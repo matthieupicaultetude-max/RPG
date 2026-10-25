@@ -48,7 +48,7 @@ Les sons sont synthétisés localement avec Web Audio : pas, armes, magie, impac
 
 ## Validation
 
-`npm test` lance seize tests de logique d'équipe, de mouvement, de monde et d'économie : composition valide, compagnons selon le principal, suivi et cadence d'attaque, priorité du tank, personnages à terre et collisions.
+`npm test` lance dix-sept tests de logique d'équipe, de mouvement, de monde et d'économie : composition valide, compagnons selon le principal, suivi et cadence d'attaque, priorité du tank, personnages à terre et collisions.
 
 Compilation Vite et parcours Chromium vérifiés : choix du trio, choix du principal, E pour déployer/rappeler, éliminations autonomes et butin partagé, changement du principal, sauvegarde après rechargement, formulaire mobile sans débordement et absence d'erreurs JavaScript. La vente chez Marius utilise désormais T.
 
@@ -58,7 +58,7 @@ Vérifications Chromium supplémentaires : orientation dans quatre directions, r
 
 La carte mesure maintenant 2400 × 1800 unités et la caméra suit le personnage principal. Le bouton de carte en haut à droite montre les quatre régions et votre position.
 
-- **Bourg-Aurore, au centre** : ville protégée, quatre portes, fontaine, feu de soin, auberge, habitations et huit PNJ. T près d'un PNJ ouvre son dialogue ou sa boutique.
+- **Bourg-Aurore, au centre** : ville protégée, quatre portes, fontaine, feu de soin, auberge, habitations et onze PNJ. T près d'un PNJ ouvre son dialogue ou sa boutique.
 - **Champs de Blévent, à l'ouest** : parcelles de blé, moulin aux ailes animées, épouvantails éveillés et navets farouches.
 - **Forêt de Sylve, à l'est et au nord** : arbres, clairières, champignons sylvestres et sangliers.
 - **Plaine des Rosées, au sud** : prairie et gelées des prés.
@@ -71,7 +71,7 @@ Brune vend deux armures à la forge au nord-ouest de la place. Iris vend deux ca
 
 Les achats équipent automatiquement le héros principal. Armures et capes réduisent les dégâts reçus ; les bâtons augmentent les dégâts du Mage uniquement. L'équipement est conservé par rôle, avec la composition et la progression, dans le stockage du navigateur. Un bâton est inactif si le rôle Distance est ensuite attribué au Rôdeur. L'ancien butin de gelées est repris automatiquement.
 
-La suite comporte désormais 16 tests, dont les accès aux régions et aux PNJ, les collisions, la protection de la ville, la migration du butin et les règles d'achat. Le parcours navigateur vérifie des déplacements réels jusqu'aux boutiques et aux trois régions, les achats d'armure/cape/bâton, la vente, le combat IA, la sauvegarde de l'équipement et la carte mobile.
+La suite comporte désormais 17 tests, dont les accès aux régions et aux PNJ, les collisions, la protection de la ville, la migration du butin et les règles d'achat. Le parcours navigateur vérifie des déplacements réels jusqu'aux boutiques et aux trois régions, les achats d'armure/cape/bâton, la vente, le combat IA, la sauvegarde de l'équipement et la carte mobile.
 
 
 ## Detailed city art pass
@@ -79,3 +79,15 @@ La suite comporte désormais 16 tests, dont les accès aux régions et aux PNJ, 
 Bourg-Aurore now has nine staggered town buildings with varied heights, roof colours, dormers, gables, timber frames, individual roof tiles, shutters, flower boxes and striped awnings. Its ground uses varied, worn cobbles, patches of moss, softened walking routes and a stone ring around the animated tiered fountain.
 
 The town also includes leafy trees, benches, lamps, planted borders, market produce, barrels, crates, a cart, a well, firewood, hanging laundry, banners, shop signs, an armour stand and magical crystals. Larger ground props and tree trunks block movement. Routes to all shops, four gates, regions and house entrances are checked; existing purchases, combat and saves remain compatible.
+
+
+## Extension de Bourg-Aurore
+
+Les remparts entourent désormais une ville de 1040 × 954 unités, soit environ deux fois la superficie précédente. Quatorze nouveaux bâtiments résidentiels portent le total à 23 bâtiments en ville, en conservant les échoppes et la place historique.
+
+- Cour des Tisserands au nord, avec cinq nouvelles maisons et Tessa.
+- Faubourg des Jardins au sud, avec des maisons, plantations et Hugo.
+- Allée des Artisans à l'est, avec de nouvelles façades, des ateliers et Simon.
+- Sept rues et passages pavés relient les quartiers, les boutiques et les quatre portes déplacées.
+
+Les tests vérifient les nouveaux remparts, chaque porte, l'accès aux façades et PNJ, ainsi que le parcours complet des rues entre leurs virages. L'exploration au clavier, les dialogues, la caméra et les boutiques sont également vérifiés dans Chromium.
