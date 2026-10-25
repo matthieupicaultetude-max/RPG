@@ -19,7 +19,7 @@ npm run dev -- --port 5173
 - Espace ou clic sur un monstre : attaquer le monstre le plus proche à portée.
 - F : pouvoir de classe, avec un délai de récupération de 7 secondes.
 - R près du feu de camp : récupérer toute sa vie.
-- T près de l'étal au nord-est : parler à Marius et vendre les gelées.
+- T près d'un PNJ : dialoguer, ouvrir sa boutique ou vendre son butin à Marius sur la place.
 - E : déployer ou rappeler les deux compagnons IA.
 - I : afficher le sac ; Échap : fermer une fenêtre.
 - Sur écran tactile : croix directionnelle, boutons d'action et bouton d'interaction.
@@ -48,8 +48,27 @@ Les sons sont synthétisés localement avec Web Audio : pas, armes, magie, impac
 
 ## Validation
 
-`npm test` lance dix tests de logique d'équipe et de mouvement : composition valide, compagnons selon le principal, suivi et cadence d'attaque, priorité du tank, personnages à terre et collisions.
+`npm test` lance quinze tests de logique d'équipe, de mouvement, de monde et d'économie : composition valide, compagnons selon le principal, suivi et cadence d'attaque, priorité du tank, personnages à terre et collisions.
 
 Compilation Vite et parcours Chromium vérifiés : choix du trio, choix du principal, E pour déployer/rappeler, éliminations autonomes et butin partagé, changement du principal, sauvegarde après rechargement, formulaire mobile sans débordement et absence d'erreurs JavaScript. La vente chez Marius utilise désormais T.
 
 Vérifications Chromium supplémentaires : orientation dans quatre directions, recul sur monstres et joueur, émission de particules, animation des compagnons, contexte Web Audio actif, silence après désactivation et persistance du réglage audio.
+
+## Bourg-Aurore et les régions de l'île
+
+La carte mesure maintenant 2400 × 1800 unités et la caméra suit le personnage principal. Le bouton de carte en haut à droite montre les quatre régions et votre position.
+
+- **Bourg-Aurore, au centre** : ville protégée, quatre portes, fontaine, feu de soin, auberge, habitations et huit PNJ. T près d'un PNJ ouvre son dialogue ou sa boutique.
+- **Champs de Blévent, à l'ouest** : parcelles de blé, moulin aux ailes animées, épouvantails éveillés et navets farouches.
+- **Forêt de Sylve, à l'est et au nord** : arbres, clairières, champignons sylvestres et sangliers.
+- **Plaine des Rosées, au sud** : prairie et gelées des prés.
+
+Les bâtiments, murs et la fontaine bloquent les déplacements. Les quatre portes restent accessibles. Les monstres ne peuvent pas entrer dans la ville et reviennent vers leur territoire s'ils s'en éloignent trop. Les tirs ne traversent pas les bâtiments ou remparts.
+
+### Marchands et équipement
+
+Brune vend deux armures à la forge au nord-ouest de la place. Iris vend deux capes et deux bâtons dans la tour de magie au nord-est. Marius rachète tout le butin sur la place : gelées, paille enchantée, racines, spores et fourrures.
+
+Les achats équipent automatiquement le héros principal. Armures et capes réduisent les dégâts reçus ; les bâtons augmentent les dégâts du Mage uniquement. L'équipement est conservé par rôle, avec la composition et la progression, dans le stockage du navigateur. Un bâton est inactif si le rôle Distance est ensuite attribué au Rôdeur. L'ancien butin de gelées est repris automatiquement.
+
+La suite comporte désormais 15 tests, dont les accès aux régions et aux PNJ, les collisions, la protection de la ville, la migration du butin et les règles d'achat. Le parcours navigateur vérifie des déplacements réels jusqu'aux boutiques et aux trois régions, les achats d'armure/cape/bâton, la vente, le combat IA, la sauvegarde de l'équipement et la carte mobile.
