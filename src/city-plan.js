@@ -45,6 +45,24 @@ export function makeTownBuildings(streets){
   }
   if(best)structures.push(best);else if(kind)throw new Error('No accessible plot for '+id);
  }
+ // Infill parcels front the existing streets; doors and prior entrances stay clear.
+ const publicSpots=[[1970,1340,46],[1970,1270,45],[1896,1158,135],[1760,1330,50],[1310,1515,40],[1060,1040,40],[2500,1610,40],[2010,732,40],[1550,1090,40],[2180,1820,40],[2280,1250,40],[1940,1310,40],[2200,1435,30],[2070,1370,45],[2000,1110,35],[2350,1830,35]];
+ let infill=0;
+ for(const street of streets){if(['Route de Sylve','Chemin du Moulin','Cour du Donjon'].includes(street.name))continue;let next=45;
+  for(let segment=1;segment<street.points.length;segment++){const a=street.points[segment-1],b=street.points[segment],length=Math.hypot(b[0]-a[0],b[1]-a[1]);if(!length)continue;
+   while(next<length){const t=next/length,px=a[0]+(b[0]-a[0])*t,py=a[1]+(b[1]-a[1])*t,nx=-(b[1]-a[1])/length,ny=(b[0]-a[0])/length;
+    for(const side of [-1,1]){if(infill>=45)break;const w=54+(infill%3)*6,h=62+(infill%3)*6,offset=street.width/2+12+Math.abs(nx)*w/2+Math.abs(ny)*h/2,rect={x:Math.round(px+side*nx*offset-w/2),y:Math.round(py+side*ny*offset-h/2),w,h};
+     const corners=[[rect.x,rect.y],[rect.x+w,rect.y],[rect.x,rect.y+h],[rect.x+w,rect.y+h]];
+     if(!corners.every(([x,y])=>contains(townOutline,x,y)&&!contains(bay,x,y)&&!contains(castleOutline,x,y)))continue;
+     if(structures.some(b=>rectGap(rect,b)<18)||streets.some(s=>intersectsLane(rect,s)))continue;
+     if(publicSpots.some(([x,y,r])=>Math.hypot(Math.max(0,rect.x-x,x-rect.x-w),Math.max(0,rect.y-y,y-rect.y-h))<r))continue;
+     const entrance=r=>({x:r.x+r.w*(r.kind==='inn'?.62:r.w<90?.67:.5),y:r.y+r.h+16}),blocks=(r,p)=>p.x>r.x-7&&p.x<r.x+r.w+7&&p.y>r.y-7&&p.y<r.y+r.h+7;
+     if(structures.some(b=>blocks(b,entrance(rect))||blocks(rect,entrance(b))))continue;
+     structures.push({id:'street-home-'+infill,...rect,name:'',kind:'',street:street.name,roof:palette[infill%palette.length],plaster:infill%2?'#d5c39f':'#c7b992',gable:infill%3===0});infill++;
+    }next+=48;
+   }next-=length;
+  }
+ }
  structures.push({id:'mill',x:570,y:735,w:110,h:135,name:'Moulin de Blévent',roof:'#b28762',kind:'mill'});return structures;
 }
 export function makeCastleWalls(){const walls=[];for(let i=0;i<castleOutline.length;i++){const a=castleOutline[i],b=castleOutline[(i+1)%castleOutline.length],length=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.ceil(length/18);for(let j=0;j<=n;j++){const t=j/n,x=a[0]+(b[0]-a[0])*t,y=a[1]+(b[1]-a[1])*t;if(i===2&&Math.hypot(x-castleGate.x,y-castleGate.y)<65)continue;walls.push({x:Math.round(x-11),y:Math.round(y-11),w:22,h:22})}}return walls}

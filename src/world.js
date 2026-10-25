@@ -1,3 +1,5 @@
+import {paintConnectedPavement} from './pavement.js';
+import {createCitizens} from './citizens.js';
 import {fromPlan,polygon,contains,townOutline,bay,castleOutline,castleGate,castleTowers,docks,boats,streetPlans,makeTownBuildings,makeCastleWalls,distanceToSegment} from './city-plan.js';
 export {castleOutline,castleGate,castleTowers,docks,bay,townOutline} from './city-plan.js';
 export const WORLD={width:3600,height:2800,spawn:{x:1970,y:1340},fire:{x:1970,y:1270},fountain:{x:1896,y:1158},town:{x:750,y:570,w:2100,h:1630}};
@@ -39,6 +41,7 @@ export function objectBlocks(x,y,o){const dx=x-o.x,dy=y-o.y;if(['barrel','plante
 export function canWalkWorld(x,y){return onLand(x,y)&&!walls.some(r=>inRect(x,y,r))&&!castleTowers.some(t=>Math.hypot(x-t.x,y-t.y)<28)&&!buildings.some(r=>inRect(x,y,r,7))&&!townTrees.some(t=>Math.hypot(x-t.x,y-t.y)<9*t.s)&&!townObjects.some(o=>objectBlocks(x,y,o))&&Math.hypot(x-WORLD.fountain.x,y-WORLD.fountain.y)>44}
 export function canMonsterWalk(x,y){return canWalkWorld(x,y)&&!inTown(x,y)}
 export function zoneAt(x,y){if(inTown(x,y))return {id:'town',name:'Bourg-Aurore',subtitle:(contains(castleOutline,x,y)?'Château d’Aurore':y<900?'Port des Marées':x<1800?'Quartier des Tisserands':y>1500?'Bourg des Jardins':'Place du Marché')+' · Zone protégée'};if(x<1050&&y<2200)return {id:'fields',name:'Les champs de Blévent',subtitle:'Moulin & cultures · Niveau 1–3'};if(x>2800&&y<2200||y<570)return {id:'forest',name:'La forêt de Sylve',subtitle:'Sous-bois & clairières · Niveau 2–4'};return {id:'plains',name:'La plaine des rosées',subtitle:'Prairies des slimes · Niveau 1–2'}}
+export const citizens=createCitizens(streets,canWalkWorld,inTown);
 export function createEnemies(){const spawns=[["slime",1575,2300],["slime",1900,2300],["slime",2190,2280],["slime",2350,2400],["slime",1250,2320],["slime",1800,2490],["scarecrow",765,1140],["scarecrow",570,1545],["scarecrow",780,960],["turnip",680,1600],["turnip",570,1230],["turnip",730,1280],["mushroom",2880,1140],["mushroom",3080,1575],["mushroom",2960,1800],["boar",3000,1185],["boar",2950,800],["boar",3100,800]];return spawns.map(([type,x,y],i)=>({type,x,y,homeX:x,homeY:y,hp:enemyTypes[type].hp,maxHp:enemyTypes[type].hp,phase:i%7,respawn:0,hit:0,attackCooldown:0,facing:'down',dir:1,walk:0,vx:0,vy:0,kx:0,ky:0}))}
 let seed=37;function random(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296}
 export const trees=Array.from({length:370},()=>({x:270+random()*3000,y:270+random()*2100,s:.85+random()*.45})).filter(t=>onLand(t.x,t.y)&&!inTown(t.x,t.y)&&canWalkWorld(t.x,t.y)&&((t.x>2750&&Math.abs(t.y-1400)>100)||(t.y<550&&Math.abs(t.x-1800)>110)||(t.x<390)||(t.y>2250&&t.x>2400)));
@@ -68,16 +71,17 @@ export class WorldRenderer{
  for(let i=0;i<170;i++){const x=200+random()*1950,y=200+random()*1350;if(!inTown(x,y)){this.r(x,y,2,5,'#5d935b');this.r(x-2,y-2,6,3,i%3?'#f2db92':'#d2a3d3')}}this.poly(bay,'#619ca3');for(let i=0;i<120;i++){const x=950+this.hash(i,3)*2300,y=this.hash(i,5)*620;if(contains(bay,x,y))this.r(x,y,12+i%16,2,'#83b3b4')}this.paintDocks();c.restore();this.ctx=original;
  }
  paintTownGround(){
- const c=this.ctx,t=WORLD.town,left=t.x,top=t.y,right=t.x+t.w,bottom=t.y+t.h;c.save();c.beginPath();townOutline.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.clip();this.r(left,top,right-left,bottom-top,'#a3ab7a');for(let i=0;i<6500;i++){const x=left+this.hash(i,7)*(right-left),y=top+this.hash(i,11)*(bottom-top);this.r(x,y,i%3?2:4,2,i%2?'#9eaf78':'#7e9565')};
- const stone=['#a7a88a','#b2ad8d','#999e80','#b9b294','#9c9e84','#aaa992','#bdb79a'];
- for(let row=0,y=top+2;y<bottom-2;row++,y+=12){for(let x=left-(row%2)*13;x<right;x+=26){if(!((Math.hypot((x-WORLD.fountain.x)/1.25,y-WORLD.fountain.y)<150)||buildings.some(b=>x>b.x-20&&x<b.x+b.w+20&&y>b.y+b.h-15&&y<b.y+b.h+45)))continue;const v=this.hash(x,y),w=22+Math.floor(v*3);this.r(x+1,y+1,w,10,stone[Math.floor(v*stone.length)]);this.r(x+2,y+2,w-2,1,'#d3ccb033');this.r(x+2,y+9,w,1,'#3c4e4120');if(v>.81){this.r(x+6,y+5,5,1,'#657958');this.r(x+9,y+4,2,2,'#6c8259')}if(v<.13)this.r(x+12,y+3,2,2,'#c9c2a4')}}
- for(const spur of entrancePaths){if(!spur.points.length)continue;c.beginPath();spur.points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.lineCap='round';c.lineWidth=19;c.strokeStyle='#b4b090';c.stroke();c.lineWidth=15;c.strokeStyle='#c6bfa0';c.setLineDash([5,2]);c.stroke();c.setLineDash([])}
- // Distinct paved streets link the old square and the new residential quarters.
- for(const street of streets){c.save();c.lineCap='round';c.lineJoin='round';c.beginPath();street.points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.strokeStyle='#737d653d';c.lineWidth=street.width+8;c.stroke();c.strokeStyle='#c6bea0';c.lineWidth=street.width+4;c.stroke();c.strokeStyle='#a6a78c';c.lineWidth=street.width;c.stroke();c.strokeStyle='#bdb89b';c.lineWidth=street.width-8;c.setLineDash([7,3]);c.stroke();c.restore()}
- // Circular cobbles surrounding the fountain.
- for(let ring=2;ring<6;ring++){const count=ring*12,r=ring*18;for(let i=0;i<count;i++){const a=i/count*Math.PI*2;this.r(WORLD.fountain.x-3+Math.cos(a)*r,WORLD.fountain.y+11+Math.sin(a)*r*.7,9,5,stone[(i+ring)%stone.length])}}
- for(const b of buildings){this.r(b.x-7,b.y+b.h-2,b.w+14,13,'#776d59');for(let x=b.x-4;x<b.x+b.w;x+=15){this.r(x,b.y+b.h+1,13,7,'#b4a689');this.r(x,b.y+b.h+1,13,1,'#d4c3a0')}this.r(b.x+b.w/2-20,b.y+b.h+9,40,8,'#847b65');this.r(b.x+b.w/2-18,b.y+b.h+9,36,3,'#bfb191')}
- for(const t of townTrees){this.e(t.x,t.y-1,34*t.s,21*t.s,'#6a8156');for(let i=0;i<24;i++){const a=i*2.4,r=15+this.hash(i,t.x)*19;this.r(t.x+Math.cos(a)*r,t.y+Math.sin(a)*r*.6,3,2,'#a6ac72')}}
+ const c=this.ctx,t=WORLD.town,left=t.x,top=t.y,right=t.x+t.w,bottom=t.y+t.h;
+ c.save();c.beginPath();townOutline.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.clip();this.r(left,top,right-left,bottom-top,'#859566');
+ for(let i=0;i<9000;i++){const x=left+this.hash(i,7)*(right-left),y=top+this.hash(i,11)*(bottom-top);this.r(x,y,i%3?2:4,2,i%2?'#9daa73':'#778d61')}
+ // Small planted borders soften the street-facing courtyards and block corners.
+ for(const b of buildings.filter(b=>b.kind!=='castle'&&b.kind!=='mill')){const x=b.x-21,y=b.y+b.h-20;this.r(x,y,16,47,'#6e8057');for(let i=0;i<17;i++){const px=x+this.hash(i,b.x)*13,py=y+this.hash(i,b.y)*42;this.r(px,py,5,4,i%2?'#83995a':'#9aa66c');if(i%4===0)this.r(px+1,py-2,2,3,i%3?'#d5b68c':'#b5a8bd')}}
+ const paths=[...streets,...entrancePaths.map(p=>({...p,width:18}))];
+ const courts=[{x:WORLD.fountain.x,y:WORLD.fountain.y,rx:145,ry:118},{points:castleOutline},...buildings.filter(b=>b.kind!=='mill').map(b=>({x:b.x-8,y:b.y+b.h-5,w:b.w+16,h:29}))];
+ paintConnectedPavement(c,{x:left,y:top,w:t.w,h:t.h},paths,courts);
+ // Doorsteps share the paving phase; only the raised step gets an individual shadow.
+ for(const b of buildings){this.r(b.x+b.w/2-19,b.y+b.h+8,38,7,'#70796555');this.r(b.x+b.w/2-17,b.y+b.h+8,34,3,'#c7bea0')}
+ for(const t of townTrees){this.e(t.x,t.y-1,34*t.s,21*t.s,'#657d53');for(let i=0;i<30;i++){const a=i*2.4,r=14+this.hash(i,t.x)*20;this.r(t.x+Math.cos(a)*r,t.y+Math.sin(a)*r*.6,3,2,i%4?'#9ea96b':'#c2b580')}}
  c.restore();
  }
  paintDocks(){
@@ -185,3 +189,9 @@ export const entrancePaths=buildings.filter(b=>b.kind!=='mill').map(b=>{const do
 
 // Deployment must also work on a one-person-wide pier or castle passage.
 export function deploymentPositions(player,count=2){const occupied=[player],positions=[];for(let i=0;i<count;i++){const preferred=[{x:player.x+(i?22:-22),y:player.y+20}];for(let radius=20;radius<=80;radius+=10)for(let a=0;a<16;a++)preferred.push({x:player.x+Math.cos(a*Math.PI/8)*radius,y:player.y+Math.sin(a*Math.PI/8)*radius});const p=preferred.find(p=>canWalkWorld(p.x,p.y)&&lineOfSight(player,p)&&occupied.every(o=>Math.hypot(o.x-p.x,o.y-p.y)>=15))||{x:player.x,y:player.y};positions.push(p);occupied.push(p)}return positions}
+
+// Pocket trees occupy leftover green corners, with pedestrian routes and doors reserved.
+const streetTrees=[];
+for(let y=860;y<1830;y+=54)for(let x=1220;x<2520;x+=54){if(!inTown(x,y)||contains(castleOutline,x,y)||!canWalkWorld(x,y))continue;if(Math.hypot(x-WORLD.fountain.x,y-WORLD.fountain.y)<82)continue;if(buildings.some(b=>x>b.x-34&&x<b.x+b.w+34&&y>b.y-12&&y<b.y+b.h+32))continue;if(npcs.some(n=>Math.hypot(x-n.x,y-n.y)<35))continue;const nearStreet=streets.some(s=>s.points.some((p,i)=>i&&distanceToSegment(x,y,s.points[i-1],p)<95));if(!nearStreet||streets.some(s=>s.points.some((p,i)=>i&&distanceToSegment(x,y,s.points[i-1],p)<s.width/2+20)))continue;if(entrancePaths.some(s=>s.points.some((p,i)=>i&&distanceToSegment(x,y,s.points[i-1],p)<18)))continue;streetTrees.push({x,y,s:.68,leaf:streetTrees.length%2})}
+streetTrees.sort((a,b)=>Math.hypot(a.x-WORLD.spawn.x,a.y-WORLD.spawn.y)-Math.hypot(b.x-WORLD.spawn.x,b.y-WORLD.spawn.y));
+let planted=0;for(const t of streetTrees){if(planted>=12)break;if(townTrees.some(n=>Math.hypot(t.x-n.x,t.y-n.y)<90))continue;townTrees.push(t);planted++}

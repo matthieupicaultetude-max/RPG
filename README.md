@@ -52,7 +52,7 @@ Le tracé de Bourg-Aurore suit les principaux repères du dessin de référence.
 - **Est** : bourg autour d'une rue en boucle, maisons et échoppes.
 - **Sorties** : routes rayonnantes vers les champs, la forêt et la plaine.
 
-La ville compte 50 bâtiments, dont 45 maisons, et douze rues, routes et passages. Chaque façade est accessible depuis le réseau de rues. La carte propose une vue rapprochée de la ville et une vue de l'île entière, avec votre position.
+La ville compte 70 bâtiments, dont 65 maisons, et douze rues, routes et passages. Vingt nouvelles façades bordent directement les rues existantes. Chaque façade est accessible depuis le réseau de rues. La carte propose une vue rapprochée de la ville et une vue de l'île entière, avec votre position.
 
 L'île mesure 3600 × 2800 unités. Le joueur ne peut pas marcher dans la baie, sauf sur les pontons. Les bâtiments, tours, murs du château, arbres et grands objets bloquent les déplacements ; les tirs ne traversent pas les obstacles. Les monstres restent hors des secteurs protégés. Les compagnons se déploient uniquement sur des positions praticables, y compris sur les quais étroits.
 
@@ -68,6 +68,15 @@ La composition, le principal, le butin, l'or, les objectifs, l'équipement et le
 
 ## Validation
 
-21 tests couvrent équipe, mouvement, orientation, recul, particules, économie, collisions, eau, pontons, six tours, porte et cour du château, rues, accès à chaque façade, régions et PNJ. La recherche de trajets vérifie aussi la liaison de chaque ponton et de la cour avec la place.
+25 tests couvrent équipe, mouvement, orientation, recul, particules, économie, collisions, eau, pontons, six tours, porte et cour du château, rues, accès à chaque façade, régions et PNJ. La recherche de trajets vérifie aussi la liaison de chaque ponton et de la cour avec la place. Les tests couvrent la périodicité des pavés et la circulation des habitants pendant une minute simulée.
 
 Le parcours Chromium vérifie achats et vente, traversée de la porte du château et de sa cour, marche sur les pontons, changement de vue de carte, combats IA, régions extérieures, sauvegarde et carte mobile. La compilation de production est vérifiée avec Vite.
+
+
+## Rues pavées et vie de quartier
+
+Les rues, carrefours, cours et passages vers les façades sont fusionnés dans des masques uniques. Les pavés et bordures utilisent des textures périodiques de 96 × 64 pixels, ancrées aux coordonnées du monde. Ainsi les raccords ne dépendent ni du tronçon, ni de la caméra, ni des découpes de rendu ; les bordures ne traversent pas les intersections. Un contrôle Chromium compare pixel par pixel un rendu entier avec deux rendus indépendants assemblés.
+
+Douze arbres de rue supplémentaires et des plates-bandes adoucissent les îlots. Les accès aux façades et les trajets restent réservés.
+
+Les onze PNJ nommés et commerçants sont rejoints par vingt-quatre habitants. Ces derniers suivent des itinéraires de rue, s'orientent en marchant, marquent des pauses et affichent parfois une courte phrase. Ils s'arrêtent et regardent le joueur lorsqu'il approche. Toute la circulation se suspend dans les fenêtres de dialogue. Les boutiques restent prioritaires à portée de T pour faciliter les achats dans la foule.
