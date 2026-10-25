@@ -1,198 +1,55 @@
-export const WORLD={width:3600,height:2800,spawn:{x:1820,y:1480},fire:{x:1800,y:1504},fountain:{x:1800,y:1320},town:{x:1032,y:616,w:1664,h:1528}};
+import {fromPlan,polygon,contains,townOutline,bay,castleOutline,castleGate,castleTowers,docks,boats,streetPlans,makeTownBuildings,makeCastleWalls,distanceToSegment} from './city-plan.js';
+export {castleOutline,castleGate,castleTowers,docks,bay,townOutline} from './city-plan.js';
+export const WORLD={width:3600,height:2800,spawn:{x:1970,y:1340},fire:{x:1970,y:1270},fountain:{x:1896,y:1158},town:{x:750,y:570,w:2100,h:1630}};
 export const shore=[[435,255],[1050,142],[1680,210],[2220,128],[2940,232],[3300,600],[3435,1200],[3330,1860],[3060,2310],[2400,2490],[1800,2588],[1110,2475],[495,2205],[188,1695],[150,1035],[255,555]];
-export const buildings=[
- {"id":"armor","x":1375,"y":1127,"w":162,"h":110,"name":"La Forge du Rempart","roof":"#a86045","kind":"forge","plaster":"#d5bb8e","gable":true},
- {"id":"magic","x":2144,"y":1054,"w":146,"h":148,"name":"La Tour des Lucioles","roof":"#607c91","kind":"magic","plaster":"#c8c4b0","gable":true},
- {"id":"inn","x":1278,"y":1801,"w":159,"h":108,"name":"Auberge du Soleil","roof":"#b3724f","kind":"inn","plaster":"#ddc7a1","gable":true},
- {"id":"home1","x":2157,"y":1807,"w":138,"h":98,"name":"","roof":"#6e8c80","plaster":"#d0c39d","gable":true},
- {"id":"home2","x":1585,"y":1100,"w":112,"h":96,"name":"","roof":"#8c8360","plaster":"#c9b996"},
- {"id":"home3","x":2281,"y":1543,"w":104,"h":64,"name":"","roof":"#827495","plaster":"#d8c4a6"},
- {"id":"cottage","x":1190,"y":1583,"w":76,"h":52,"name":"","roof":"#7c9278","plaster":"#c1b396"},
- {"id":"bakery","x":1921,"y":1897,"w":64,"h":80,"name":"","roof":"#b98856","plaster":"#e2ceab","kind":"bakery"},
- {"id":"scribe","x":2032,"y":1059,"w":67,"h":91,"name":"","roof":"#7c8e9a","plaster":"#c6c4af"},
- {"id":"weaver","x":1110,"y":760,"w":111,"h":96,"name":"","roof":"#a57869","plaster":"#d7c4a2","gable":true},
- {"id":"north1","x":1462,"y":866,"w":100,"h":103,"name":"","roof":"#748b87","plaster":"#d0c4a6"},
- {"id":"north2","x":1712,"y":767,"w":78,"h":82,"name":"","roof":"#9d8658","plaster":"#d9c49c"},
- {"id":"north3","x":2042,"y":888,"w":114,"h":102,"name":"","roof":"#a16c55","plaster":"#d9c6a1","gable":true},
- {"id":"north4","x":2266,"y":777,"w":122,"h":108,"name":"","roof":"#6d8596","plaster":"#c7c7b4","gable":true},
- {"id":"west1","x":1085,"y":1221,"w":90,"h":102,"name":"","roof":"#8b916a","plaster":"#d5c39a"},
- {"id":"west2","x":1085,"y":1700,"w":60,"h":82,"name":"","roof":"#a47759","plaster":"#cfbc94"},
- {"id":"south1","x":1124,"y":1948,"w":108,"h":70,"name":"","roof":"#708c80","plaster":"#d8c7aa","gable":true},
- {"id":"south2","x":1482,"y":1971,"w":106,"h":60,"name":"","roof":"#a87460","plaster":"#dbc8a3"},
- {"id":"south3","x":2053,"y":1983,"w":110,"h":75,"name":"","roof":"#8d805b","plaster":"#d4c19b","gable":true},
- {"id":"south4","x":2230,"y":1955,"w":112,"h":68,"name":"","roof":"#7b7f98","plaster":"#d4c5af"},
- {"id":"east1","x":2472,"y":1108,"w":99,"h":109,"name":"","roof":"#a67855","plaster":"#d8c4a0","gable":true},
- {"id":"east2","x":2530,"y":1688,"w":101,"h":90,"name":"","roof":"#7d927d","plaster":"#cfc4a7"},
- {"id":"east3","x":2500,"y":1871,"w":87,"h":92,"name":"","roof":"#aa7c6e","plaster":"#ddcbb1"},
- {"id":"mill","x":570,"y":735,"w":110,"h":135,"name":"Moulin de Blévent","roof":"#b28762","kind":"mill"}
-];
-export const townTrees=[
- {"x":1352,"y":885,"s":0.8,"leaf":1},
- {"x":2147,"y":894,"s":0.85,"leaf":0},
- {"x":2542,"y":890,"s":0.8,"leaf":1},
- {"x":1074,"y":1213,"s":0.7,"leaf":0},
- {"x":2504,"y":2064,"s":0.76,"leaf":0},
- {"x":1386,"y":2066,"s":0.68,"leaf":1},
- {"x":1288,"y":1086,"s":0.82,"leaf":0},
- {"x":1928,"y":1256,"s":0.88,"leaf":1},
- {"x":2307,"y":1696,"s":0.9,"leaf":0},
- {"x":1632,"y":1848,"s":0.75,"leaf":1},
- {"x":1277,"y":1800,"s":0.7,"leaf":0},
- {"x":1976,"y":1882,"s":0.68,"leaf":1},
- {"x":2296,"y":1024,"s":0.8,"leaf":0},
- {"x":1320,"y":1030,"s":1,"leaf":0},
- {"x":1660,"y":1270,"s":0.95,"leaf":1},
- {"x":1950,"y":1620,"s":1.1,"leaf":0},
- {"x":1500,"y":1770,"s":0.9,"leaf":1},
- {"x":2140,"y":1720,"s":1.05,"leaf":0},
- {"x":2320,"y":1050,"s":1,"leaf":1},
- {"x":1190,"y":1900,"s":0.85,"leaf":0},
- {"x":2420,"y":2040,"s":0.95,"leaf":1},
- {"x":1610,"y":810,"s":0.85,"leaf":0},
- {"x":1920,"y":870,"s":0.8,"leaf":1},
- {"x":2560,"y":1570,"s":0.9,"leaf":0}
-];
+export function smoothStreet(points){let result=points;for(let pass=0;pass<2;pass++){const next=[result[0]];for(let i=1;i<result.length;i++){const a=result[i-1],b=result[i];next.push([a[0]*.75+b[0]*.25,a[1]*.75+b[1]*.25],[a[0]*.25+b[0]*.75,a[1]*.25+b[1]*.75])}next.push(result.at(-1));result=next}return result}
+export const streets=streetPlans.map(street=>({...street,points:smoothStreet(polygon(street.points))}));
+export const buildings=makeTownBuildings(streets);
+export const walls=makeCastleWalls();
+export const gates={north:{x:1900,y:710},south:fromPlan(174,333),west:fromPlan(83,151),east:fromPlan(337,157),castle:castleGate};
+export const districts=[{name:'Port des Marées',x:2070,y:730},{name:'Quartier des Tisserands',x:1510,y:1040},{name:'Bourg des Jardins',x:2220,y:1750},{name:'Château d’Aurore',x:1090,y:1660}];
+const treeSpots=polygon([[58,145],[38,276],[86,292],[139,315],[196,324],[294,312],[324,288],[345,183],[316,123],[83,107],[305,93],[260,295],[224,288],[104,257]]);
+export const townTrees=treeSpots.map(([x,y],i)=>({x,y,s:.75+(i%3)*.12,leaf:i%2})).filter(t=>!buildings.some(b=>t.x>b.x-35&&t.x<b.x+b.w+35&&t.y>b.y-20&&t.y<b.y+b.h+25)&&!streets.some(s=>s.points.some((p,i)=>i&&distanceToSegment(t.x,t.y,s.points[i-1],p)<s.width/2+12)));
 export const townObjects=[
- {"kind":"planter","x":1130,"y":870,"variant":0},
- {"kind":"planter","x":1490,"y":1022,"variant":1},
- {"kind":"planter","x":2090,"y":1040,"variant":2},
- {"kind":"planter","x":2361,"y":900,"variant":3},
- {"kind":"planter","x":2482,"y":1230,"variant":4},
- {"kind":"planter","x":2620,"y":1792,"variant":5},
- {"kind":"planter","x":1129,"y":1797,"variant":6},
- {"kind":"planter","x":1138,"y":2104,"variant":7},
- {"kind":"planter","x":2250,"y":2039,"variant":8},
- {"kind":"barrel","x":1097,"y":1342,"variant":0},
- {"kind":"barrel","x":2461,"y":1231,"variant":1},
- {"kind":"barrel","x":2589,"y":1978,"variant":2},
- {"kind":"barrel","x":1497,"y":2047,"variant":3},
- {"kind":"barrel","x":2068,"y":2073,"variant":4},
- {"kind":"lamp","x":1112,"y":1006,"variant":0},
- {"kind":"lamp","x":1624,"y":928,"variant":1},
- {"kind":"lamp","x":2158,"y":958,"variant":2},
- {"kind":"lamp","x":2368,"y":1802,"variant":3},
- {"kind":"lamp","x":1262,"y":1846,"variant":4},
- {"kind":"lamp","x":1717,"y":1992,"variant":5},
- {"kind":"bench","x":2568,"y":1262},
- {"kind":"bench","x":2178,"y":2038},
- {"kind":"bench","x":1592,"y":1810},
- {"kind":"laundry","x":1508,"y":993},
- {"kind":"cart","x":2528,"y":1776},
- {"kind":"garden","x":2233,"y":1998},
- {"kind":"woodpile","x":1096,"y":1792},
- {"kind":"crate","x":2589,"y":1235},
- {"kind":"well","x":2200,"y":840},
- {"kind":"banner","x":1112,"y":1309,"variant":0},
- {"kind":"banner","x":2616,"y":1309,"variant":1},
- {"kind":"banner","x":1112,"y":1525,"variant":2},
- {"kind":"banner","x":2616,"y":1525,"variant":3},
- {"kind":"barrel","x":1531,"y":1175,"variant":0},
- {"kind":"barrel","x":1392,"y":1258,"variant":1},
- {"kind":"barrel","x":2281,"y":1221,"variant":2},
- {"kind":"barrel","x":2163,"y":1224,"variant":3},
- {"kind":"barrel","x":1298,"y":1923,"variant":4},
- {"kind":"barrel","x":2247,"y":1921,"variant":5},
- {"kind":"barrel","x":2298,"y":1620,"variant":6},
- {"kind":"barrel","x":1213,"y":1665,"variant":7},
- {"kind":"crate","x":1382,"y":1272,"variant":0},
- {"kind":"crate","x":1528,"y":1197,"variant":1},
- {"kind":"crate","x":2259,"y":1228,"variant":2},
- {"kind":"crate","x":2360,"y":1613,"variant":3},
- {"kind":"crate","x":1279,"y":1637,"variant":4},
- {"kind":"crate","x":2302,"y":1907,"variant":5},
- {"kind":"planter","x":1428,"y":1249,"variant":0},
- {"kind":"planter","x":1513,"y":1249,"variant":1},
- {"kind":"planter","x":2169,"y":1215,"variant":2},
- {"kind":"planter","x":2250,"y":1215,"variant":3},
- {"kind":"planter","x":1585,"y":1215,"variant":4},
- {"kind":"planter","x":2096,"y":1165,"variant":5},
- {"kind":"planter","x":1207,"y":1656,"variant":6},
- {"kind":"planter","x":1425,"y":1921,"variant":7},
- {"kind":"planter","x":2177,"y":1919,"variant":8},
- {"kind":"planter","x":2379,"y":1625,"variant":9},
- {"kind":"planter","x":1961,"y":1983,"variant":10},
- {"kind":"bench","x":1688,"y":1296,"variant":0},
- {"kind":"bench","x":1910,"y":1500,"variant":1},
- {"kind":"bench","x":1656,"y":1520,"variant":2},
- {"kind":"lamp","x":1656,"y":1240,"variant":0},
- {"kind":"lamp","x":1971,"y":1309,"variant":1},
- {"kind":"lamp","x":1622,"y":1779,"variant":2},
- {"kind":"lamp","x":2286,"y":1496,"variant":3},
- {"kind":"lamp","x":1861,"y":1856,"variant":4},
- {"kind":"cart","x":1368,"y":1501},
- {"kind":"well","x":1976,"y":1568},
- {"kind":"woodpile","x":1200,"y":1307},
- {"kind":"woodpile","x":1438,"y":1882},
- {"kind":"sign","x":1635,"y":1339,"variant":0},
- {"kind":"sign","x":2093,"y":1224,"variant":1},
- {"kind":"sign","x":1459,"y":1917,"variant":2},
- {"kind":"garden","x":1699,"y":917,"variant":0},
- {"kind":"garden","x":2305,"y":1857,"variant":1},
- {"kind":"laundry","x":2315,"y":1633},
- {"kind":"market","x":1520,"y":1448,"variant":0},
- {"kind":"market","x":2060,"y":1530,"variant":1},
- {"kind":"anvil","x":1520,"y":1160},
- {"kind":"armor","x":1401,"y":1256},
- {"kind":"crystal","x":2268,"y":1211},
- {"kind":"banner","x":1261,"y":1320,"variant":0},
- {"kind":"banner","x":2334,"y":1323,"variant":1},
- {"kind":"banner","x":1262,"y":1510,"variant":2},
- {"kind":"banner","x":2333,"y":1509,"variant":3}
+ ...buildings.filter(b=>b.kind!=='castle'&&b.kind!=='mill').flatMap((b,i)=>[{kind:'planter',x:b.x+8,y:b.y+b.h+14,variant:i%3},...(i%3===0?[{kind:'barrel',x:b.x+b.w-8,y:b.y+b.h+14,variant:i}]:[])]),
+ {kind:'market',x:1760,y:1310,variant:0},{kind:'market',x:2070,y:1370,variant:1},{kind:'well',x:2200,y:1435},
+ {kind:'bench',x:2000,y:1110},{kind:'bench',x:1010,y:1640},{kind:'cart',x:2350,y:1830},
+ ...[[1740,710],[1880,708],[2080,718],[2240,728],[2410,725],[2460,748]].map(([x,y],i)=>({kind:i%2?'barrel':'crate',x,y,variant:i})),
+ ...[[1680,1100],[2010,1365],[2390,1510],[1300,1690],[1080,1300]].map(([x,y],i)=>({kind:'lamp',x,y,variant:i}))
 ];
-// Four wide openings remain aligned with the island's approach roads.
-export const gates={north:{x:1800,y:628},south:{x:1800,y:2132},west:{x:1044,y:1400},east:{x:2684,y:1400}};
-const {x:tx,y:ty,w:tw,h:th}=WORLD.town;
-const bottom=ty+th-24,right=tx+tw-24;
-export const walls=[
- {x:tx,y:ty,w:1740-tx,h:24},{x:1860,y:ty,w:tx+tw-1860,h:24},
- {x:tx,y:bottom,w:1740-tx,h:24},{x:1860,y:bottom,w:tx+tw-1860,h:24},
- {x:tx,y:ty,w:24,h:1340-ty},{x:tx,y:1460,w:24,h:ty+th-1460},
- {x:right,y:ty,w:24,h:1340-ty},{x:right,y:1460,w:24,h:ty+th-1460}
-];
-// Keep endpoints fixed while rounding bends; rendering and route checks use the same samples.
-export function smoothStreet(points){let result=points;for(let pass=0;pass<3;pass++){const next=[result[0]];for(let i=1;i<result.length;i++){const a=result[i-1],b=result[i];next.push([a[0]*.75+b[0]*.25,a[1]*.75+b[1]*.25],[a[0]*.25+b[0]*.75,a[1]*.25+b[1]*.75])}next.push(result.at(-1));result=next}return result}
-export const streets=[
- {name:'Grande-Rue',points:[[1056,1400],[1230,1460],[1450,1390],[1620,1380],[1730,1420],[1880,1440],[2050,1470],[2300,1400],[2480,1350],[2672,1400]],width:48},
- {name:'Rue des Tisserands',points:[[1170,940],[1330,1030],[1450,1000],[1620,970],[1830,1030],[2020,1030],[2190,1010],[2410,980],[2540,1000]],width:38},
- {name:'Rue des Jardins',points:[[1300,1990],[1410,1940],[1610,1940],[1820,1940],[1930,2010],[1980,2100],[2180,2100],[2400,2090],[2480,2020],[2430,1960]],width:38},
- {name:'Allée des Artisans',points:[[2540,1000],[2650,1100],[2640,1250],[2500,1320],[2480,1480],[2440,1600],[2470,1800],[2430,1960]],width:36},
- {name:'Passage du Verger',points:[[1170,940],[1290,1100],[1260,1280],[1180,1480],[1135,1650],[1220,1740],[1200,1870],[1300,1990]],width:32},
- {name:'Voie du Nord',points:[[1800,640],[1830,750],[1860,880],[1840,1050],[1790,1190],[1870,1300],[1880,1440]],width:40},
- {name:'Rue du Soleil',points:[[1880,1440],[1790,1510],[1730,1640],[1790,1760],[1820,1900],[1770,2010],[1800,2120]],width:42}
-].map(street=>({...street,points:smoothStreet(street.points)}));
-export const districts=[{name:'Cour des Tisserands',x:1830,y:1030},{name:'Faubourg des Jardins',x:1980,y:2050},{name:'Allée des Artisans',x:2480,y:1510}];
+function shopNPC(id,name,job,shop,color,dialog){const b=buildings.find(b=>b.id===id),p=houseEntrance(b);return {id:id==='armor'?'brune':id==='magic'?'iris':id,name,job,shop,color,dialog,x:p.x,y:p.y+12}}
 export const npcs=[
- {"id":"marius","name":"Marius","job":"Marchand","x":1528,"y":1464,"shop":"general","color":"#bd9165","dialog":"Toutes les récoltes de vos aventures trouvent preneur ici !"},
- {"id":"brune","name":"Brune","job":"Armurière","x":1466,"y":1269,"shop":"armor","color":"#b98772","dialog":"Une bonne armure, et vous reviendrez de vos aventures en un seul morceau."},
- {"id":"iris","name":"Iris","job":"Enchanteresse","x":2204,"y":1234,"shop":"magic","color":"#bd9fdf","dialog":"Des capes tissées de lumière et des bâtons pour vos mages."},
- {"id":"elio","name":"Élio","job":"Garde","x":1800,"y":2070,"color":"#8aaec0","dialog":"Au sud, les slimes occupent la plaine. Les remparts protègent la ville : aucun monstre ne peut entrer."},
- {"id":"rose","name":"Rose","job":"Fermière","x":1130,"y":1410,"color":"#d8ae79","dialog":"À l’ouest, les épouvantails ont pris vie ! Méfiez-vous aussi des navets près du moulin."},
- {"id":"lina","name":"Lina","job":"Herboriste","x":2580,"y":1430,"color":"#91ba88","dialog":"À l’est s’étend la forêt de Sylve. Les sangliers et les champignons y défendent leur territoire."},
- {"id":"noe","name":"Noé","job":"Villageois","x":1928,"y":1600,"color":"#d5b093","dialog":"La fontaine est notre point de rendez-vous. Le feu de la place soigne toute votre compagnie.","roam":35},
- {"id":"tessa","name":"Tessa","job":"Tisserande","x":1165,"y":893,"color":"#bba0c1","dialog":"La cour des Tisserands occupe le nouveau quartier nord. Ses ruelles rejoignent la grande place.","roam":20},
- {"id":"hugo","name":"Hugo","job":"Jardinier","x":2240,"y":2050,"color":"#98b18a","dialog":"Les maisons du faubourg des Jardins bordent la rue du sud. La porte mène à la plaine.","roam":14},
- {"id":"simon","name":"Simon","job":"Charpentier","x":2360,"y":1696,"color":"#c4a17f","dialog":"L’allée des Artisans relie le quartier est au nord et aux jardins.","roam":18},
- {"id":"alma","name":"Alma","job":"Villageoise","x":1672,"y":1704,"color":"#d5a5b7","dialog":"Bienvenue à Bourg-Aurore ! Les échoppes sont au nord, l’auberge au sud.","roam":28}
+ {id:'marius',name:'Marius',job:'Marchand',shop:'general',color:'#bd9165',x:1760,y:1330,dialog:'Le marché relie les quais et les quartiers. Je rachète tous vos trésors !'},
+ shopNPC('armor','Brune','Armurière','armor','#b98772','Ma forge est installée dans le quartier des artisans, près du château.'),
+ shopNPC('magic','Iris','Enchanteresse','magic','#bd9fdf','Bienvenue dans l’échoppe des Lucioles. Capes et bâtons pour vos voyages !'),
+ {id:'elio',name:'Élio',job:'Garde',x:1310,y:1515,color:'#8aaec0',dialog:'Passez la porte pour visiter la cour du château. Les tours surveillent toute la ville.'},
+ {id:'rose',name:'Rose',job:'Fermière',x:1060,y:1040,color:'#d8ae79',dialog:'Le chemin à l’ouest mène au moulin et aux champs de Blévent.'},
+ {id:'lina',name:'Lina',job:'Herboriste',x:2500,y:1610,color:'#91ba88',dialog:'En suivant la route vers l’est, vous rejoindrez la forêt de Sylve.'},
+ {id:'noe',name:'Noé',job:'Docker',x:2010,y:732,color:'#d5b093',dialog:'Quatre pontons accueillent les bateaux dans la baie. Les quais sont ouverts à tous.'},
+ {id:'tessa',name:'Tessa',job:'Tisserande',x:1550,y:1090,color:'#bba0c1',dialog:'Nos maisons suivent les rues anciennes, entre le port et le château.'},
+ {id:'hugo',name:'Hugo',job:'Jardinier',x:2180,y:1820,color:'#98b18a',dialog:'La route du sud serpente entre les maisons avant de rejoindre la plaine.'},
+ {id:'simon',name:'Simon',job:'Charpentier',x:2280,y:1250,color:'#c4a17f',dialog:'Le bourg est construit autour d’une rue en boucle. Le port est au nord.'},
+ {id:'alma',name:'Alma',job:'Villageoise',x:1940,y:1310,color:'#d5a5b7',dialog:'La place du Marché est le cœur de la ville. Le feu soigne votre compagnie.'}
 ];
 export const enemyTypes={slime:{name:'Gelée des prés',hp:60,damage:8,loot:'jelly',color:'#87d58d'},scarecrow:{name:'Épouvantail éveillé',hp:90,damage:11,loot:'straw',color:'#d9b976'},turnip:{name:'Navet farouche',hp:65,damage:9,loot:'root',color:'#e3bbd4'},mushroom:{name:'Champignon sylvestre',hp:75,damage:10,loot:'spore',color:'#e69679'},boar:{name:'Sanglier des bois',hp:105,damage:13,loot:'fur',color:'#a18b77'}};
-export function inTown(x,y){const t=WORLD.town;return x>t.x+24&&x<t.x+t.w-24&&y>t.y+24&&y<t.y+t.h-24}
-export function onLand(x,y){let inside=false;for(let i=0,j=shore.length-1;i<shore.length;j=i++){const [xi,yi]=shore[i],[xj,yj]=shore[j];if((yi>y)!==(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi)inside=!inside}return inside}
+export function inTown(x,y){return contains(townOutline,x,y)||contains(castleOutline,x,y)||docks.some(d=>x>d.x&&x<d.x+d.w&&y>d.y&&y<d.y+d.h)}
+export function onLand(x,y){return contains(shore,x,y)&&(!contains(bay,x,y)||docks.some(d=>x>d.x&&x<d.x+d.w&&y>d.y&&y<d.y+d.h))}
 function inRect(x,y,r,pad=9){return x>r.x-pad&&x<r.x+r.w+pad&&y>r.y-pad&&y<r.y+r.h+pad}
 export function objectBlocks(x,y,o){const dx=x-o.x,dy=y-o.y;if(['barrel','planter','crate','well'].includes(o.kind))return Math.hypot(dx,dy+3)<(o.kind==='well'?17:o.kind==='crate'?11:8);if(o.kind==='cart')return Math.abs(dx)<26&&dy>-19&&dy<7;if(o.kind==='bench')return Math.abs(dx)<23&&dy>-10&&dy<5;if(o.kind==='market')return Math.abs(dx)<(o.variant?33:51)&&dy>-17&&dy<5;return false}
-export function canWalkWorld(x,y){return onLand(x,y)&&!walls.some(r=>inRect(x,y,r))&&!buildings.some(r=>inRect(x,y,r,7))&&!townTrees.some(t=>Math.hypot(x-t.x,y-t.y)<9*t.s)&&!townObjects.some(o=>objectBlocks(x,y,o))&&Math.hypot(x-WORLD.fountain.x,y-WORLD.fountain.y)>44}
+export function canWalkWorld(x,y){return onLand(x,y)&&!walls.some(r=>inRect(x,y,r))&&!castleTowers.some(t=>Math.hypot(x-t.x,y-t.y)<28)&&!buildings.some(r=>inRect(x,y,r,7))&&!townTrees.some(t=>Math.hypot(x-t.x,y-t.y)<9*t.s)&&!townObjects.some(o=>objectBlocks(x,y,o))&&Math.hypot(x-WORLD.fountain.x,y-WORLD.fountain.y)>44}
 export function canMonsterWalk(x,y){return canWalkWorld(x,y)&&!inTown(x,y)}
-export function zoneAt(x,y){const t=WORLD.town;if(x>=t.x&&x<=t.x+t.w&&y>=t.y&&y<=t.y+t.h)return {id:'town',name:'Bourg-Aurore',subtitle:(y<1100?'Cour des Tisserands':y>1900?'Faubourg des Jardins':x>2350?'Allée des Artisans':'Cœur historique')+' · Zone protégée'};if(x<t.x&&y<2200)return {id:'fields',name:'Les champs de Blévent',subtitle:'Moulin & cultures · Niveau 1–3'};if(x>t.x+t.w&&y<2200||y<t.y)return {id:'forest',name:'La forêt de Sylve',subtitle:'Sous-bois & clairières · Niveau 2–4'};return {id:'plains',name:'La plaine des rosées',subtitle:'Prairies des slimes · Niveau 1–2'}}
-export function createEnemies(){const spawns=[["slime",1575,2300],["slime",1900,2300],["slime",2190,2280],["slime",2350,2400],["slime",1250,2320],["slime",1800,2490],["scarecrow",765,1140],["scarecrow",570,1545],["scarecrow",1005,945],["turnip",930,1560],["turnip",570,1230],["turnip",960,1200],["mushroom",2880,1140],["mushroom",3080,1575],["mushroom",2960,1800],["boar",3000,1185],["boar",2950,800],["boar",2175,585]];return spawns.map(([type,x,y],i)=>({type,x,y,homeX:x,homeY:y,hp:enemyTypes[type].hp,maxHp:enemyTypes[type].hp,phase:i%7,respawn:0,hit:0,attackCooldown:0,facing:'down',dir:1,walk:0,vx:0,vy:0,kx:0,ky:0}))}
+export function zoneAt(x,y){if(inTown(x,y))return {id:'town',name:'Bourg-Aurore',subtitle:(contains(castleOutline,x,y)?'Château d’Aurore':y<900?'Port des Marées':x<1800?'Quartier des Tisserands':y>1500?'Bourg des Jardins':'Place du Marché')+' · Zone protégée'};if(x<1050&&y<2200)return {id:'fields',name:'Les champs de Blévent',subtitle:'Moulin & cultures · Niveau 1–3'};if(x>2800&&y<2200||y<570)return {id:'forest',name:'La forêt de Sylve',subtitle:'Sous-bois & clairières · Niveau 2–4'};return {id:'plains',name:'La plaine des rosées',subtitle:'Prairies des slimes · Niveau 1–2'}}
+export function createEnemies(){const spawns=[["slime",1575,2300],["slime",1900,2300],["slime",2190,2280],["slime",2350,2400],["slime",1250,2320],["slime",1800,2490],["scarecrow",765,1140],["scarecrow",570,1545],["scarecrow",780,960],["turnip",680,1600],["turnip",570,1230],["turnip",730,1280],["mushroom",2880,1140],["mushroom",3080,1575],["mushroom",2960,1800],["boar",3000,1185],["boar",2950,800],["boar",3100,800]];return spawns.map(([type,x,y],i)=>({type,x,y,homeX:x,homeY:y,hp:enemyTypes[type].hp,maxHp:enemyTypes[type].hp,phase:i%7,respawn:0,hit:0,attackCooldown:0,facing:'down',dir:1,walk:0,vx:0,vy:0,kx:0,ky:0}))}
 let seed=37;function random(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296}
 export const trees=Array.from({length:370},()=>({x:270+random()*3000,y:270+random()*2100,s:.85+random()*.45})).filter(t=>onLand(t.x,t.y)&&!inTown(t.x,t.y)&&canWalkWorld(t.x,t.y)&&((t.x>2750&&Math.abs(t.y-1400)>100)||(t.y<550&&Math.abs(t.x-1800)>110)||(t.x<390)||(t.y>2250&&t.x>2400)));
 export const fieldPlots=[
  {"x":420,"y":1065,"w":270,"h":170},
  {"x":740,"y":870,"w":220,"h":260},
  {"x":435,"y":1500,"w":270,"h":200},
- {"x":755,"y":1510,"w":220,"h":190}
+ {"x":570,"y":1740,"w":210,"h":190}
 ];
 export const waypoints=[
- {"x":1800,"y":1400,"name":"BOURG-AURORE","color":"#e4d8b3"},
+ {"x":1880,"y":1280,"name":"BOURG-AURORE","color":"#e4d8b3"},
  {"x":700,"y":1400,"name":"CHAMPS DE BLÉVENT","color":"#e7ca84"},
  {"x":2950,"y":1400,"name":"FORÊT DE SYLVE","color":"#a6cfaa"},
  {"x":1800,"y":2470,"name":"PLAINE DES ROSÉES","color":"#bedb9d"}
@@ -208,10 +65,10 @@ export class WorldRenderer{
  const road=points=>{c.beginPath();points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.strokeStyle='#a7ad77';c.lineWidth=66;c.lineCap='round';c.lineJoin='round';c.stroke();c.strokeStyle='#d3ca99';c.lineWidth=48;c.stroke()};road([[650,1400],[1044,1400]]);road([[2684,1400],[3000,1400]]);road([[1800,400],[1800,628]]);road([[1800,2132],[1800,2480]]);road([[625,1400],[625,940]]);
  this.paintTownGround();
  for(const f of fieldPlots){this.r(f.x-5,f.y-5,f.w+10,f.h+10,'#9b8554');this.r(f.x,f.y,f.w,f.h,'#886e47');for(let y=f.y+8;y<f.y+f.h;y+=18){this.r(f.x+5,y+7,f.w-10,3,'#a38a55');for(let x=f.x+9;x<f.x+f.w;x+=12){this.r(x,y,2,12,'#bca75d');this.r(x-3,y-3,7,8,'#e4c776');this.r(x-1,y-5,3,10,'#f0d688')}}}
- for(let i=0;i<170;i++){const x=200+random()*1950,y=200+random()*1350;if(!inTown(x,y)){this.r(x,y,2,5,'#5d935b');this.r(x-2,y-2,6,3,i%3?'#f2db92':'#d2a3d3')}}c.restore();this.ctx=original;
+ for(let i=0;i<170;i++){const x=200+random()*1950,y=200+random()*1350;if(!inTown(x,y)){this.r(x,y,2,5,'#5d935b');this.r(x-2,y-2,6,3,i%3?'#f2db92':'#d2a3d3')}}this.poly(bay,'#619ca3');for(let i=0;i<120;i++){const x=950+this.hash(i,3)*2300,y=this.hash(i,5)*620;if(contains(bay,x,y))this.r(x,y,12+i%16,2,'#83b3b4')}this.paintDocks();c.restore();this.ctx=original;
  }
  paintTownGround(){
- const c=this.ctx,t=WORLD.town,left=t.x+24,top=t.y+24,right=t.x+t.w-24,bottom=t.y+t.h-24;this.r(left,top,right-left,bottom-top,'#8ca16e');for(let i=0;i<6500;i++){const x=left+this.hash(i,7)*(right-left),y=top+this.hash(i,11)*(bottom-top);this.r(x,y,i%3?2:4,2,i%2?'#9eaf78':'#7e9565')};
+ const c=this.ctx,t=WORLD.town,left=t.x,top=t.y,right=t.x+t.w,bottom=t.y+t.h;c.save();c.beginPath();townOutline.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.clip();this.r(left,top,right-left,bottom-top,'#a3ab7a');for(let i=0;i<6500;i++){const x=left+this.hash(i,7)*(right-left),y=top+this.hash(i,11)*(bottom-top);this.r(x,y,i%3?2:4,2,i%2?'#9eaf78':'#7e9565')};
  const stone=['#a7a88a','#b2ad8d','#999e80','#b9b294','#9c9e84','#aaa992','#bdb79a'];
  for(let row=0,y=top+2;y<bottom-2;row++,y+=12){for(let x=left-(row%2)*13;x<right;x+=26){if(!((Math.hypot((x-WORLD.fountain.x)/1.25,y-WORLD.fountain.y)<150)||buildings.some(b=>x>b.x-20&&x<b.x+b.w+20&&y>b.y+b.h-15&&y<b.y+b.h+45)))continue;const v=this.hash(x,y),w=22+Math.floor(v*3);this.r(x+1,y+1,w,10,stone[Math.floor(v*stone.length)]);this.r(x+2,y+2,w-2,1,'#d3ccb033');this.r(x+2,y+9,w,1,'#3c4e4120');if(v>.81){this.r(x+6,y+5,5,1,'#657958');this.r(x+9,y+4,2,2,'#6c8259')}if(v<.13)this.r(x+12,y+3,2,2,'#c9c2a4')}}
  for(const spur of entrancePaths){if(!spur.points.length)continue;c.beginPath();spur.points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.lineCap='round';c.lineWidth=19;c.strokeStyle='#b4b090';c.stroke();c.lineWidth=15;c.strokeStyle='#c6bfa0';c.setLineDash([5,2]);c.stroke();c.setLineDash([])}
@@ -221,11 +78,23 @@ export class WorldRenderer{
  for(let ring=2;ring<6;ring++){const count=ring*12,r=ring*18;for(let i=0;i<count;i++){const a=i/count*Math.PI*2;this.r(WORLD.fountain.x-3+Math.cos(a)*r,WORLD.fountain.y+11+Math.sin(a)*r*.7,9,5,stone[(i+ring)%stone.length])}}
  for(const b of buildings){this.r(b.x-7,b.y+b.h-2,b.w+14,13,'#776d59');for(let x=b.x-4;x<b.x+b.w;x+=15){this.r(x,b.y+b.h+1,13,7,'#b4a689');this.r(x,b.y+b.h+1,13,1,'#d4c3a0')}this.r(b.x+b.w/2-20,b.y+b.h+9,40,8,'#847b65');this.r(b.x+b.w/2-18,b.y+b.h+9,36,3,'#bfb191')}
  for(const t of townTrees){this.e(t.x,t.y-1,34*t.s,21*t.s,'#6a8156');for(let i=0;i<24;i++){const a=i*2.4,r=15+this.hash(i,t.x)*19;this.r(t.x+Math.cos(a)*r,t.y+Math.sin(a)*r*.6,3,2,'#a6ac72')}}
-
+ c.restore();
+ }
+ paintDocks(){
+ for(const d of docks){this.r(d.x+5,d.y+7,d.w,d.h,'#365f5c40');this.r(d.x,d.y,d.w,d.h,'#755e43');if(d.h>d.w){for(let y=d.y+2;y<d.y+d.h;y+=9){this.r(d.x+2,y,d.w-4,7,'#b49a69');this.r(d.x+4,y+1,d.w-9,1,'#d3bc87')}for(let y=d.y+10;y<d.y+d.h;y+=45){this.r(d.x-3,y,5,7,'#5e5640');this.r(d.x+d.w-2,y,5,7,'#5e5640')}}else{for(let x=d.x+2;x<d.x+d.w;x+=10){this.r(x,d.y+2,8,d.h-4,'#b49a69');this.r(x+1,d.y+4,1,d.h-9,'#d3bc87')}}}
+ for(const b of boats){const c=this.ctx;c.save();c.translate(b.x,b.y);c.rotate(b.angle);this.poly([[-15,-30],[13,-30],[20,14],[0,34],[-20,14]],'#674f3c');this.poly([[-11,-25],[9,-25],[14,12],[0,27],[-14,12]],'#c0a16b');this.r(-3,-25,5,49,'#745e43');this.poly([[1,-21],[1,17],[22,12]],'#e0d6b3');this.r(-13,-5,27,4,'#8c7653');c.restore()}
+ }
+ castle(b){const {x,y,w,h}=b;this.poly([[x+w,y+10],[x+w+25,y+30],[x+w+25,y+h+18],[x+10,y+h+18]],'#263b3438');this.r(x,y,w,h,'#7e8c80');for(let row=0;row<h;row+=12)for(let col=0;col<w;col+=24){this.r(x+col+1,y+row+1,22,10,(row+col)%36?'#a3ac96':'#b7baa0');this.r(x+col+1,y+row+1,22,2,'#cfccb0')}
+ this.r(x+14,y+22,w-28,8,'#738477');this.r(x+18,y+h-43,w-36,9,'#6d7d70');this.poly([[x-13,y+5],[x+30,y-65],[x+w-30,y-65],[x+w+13,y+5]],'#596d7a');for(let ry=y-60;ry<y;ry+=8)this.r(x+25,ry,w-50,2,'#8b9a99');this.r(x-10,y+2,w+20,7,'#c1bea0');
+ for(const dx of [35,w-56]){this.r(x+dx,y+50,20,46,'#4c625c');this.e(x+dx+10,y+50,10,10,'#4c625c');this.r(x+dx+8,y+48,3,43,'#a0b9ac')}
+ const door=x+w/2;this.r(door-24,y+h-65,48,65,'#54685d');this.e(door,y+h-65,24,23,'#54685d');this.r(door-18,y+h-64,36,64,'#7e6648');for(let i=0;i<5;i++)this.r(door-16+i*7,y+h-62,2,59,'#b69b64');this.r(door-18,y+h-30,36,4,'#505b46');this.r(door-8,y-124,5,60,'#6a7056');this.poly([[door-3,y-121],[door+39,y-112],[door-3,y-96]],'#8a6673');this.text('Château d’Aurore',door,y+h+33,'#e8d8ad',13);
+ }
+ tower(t){const{x,y}=t;this.e(x+7,y+7,31,18,'#243d353d');this.r(x-27,y-61,54,64,'#829080');for(let row=0;row<6;row++){this.r(x-25,y-58+row*10,50,2,'#b4bba1');for(let col=0;col<3;col++)this.r(x-23+col*18+(row%2?7:0),y-56+row*10,2,7,'#667e6f')}this.e(x,y-63,29,16,'#b9bea2');this.e(x,y-64,21,10,'#768777');for(const dx of [-25,-9,9])this.r(x+dx,y-78,13,15,'#a8b39a');this.r(x-4,y-41,8,19,'#496257')
  }
  hash(x,y){const v=Math.sin(x*127.1+y*311.7)*43758.5453;return v-Math.floor(v)}
  poly(points,color){const c=this.ctx;c.fillStyle=color;c.beginPath();points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.fill()}
  building(b,time){
+ if(b.kind==='castle'){this.castle(b);return}
  const {x,y,w,h}=b,c=this.ctx,roofHeight=b.gable?64:46,eave=y+20,roofTop=eave-roofHeight,wood='#665140',dark='#443e34',plaster=b.plaster||'#d9c6a0';
  // Cast shadows fall consistently to the south-east.
  this.poly([[x+w,y+15],[x+w+26,y+28],[x+w+26,y+h+14],[x+10,y+h+14],[x,y+h]],'#283d3138');
@@ -236,9 +105,9 @@ export class WorldRenderer{
  this.r(x+5,y+39,w-10,6,wood);this.r(x+5,y+43,w-10,2,'#9e8560');
  // Diagonal half-timber braces.
  c.strokeStyle=wood;c.lineWidth=5;for(const side of [0,1]){const left=x+9+side*w*.5;c.beginPath();c.moveTo(left,y+44);c.lineTo(left+w*.32,y+72);c.stroke()}
- const doorX=x+w*(b.kind==='inn'?.62:.5)-13,doorY=y+h-46;
+ const doorX=x+w*(b.kind==='inn'?.62:w<90?.67:.5)-13,doorY=y+h-46;
  this.r(doorX-4,doorY-4,34,49,'#b4a17b');this.r(doorX-1,doorY-3,28,49,dark);this.e(doorX+13,doorY,13,9,dark);this.r(doorX+2,doorY,22,44,'#765a3d');for(let i=0;i<4;i++)this.r(doorX+3+i*5,doorY+3,1,38,'#9d7b4d');this.r(doorX+3,doorY+12,20,3,'#4e4939');this.r(doorX+3,doorY+32,20,3,'#4e4939');this.r(doorX+18,doorY+23,3,3,'#e2bb68');
- const winY=y+(h>110?49:50);for(const wx of w>90?[x+17,x+w-43]:[x+12])this.window(wx,winY,b.kind==='magic',b.id.length);
+ const winY=y+Math.max(24,Math.min(50,h-38));for(const wx of w>110?[x+15,x+w-41]:[x+7])this.window(wx,winY,b.kind==='magic',b.id.length,w>110?22:16,Math.min(25,h-25));
  if(h>120){this.window(x+22,y+91,true,2);this.window(x+w-46,y+91,true,3)}
  // Deep eaves and a tiled roof with individual shaded terracotta/slate shingles.
  this.r(x-10,eave+1,w+20,9,dark);this.r(x-11,eave,w+22,4,'#9c835b');
@@ -283,6 +152,7 @@ export class WorldRenderer{
  draw(camera,time,actors,drawActor){
  const c=this.ctx;c.save();c.translate(-Math.round(camera.x),-Math.round(camera.y));c.drawImage(this.base,0,0);this.townDetails(time);
  const props=[
+ ...castleTowers.map(t=>({x:t.x-35,y:t.y+15,minY:t.y-110,maxY:t.y+20,w:70,draw:()=>this.tower(t)})),
  {x:WORLD.fountain.x-60,y:WORLD.fountain.y+5,minY:WORLD.fountain.y-65,maxY:WORLD.fountain.y+35,w:120,draw:()=>this.fountain(time)},
  ...buildings.map(b=>({x:b.x-25,y:b.y+b.h,minY:b.y-150,maxY:b.y+b.h+35,w:b.w+60,draw:()=>this.building(b,time)})),
  ...walls.map(w=>({x:w.x,y:w.y+w.h,minY:w.y-40,maxY:w.y+w.h+15,w:w.w+25,draw:()=>this.wall(w)})),
@@ -295,10 +165,23 @@ export class WorldRenderer{
  const {x,y,s}=t,c=this.ctx;c.save();c.translate(Math.round(x),Math.round(y));c.scale(s,s);this.e(13,4,43,17,'#2b443437');this.r(-6,-52,13,59,'#65563c');this.r(-3,-50,4,55,'#a68c57');this.r(-13,-32,11,8,'#796848');this.r(7,-42,11,7,'#796848');
  const clusters=[[-27,-54,35,27],[-5,-50,35,25],[-38,-73,35,28],[-18,-83,38,35],[10,-73,31,29],[-15,-101,30,29]];
  for(let i=0;i<clusters.length;i++){const [a,b,w,h]=clusters[i];this.poly([[a+7,b],[a+w-7,b],[a+w-7,b+4],[a+w,b+4],[a+w,b+h-6],[a+w-5,b+h-6],[a+w-5,b+h],[a+6,b+h],[a+6,b+h-4],[a,b+h-4],[a,b+5],[a+7,b+5]],['#3d6847','#517b4c','#62874e','#789655'][i%4]);this.r(a+5,b-4,w-10,5,'#698b4d');this.r(a+4,b+4,w-8,5,'#8ba75d');for(let j=0;j<50;j++){const u=this.hash(i*57+j,x),v=this.hash(j*31,y+i);this.r(a+u*(w-4),b+v*(h-4),j%4?3:5,2,['#9fb56a','#779955','#4f7a48','#b4bd76'][j%4])}}c.restore()}
- map(canvas,player){const c=canvas.getContext('2d'),s=canvas.width/WORLD.width;c.clearRect(0,0,canvas.width,canvas.height);c.drawImage(this.base,0,0,canvas.width,canvas.height);c.save();c.scale(s,s);c.fillStyle='#bfc6a4';for(const w of walls)c.fillRect(w.x,w.y,w.w,w.h);for(const b of buildings){c.fillStyle=b.roof;c.fillRect(b.x,b.y,b.w,b.h)}c.fillStyle='#4f805b';for(const t of trees)c.fillRect(t.x-9,t.y-20,18,24);for(const p of waypoints){c.font='bold 48px sans-serif';c.textAlign='center';c.fillStyle='#203e3a';c.fillText(p.name,p.x,p.y-100)}c.fillStyle='#fff6cd';c.beginPath();c.arc(player.x,player.y,18,0,Math.PI*2);c.fill();c.strokeStyle='#4e5340';c.lineWidth=5;c.stroke();c.restore()}
+ map(canvas,player,mode='city'){
+ const c=canvas.getContext('2d'),view=mode==='city'?{x:730,y:430,w:2120,h:1770}:{x:0,y:0,w:WORLD.width,h:WORLD.height},scale=Math.min(canvas.width/view.w,canvas.height/view.h),ox=(canvas.width-view.w*scale)/2,oy=(canvas.height-view.h*scale)/2;
+ c.fillStyle='#243b3c';c.fillRect(0,0,canvas.width,canvas.height);c.save();c.translate(ox,oy);c.scale(scale,scale);c.translate(-view.x,-view.y);c.drawImage(this.base,0,0);
+ c.strokeStyle='#626e61';c.lineWidth=15;c.beginPath();castleOutline.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.stroke();for(const t of castleTowers){c.fillStyle='#6f7b6b';c.beginPath();c.arc(t.x,t.y,23,0,Math.PI*2);c.fill()}
+ for(const b of buildings){c.fillStyle=b.roof;c.fillRect(b.x,b.y,b.w,b.h);c.strokeStyle='#5d624d';c.lineWidth=2;c.strokeRect(b.x,b.y,b.w,b.h)}
+ const labels=mode==='city'?[{x:2020,y:590,name:'PORT DES MARÉES'},{x:1090,y:1830,name:'CHÂTEAU D’AURORE'},{x:1900,y:1115,name:'PLACE DU MARCHÉ'},{x:1510,y:960,name:'TISSERANDS'},{x:2260,y:1510,name:'BOURG EST'}]:waypoints;
+ for(const p of labels){c.font=`bold ${mode==='city'?32:48}px sans-serif`;c.textAlign='center';c.fillStyle='#f2e5bf';c.strokeStyle='#40584c';c.lineWidth=6;c.strokeText(p.name,p.x,p.y-30);c.fillText(p.name,p.x,p.y-30)}
+ c.fillStyle='#fff0b6';c.beginPath();c.arc(player.x,player.y,12/scale*.25,0,Math.PI*2);c.fill();c.strokeStyle='#344f47';c.lineWidth=4;c.stroke();c.restore()
+ }
+
 }
 
 export function lineOfSight(a,b){const d=Math.hypot(b.x-a.x,b.y-a.y),steps=Math.ceil(d/8);for(let i=1;i<steps;i++)if(!canWalkWorld(a.x+(b.x-a.x)*i/steps,a.y+(b.y-a.y)*i/steps))return false;return true}
 
-export function houseEntrance(b){return {x:b.x+b.w*(b.kind==='inn'?.62:.5),y:b.y+b.h+16}}
-export const entrancePaths=buildings.filter(b=>b.kind!=='mill').map(b=>{const door=houseEntrance(b);const candidates=streets.flatMap(s=>s.points).map(([x,y])=>({x,y})).sort((a,z)=>Math.hypot(a.x-door.x,a.y-door.y)-Math.hypot(z.x-door.x,z.y-door.y));for(const offset of [[0,0],[65,0],[-65,0],[90,20],[-90,20],[0,35]]){const turn={x:door.x+offset[0],y:door.y+offset[1]};if(!canWalkWorld(turn.x,turn.y)||!lineOfSight(door,turn))continue;const target=candidates.find(p=>Math.hypot(p.x-door.x,p.y-door.y)<400&&canWalkWorld(p.x,p.y)&&lineOfSight(turn,p));if(target)return {id:b.id,points:offset[0]||offset[1]?[[door.x,door.y],[turn.x,turn.y],[target.x,target.y]]:[[door.x,door.y],[target.x,target.y]]}}return {id:b.id,points:[]}});
+export function houseEntrance(b){return {x:b.x+b.w*(b.kind==='inn'?.62:b.w<90?.67:.5),y:b.y+b.h+16}}
+function entranceDetour(door,candidates){const step=10,queue=[door],parents=[-1],seen=new Set(['0,0']);for(let i=0;i<queue.length&&i<12000;i++){const p=queue[i],target=candidates.find(t=>Math.hypot(t.x-p.x,t.y-p.y)<15&&canWalkWorld(t.x,t.y)&&lineOfSight(p,t));if(target){const path=[[target.x,target.y]];for(let j=i;j>=0;j=parents[j])path.push([queue[j].x,queue[j].y]);return path.reverse().filter((p,i,a)=>i===0||i===a.length-1||Math.abs((p[0]-a[i-1][0])*(a[i+1][1]-p[1])-(p[1]-a[i-1][1])*(a[i+1][0]-p[0]))>.1)}for(const [dx,dy]of [[step,0],[-step,0],[0,step],[0,-step]]){const n={x:p.x+dx,y:p.y+dy},key=Math.round((n.x-door.x)/step)+','+Math.round((n.y-door.y)/step);if(seen.has(key)||Math.hypot(n.x-door.x,n.y-door.y)>420||!canWalkWorld(n.x,n.y)||!lineOfSight(p,n))continue;seen.add(key);queue.push(n);parents.push(i)}}return []}
+export const entrancePaths=buildings.filter(b=>b.kind!=='mill').map(b=>{const door=houseEntrance(b);const candidates=streets.flatMap(s=>s.points).map(([x,y])=>({x,y})).sort((a,z)=>Math.hypot(a.x-door.x,a.y-door.y)-Math.hypot(z.x-door.x,z.y-door.y));for(const offset of [[0,0],[65,0],[-65,0],[90,20],[-90,20],[0,35]]){const turn={x:door.x+offset[0],y:door.y+offset[1]};if(!canWalkWorld(turn.x,turn.y)||!lineOfSight(door,turn))continue;const target=candidates.find(p=>Math.hypot(p.x-door.x,p.y-door.y)<400&&canWalkWorld(p.x,p.y)&&lineOfSight(turn,p));if(target)return {id:b.id,points:offset[0]||offset[1]?[[door.x,door.y],[turn.x,turn.y],[target.x,target.y]]:[[door.x,door.y],[target.x,target.y]]}}return {id:b.id,points:entranceDetour(door,candidates)}});
+
+// Deployment must also work on a one-person-wide pier or castle passage.
+export function deploymentPositions(player,count=2){const occupied=[player],positions=[];for(let i=0;i<count;i++){const preferred=[{x:player.x+(i?22:-22),y:player.y+20}];for(let radius=20;radius<=80;radius+=10)for(let a=0;a<16;a++)preferred.push({x:player.x+Math.cos(a*Math.PI/8)*radius,y:player.y+Math.sin(a*Math.PI/8)*radius});const p=preferred.find(p=>canWalkWorld(p.x,p.y)&&lineOfSight(player,p)&&occupied.every(o=>Math.hypot(o.x-p.x,o.y-p.y)>=15))||{x:player.x,y:player.y};positions.push(p);occupied.push(p)}return positions}

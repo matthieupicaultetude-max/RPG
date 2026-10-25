@@ -41,21 +41,22 @@ Le panneau de composition impose un héros par rôle :
 
 Le joueur contrôle le héros principal choisi dans le formulaire ou en cliquant sur sa carte. Les deux autres restent en réserve jusqu'à E, puis suivent et combattent automatiquement. Leur butin est partagé. Rappel et changement de principal conservent les PV ; un héros à terre ne peut pas être contrôlé avant soin. R au feu soigne toute l'équipe, même les héros à terre ou en réserve. Une défaite du principal ramène la compagnie au feu sans perte de butin.
 
-## Monde et ville
+## Ville construite d'après le plan fourni
 
-L'île mesure 3600 × 2800 unités ; la caméra suit le principal. Bourg-Aurore occupe 1664 × 1528 unités et conserve 23 bâtiments, désormais répartis en petits groupes espacés. Les façades gardent au moins 40 unités d'écart. Les sept allées sont arrondies, avec des chemins secondaires qui desservent chaque maison. Les jardins et pelouses remplacent le pavage uniforme hors de la place et des cours.
+Le tracé de Bourg-Aurore suit les principaux repères du dessin de référence. `src/city-plan.js` contient les positions exprimées dans le repère du plan et leur conversion en coordonnées du jeu.
 
-Les remparts, quatre portes, habitants, boutiques, arbres et objets ont été repositionnés. Les champs, la forêt et la plaine sont éloignés pour préserver les espaces entre les quartiers et les territoires sauvages.
+- **Nord** : baie ouverte, quai, quatre pontons praticables et bateaux.
+- **Ouest** : château avec enceinte polygonale, six tours, porte côté ville et cour accessible.
+- **Nord-ouest et sud-ouest de la place** : îlots compacts de maisons et quartier des Tisserands.
+- **Centre** : place du Marché, fontaine, feu et commerces.
+- **Est** : bourg autour d'une rue en boucle, maisons et échoppes.
+- **Sorties** : routes rayonnantes vers les champs, la forêt et la plaine.
 
-- **Centre** : place et fontaine animée, feu de soin, auberge, Marius et les échoppes.
-- **Nord** : cour des Tisserands, maisons et Tessa.
-- **Sud** : faubourg des Jardins et Hugo.
-- **Est** : allée des Artisans et Simon.
-- **À l'ouest de la ville** : champs de Blévent, moulin animé, épouvantails et navets farouches.
-- **À l'est et au nord** : forêt de Sylve, champignons et sangliers.
-- **Au sud des remparts** : plaine des Rosées et slimes.
+La ville compte 50 bâtiments, dont 45 maisons, et douze rues, routes et passages. Chaque façade est accessible depuis le réseau de rues. La carte propose une vue rapprochée de la ville et une vue de l'île entière, avec votre position.
 
-Les bâtiments, remparts, fontaine, troncs et grands objets bloquent le passage. Les tirs ne traversent pas les obstacles. Les monstres ne peuvent pas entrer en ville et regagnent leur territoire s'ils s'éloignent trop. Ils réapparaissent après 12 secondes.
+L'île mesure 3600 × 2800 unités. Le joueur ne peut pas marcher dans la baie, sauf sur les pontons. Les bâtiments, tours, murs du château, arbres et grands objets bloquent les déplacements ; les tirs ne traversent pas les obstacles. Les monstres restent hors des secteurs protégés. Les compagnons se déploient uniquement sur des positions praticables, y compris sur les quais étroits.
+
+Les champs de Blévent à l'ouest gardent le moulin animé, les épouvantails et les navets. La forêt de Sylve à l'est abrite champignons et sangliers ; la plaine des Rosées au sud abrite les slimes. Les monstres regagnent leur territoire s'ils s'éloignent trop et réapparaissent après 12 secondes.
 
 ## Boutiques et progression
 
@@ -67,6 +68,6 @@ La composition, le principal, le butin, l'or, les objectifs, l'équipement et le
 
 ## Validation
 
-19 tests couvrent l'équipe, les déplacements, l'orientation, le recul, les particules, les collisions, les accès aux régions et aux PNJ, la protection de la ville, les achats, les chemins des façades et l'espacement des maisons. Les tests utilisent les mêmes courbes que le rendu pour vérifier les allées.
+21 tests couvrent équipe, mouvement, orientation, recul, particules, économie, collisions, eau, pontons, six tours, porte et cour du château, rues, accès à chaque façade, régions et PNJ. La recherche de trajets vérifie aussi la liaison de chaque ponton et de la cour avec la place.
 
-Le parcours Chromium vérifie déplacements au clavier, boutiques déplacées, achats et vente, dialogues, exploration des quartiers et des trois régions, combats IA, sauvegarde de l'équipement et carte mobile. La compilation de production est vérifiée avec Vite.
+Le parcours Chromium vérifie achats et vente, traversée de la porte du château et de sa cour, marche sur les pontons, changement de vue de carte, combats IA, régions extérieures, sauvegarde et carte mobile. La compilation de production est vérifiée avec Vite.
