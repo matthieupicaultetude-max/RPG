@@ -1,3 +1,4 @@
+import { createMonster, monsterDefinition } from '../data/monsters.js';
 import { ATTACK_RANGE, guidedTarget, launchAttack, stepAttacks, lineClear } from '../combat/attacks.js';
 import { stepCompanions, placeAllies, clearRoute } from '../ai/companions.js';
 import { createState, update as movePlayer } from '../game/state.js';
@@ -18,7 +19,7 @@ export function createSandbox() {
     team: ['melee', 'support', 'ranged'].map(makeMember), main: 0, deployed: false,
     ultimate: { remaining: 0, cooldown: 0 },
     bag: [], nextItem: 1, gold: 0, log: ['Bienvenue dans le jardin des essais.'], revision: 0,
-    monsters: [{ name: 'Slime', x: 455, y: 220, homeX: 455, homeY: 220, hp: 45, maxHp: 45, cooldown: 0, respawn: 0 }, { name: 'Sanglier', x: 535, y: 285, homeX: 535, homeY: 285, hp: 70, maxHp: 70, cooldown: 0, respawn: 0 }],
+    monsters: [createMonster('slime',455,220), createMonster('boar',535,285)],
     bots: Array.from({ length: 3 }, (_, i) => ({ name: ['Milo', 'Éline', 'Orin'][i], x: 290 + i * 70, y: 110, role: ['melee', 'support', 'ranged'][i], facing: 'down', moving: true, phase: i * 2, target: { x: 270 + i * 70, y: 110 } })),
     effects: [], attacks: [], aim: { x: 0, y: 0, active: false }, autoAttack: false,
   });
@@ -102,7 +103,8 @@ export function heal(s) {
   note(s, 'Équipe soignée et réanimée.');
 }
 export function grantLoot(s, type = 'normal', chromatic = false, monster = 'Slime') {
-  const name = monster === 'Slime' ? (type === 'rare' ? 'Cœur de gelée' : 'Gelée') : (type === 'rare' ? 'Défense ancienne' : 'Soie de sanglier');
+  const definition = monsterDefinition(monster);
+  const name = type === 'rare' ? definition.rare : definition.normal;
   const existing = s.bag.find(item => item.name === name && item.chromatic === chromatic);
   if (existing) existing.quantity++;
   else s.bag.push({ id: s.nextItem++, name, type, chromatic, quantity: 1 });
@@ -154,10 +156,11 @@ function hitMonster(s, monster, damage, member) {
   if (canStand(nx, ny)) { monster.x = nx; monster.y = ny; }
   s.revision++;
   if (monster.hp === 0) {
-    monster.respawn = 7;
-    s.gold += 5;
-    grantXp(s, 10);
-    grantLoot(s, Math.random() < .2 ? 'rare' : 'normal', Math.random() < .1, monster.name);
+    monster.respawn = monster.respawnDelay;
+    s.gold += monster.gold;
+    grantXp(s, monster.xp);
+    const definition = monsterDefinition(monster.species);
+    grantLoot(s, Math.random() < definition.rareChance ? 'rare' : 'normal', Math.random() < definition.chromaticChance, monster.name);
   }
 }
 export function attack(s, point = s.aim.active ? s.aim : null) {
@@ -200,15 +203,15 @@ export function stepSandbox(s, direction, dt, elapsed = dt) {
       return;
     }
     const target = s.team.filter((m, i) => m.hp > 0 && (i === s.main || s.deployed)).sort((a, b) => Math.hypot(a.x - monster.x, a.y - monster.y) - Math.hypot(b.x - monster.x, b.y - monster.y))[0];
-    if (target && Math.hypot(target.x - monster.homeX, target.y - monster.homeY) < 105) {
-      if (Math.hypot(monster.x - target.x, monster.y - target.y) > 22) walk(monster, target.x, target.y, 32, dt);
+    if (target && Math.hypot(target.x - monster.homeX, target.y - monster.homeY) < monster.detection) {
+      if (Math.hypot(monster.x - target.x, monster.y - target.y) > 22) walk(monster, target.x, target.y, monster.speed, dt);
       else if (monster.cooldown === 0) {
-        target.hp = Math.max(0, target.hp - 8); monster.cooldown = 1.2;
+        target.hp = Math.max(0, target.hp - monster.damage); monster.cooldown = monster.attackDelay;
         s.effects.push({ x: monster.x, y: monster.y-8, toX: target.x, toY: target.y-8, text: '', color: '#f0a28e', life: .22 });
-        s.effects.push({ x: target.x, y: target.y - 25, text: '−8', color: '#ffa3a3', life: .8 }); s.revision++;
+        s.effects.push({ x: target.x, y: target.y - 25, text: `−${monster.damage}`, color: '#ffa3a3', life: .8 }); s.revision++;
         if (s.team.every(m => m.hp <= 0)) { endUltimate(s); teleport(s, 'maison'); heal(s); note(s, 'Défaite : retour à la maison (règle de test).'); }
       }
-    } else walk(monster, monster.homeX + Math.sin(s.time * .5 + monster.homeX) * 20, monster.homeY + Math.cos(s.time * .4) * 15, 14, dt);
+    } else walk(monster, monster.homeX + Math.sin(s.time * .5 + monster.homeX) * 20, monster.homeY + Math.cos(s.time * .4) * 15, monster.patrolSpeed, dt);
   });
   s.bots.forEach(bot => {
     if (Math.hypot(bot.x - bot.target.x, bot.y - bot.target.y) < 8) {

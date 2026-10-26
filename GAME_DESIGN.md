@@ -260,3 +260,21 @@ Un clic sélectionne un objet ou un emplacement sans modifier l’équipement. L
 Le bouclier et le familier portent le total à **16 emplacements**, dont les six trophées. Il peut être généré dans les outils dev, équipé et retiré indépendamment de l’arme. Il est visible dans l’aperçu et sur le personnage en jeu. Ses statistiques défensives restent à définir. Le familier est équipable depuis le sac et visible dans l’aperçu ; ses bonus et son comportement dans le monde restent à concevoir.
 
 L’inventaire n’a pas de grand en-tête : le personnage et les objets occupent directement le haut du panneau. Les commandes Équipement & sac, Outils dev et Fermer sont compactées dans la barre du bas pour éviter le défilement de la vue principale. Seule la grille du sac défile si elle contient beaucoup d’objets.
+
+## 18. Bestiaire et consultation par niveau
+
+Le bestiaire est accessible par **B**, un bouton visible et un onglet du panneau. Il recense toutes les espèces actuellement implémentées : slime et sanglier. La fiche comprend une illustration, la famille, l’habitat, une description, les PV, les dégâts, le délai d’attaque, la vitesse de poursuite, le rayon d’engagement, le délai de réapparition, l’XP et l’or.
+
+Un curseur de **niveau 1 à 100** recalcule les statistiques consultées, sans modifier les monstres présents ni leurs récompenses. Le niveau consulté est conservé lors du changement de fiche et pendant la session. Il s’agit d’une plage de consultation d’essai, pas d’une décision de plafond pour la progression des personnages.
+
+Croissance provisoire, calculée à partir des valeurs du niveau 1, avec `n = niveau − 1` :
+
+- PV : `arrondi(PV de base × (1 + 0,12 × n))`.
+- Dégâts : `arrondi(dégâts de base × (1 + 0,08 × n))`.
+- XP : `arrondi(XP de base × (1 + 0,10 × n))`.
+- Or : `arrondi(or de base × (1 + 0,05 × n))`.
+- Vitesse, distances et délais fixes pour le moment.
+
+La fiche expose les quatre résultats du tirage de butin et leurs probabilités effectives : normal standard **72 %**, normal chromatique **8 %**, rare standard **18 %**, rare chromatique **2 %**. Ces valeurs correspondent au tirage de test existant : 20 % rare et 10 % chromatique indépendant, un objet par victoire. Le niveau ne modifie pas ces chances pour le moment.
+
+Le catalogue de monstres est partagé entre le combat et le bestiaire ; les données ne doivent pas être dupliquées dans l’interface. Le monde continue pendant la consultation. Les statistiques et règles de croissance restent des paramètres d’essai.

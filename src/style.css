@@ -482,7 +482,7 @@ canvas { cursor: crosshair; }
 }
 @media (min-width: 521px) {
   .inventory-window { height: min(820px, calc(100dvh - 40px)); }
-  .inventory-window:not(.tools-open) #panel { display: flex; flex-direction: column; }
+  .inventory-window:not(.tools-open):not(.bestiary-open) #panel { display: flex; flex-direction: column; }
   .inventory-character-bar, .item-details { flex-shrink: 0; }
   .paper-layout { flex: 1; min-height: 0; overflow-y: auto; padding: 2px; }
   .paper-slot { height: 54px; flex-shrink: 0; }
@@ -549,4 +549,36 @@ canvas { cursor: crosshair; }
   .paper-avatar { height: 115px; }
   .character-equipment { gap: 6px; }
   .trophy-row { padding-top: 6px; gap: 6px; }
+}
+
+.bestiary-open #panel { display: block; }
+.bestiary-heading { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.bestiary-heading h2 { font-size: 27px; color: #e6d5aa; }
+.bestiary-heading > span { font-size: 10px; color: #9eb18f; }
+.bestiary-layout { display: grid; grid-template-columns: 175px minmax(0,1fr); gap: 24px; }
+.monster-list { display: flex; flex-direction: column; gap: 9px; }
+.monster-list button { display: flex; align-items: center; gap: 9px; padding: 10px 6px; text-align: left; }
+.monster-list svg { width: 54px; height: 48px; flex-shrink: 0; }
+.monster-list strong { display: block; font-size: 12px; }.monster-list small { display: block; font-size: 8px; color: #9daf8f; margin-top: 5px; }
+.monster-sheet { min-width: 0; }
+.monster-identity { display: flex; gap: 20px; align-items: center; padding-bottom: 15px; border-bottom: 1px solid #64764d66; }
+.monster-identity > svg { width: 145px; height: 120px; flex-shrink: 0; background: radial-gradient(ellipse,#b2b86a30,transparent 70%); }
+.monster-identity h3 { margin: 0 0 6px; font-size: 26px; color: #e7d7af; }
+.monster-identity span { font-size: 9px; color: #a6b888; }.monster-identity p:not(.eyebrow) { color: #a4b69a; line-height: 1.6; font-size: 11px; margin: 9px 0 0; }
+.monster-level { margin: 19px 0; background: #13261c99; border: 1px solid #586d4380; border-radius: 7px; padding: 14px; }
+.monster-level label { display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: #cbd4af; }.monster-level output { font: 23px Outfit, sans-serif; color: #e8c77c; }
+.monster-level input { display: block; width: 100%; margin: 14px 0 6px; accent-color: #d6b978; cursor: pointer; }
+.monster-level > div { display: flex; justify-content: space-between; color: #8ea17c; font-size: 8px; }.monster-level small { display: block; color: #9eb08d; font-size: 9px; margin-top: 11px; }
+.monster-stats { display: grid; grid-template-columns: 1fr 1fr; margin: 0; gap: 7px; }.monster-stats > div { display: flex; justify-content: space-between; align-items: center; gap: 8px; background: #14261f99; border-radius: 4px; padding: 12px; }.monster-stats dt { font-size: 10px; color: #9fb28e; }.monster-stats dd { margin: 0; font: 14px Outfit,sans-serif; color: #e1d6ae; white-space: nowrap; }
+.monster-drops { margin-top: 23px; }.monster-drops h3 { margin: 0 0 8px; font-size: 16px; }.monster-drops > p { font-size: 10px; line-height: 1.6; color: #92a886; }
+.monster-loot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }.monster-loot { display: flex; align-items: center; gap: 9px; border: 1px solid #64764d66; border-radius: 5px; padding: 10px; }.monster-loot > svg { width: 27px; height: 30px; flex-shrink: 0; }.monster-loot > div { flex: 1; min-width: 0; }.monster-loot strong { display: block; font-size: 10px; line-height: 1.5; }.monster-loot small { display: block; font-size: 8px; margin-top: 4px; color: #92a886; }.monster-loot b { font-size: 10px; color: #d7bd82; white-space: nowrap; }.monster-loot.chromatic { background: linear-gradient(110deg,#5a3d682b,#36534b44); border-color: #a382b780; }.monster-loot.chromatic strong { color: #d5b9e7; }
+@media (max-width: 700px) {
+  .hud-menu [data-action="bestiary"] span { display: none; }
+  .hud-menu [data-action="tools"] { font-size: 0; }
+  .hud-menu [data-action="tools"]::after { content: '⚙'; font-size: 13px; }
+  .bestiary-layout { grid-template-columns: 1fr; gap: 15px; }.monster-list { flex-direction: row; }.monster-list button { flex: 1; }.monster-list svg { width: 40px; height: 38px; }.monster-list strong { font-size: 11px; }
+  .monster-identity { gap: 10px; }.monster-identity > svg { width: 90px; height: 85px; }.monster-identity h3 { font-size: 21px; }.monster-identity p:not(.eyebrow) { font-size: 10px; }
+  .monster-stats > div { padding: 9px 6px; }.monster-stats dt { font-size: 8px; }.monster-stats dd { font-size: 12px; }
+  .monster-loot-grid { grid-template-columns: 1fr; }.bestiary-heading { margin-bottom: 12px; }.bestiary-heading h2 { font-size: 23px; }
+  .inventory-footer .tabs button { padding: 7px 5px; font-size: 8px; }
 }
