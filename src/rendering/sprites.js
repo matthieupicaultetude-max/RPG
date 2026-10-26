@@ -380,7 +380,25 @@ function rock(g) {
   g.fillStyle = "#d2c7a1";
   g.fillRect(-3, -7, 5, 2);
 }
+function petshop(g) {
+  g.fillStyle="#73583b";g.fillRect(-34,-36,68,36);
+  g.fillStyle="#c2af83";g.fillRect(-32,-34,64,33);
+  for(let x=-30;x<33;x+=8){g.fillStyle="#dec498";g.fillRect(x,-32,1,30);}
+  for(const x of [-33,29]){g.fillStyle="#775236";g.fillRect(x,-35,4,35);}
+  const ridgeBack=[-4,-70],ridgeFront=[0,-55],left=[-40,-31],right=[40,-31];
+  roofPlane(g,[[-44,-46],ridgeBack,ridgeFront,left],4,4,false);
+  roofPlane(g,[ridgeBack,[36,-46],right,ridgeFront],4,4,true);
+  poly(g,[left,ridgeFront,right],"#c5aa78","#765238");
+  g.fillStyle="#6c5139";g.fillRect(-10,-18,20,18);g.fillStyle="#9e7c51";g.fillRect(-8,-16,16,16);
+  g.fillStyle="#d3bd89";g.fillRect(4,-8,2,2);
+  for(const x of [-25,17]){g.fillStyle="#6a5136";g.fillRect(x,-28,10,12);g.fillStyle="#8baca0";g.fillRect(x+1,-27,8,9);g.fillStyle="#d6bd84";g.fillRect(x+4,-27,1,9);}
+  g.fillStyle="#66563a";g.fillRect(-12,-44,25,14);g.fillStyle="#b29965";g.fillRect(-11,-43,23,12);
+  g.fillStyle="#4e6149";g.fillRect(-4,-36,9,5);for(const[x,y]of[[-6,-40],[-1,-42],[4,-41],[8,-38]])g.fillRect(x,y,3,3);
+  g.fillStyle="#caba8f";g.fillRect(-12,0,25,3);
+  g.fillStyle="#70583d";g.fillRect(-28,-1,12,4);g.fillStyle="#a9c0a2";g.fillRect(-26,0,8,2);
+}
 const DEFINITIONS = {
+  petshop:{bounds:[-47,-73,95,80],origin:[0,0],paint:petshop},
   house: { bounds: [40, 0, 140, 124], origin: [110, 108], paint: house },
   market: { bounds: [-42, -58, 86, 61], origin: [0, 0], paint: market },
   tree: {

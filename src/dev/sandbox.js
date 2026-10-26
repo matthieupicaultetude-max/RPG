@@ -1,3 +1,5 @@
+import { recordSetLoot, nearPetShop } from '../game/pet-quests.js';
+import { PET_SHOP } from '../world/map.js';
 import { canWalkMap } from '../world/map.js';
 import { ELEMENTS, CORE_CHANCE, createCore, rollCoreEquipment, weaponDamage, syncEquipmentHealth } from '../data/equipment.js';
 import { createMonster, monsterDefinition } from '../data/monsters.js';
@@ -8,7 +10,7 @@ import { createState, update as movePlayer } from '../game/state.js';
 export const ROLES = { melee: 'Corps à corps', support: 'Soutien', ranged: 'Distance' };
 export const COLORS = { melee: '#c0a16d', support: '#9db780', ranged: '#8bacae' };
 export const SLOTS = ['Coiffe', 'Cape', 'Ceinture', 'Bottes', 'Anneau 1', 'Anneau 2', 'Amulette', 'Arme', 'Bouclier', 'Familier', ...Array.from({ length: 6 }, (_, i) => `Trophée ${i + 1}`)];
-export const STATIONS = { maison: { x: 110, y: 135 }, combat: { x: 480, y: 255 }, atelier: { x: 190, y: 295 } };
+export const STATIONS = { maison: { x: 110, y: 135 }, combat: { x: 480, y: 255 }, atelier: { x: 190, y: 295 }, animalerie: { x:250,y:157 } };
 export const ULTIMATE_DURATION = 30;
 export const ULTIMATE_COOLDOWN = 300;
 const names = ['Aëlan', 'Liora', 'Sylas'];
@@ -20,6 +22,7 @@ export function createSandbox() {
   Object.assign(state, {
     team: ['melee', 'support', 'ranged'].map(makeMember), main: 0, deployed: false,
     ultimate: { remaining: 0, cooldown: 0 },
+    collections: {}, petQuests: {}, npcs:[{...PET_SHOP.npc}],
     bag: [], nextItem: 1, gold: 0, log: ['Bienvenue dans le jardin des essais.'], revision: 0,
     monsters: [createMonster('slime',455,220), createMonster('boar',535,285),createMonster('firefly',530,165),createMonster('moth',585,240)],
     bots: Array.from({ length: 3 }, (_, i) => ({ name: ['Milo', 'Éline', 'Orin'][i], x: 290 + i * 70, y: 110, role: ['melee', 'support', 'ranged'][i], facing: 'down', moving: true, phase: i * 2, target: { x: 270 + i * 70, y: 110 } })),
@@ -34,7 +37,7 @@ export function note(s, message) {
   s.log.length = Math.min(s.log.length, 6);
   s.revision++;
 }
-export function atHome(s) { return Math.hypot(s.player.x - STATIONS.maison.x, s.player.y - STATIONS.maison.y) < 65; }
+export function atHome(s) { return Math.hypot(s.player.x - STATIONS.maison.x, s.player.y - STATIONS.maison.y) < 65 || nearPetShop(s); }
 export function teleport(s, station) {
   const point = STATIONS[station];
   if (!point) return;
@@ -126,7 +129,7 @@ export function openCore(s,id,random=Math.random) {
   const item=rollCoreEquipment(s.bag[index],random);
   if(!item){note(s,'Aucune panoplie disponible pour cette tranche de niveaux.');return null;}
   if(--s.bag[index].quantity===0)s.bag.splice(index,1);
-  const reward={...item,id:s.nextItem++};s.bag.push(reward);
+  const reward={...item,id:s.nextItem++};s.bag.push(reward);recordSetLoot(s,reward);
   note(s,`Noyau ouvert : ${reward.name}${reward.chromatic?' chromatique':''} !`);
   return reward;
 }

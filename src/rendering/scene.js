@@ -62,6 +62,7 @@ export function createRenderer(canvas) {
           ctx.restore();
         },
       })),
+      ...(s.npcs || []).map(npc=>({y:npc.y,draw:()=>person(npc,s.time,false,false)})),
       ...s.bots.map((p) => ({
         y: p.y,
         draw: () => person(p, s.time, false, true),

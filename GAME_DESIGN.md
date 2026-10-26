@@ -257,7 +257,7 @@ Le panneau rassemble l’équipement et le sac dans une même vue :
 
 Un clic sélectionne un objet ou un emplacement sans modifier l’équipement. La fiche propose **Équiper** pour un équipement du sac, ou **Retirer** pour un objet équipé. Un emplacement vide affiche une explication ; une ressource n’offre pas d’action d’équipement. Les trois personnages sont consultables dans le panneau, avec leur équipement individuel.
 
-Le bouclier et le familier portent le total à **16 emplacements**, dont les six trophées. Il peut être généré dans les outils dev, équipé et retiré indépendamment de l’arme. Il est visible dans l’aperçu et sur le personnage en jeu. Ses statistiques défensives restent à définir. Le familier est équipable depuis le sac et visible dans l’aperçu ; ses bonus et son comportement dans le monde restent à concevoir.
+Le bouclier et le familier portent le total à **16 emplacements**, dont les six trophées. Il peut être généré dans les outils dev, équipé et retiré indépendamment de l’arme. Il est visible dans l’aperçu et sur le personnage en jeu. Ses statistiques défensives restent à définir. Le familier est équipable depuis le sac et visible dans l’aperçu et en jeu. Les familiers de l’animalerie suivent les règles de la section 24.
 
 L’inventaire n’a pas de grand en-tête : le personnage et les objets occupent directement le haut du panneau. Les commandes Équipement & sac, Outils dev et Fermer sont compactées dans la barre du bas pour éviter le défilement de la vue principale. Seule la grille du sac défile si elle contient beaucoup d’objets.
 
@@ -389,3 +389,19 @@ Les neuf catégories restent reconnaissables entre les panoplies. Les icônes so
 **Suppression des noyaux chromatiques :** ni le tirage sur les monstres ni l’ouverture d’un noyau ne peuvent donner un équipement chromatique. Même un ancien marqueur chromatique sur un noyau ne doit pas être transmis à sa récompense. Le taux global de noyau reste 25 %.
 
 Les équipements chromatiques relèveront de **l’artisanat**. Cette étape réserve leur provenance sans inventer de recettes, de coûts, de métier ou de bonus supplémentaires. Le système de fabrication reste à concevoir. Les ressources normales/rares et leurs variations chromatiques conservent leurs tirages actuels.
+
+
+## 24. Animalerie, certificats et progression des familiers
+
+L’animalerie du village est tenue par **Nola**, PNJ accessible avec **F** à proximité. Ses quatre quêtes correspondent aux panoplies Ronce, Braise, Brise et Rosée. Accepter une quête donne un **certificat d’adoption**, conservé dans le sac. Une fois les neuf pièces distinctes obtenues par ouverture de noyaux, le certificat s’échange contre le familier associé. Les équipements ne sont pas consommés. L’historique compte aussi les pièces obtenues avant l’acceptation, indépendamment du personnage qui les porte. Une quête et une récompense par panoplie dans la session.
+
+| Élément / panoplie | Familier | Monstre associé | Aliment accepté |
+| --- | --- | --- | --- |
+| Terre / Ronce | Roncinet | Sanglier | Défense ancienne rare chromatique |
+| Feu / Braise | Flammèche | Luciole ardente | Étincelle vive rare chromatique |
+| Air / Brise | Zéphyr | Phalène | Aile de zéphyr rare chromatique |
+| Eau / Rosée | Gélutin | Slime | Cœur de gelée rare chromatique |
+
+Le familier commence au niveau 1. Le nourrissage consomme une seule ressource rare chromatique du monstre associé et accorde **10 XP**. Le seuil du prochain niveau vaut **niveau actuel × 10 XP**. Le plafond provisoire est **20** ; au plafond, aucune nourriture n’est consommée. Le bonus vaut **niveau + 1** dans la caractéristique principale de l’élément, sans effet secondaire. La progression reste attachée à l’objet lors des échanges d’équipement. Le familier est un compagnon visuel passif, sans attaque autonome.
+
+Les ressources **normales chromatiques** sont réservées au craft des armures chromatiques. Elles ne nourrissent aucun familier. Les recettes d’artisanat restent à concevoir ; ce craft n’est pas encore implémenté. La sauvegarde persistante et la validation serveur ne font pas partie de cette étape : collections, certificats et familiers appartiennent à la session locale.

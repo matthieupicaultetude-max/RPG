@@ -271,9 +271,16 @@ function resourceArt(item) {
       return null;
   }
 }
+function petArt(item,p) {
+  const species=item.petSpecies;
+  if(species==='slime')return path('M3 24c0-7 5-9 7-13 3-7 14-5 15 3l4 9c2 8-27 10-26 1z',p.base)+path('M9 18c0-6 10-8 12-3','none',p.light,2)+path('M10 23v2m11-2v2M15 27h3','none','#344f49',2);
+  if(species==='boar')return path('m5 13 1-9 7 5h7l6-5 1 9v12l-10 5-12-5z','#9d8056')+path('M10 20h13v7H10z','#cfb18a')+path('M8 15v3m16-3v3m-10 5h2m4 0h2','none','#514b38',2)+path('M7 23v4h4m14-4v4h-4','none','#eee1bb',2)+elementSigil('earth',10,-3,.4,p.gem);
+  return path('M12 14 3 4 1 15l10 10m9-11L29 4l2 11-10 10z',p.light)+path('M12 7h8v22h-8z',p.base)+path('M14 4V1m4 3V1M14 13v2m4-2v2','none',p.dark,2)+path('M13 22h6v6h-6z',p.gem);
+}
 export function renderItemIcon(item = {}) {
   const p = PALETTES[item.element] || PALETTES.neutral;
-  let art = resourceArt(item);
+  let art = item.kind==='pet' ? petArt(item,p) : resourceArt(item);
+  if(item.kind==='certificate')art=path('M7 3h21v24H6V8H3V3z','#dfd0a4')+path('M7 3v5H3m4 19h21v-4H9','none','#a08b62')+path('M11 10h12m-12 4h8','none','#9d8a61')+path('m20 17 5 3-1 7-4-2-4 2-1-7z',p.base)+elementSigil(item.element,14,15,.38,p.gem);
   if (item.kind === "core" || item.slot === "Noyau")
     art =
       path("m16 2 12 9-4 15-8 5-8-5-4-15z", p.dark) +

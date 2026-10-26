@@ -94,7 +94,9 @@ function smooth(points) {
   }
   return result;
 }
+export const PET_SHOP = Object.freeze({x:250,y:138,npc:{id:'nola',name:'Nola',x:268,y:153,role:'support',facing:'down',moving:false,equipment:{}}});
 export const ROADS = [
+  {id:'petshop',width:20,points:[[250,148],[250,180]]},
   {
     id: "village",
     width: 26,
@@ -170,6 +172,7 @@ export const isRoad = (x, y) => roadDistance(x, y) <= 0;
 
 // Sprite origin is its ground anchor. Only the footprint blocks movement.
 export const PROPS = [
+  {id:'petshop',kind:'petshop',x:PET_SHOP.x,y:PET_SHOP.y,footprint:{type:'box',left:-34,right:34,top:-36,bottom:0}},
   {
     id: "house",
     kind: "house",
@@ -230,7 +233,7 @@ export const PROPS = [
     footprint: { type: "box", left: -9, right: 9, top: -6, bottom: 0 },
   })),
   ...[
-    [203, 123],
+    [192, 132],
     [246, 344],
   ].map(([x, y], i) => ({
     id: `bench-${i}`,
@@ -266,7 +269,7 @@ export const DECORATIONS = [
     [250, 279],
     [357, 215],
     [355, 350],
-    [280, 99],
+    [288, 150],
     [567, 110],
     [76, 343],
   ].map(([x, y], i) => ({ id: `flowers-${i}`, kind: "flowers", x, y })),
@@ -387,7 +390,7 @@ export function validateMap() {
     if (!placementOnLand(prop))
       errors.push(`${prop.id}: footprint outside land`);
     if (
-      !["house", "market", "fence"].includes(prop.kind) &&
+      !["house", "market", "petshop", "fence"].includes(prop.kind) &&
       footprintPoints(prop).some(([x, y]) => isRoad(x, y))
     )
       errors.push(`${prop.id}: footprint on a road`);

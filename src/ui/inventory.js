@@ -1,3 +1,5 @@
+import { petDefinition, foodQuantity, PET_MAX_LEVEL, petLevelXp } from "../data/pets.js";
+import { adoptionProgress } from "../game/pet-quests.js";
 import { renderItemIcon, elementSigil } from "./item-art.js";
 import { ELEMENTS, setForCore, equipmentStats } from "../data/equipment.js";
 import { ROLES, COLORS, SLOTS, atHome } from "../dev/sandbox.js";
@@ -63,7 +65,7 @@ function avatar(member) {
     ${e.Ceinture ? '<path d="M38 104h44v9H38z" fill="#735339"/><path d="M55 103h12v11H55z" fill="#dfbd6f"/>' : ""}
     ${e.Amulette ? `<path d="m51 64 9 13 10-13" fill="none" stroke="#d8bd79" stroke-width="2"/><path d="m60 73 5 6-5 6-5-6z" fill="${e.Amulette.color || "#8bcebc"}"/>` : ""}
     ${weaponArt(e.Arme)}
-    ${e.Familier ? '<path d="M82 142h17v10H82zm0-6 6 4h5l6-4v9H82z" fill="#cfa56c"/><path d="M86 143h2v2h-2zm9 0h2v2h-2z" fill="#243a39"/>' : ""}
+    ${e.Familier?.kind==='pet'?renderItemIcon(e.Familier).replace('<svg ', '<svg x="77" y="126" width="28" height="28" '):e.Familier?'<path d="M82 142h17v10H82zm0-6 6 4h5l6-4v9H82z" fill="#cfa56c"/>':''}
     ${e.Bouclier ? `<path d="m27 84 17 6v22l-17 12-17-12V90z" fill="${e.Bouclier?.color || "#879d9d"}"/><path d="m27 89 11 4v16l-11 8-11-8V93z" fill="#475e6a"/><path d="M25 93h4v18h-4z" fill="#d5b974"/>` : ""}
     ${e.Bouclier?.element ? elementSigil(e.Bouclier.element, 17, 93, 0.62) : ""}
     ${e.Cape?.element ? elementSigil(e.Cape.element, 31, 117, 0.5) : ""}
@@ -87,6 +89,14 @@ function objectDetails(state, selection) {
       element = ELEMENTS[item.element];
     return `<div class="item-details core-details"><span class="detail-icon">${itemIcon("Noyau", false, item.color, item)}</span><div><p class="eyebrow">NOYAU · ${element.name} / ${element.stat} · NIVEAUX ${item.band.min}–${item.band.max}</p><h3>${item.name}</h3><p>${set ? `${set.name} : une pièce aléatoire parmi ${set.pieces.length}, équipable niveau ${set.minLevel}. Doublons possibles.` : "Panoplie de cette tranche non disponible pour le moment."}</p><small>Quantité : ${item.quantity} · ${atHome(state) ? "Au village : ouverture possible." : "Ouverture uniquement au village, près de la maison."}</small></div><button data-open-core="${item.id}" ${!atHome(state) || !set ? "disabled" : ""}>Ouvrir le noyau</button></div>`;
   }
+  if (item.kind === "certificate") {
+    const count=adoptionProgress(state,item.questId).filter(p=>p.obtained).length;
+    return `<div class="item-details"><span class="detail-icon">${renderItemIcon(item)}</span><div><p class="eyebrow">CERTIFICAT D’ADOPTION</p><h3>${item.name}</h3><p>${count}/9 pièces obtenues. À remettre à Nola à l’animalerie contre le familier, une fois la panoplie complète. Vos équipements seront conservés.</p></div><button data-tab="petshop">Voir la quête</button></div>`;
+  }
+  if (item.kind === "pet") {
+    const def=petDefinition(item.petId),quantity=foodQuantity(state,item),maximum=item.level>=PET_MAX_LEVEL;
+    return `<div class="item-details pet-details"><span class="detail-icon">${renderItemIcon(item)}</span><div><p class="eyebrow">FAMILIER · ${ELEMENTS[item.element].name} · ${equipped?'ÉQUIPÉ':'DANS LE SAC'}</p><h3>${item.name} · Niveau ${item.level}/${PET_MAX_LEVEL}</h3><p>${Object.entries(item.stats).map(([stat,value])=>`+${value} ${stat}`).join(' · ')} · ${maximum?'Niveau maximum':`${item.xp}/${petLevelXp(item.level)} XP`}</p><small>Nourriture : ${def.food} chromatique (rare) · ${quantity} en sac.</small><div class="xp-track"><span style="width:${maximum?100:item.xp/petLevelXp(item.level)*100}%"></span></div></div><div class="pet-detail-actions"><button ${equipped?`data-slot="Familier"`:`data-equip="${item.id}"`}>${equipped?'Retirer':'Équiper'}</button><button data-feed-pet="${item.id}" ${quantity===0||maximum?'disabled':''}>Nourrir · 1 ressource</button></div></div>`;
+  }
   const effect = item.stats
     ? Object.entries(item.stats)
         .map(([stat, value]) => `+${value} ${stat}`)
@@ -101,8 +111,9 @@ function objectDetails(state, selection) {
             ? "Modifie l’apparence du personnage. Aucun bonus chiffré pour le moment."
             : item.slot
               ? "Équipement de test. Les caractéristiques et bonus seront définis plus tard."
-              : "Ressource obtenue sur un monstre. Les usages et la valeur marchande restent à définir.";
-  return `<div class="item-details ${item.chromatic ? "chromatic" : ""}"><span class="detail-icon">${itemIcon(item.kind === "core" ? "Noyau" : item.slot, item.chromatic, item.color, item)}</span><div><p class="eyebrow">${item.slot || (item.type === "rare" ? "BUTIN RARE" : "BUTIN NORMAL")}${item.chromatic ? " · CHROMATIQUE" : ""} · ${equipped ? "ÉQUIPÉ" : "DANS LE SAC"}</p><h3>${item.name}${item.chromatic ? " chromatique" : ""}</h3><p>${effect}</p>${item.setId ? `<p class="set-info">${item.setName} · Niveau requis ${item.requiredLevel} · ${Object.values(state.team[state.main].equipment).filter((piece) => piece.setId === item.setId).length}/9 pièces équipées</p>` : ""}<small>Quantité : ${item.quantity} ${equipped ? "· " + state.team[state.main].name : ""}</small></div>${item.slot ? `<button ${equipped ? `data-slot="${item.slot}"` : `data-equip="${item.id}"`}>${equipped ? "Retirer" : "Équiper"}</button>` : ""}</div>`;
+              : "Ressource obtenue sur un monstre.";
+  const usage = !item.slot && item.chromatic ? (item.type==='rare' ? `Nourriture du familier associé : ${petDefinition(Object.keys(ELEMENTS).find(element=>petDefinition(element)?.food===item.name))?.name || 'voir l’animalerie'}.` : 'Matériau réservé au futur craft des armures chromatiques.') : '';
+  return `<div class="item-details ${item.chromatic ? "chromatic" : ""}"><span class="detail-icon">${itemIcon(item.kind === "core" ? "Noyau" : item.slot, item.chromatic, item.color, item)}</span><div><p class="eyebrow">${item.slot || (item.type === "rare" ? "BUTIN RARE" : "BUTIN NORMAL")}${item.chromatic ? " · CHROMATIQUE" : ""} · ${equipped ? "ÉQUIPÉ" : "DANS LE SAC"}</p><h3>${item.name}${item.chromatic ? " chromatique" : ""}</h3><p>${effect}</p>${usage?`<p class="resource-purpose">${usage}</p>`:""}${item.setId ? `<p class="set-info">${item.setName} · Niveau requis ${item.requiredLevel} · ${Object.values(state.team[state.main].equipment).filter((piece) => piece.setId === item.setId).length}/9 pièces équipées</p>` : ""}<small>Quantité : ${item.quantity} ${equipped ? "· " + state.team[state.main].name : ""}</small></div>${item.slot ? `<button ${equipped ? `data-slot="${item.slot}"` : `data-equip="${item.id}"`}>${equipped ? "Retirer" : "Équiper"}</button>` : ""}</div>`;
 }
 export function renderInventory(state, selection, filter = "all") {
   const m = state.team[state.main];

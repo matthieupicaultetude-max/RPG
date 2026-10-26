@@ -32,7 +32,15 @@ export function drawAdventurer(ctx,p,time,animation){
    else{ctx.fillStyle='#7b674b';ctx.fillRect(9,-6,2,8);ctx.fillStyle='#c5ae73';ctx.fillRect(6,-7,7,2);ctx.fillStyle='#c6cebb';ctx.fillRect(9,-20,2,13);ctx.fillStyle='#eef0d4';ctx.fillRect(9,-19,1,11);}
  }
  if(p.equipment?.Bouclier){ctx.fillStyle='#655e45';ctx.fillRect(-11,-14,7,12);ctx.fillRect(-10,-2,5,2);ctx.fillStyle=p.equipment.Bouclier.color||'#90a49c';ctx.fillRect(-10,-13,5,10);ctx.fillStyle='#dfc890';ctx.fillRect(-8,-12,1,9);}
- if(p.equipment?.Familier){ctx.fillStyle='#8a704b';ctx.fillRect(13,1,8,5);ctx.fillRect(14,-3,6,5);ctx.fillRect(13,-4,2,3);ctx.fillRect(19,-4,2,3);ctx.fillStyle='#d8b97e';ctx.fillRect(15,-2,4,2);ctx.fillStyle='#3e4f40';ctx.fillRect(15,-1,1,1);ctx.fillRect(18,-1,1,1);}
+ if(p.equipment?.Familier){
+  const pet=p.equipment.Familier,kind=pet.petSpecies;
+  ctx.save();ctx.translate(17,1);
+  if(kind==='slime'){ctx.fillStyle='#5c9c9c';ctx.fillRect(-4,-4,9,6);ctx.fillRect(-2,-7,5,5);ctx.fillStyle='#b5daba';ctx.fillRect(-2,-6,3,2);}
+  else if(kind==='boar'){ctx.fillStyle='#a4895b';ctx.fillRect(-5,-5,11,7);ctx.fillRect(-4,-8,3,4);ctx.fillRect(3,-8,3,4);ctx.fillStyle='#e0c99c';ctx.fillRect(-2,-1,5,3);}
+  else if(kind==='firefly'||kind==='moth'){const bob=Math.round(Math.sin(time*10));ctx.fillStyle=kind==='firefly'?'#e5bf80':'#c5d6b5';ctx.fillRect(-7,-8+bob,5,4);ctx.fillRect(3,-8-bob,5,4);ctx.fillStyle=pet.color;ctx.fillRect(-2,-9,5,10);ctx.fillStyle='#eddbac';ctx.fillRect(-1,-1,3,2);}
+  else{ctx.fillStyle='#8a704b';ctx.fillRect(-4,-1,8,5);ctx.fillRect(-3,-5,6,5);ctx.fillRect(-4,-6,2,3);ctx.fillRect(2,-6,2,3);}
+  ctx.fillStyle='#334b3b';ctx.fillRect(-1,-4,1,1);ctx.fillRect(2,-4,1,1);ctx.restore();
+ }
  ctx.restore();
 }
 export function drawCreature(ctx,m,time){
