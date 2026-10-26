@@ -1,0 +1,507 @@
+// Original pixel art, drawn once for the terrain and sorted by depth for the trees.
+const seed = (x, y, n = 0) => {
+  const v = Math.sin(x * 127.1 + y * 311.7 + n * 74.7) * 43758.5453;
+  return v - Math.floor(v);
+};
+const poly = (ctx, points, fill, stroke) => {
+  ctx.beginPath();
+  points.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
+  ctx.closePath();
+  if (fill) {
+    ctx.fillStyle = fill;
+    ctx.fill();
+  }
+  if (stroke) {
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+};
+function oval(ctx, x, y, rx, ry, color) {
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
+  ctx.fill();
+}
+function barrel(g, x, y) {
+  oval(g, x + 2, y + 2, 9, 3, "#75683f44");
+  g.fillStyle = "#6c5138";
+  g.fillRect(x - 6, y - 12, 12, 13);
+  g.fillStyle = "#ab8151";
+  g.fillRect(x - 5, y - 12, 9, 12);
+  for (let dx = -3; dx < 5; dx += 3) {
+    g.fillStyle = "#775836";
+    g.fillRect(x + dx, y - 10, 1, 10);
+  }
+  g.fillStyle = "#cab185";
+  g.fillRect(x - 6, y - 9, 12, 2);
+  g.fillRect(x - 6, y - 2, 12, 2);
+  oval(g, x, y - 12, 6, 3, "#d2b58a");
+  oval(g, x, y - 12, 4, 1, "#9a784d");
+}
+function crate(g, x, y) {
+  g.fillStyle = "#604a34";
+  g.fillRect(x - 9, y - 18, 19, 19);
+  g.fillStyle = "#ad8757";
+  g.fillRect(x - 8, y - 17, 17, 17);
+  for (let dx = -5; dx <= 6; dx += 4) {
+    g.fillStyle = "#89663f";
+    g.fillRect(x + dx, y - 15, 1, 14);
+  }
+  g.strokeStyle = "#d0ae75";
+  g.strokeRect(x - 7.5, y - 16.5, 15, 15);
+  g.beginPath();
+  g.moveTo(x - 7, y - 16);
+  g.lineTo(x + 7, y - 2);
+  g.stroke();
+}
+function flowers(g, x, y) {
+  g.fillStyle = "#667839";
+  g.fillRect(x - 5, y, 11, 3);
+  for (let i = 0; i < 4; i++) {
+    const xx = x - 4 + i * 3;
+    g.fillStyle = "#798b40";
+    g.fillRect(xx, y - 5 - (i % 2) * 2, 1, 6);
+    g.fillStyle = i % 2 ? "#efe7b4" : "#d6ad78";
+    g.fillRect(xx - 1, y - 7 - (i % 2) * 2, 3, 2);
+    g.fillStyle = "#d3bd6e";
+    g.fillRect(xx, y - 6 - (i % 2) * 2, 1, 1);
+  }
+}
+function bush(g, x, y, s = 1) {
+  oval(g, x + 3, y + 2, 11 * s, 4 * s, "#65703755");
+  for (let i = 0; i < 25; i++) {
+    const a = seed(x, y, i) * 6.28,
+      r = seed(y, x, i) * 10 * s;
+    g.fillStyle = ["#6c813b", "#839344", "#9ca74c", "#b7b960"][
+      Math.floor(seed(x, i, y) * 4)
+    ];
+    g.fillRect(
+      Math.round(x + Math.cos(a) * r) - 3,
+      Math.round(y - 7 + Math.sin(a) * r * 0.6) - 3,
+      6,
+      5,
+    );
+  }
+}
+function fence(g, x1, x2, y) {
+  g.fillStyle = "#6f5238";
+  g.fillRect(x1, y - 13, x2 - x1, 3);
+  g.fillRect(x1, y - 5, x2 - x1, 3);
+  g.fillStyle = "#c2a376";
+  g.fillRect(x1, y - 14, x2 - x1, 1);
+  g.fillRect(x1, y - 6, x2 - x1, 1);
+  for (const x of new Set([
+    ...Array.from(
+      { length: Math.floor((x2 - x1) / 21) + 1 },
+      (_, i) => x1 + i * 21,
+    ),
+    x2,
+  ])) {
+    g.fillStyle = "#725239";
+    g.fillRect(x - 2, y - 20, 5, 24);
+    g.fillStyle = "#be9a67";
+    g.fillRect(x - 1, y - 19, 3, 22);
+    g.fillStyle = "#e0c18e";
+    g.fillRect(x - 2, y - 20, 5, 2);
+  }
+}
+function tree(g, x, y, size = 1) {
+  g.save();
+  g.translate(Math.round(x), Math.round(y));
+  g.scale(size, size);
+  oval(g, 9, 3, 22, 6, "#5a653142");
+  poly(
+    g,
+    [
+      [-5, 2],
+      [-3, -38],
+      [4, -38],
+      [5, 2],
+      [9, 5],
+      [1, 4],
+      [-7, 6],
+    ],
+    "#d3c7a0",
+    "#807b53",
+  );
+  g.fillStyle = "#e8dcba";
+  g.fillRect(-2, -33, 3, 35);
+  for (const yy of [-29, -19, -9]) {
+    g.fillStyle = "#8b8766";
+    g.fillRect(-4, yy, 3, 2);
+    g.fillRect(1, yy + 4, 3, 1);
+  }
+  const crown = Array.from({ length: 24 }, (_, i) => {
+    const a = (i / 24) * Math.PI * 2,
+      r = 0.92 + seed(x, y, i + 101) * 0.15;
+    return [
+      Math.round(Math.cos(a) * 26 * r),
+      Math.round(-43 + Math.sin(a) * 22 * r),
+    ];
+  });
+  poly(g, crown, "#7d8939", "#647234");
+  g.save();
+  g.clip();
+  for (let i = 0; i < 95; i++) {
+    const angle = seed(x, y, i) * 6.28,
+      r = Math.sqrt(seed(y + 19, x - 7, i + 37)) * 25;
+    const xx = Math.round(Math.cos(angle) * r),
+      yy = Math.round(-43 + Math.sin(angle) * r * 0.79);
+    const light = yy < -44 ? 1 : 0;
+    g.fillStyle = ["#647234", "#7d8939", "#99a044", "#b2b254", "#c9c36a"][
+      Math.min(4, Math.floor(seed(i, x, y) * 4) + light)
+    ];
+    g.fillRect(xx - 4, yy - 3, 8, 6);
+    g.fillRect(xx - 2, yy - 5, 4, 9);
+    if (i % 7 === 0) {
+      g.fillStyle = "#d8cf83";
+      g.fillRect(xx - 3, yy - 3, 3, 2);
+    }
+  }
+  g.restore();
+  g.restore();
+}
+function roofPlane(g, corners, rows, columns, dark) {
+  const lerp = (a, b, t) => [
+    a[0] + (b[0] - a[0]) * t,
+    a[1] + (b[1] - a[1]) * t,
+  ];
+  for (let row = 0; row < rows; row++)
+    for (let col = 0; col < columns; col++) {
+      const t0 = row / rows,
+        t1 = (row + 1) / rows,
+        u0 = col / columns,
+        u1 = (col + 1) / columns;
+      const l0 = lerp(corners[0], corners[3], t0),
+        r0 = lerp(corners[1], corners[2], t0),
+        l1 = lerp(corners[0], corners[3], t1),
+        r1 = lerp(corners[1], corners[2], t1);
+      const points = [
+        lerp(l0, r0, u0),
+        lerp(l0, r0, u1),
+        lerp(l1, r1, u1),
+        lerp(l1, r1, u0),
+      ].map(([x, y]) => [Math.round(x), Math.round(y)]);
+      const palette = dark
+        ? ["#747267", "#828174", "#908d7e"]
+        : ["#929388", "#a3a294", "#b2ad99"];
+      poly(g, points, palette[(row * 7 + col * 3) % 3], "#665d4b");
+      g.strokeStyle = dark ? "#a49c83" : "#c5bba2";
+      g.beginPath();
+      g.moveTo(points[0][0] + 1, points[0][1] + 1);
+      g.lineTo(points[1][0] - 1, points[1][1] + 1);
+      g.stroke();
+    }
+}
+function house(g) {
+  oval(g, 115, 111, 64, 10, "#5f633841");
+  g.fillStyle = "#66503a";
+  g.fillRect(57, 62, 105, 47);
+  g.save();
+  g.beginPath();
+  g.rect(59, 65, 101, 43);
+  g.clip();
+  for (let y = 65; y < 108; y += 7)
+    for (let x = 59; x < 160; x += 13) {
+      const offset = ((y - 65) / 7) % 2 ? 6 : 0;
+      g.fillStyle = ["#b4a98b", "#c3b695", "#a69e82"][(x + y) % 3];
+      g.fillRect(x + offset, y, 12, 6);
+    }
+  g.restore();
+  g.fillStyle = "#b99a69";
+  g.fillRect(67, 62, 86, 23);
+  for (let x = 70; x < 151; x += 8) {
+    g.fillStyle = "#d1b082";
+    g.fillRect(x, 65, 1, 18);
+  }
+  for (const x of [62, 99, 153]) {
+    g.fillStyle = "#705135";
+    g.fillRect(x, 61, 5, 46);
+    g.fillStyle = "#bc9765";
+    g.fillRect(x, 61, 1, 46);
+  }
+  g.fillStyle = "#745339";
+  g.fillRect(62, 83, 96, 4);
+  for (const x of [74, 129]) {
+    g.fillStyle = "#684d35";
+    g.fillRect(x - 2, 69, 19, 16);
+    g.fillStyle = "#55716d";
+    g.fillRect(x, 71, 14, 11);
+    g.strokeStyle = "#d8b97f";
+    g.beginPath();
+    g.moveTo(x, 71);
+    g.lineTo(x + 14, 82);
+    g.moveTo(x + 14, 71);
+    g.lineTo(x, 82);
+    g.moveTo(x + 7, 71);
+    g.lineTo(x + 7, 82);
+    g.stroke();
+  }
+  g.fillStyle = "#62462f";
+  g.fillRect(103, 82, 18, 27);
+  g.fillStyle = "#af8555";
+  g.fillRect(105, 83, 14, 25);
+  for (let x = 108; x < 120; x += 4) {
+    g.fillStyle = "#88623d";
+    g.fillRect(x, 84, 1, 24);
+  }
+  g.fillStyle = "#e1bc72";
+  g.fillRect(115, 97, 2, 2);
+  poly(
+    g,
+    [
+      [48, 63],
+      [78, 17],
+      [111, 5],
+      [111, 34],
+      [72, 72],
+    ],
+    "#79776a",
+    "#65503a",
+  );
+  roofPlane(
+    g,
+    [
+      [78, 17],
+      [111, 5],
+      [111, 34],
+      [48, 63],
+    ],
+    6,
+    4,
+    false,
+  );
+  roofPlane(
+    g,
+    [
+      [111, 5],
+      [149, 24],
+      [173, 65],
+      [111, 34],
+    ],
+    6,
+    4,
+    true,
+  );
+  poly(
+    g,
+    [
+      [72, 65],
+      [111, 32],
+      [151, 65],
+    ],
+    "#bda477",
+    "#715136",
+  );
+  g.strokeStyle = "#765138";
+  g.lineWidth = 3;
+  g.beginPath();
+  g.moveTo(73, 65);
+  g.lineTo(111, 32);
+  g.lineTo(151, 65);
+  g.moveTo(111, 35);
+  g.lineTo(111, 63);
+  g.stroke();
+  g.lineWidth = 1;
+  g.fillStyle = "#735338";
+  g.fillRect(103, 48, 17, 16);
+  g.fillStyle = "#536c67";
+  g.fillRect(106, 51, 11, 10);
+  g.fillStyle = "#d9b77e";
+  g.fillRect(111, 51, 1, 10);
+  g.fillStyle = "#68513c";
+  g.fillRect(80, 12, 12, 16);
+  g.fillStyle = "#b1aa8d";
+  g.fillRect(81, 11, 10, 15);
+  g.fillStyle = "#d0c5a3";
+  g.fillRect(78, 9, 16, 4);
+  g.fillStyle = "#6c6352";
+  g.fillRect(81, 9, 10, 1);
+  g.fillStyle = "#8a8063";
+  g.fillRect(98, 109, 30, 4);
+  g.fillStyle = "#c6b48b";
+  g.fillRect(97, 108, 30, 3);
+  g.fillRect(94, 112, 36, 3);
+  g.fillStyle = "#927043";
+  g.fillRect(74, 100, 20, 6);
+  flowers(g, 83, 100);
+}
+
+function market(g) {
+  g.fillStyle = "#705035";
+  g.fillRect(-31, -40, 4, 41);
+  g.fillRect(29, -40, 4, 41);
+  const roof = [
+    [-39, -35],
+    [-28, -54],
+    [29, -54],
+    [40, -35],
+  ];
+  poly(g, roof, "#d7c799");
+  g.save();
+  g.clip();
+  for (let x = -45; x < 45; x += 9) {
+    g.fillStyle = Math.floor((x + 45) / 9) % 2 ? "#ded1a6" : "#7e9b8b";
+    g.fillRect(x, -55, 9, 22);
+  }
+  g.restore();
+  poly(g, roof, null, "#795d3d");
+  g.fillStyle = "#6c4d31";
+  g.fillRect(-33, -17, 66, 7);
+  g.fillRect(-30, -10, 4, 10);
+  g.fillRect(26, -10, 4, 10);
+  g.fillStyle = "#be9864";
+  g.fillRect(-33, -18, 66, 3);
+  for (let x = -30; x < 33; x += 9) {
+    g.fillStyle = "#8d6940";
+    g.fillRect(x, -17, 1, 4);
+  }
+  g.fillStyle = "#b7bba0";
+  g.fillRect(-15, -23, 24, 3);
+  g.fillStyle = "#79593b";
+  g.fillRect(-8, -27, 3, 11);
+  g.fillStyle = "#d7bd77";
+  g.fillRect(-11, -24, 10, 2);
+}
+function bench(g) {
+  g.fillStyle = "#6f5135";
+  g.fillRect(-13, -7, 4, 7);
+  g.fillRect(10, -7, 4, 7);
+  g.fillStyle = "#c3a374";
+  g.fillRect(-17, -9, 34, 4);
+  g.fillRect(-17, -18, 34, 5);
+  g.fillStyle = "#947244";
+  g.fillRect(-17, -14, 34, 1);
+  g.fillRect(-17, -6, 34, 1);
+}
+function woodpile(g) {
+  for (let row = 0; row < 3; row++)
+    for (let col = 0; col < 3; col++) {
+      const x = -9 + col * 6 + (row % 2) * 2,
+        y = -3 - row * 4;
+      g.fillStyle = "#6c4f35";
+      g.fillRect(x - 2, y - 2, 7, 4);
+      g.fillStyle = "#a57d4d";
+      g.fillRect(x - 1, y - 2, 5, 3);
+      g.fillStyle = "#d3b27c";
+      g.fillRect(x + 3, y - 1, 2, 2);
+    }
+}
+function sign(g, text) {
+  g.fillStyle = "#705238";
+  g.fillRect(-1, -19, 3, 19);
+  g.fillStyle = "#a78451";
+  g.fillRect(-17, -26, 37, 10);
+  g.fillStyle = "#d0b47d";
+  g.fillRect(-16, -26, 34, 1);
+  g.fillStyle = "#4d4932";
+  g.font = "5px monospace";
+  g.textAlign = "center";
+  g.fillText(text, 1, -19);
+}
+function rock(g) {
+  poly(
+    g,
+    [
+      [-6, 0],
+      [-5, -8],
+      [2, -11],
+      [7, -4],
+      [6, 1],
+    ],
+    "#aaa58b",
+    "#7c7b59",
+  );
+  g.fillStyle = "#d2c7a1";
+  g.fillRect(-3, -7, 5, 2);
+}
+const DEFINITIONS = {
+  house: { bounds: [40, 0, 140, 124], origin: [110, 108], paint: house },
+  market: { bounds: [-42, -58, 86, 61], origin: [0, 0], paint: market },
+  tree: {
+    bounds: [-35, -72, 75, 82],
+    origin: [0, 0],
+    paint: (g, prop) => {
+      const offset = prop.variant * 17;
+      g.save();
+      g.translate(-offset, 0);
+      tree(g, offset, 0, 1);
+      g.restore();
+    },
+  },
+  barrel: {
+    bounds: [-10, -17, 22, 22],
+    origin: [0, 0],
+    paint: (g) => barrel(g, 0, 0),
+  },
+  crate: {
+    bounds: [-11, -20, 23, 23],
+    origin: [0, 0],
+    paint: (g) => crate(g, 0, 0),
+  },
+  bench: { bounds: [-19, -20, 39, 23], origin: [0, 0], paint: bench },
+  woodpile: { bounds: [-13, -14, 29, 18], origin: [0, 0], paint: woodpile },
+  sign: {
+    bounds: [-19, -28, 42, 31],
+    origin: [0, 0],
+    paint: (g, p) => sign(g, p.text),
+  },
+  flowers: {
+    bounds: [-8, -13, 18, 18],
+    origin: [0, 0],
+    paint: (g) => flowers(g, 0, 0),
+  },
+  bush: {
+    bounds: [-17, -20, 38, 29],
+    origin: [0, 0],
+    paint: (g) => bush(g, 0, 0, 1),
+  },
+  daisy: {
+    bounds: [-3, -7, 8, 10],
+    origin: [0, 0],
+    paint: (g) => {
+      g.fillStyle = "#849443";
+      g.fillRect(0, -4, 1, 5);
+      g.fillRect(1, -2, 2, 1);
+      g.fillStyle = "#ede6b8";
+      g.fillRect(-1, -6, 3, 3);
+      g.fillRect(-2, -5, 5, 1);
+      g.fillStyle = "#d1b86e";
+      g.fillRect(0, -5, 1, 1);
+    },
+  },
+  rock: { bounds: [-9, -14, 20, 19], origin: [0, 0], paint: rock },
+};
+export function createSpriteAtlas() {
+  const cache = new Map();
+  return (prop) => {
+    const key = `${prop.kind}:${prop.variant || 0}:${prop.text || ""}`;
+    if (cache.has(key)) return cache.get(key);
+    const def = DEFINITIONS[prop.kind];
+    if (!def) throw new Error(`Unknown sprite: ${prop.kind}`);
+    const [left, top, width, height] = def.bounds;
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const g = canvas.getContext("2d");
+    g.imageSmoothingEnabled = false;
+    g.translate(-left, -top);
+    def.paint(g, { ...prop, variant: prop.variant || 0 });
+    // Snap silhouette coverage once when baking; no fractional sprite scales at runtime.
+    const data = g.getImageData(0, 0, width, height);
+    for (let i = 3; i < data.data.length; i += 4)
+      data.data[i] = data.data[i] >= 128 ? 255 : 0;
+    g.putImageData(data, 0, 0);
+    const sprite = {
+      canvas,
+      anchorX: def.origin[0] - left,
+      anchorY: def.origin[1] - top,
+    };
+    cache.set(key, sprite);
+    return sprite;
+  };
+}
+export function drawFence(g, segment) {
+  fence(g, segment.x1, segment.x2, segment.y);
+}

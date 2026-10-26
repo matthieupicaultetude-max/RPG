@@ -1,3 +1,4 @@
+import { canWalkMap } from '../world/map.js';
 import { ELEMENTS, CORE_CHANCE, createCore, rollCoreEquipment, weaponDamage, syncEquipmentHealth } from '../data/equipment.js';
 import { createMonster, monsterDefinition } from '../data/monsters.js';
 import { ATTACK_RANGE, guidedTarget, launchAttack, stepAttacks, lineClear } from '../combat/attacks.js';
@@ -154,7 +155,7 @@ export function unequip(s, slot) {
   note(s, `${slot} retiré.`);
 }
 export function canStand(x, y) {
-  return x >= 14 && x <= 626 && y >= 65 && y <= 386 && !(x > 52 && x < 164 && y < 108);
+  return canWalkMap(x,y);
 }
 function walk(entity, x, y, speed, dt) {
   const dx = x - entity.x, dy = y - entity.y, d = Math.hypot(dx, dy);

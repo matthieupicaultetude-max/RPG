@@ -362,3 +362,11 @@ Une ouverture consomme **un seul noyau** et donne **une pièce aléatoire** de l
 Premier passage inspiré des références de village en pixel art : herbe jaune-verte nuancée, terre sableuse, bois miel, façades de pierre et colombages, toitures d’ardoise chaude et eau turquoise. Les végétaux utilisent des silhouettes irrégulières, des troncs clairs et des feuillages en plusieurs tons. Fleurs, caisses, tonneaux, bancs et panneaux ancrent la zone dans un village habité.
 
 Les contours et les ombres restent modérés ; les chemins ont des raccords continus et des bordures usées plutôt qu’une grille visible. Les personnages et les monstres gardent des silhouettes distinctes, des orientations lisibles et leurs animations de combat. Le tri vertical permet l’occultation par les arbres ; une transparence de proximité aide à retrouver le personnage principal. Cette étape porte sur le rendu du jardin existant, avant une éventuelle refonte de sa géométrie et de son contenu.
+
+## 22. Cohérence du terrain et des objets
+
+Le rendu de terrain et la navigation partagent une seule définition de la terre, de l’eau, des chemins et des emprises solides. Les textures sont périodiques, avec une phase commune dans le repère du monde. Les chemins et clairières forment une surface unifiée ; seules ses bordures extérieures sont visibles. Les routes rejoignent une jonction ou une destination, sans branche isolée.
+
+Chaque arbre et objet possède un ancrage au sol contrôlé sur la terre ferme. Les racines ne sont jamais placées dans l’eau ni sur un chemin. Les objets solides et les clôtures bloquent les déplacements selon leur emprise, et leur affichage suit la profondeur de cet ancrage. Les textures ne servent pas à déduire les collisions.
+
+Le pixel art est présenté avec une échelle entière, une caméra calée au pixel et une conversion de visée identique au rendu. Ces règles remplacent le placement libre des objets et le tracé indépendant des bordures du premier passage graphique. Voir `docs/RENDERING.md` pour les conventions d’implémentation et les tests.
