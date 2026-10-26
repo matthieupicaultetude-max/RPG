@@ -7,7 +7,7 @@ export function drawAdventurer(ctx,p,time,animation){
  ctx.fillStyle='#4c573943';ctx.beginPath();ctx.ellipse(2,3,8,3,0,0,Math.PI*2);ctx.fill();
  // Boots and trousers have independent walking frames.
  ctx.fillStyle='#4c4738';ctx.fillRect(-5,-2+step,5,7);ctx.fillRect(1,-2-step,5,7);
- ctx.fillStyle='#6e6350';ctx.fillRect(-4,-3+step,3,5);ctx.fillRect(2,-3-step,3,5);
+ ctx.fillStyle=p.equipment?.Bottes?.color||'#6e6350';ctx.fillRect(-4,-3+step,3,5);ctx.fillRect(2,-3-step,3,5);
  ctx.fillStyle='#a6926a';ctx.fillRect(-5,3+step,5,1);ctx.fillRect(1,3-step,5,1);
  const coat=p.equipment?.Cape?.color||ROLE_COLOR[p.role];
  ctx.fillStyle='#5b5b3e';ctx.fillRect(-7,-16,14,16);ctx.fillStyle=coat;ctx.fillRect(-6,-15,12,14);
@@ -20,6 +20,11 @@ export function drawAdventurer(ctx,p,time,animation){
  const hair=p.equipment?.Coiffe?.color||'#786043';ctx.fillStyle='#534932';ctx.fillRect(-5,-26,10,5);ctx.fillRect(-6,-24,2,6);
  ctx.fillStyle=hair;ctx.fillRect(-4,-26,8,4);ctx.fillRect(-5,-23,2,4);ctx.fillStyle='#ac9262';ctx.fillRect(-3,-26,5,1);
  if(p.equipment?.Coiffe){ctx.fillStyle='#d3c8a0';ctx.fillRect(-6,-23,12,2);ctx.fillStyle='#b3a37a';ctx.fillRect(-5,-27,10,4);ctx.fillStyle=p.equipment.Coiffe.color||'#b3bba5';ctx.fillRect(-3,-29,6,3);}
+ const theme=p.equipment?.Coiffe?.element;
+ if(theme==='earth'){ctx.fillStyle='#70834a';ctx.fillRect(-6,-29,3,3);ctx.fillRect(3,-30,3,3);ctx.fillStyle='#c2cd8e';ctx.fillRect(-2,-32,2,4);}
+ if(theme==='fire'){ctx.fillStyle='#bc6846';ctx.fillRect(-6,-30,3,5);ctx.fillRect(4,-30,3,5);ctx.fillStyle='#efcc82';ctx.fillRect(0,-33,2,6);}
+ if(theme==='air'){ctx.fillStyle='#e1e5c4';ctx.fillRect(4,-34,2,7);ctx.fillRect(6,-36,2,5);}
+ if(theme==='water'){ctx.fillStyle='#4c829c';ctx.fillRect(-6,-27,2,11);ctx.fillRect(5,-27,2,11);ctx.fillStyle='#b0d9d6';ctx.fillRect(-3,-28,7,1);}
  if(p.facing==='up'){ctx.fillStyle=hair;ctx.fillRect(-4,-23,8,7);ctx.fillStyle='#a38a60';ctx.fillRect(-3,-23,6,1);}else{ctx.fillStyle='#4a4938';ctx.fillRect(-2,-19,1,2);ctx.fillRect(3,-19,1,2);ctx.fillStyle='#b48b65';ctx.fillRect(0,-15,3,1);}
  if(!animation||p.role!=='melee'){
    if(p.role==='ranged'){ctx.strokeStyle='#72563a';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(9,-17);ctx.lineTo(12,-11);ctx.lineTo(11,-4);ctx.stroke();ctx.strokeStyle='#e1d7b3';ctx.beginPath();ctx.moveTo(9,-17);ctx.lineTo(9,-4);ctx.lineTo(11,-4);ctx.stroke();}

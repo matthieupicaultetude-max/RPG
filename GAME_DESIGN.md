@@ -349,13 +349,13 @@ Chaque monstre possède un élément principal, associé à une caractéristique
 
 Le noyau mémorise une tranche de dix niveaux : **1–10**, **11–20**, etc., calculée d’après le niveau du monstre. Seule la tranche 1–10 possède actuellement des panoplies, toutes équipables niveau 1. Le curseur du bestiaire ne change pas le niveau des monstres de la carte ni la tranche des noyaux qu’ils donnent.
 
-Les noyaux ont une variation chromatique, avec **10 %** de chance conditionnelle : par victoire, noyau standard **22,5 %**, noyau chromatique **2,5 %**. Les piles sont séparées par élément, tranche et variation.
+Les noyaux sont **exclusivement standards**, avec **25 %** de chance par victoire. Aucun noyau chromatique ne peut tomber. Les piles sont séparées par élément et tranche. Cette règle ne retire pas les variantes chromatiques des ressources normales et rares.
 
 ### Ouverture au village
 
 Dans la zone d’essai, le village est matérialisé près de la maison. Le joueur doit être dans cette zone pour ouvrir un noyau depuis sa fiche d’inventaire. Aucune monnaie n’est nécessaire.
 
-Une ouverture consomme **un seul noyau** et donne **une pièce aléatoire** de la panoplie de son élément et de sa tranche. Chaque pièce a une probabilité de **1/9** ; les doublons sont possibles. Un noyau chromatique donne une pièce chromatique, sans puissance supplémentaire. Le résultat est immédiatement sélectionné dans le sac et peut être équipé. Un noyau d’une tranche non disponible ne peut pas être consommé. Les outils dev permettent de générer les quatre noyaux débutants et de revenir à la maison pour tester la boucle.
+Une ouverture consomme **un seul noyau** et donne **une pièce aléatoire** de la panoplie de son élément et de sa tranche. Chaque pièce a une probabilité de **1/9** ; les doublons sont possibles. Un noyau donne uniquement une pièce standard. Les armures chromatiques seront obtenues par artisanat ; les recettes et les règles de fabrication seront définies plus tard. Le résultat est immédiatement sélectionné dans le sac et peut être équipé. Un noyau d’une tranche non disponible ne peut pas être consommé. Les outils dev permettent de générer les quatre noyaux débutants et de revenir à la maison pour tester la boucle.
 
 ## 21. Direction graphique : village pastoral
 
@@ -370,3 +370,22 @@ Le rendu de terrain et la navigation partagent une seule définition de la terre
 Chaque arbre et objet possède un ancrage au sol contrôlé sur la terre ferme. Les racines ne sont jamais placées dans l’eau ni sur un chemin. Les objets solides et les clôtures bloquent les déplacements selon leur emprise, et leur affichage suit la profondeur de cet ancrage. Les textures ne servent pas à déduire les collisions.
 
 Le pixel art est présenté avec une échelle entière, une caméra calée au pixel et une conversion de visée identique au rendu. Ces règles remplacent le placement libre des objets et le tracé indépendant des bordures du premier passage graphique. Voir `docs/RENDERING.md` pour les conventions d’implémentation et les tests.
+
+## 23. Identité visuelle des objets et provenance des chromatiques
+
+Chaque ressource possède un dessin lié à son nom. La variation chromatique garde cette silhouette tout en changeant de palette et en ajoutant une marque brillante ; elle reste identifiée par le texte de l’objet.
+
+Les pièces de panoplie partagent un vocabulaire visuel :
+
+| Panoplie | Motifs et matières |
+| --- | --- |
+| Ronce / Force | Feuilles, épines, cuir et bois, vert olive et laiton |
+| Braise / Intelligence | Flammes, pointes, métal chaud, cuivre et ambre |
+| Brise / Agilité | Plumes, ailes, formes effilées, sauge et ivoire |
+| Rosée / Chance | Gouttes, vagues, capuchon fluide, bleu et argent |
+
+Les neuf catégories restent reconnaissables entre les panoplies. Les icônes sont partagées entre le sac, l’équipement, la fiche de détail et le bestiaire. Coiffes, capes, armes et boucliers reprennent le thème dans l’aperçu ; les sprites du monde affichent les couleurs, coiffes et accessoires équipés. Ces changements ne modifient pas les bonus des objets.
+
+**Suppression des noyaux chromatiques :** ni le tirage sur les monstres ni l’ouverture d’un noyau ne peuvent donner un équipement chromatique. Même un ancien marqueur chromatique sur un noyau ne doit pas être transmis à sa récompense. Le taux global de noyau reste 25 %.
+
+Les équipements chromatiques relèveront de **l’artisanat**. Cette étape réserve leur provenance sans inventer de recettes, de coûts, de métier ou de bonus supplémentaires. Le système de fabrication reste à concevoir. Les ressources normales/rares et leurs variations chromatiques conservent leurs tirages actuels.

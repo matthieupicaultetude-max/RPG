@@ -112,9 +112,9 @@ export function grantLoot(s, type = 'normal', chromatic = false, monster = 'Slim
   else s.bag.push({ id: s.nextItem++, name, type, chromatic, quantity: 1 });
   note(s, `Butin : ${name}${chromatic ? ' chromatique' : ''}.`);
 }
-export function grantCore(s,element,level=1,chromatic=false) {
-  const core=createCore(element,level,chromatic);
-  const existing=s.bag.find(item=>item.kind==='core'&&item.element===element&&item.band.min===core.band.min&&item.chromatic===chromatic);
+export function grantCore(s,element,level=1) {
+  const core=createCore(element,level);
+  const existing=s.bag.find(item=>item.kind==='core'&&item.element===element&&item.band.min===core.band.min&&!item.chromatic);
   if(existing)existing.quantity++;
   else s.bag.push({...core,id:s.nextItem++});
   note(s,`Noyau de ${ELEMENTS[element].name} obtenu · niveaux ${core.band.min}–${core.band.max}.`);
@@ -188,7 +188,7 @@ export function rewardMonster(s,monster,random=Math.random) {
   grantXp(s, monster.xp);
   const definition=monsterDefinition(monster.species);
   grantLoot(s,random()<definition.rareChance?'rare':'normal',random()<definition.chromaticChance,monster.name);
-  if(random()<CORE_CHANCE)grantCore(s,definition.element,monster.level,random()<definition.chromaticChance);
+  if(random()<CORE_CHANCE)grantCore(s,definition.element,monster.level);
 }
 export function attack(s, point = s.aim.active ? s.aim : null) {
   const member = s.team[s.main];
