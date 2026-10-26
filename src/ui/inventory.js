@@ -1,7 +1,7 @@
 import { ROLES, COLORS, SLOTS } from '../dev/sandbox.js';
 
 const LEFT = ['Coiffe', 'Amulette', 'Arme', 'Anneau 1', 'Ceinture'];
-const RIGHT = ['Cape', 'Bouclier', 'Anneau 2', 'Bottes'];
+const RIGHT = ['Cape', 'Bouclier', null, 'Anneau 2', 'Bottes'];
 export function itemIcon(slot = '', chromatic = false) {
   const color = chromatic ? '#c5a4e9' : '#d9b76b';
   let shape;
@@ -60,7 +60,7 @@ export function renderInventory(state, selection, filter='all') {
   return `<div class="inventory-character-bar"><div><p class="eyebrow">${ROLES[m.role]}</p><h3>${m.name} <small>Niveau ${m.level}</small></h3></div><div class="inventory-party">${state.team.map((member,i)=>`<button data-main="${i}" aria-pressed="${state.main===i}">${member.name}</button>`).join('')}</div></div>
   <div class="paper-layout">
     <section class="trophy-column" aria-label="Six trophées"><h3>Trophées</h3>${SLOTS.filter(name=>name.startsWith('Trophée')).map(slot).join('')}</section>
-    <section class="character-loadout" aria-label="Équipement du personnage"><div class="gear-column">${LEFT.map(slot).join('')}</div><div class="character-stage"><div class="character-halo"></div>${avatar(m)}<div class="avatar-caption"><strong>${m.name}</strong><span>${m.hp} / ${m.maxHp} PV</span><div class="xp-track"><span style="width:${m.xp/(m.level*50)*100}%"></span></div><small>${m.xp} / ${m.level*50} XP</small></div></div><div class="gear-column">${RIGHT.map(slot).join('')}</div></section>
+    <section class="character-loadout" aria-label="Équipement du personnage"><div class="gear-column">${LEFT.map(slot).join('')}</div><div class="character-stage"><div class="character-halo"></div>${avatar(m)}<div class="avatar-caption"><strong>${m.name}</strong><span>${m.hp} / ${m.maxHp} PV</span><div class="xp-track"><span style="width:${m.xp/(m.level*50)*100}%"></span></div><small>${m.xp} / ${m.level*50} XP</small></div></div><div class="gear-column">${RIGHT.map(name=>name?slot(name):'<div class="gear-spacer" aria-hidden="true"></div>').join('')}</div></section>
     <section class="inventory-bag" aria-label="Objets du sac"><div class="bag-heading"><h3>Sac de voyage <small>${state.bag.length} piles</small></h3><label class="sr-only" for="bag-filter">Filtrer les objets</label><select id="bag-filter"><option value="all" ${filter==='all'?'selected':''}>Tous les objets</option><option value="equipment" ${filter==='equipment'?'selected':''}>Équipements</option><option value="loot" ${filter==='loot'?'selected':''}>Ressources</option></select></div><div class="inventory-items">${items.map(item=>`<button class="bag-cell ${item.chromatic?'chromatic':''} ${item.type==='rare'?'rare':''} ${selection?.source==='bag'&&selection.id===item.id?'inspected':''}" data-inspect-bag="${item.id}" aria-label="${item.name}${item.chromatic?' chromatique':''}, quantité ${item.quantity}" aria-pressed="${selection?.source==='bag'&&selection.id===item.id}" title="${item.name}${item.chromatic?' chromatique':''}">${itemIcon(item.slot,item.chromatic)}<small>${item.quantity}</small></button>`).join('')}${Array.from({length:emptyCount},()=>'<div class="bag-cell empty" aria-hidden="true"></div>').join('')}</div>${!items.length?'<p class="bag-empty-hint">Aucun objet. Générez du matériel dans les outils dev ou récupérez du butin.</p>':''}<div class="bag-currency"><span>◈ ${state.gold} pièces</span><small>Sac partagé · Test</small></div></section>
   </div>${objectDetails(state,selection)}`;
 }
