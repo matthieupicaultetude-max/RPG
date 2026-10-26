@@ -4,7 +4,7 @@ import { nearForge } from './forge.js';
 import { nearPetShop } from './pet-quests.js';
 import { screenToWorld } from '../rendering/viewport.js';
 import { createCharacterWheel } from '../input/character-wheel.js';
-import { createSandbox, stepSandbox, attack, teleport, activateUltimate, cycleMain, castEquipped } from '../dev/sandbox.js';
+import { createSandbox, stepSandbox, attack, teleport, activateUltimate, cycleMain, castEquipped, clickBonus } from '../dev/sandbox.js';
 import { createControls } from '../input/controls.js';
 import { createRenderer } from '../rendering/scene.js';
 
@@ -32,10 +32,11 @@ export function createGame(canvas, touchControls, onChange, onTimers = () => {},
   canvas.addEventListener('pointerleave', () => { pointer = null; state.aim.active = false; }, { signal: controller.signal });
   canvas.addEventListener('contextmenu', event => event.preventDefault(), { signal: controller.signal });
   canvas.addEventListener('pointerdown', event => {
-    if (event.button !== 2 || interfaceOpen) return;
+    if (![0,2].includes(event.button) || interfaceOpen) return;
     event.preventDefault();
     canvas.focus({ preventScroll: true });
     updateAim(event);
+    if(event.button===0){clickBonus(state,screenToWorld(event.clientX,event.clientY,canvas.getBoundingClientRect(),state.player));return;}
     if(spellById(state.team[state.main].loadout[0])?.effect==='pierce')state.spellCharge={time:0,owner:state.main};else attack(state);
   }, { signal: controller.signal });
   window.addEventListener('pointerup',event=>{if(event.button===2&&state.spellCharge){if(!interfaceOpen&&state.spellCharge.owner===state.main)castEquipped(state,0,undefined,{charge:state.spellCharge.time});state.spellCharge=null;}},{signal:controller.signal});

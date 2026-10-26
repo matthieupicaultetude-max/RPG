@@ -1,3 +1,4 @@
+import { recordBonusOpportunity, stepBonusTargets, clickBonusTarget } from '../combat/bonus-targets.js';
 import { emptyAllocation, fillUnlockedSlots } from '../data/progression.js';
 import { defaultLoadout } from '../data/spells.js';
 import { castSpell, stepSpells, receiveSpellDamage } from '../combat/spells.js';
@@ -193,7 +194,8 @@ function walk(entity, x, y, speed, dt) {
   if (canStand(entity.x + dx / d * step, entity.y)) entity.x += dx / d * step;
   if (canStand(entity.x, entity.y + dy / d * step)) entity.y += dy / d * step;
 }
-function hitMonster(s, monster, damage, member) {
+function hitMonster(s, monster, damage, member, options={}) {
+  if(monster.hp<=0||!Number.isFinite(damage)||damage<=0)return;
   monster.hp = Math.max(0, monster.hp - damage);
   s.effects.push({ x: monster.x, y: monster.y - 15, text: `−${damage}`, color: '#ffe7a2', life: .8 });
   for (let i = 0; i < 6; i++) {
@@ -204,6 +206,8 @@ function hitMonster(s, monster, damage, member) {
   const nx = monster.x + (monster.x - member.x) / d * 5;
   const ny = monster.y + (monster.y - member.y) / d * 5;
   if (canStand(nx, ny)) { monster.x = nx; monster.y = ny; }
+  if(!options.bonus)recordBonusOpportunity(s,monster,damage,member,canStand);
+  else if(monster.hp===0)delete monster.bonusTarget;
   s.revision++;
   if (monster.hp === 0) {
     monster.respawn = monster.respawnDelay;
@@ -217,6 +221,7 @@ export function rewardMonster(s,monster,random=Math.random) {
   grantLoot(s,random()<definition.rareChance?'rare':'normal',random()<definition.chromaticChance,monster.name);
   if(random()<CORE_CHANCE)grantCore(s,definition.element,monster.level);
 }
+export function clickBonus(s,point) {Object.assign(s.team[s.main],s.player);return clickBonusTarget(s,point,canStand,hitMonster);}
 export const spellContext = {canStand,hitMonster};
 export function castEquipped(s,slot,point=s.aim.active?s.aim:null,options={}) {
  const member=s.team[s.main];Object.assign(member,s.player);
@@ -225,6 +230,7 @@ export function castEquipped(s,slot,point=s.aim.active?s.aim:null,options={}) {
 export function attack(s,point=s.aim.active?s.aim:null) {return castEquipped(s,0,point);}
 export function stepSandbox(s, direction, dt, elapsed = dt) {
   advanceUltimate(s, Math.max(0, elapsed));
+  stepBonusTargets(s,elapsed,canStand);
   const old = { x: s.player.x, y: s.player.y };
   if (s.team[s.main].hp > 0) movePlayer(s, direction, dt);
   else { s.time += dt; s.player.moving = false; }
@@ -241,7 +247,7 @@ export function stepSandbox(s, direction, dt, elapsed = dt) {
     monster.cooldown = Math.max(0, monster.cooldown - dt);
     if (monster.hp <= 0) {
       monster.respawn -= dt;
-      if (monster.respawn <= 0) { monster.hp = monster.maxHp; monster.x = monster.homeX; monster.y = monster.homeY; s.revision++; }
+      if (monster.respawn <= 0) { monster.hp = monster.maxHp; delete monster.bonusTarget;delete monster.lastReceivedDamage;monster.bonusTargetCooldown=0; monster.x = monster.homeX; monster.y = monster.homeY; s.revision++; }
       return;
     }
     const target = s.team.filter((m, i) => m.hp > 0 && (i === s.main || s.deployed)).sort((a, b) => Math.hypot(a.x - monster.x, a.y - monster.y) - Math.hypot(b.x - monster.x, b.y - monster.y))[0];

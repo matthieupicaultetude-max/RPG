@@ -1,3 +1,5 @@
+import { bonusTargetPosition, BONUS_TARGET_RADIUS } from '../combat/bonus-targets.js';
+import { drawBonusTargets } from './bonus-targets.js';
 import { drawSpellGround, drawSpellOverlays } from './spells.js';
 import { spellById } from '../data/spells.js';
 import { createEnvironment } from "./environment.js";
@@ -157,7 +159,7 @@ export function createRenderer(canvas) {
       ctx.restore();
     }
     drawSpellOverlays(ctx,s);
-    if (s.aim.active) {
+    if (s.aim.active && !s.monsters.some(monster=>monster.hp>0&&monster.bonusTarget?.time>0&&Math.hypot(s.aim.x-bonusTargetPosition(monster).x,s.aim.y-bonusTargetPosition(monster).y)<=BONUS_TARGET_RADIUS)) {
       const primary=spellById(s.team[s.main].loadout[0]);
       const guide = primary?.role==='support'?{target:null}:guidedTarget(s, s.aim, canStand);
       const target = guide.target;
@@ -223,6 +225,7 @@ export function createRenderer(canvas) {
       else ctx.fillText(e.text, e.x, e.y);
       ctx.globalAlpha = 1;
     }
+    drawBonusTargets(ctx,s);
     const width = Math.round(canvas.clientWidth),
       height = Math.round(canvas.clientHeight);
     if (canvas.width !== width || canvas.height !== height) {

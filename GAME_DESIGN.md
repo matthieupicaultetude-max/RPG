@@ -457,3 +457,14 @@ Les **12 sorts normaux actuels de chaque classe** se débloquent automatiquement
 Chaque palier de **5 niveaux** accorde un **choix d’ultime individuel**. Le joueur choisit un ultime de sa classe dans le grimoire ; chaque ultime ne peut être appris qu’une fois. Le premier appris remplit l’emplacement d’ultime vide, les suivants n’en remplacent pas le contenu. Les choix sont conservés jusqu’à dépense, y compris après acquisition des quatre ultimes actuels. Les ultimes appris restent acquis à la fontaine. Le déploiement E reste indépendant et disponible au niveau 1.
 
 Le catalogue n’ajoute pas de sorts normaux fictifs après le niveau 12. Les prochains contenus pourront exploiter les niveaux et choix supplémentaires. Les outils d’XP et de charge restent réservés au banc d’essai local ; aucune sauvegarde persistante ou validation serveur n’est ajoutée dans cette étape.
+
+
+## 29. Opportunités de clic gauche
+
+Chaque impact positif du personnage principal sur un ennemi survivant peut créer une **cible bonus** avec une probabilité de **20 %**. Les dégâts reçus par l’ennemi sont mémorisés après les calculs de caractéristiques, Puissance et résistances, y compris les impacts des alliés. Un coup plus récent met à jour la valeur à copier, sans renouveler la durée d’une cible déjà présente.
+
+La cible apparaît à environ 26 pixels du centre visuel de l’ennemi, sur une position valide et visible en ligne directe. Elle suit l’ennemi, dure **2,5 secondes** et affiche un indicateur circulaire de durée. Son centre possède un rayon cliquable de **6 pixels du monde**. Le clic gauche utilise la même conversion caméra/écran que le rendu ; le clic droit conserve son rôle de sort principal. Les boutons de l’interface ne sont pas des cibles bonus.
+
+Un clic réussi consomme l’opportunité puis inflige exactement la dernière valeur de dégâts mémorisée, sans nouveau multiplicateur ni nouvelle résistance. Il ne dépense pas de recharge de sort, ne déclenche pas d’effet secondaire de sort et ne génère pas de nouvelle opportunité. Les dégâts effectifs contribuent à la jauge personnelle avec les plafonds et blocages habituels. Un ennemi tué par ce bonus suit la boucle normale de récompenses et de réapparition.
+
+Une seule cible existe par ennemi, avec **4 secondes** entre apparitions possibles, et **3 cibles simultanées** au maximum. Une cible expirée, derrière un obstacle ou portée par un ennemi mort disparaît. La réapparition du monstre efface les anciennes données. Le personnage principal à terre et les menus ouverts empêchent l’activation ; le temps réel continue à écouler la durée. Les cibles non cliquées n’infligent aucun dégât.

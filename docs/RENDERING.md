@@ -72,3 +72,8 @@ La maison utilise une géométrie de toit commune dans `src/rendering/house-geom
 ### Auras chromatiques
 
 `src/rendering/chromatic-aura.js` sépare les éclats de chaque pièce du halo de panoplie complète. Le halo est dessiné avant le personnage, uniquement en mouvement avec neuf pièces chromatiques du même ensemble ; les éclats des pièces sont dessinés après. Les particules utilisent des positions arrondies et des rectangles de pixels, sans flou de sprite. Les icônes conservent les silhouettes de panoplie avec une palette et une aura distinctes.
+
+
+### Cibles bonus
+
+`src/rendering/bonus-targets.js` dessine les cibles en dernier dans le repère du monde : silhouette contrastée, centre cliquable et anneau de durée. Le décalage reste attaché au monstre. Le clic passe par `screenToWorld`, sans la correction de hauteur des sorts guidés ; le rendu et la détection partagent `bonusTargetPosition` et le même rayon. La visée habituelle est masquée lorsque le pointeur survole une cible bonus.
