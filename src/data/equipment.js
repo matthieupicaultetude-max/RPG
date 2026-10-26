@@ -96,9 +96,14 @@ export function equipmentStats(member) {
       result[key] = (result[key] || 0) + value;
   return result;
 }
+export function characterStats(member) {
+  const result=equipmentStats(member);
+  for(const [stat,value]of Object.entries(member.allocatedStats||{}))result[stat]=(result[stat]||0)+value;
+  return result;
+}
 export function syncEquipmentHealth(member) {
   const oldBonus = member.equipmentHp || 0;
-  const nextBonus = equipmentStats(member).Vitalité;
+  const nextBonus = characterStats(member).Vitalité;
   member.maxHp = member.maxHp - oldBonus + nextBonus;
   member.equipmentHp = nextBonus;
   member.hp = Math.min(member.hp, member.maxHp);
@@ -106,7 +111,7 @@ export function syncEquipmentHealth(member) {
 
 export function weaponDamage(member, baseDamage = 12) {
   const weapon = member.equipment.Arme;
-  const stats = equipmentStats(member);
+  const stats = characterStats(member);
   const bonus = weapon?.element
     ? stats[ELEMENTS[weapon.element].stat]
     : 0;

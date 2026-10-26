@@ -313,7 +313,7 @@ La Prospection est indépendante de la Chance. Aucun bonus de vitesse de déplac
 ### Réglages et compétences à définir plus tard
 
 - Coefficients de PV, dégâts, XP et prospection, valeurs de départ, limites et règles d’arrondi.
-- Attribution des points par niveau, redistribution et bonus des équipements/trophées/familiers. Les cinq points par niveau de la première proposition ne constituent pas encore une règle validée.
+- La répartition de cinq points par montée de niveau et la redistribution à la fontaine sont définies en section 28. Les autres équilibrages des équipements/trophées/familiers pourront être affinés.
 - Intensité des critiques, compétences concernées et plafonds des critiques/résistances. Les plafonds évoqués dans la première proposition ne sont pas fixés.
 - Formule de Prospection, prise en compte individuelle ou par équipe, effets sur le loot normal, rare et chromatique, et articulation avec le tirage actuel d’un objet par victoire.
 - Conditions d’attribution de l’XP et de la Prospection aux personnages actifs, compagnons et réservistes.
@@ -442,3 +442,18 @@ Un délai commun de **0,35 s** sépare les sorts. Chaque sort conserve en plus s
 Les alliés contrôlés par l’IA utilisent la même barre, les mêmes formules et les mêmes règles de recharge. Les soins nécessaires sont prioritaires ; les comportements prennent notamment en compte Fractures, Braises, Ancrage et flaques. Le suivi naturel et les distances propres au rôle sont conservés. Un personnage hors terrain n’agit plus et ses zones, événements et projectiles sont interrompus.
 
 Les animations distinguent impacts, projectiles, boucliers, zones persistantes et avertissements de zones différées, avec une couleur par élément. Les déplacements et tirs respectent les collisions du monde. Le prototype reste local, sans sauvegarde persistante ni autorité multijoueur ; les chiffres constituent des réglages initiaux.
+
+
+## 28. Répartition des caractéristiques et déblocages par niveau
+
+Chaque personnage commence au **niveau 1 avec zéro point**. Toute montée de niveau accorde **5 points de caractéristiques**, conservés jusqu’à dépense. Les gains multiples accordent cinq points par niveau traversé. L’interface **P** permet d’investir une quantité entière positive à **1 point = +1** en Vitalité, Force, Intelligence, Agilité, Chance ou Sagesse. Aucune dépense ne dépasse le budget ni ne vise une statistique secondaire. Les points investis et les bonus d’équipement restent distingués dans l’affichage et additionnés dans les calculs.
+
+Vitalité : +1 PV maximum par point, sans soin gratuit. Les caractéristiques élémentaires alimentent la formule des sorts avec la Puissance. Sagesse : bonus individuel d’XP selon `floor(base × (1 + Sagesse / 100))`, équipements inclus, sans effet sur le butin. Les gains de PV de base par niveau du prototype restent inchangés.
+
+La **Fontaine du renouveau** est un objet interactif solide dans le village, relié au chemin existant. **F** ou son bouton ouvre les caractéristiques. À proximité, une réinitialisation gratuite restitue tous les points investis du personnage actif. Elle ne modifie ni équipements, ni niveaux, ni XP, ni sorts appris, ni jauges ou recharges. Les PV sont seulement limités au nouveau maximum. Réinitialiser à distance ou réclamer deux fois les mêmes points est impossible.
+
+Les **12 sorts normaux actuels de chaque classe** se débloquent automatiquement : premier Terre au niveau 1, premier Feu au 2, premier Air au 3, premier Eau au 4, puis deuxièmes sorts aux niveaux 5–8 et troisièmes aux niveaux 9–12. Seul le premier Terre est équipé au départ. Les emplacements normaux libres sont remplis à l’apprentissage, sans remplacer les choix déjà faits. Les éléments restent librement combinables parmi les sorts acquis ; le grimoire et le moteur de combat vérifient les conditions.
+
+Chaque palier de **5 niveaux** accorde un **choix d’ultime individuel**. Le joueur choisit un ultime de sa classe dans le grimoire ; chaque ultime ne peut être appris qu’une fois. Le premier appris remplit l’emplacement d’ultime vide, les suivants n’en remplacent pas le contenu. Les choix sont conservés jusqu’à dépense, y compris après acquisition des quatre ultimes actuels. Les ultimes appris restent acquis à la fontaine. Le déploiement E reste indépendant et disponible au niveau 1.
+
+Le catalogue n’ajoute pas de sorts normaux fictifs après le niveau 12. Les prochains contenus pourront exploiter les niveaux et choix supplémentaires. Les outils d’XP et de charge restent réservés au banc d’essai local ; aucune sauvegarde persistante ou validation serveur n’est ajoutée dans cette étape.

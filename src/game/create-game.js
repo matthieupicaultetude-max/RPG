@@ -1,3 +1,4 @@
+import { nearFountain } from '../data/progression.js';
 import { spellById } from '../data/spells.js';
 import { nearForge } from './forge.js';
 import { nearPetShop } from './pet-quests.js';
@@ -17,7 +18,7 @@ export function createGame(canvas, touchControls, onChange, onTimers = () => {},
   canvas.addEventListener('wheel', createCharacterWheel(direction => { if (!interfaceOpen) cycleMain(state, direction); }), { passive: false, signal: controller.signal });
   canvas.addEventListener('keydown', event => {
     if (interfaceOpen) return;
-    if (event.code === 'KeyF' && !event.repeat) {event.preventDefault();if(nearForge(state))onInteraction('forge');else if(nearPetShop(state))onInteraction('petshop');}
+    if (event.code === 'KeyF' && !event.repeat) {event.preventDefault();if(nearFountain(state))onInteraction('characteristics');else if(nearForge(state))onInteraction('forge');else if(nearPetShop(state))onInteraction('petshop');}
     const slot={KeyR:1,KeyC:2,KeyT:3}[event.code];
     if(slot!==undefined&&!event.repeat){event.preventDefault();castEquipped(state,slot);}
     if (event.code === 'KeyE' && !event.repeat) { event.preventDefault(); activateUltimate(state); }
@@ -35,7 +36,7 @@ export function createGame(canvas, touchControls, onChange, onTimers = () => {},
     event.preventDefault();
     canvas.focus({ preventScroll: true });
     updateAim(event);
-    if(spellById(state.team[state.main].loadout[0]).effect==='pierce')state.spellCharge={time:0,owner:state.main};else attack(state);
+    if(spellById(state.team[state.main].loadout[0])?.effect==='pierce')state.spellCharge={time:0,owner:state.main};else attack(state);
   }, { signal: controller.signal });
   window.addEventListener('pointerup',event=>{if(event.button===2&&state.spellCharge){if(!interfaceOpen&&state.spellCharge.owner===state.main)castEquipped(state,0,undefined,{charge:state.spellCharge.time});state.spellCharge=null;}},{signal:controller.signal});
   window.addEventListener('blur',()=>{state.spellCharge=null;},{signal:controller.signal});

@@ -44,7 +44,7 @@ npm run build
 npm run preview
 ```
 
-Quatre-vingt-deux tests couvrent déplacement, composition à trois, variantes de butin, échanges d’équipement, XP, combat/récompenses/respawn, collisions de la maison, soutien IA, retour après défaite, ultime (30 s / 300 s), changements de personnage, filtrage de la molette, ciblage guidé, impacts différés, projectiles, conversion caméra/curseur, contournement de la maison, espacement au repos, recul du distance et regroupement. Les parcours navigateur vérifient également les commandes, les panneaux et le petit écran.
+Quatre-vingt-onze tests couvrent déplacement, composition à trois, variantes de butin, échanges d’équipement, XP, combat/récompenses/respawn, collisions de la maison, soutien IA, retour après défaite, ultime (30 s / 300 s), changements de personnage, filtrage de la molette, ciblage guidé, impacts différés, projectiles, conversion caméra/curseur, contournement de la maison, espacement au repos, recul du distance et regroupement. Les parcours navigateur vérifient également les commandes, les panneaux et le petit écran.
 
 ## Organisation
 
@@ -158,9 +158,9 @@ Les pièces possèdent une palette chromatique, une aura dans l’inventaire et 
 
 ## Classes, sorts et grimoire
 
-**K**, le bouton Grimoire ou son onglet ouvre le catalogue du personnage actif : **Combattant**, **Soutien** ou **Distance**. Chaque classe possède **12 sorts normaux et 4 ultimes** (Terre, Feu, Air et Eau), soit **48 sorts** au total. Tous sont accessibles dans cette zone de développement.
+**K**, le bouton Grimoire ou son onglet ouvre le catalogue du personnage actif : **Combattant**, **Soutien** ou **Distance**. Chaque classe possède **12 sorts normaux et 4 ultimes** (Terre, Feu, Air et Eau), soit **48 sorts** au total. Ils se débloquent désormais par niveau ; les ultimes nécessitent un choix de progression.
 
-Choisir un des **3 emplacements normaux**, puis un sort de cette classe. Les éléments se mélangent librement : par exemple Frappe de faille Terre, Entaille ardente Feu et Garde d’écume Eau. Le quatrième emplacement accueille un ultime personnel de n’importe quel élément de cette même classe. Les sorts équipés restent propres à chaque personnage. Un même sort ne peut pas occuper deux emplacements.
+Choisir un des **3 emplacements normaux**, puis un sort débloqué de cette classe. Les éléments se mélangent librement : par exemple Frappe de faille Terre, Entaille ardente Feu et Garde d’écume Eau. Le quatrième emplacement accueille un ultime personnel de n’importe quel élément de cette même classe. Les sorts équipés restent propres à chaque personnage. Un même sort ne peut pas occuper deux emplacements.
 
 - **Clic droit** : sort 1 ; maintenir puis relâcher charge le Trait perforant (charge maximale après 1 s).
 - **R** : sort 2 ; **C** : sort 3 ; **T** : ultime personnel.
@@ -174,3 +174,24 @@ La jauge personnelle commence à zéro et monte sur les dégâts, soins effectif
 Les alliés déployés utilisent **leurs sorts équipés**, donnent priorité aux soins nécessaires, préparent leurs combinaisons et conservent leur déplacement par rôle. Les zones, événements et projectiles d’un personnage rappelé cessent ; le monde continue pendant le grimoire, mais les commandes directes y sont suspendues. L’état reste local à la session.
 
 Le catalogue et les règles détaillées sont dans [docs/SPELLS.md](docs/SPELLS.md). Les valeurs constituent un premier équilibrage jouable.
+
+
+## Caractéristiques et apprentissage
+
+**P**, le bouton **Carac.** ou l’onglet **Caractéristiques** ouvre la répartition du personnage actif. Chaque montée de niveau rapporte **5 points**, y compris lors de plusieurs niveaux gagnés d’un coup. Le niveau 1 commence sans point à dépenser. Les budgets sont individuels et les points non dépensés sont conservés.
+
+Un point acheté vaut **+1** en Vitalité, Force, Intelligence, Agilité, Chance ou Sagesse. Choisir la quantité à investir puis la caractéristique. Les totaux combinent les points et les équipements. La Vitalité augmente les PV maximum sans soigner ; les quatre caractéristiques élémentaires augmentent les sorts de leur élément avec la Puissance. La Sagesse augmente l’XP reçue : `floor(XP de base × (1 + Sagesse / 100))`, individuellement. Puissance, résistances, critique et prospection restent des bonus d’équipement, sans achat de points dans cet écran.
+
+La **Fontaine du renouveau**, au village à droite de l’animalerie, s’ouvre avec **F** à proximité ou le bouton d’interaction. Elle permet de réinitialiser gratuitement les points du personnage actif. Tous les points investis sont remboursés ; les équipements, niveaux, XP, sorts appris, jauge et recharges restent conservés. Le retrait de Vitalité limite les PV au nouveau maximum et ne soigne pas. Un raccourci **Fontaine** figure dans les outils dev.
+
+Les sorts normaux s’obtiennent automatiquement dans **K** :
+
+| Niveaux | Déblocages |
+| --- | --- |
+| 1, 2, 3, 4 | Premier Terre, premier Feu, premier Air, premier Eau |
+| 5, 6, 7, 8 | Deuxième Terre, deuxième Feu, deuxième Air, deuxième Eau |
+| 9, 10, 11, 12 | Troisième Terre, troisième Feu, troisième Air, troisième Eau |
+
+Au départ, seul le premier Terre est équipé. Les nouveaux sorts remplissent les emplacements libres, sans remplacer une barre personnalisée. Les cartes verrouillées affichent leur niveau requis, et le combat vérifie aussi le déblocage.
+
+Aux **niveaux 5, 10, 15, 20, puis tous les 5 niveaux**, chaque personnage reçoit un choix d’ultime. Dans le quatrième emplacement du grimoire, choisir **Débloquer cet ultime**. Le premier est automatiquement équipé ; les suivants sont disponibles sans remplacer l’ultime choisi. Aucun doublon ni ultime d’une autre classe n’est possible. Les choix non utilisés restent en réserve, y compris une fois les quatre ultimes actuels acquis. Le catalogue actuel s’arrête à 12 sorts normaux par classe ; aucun nouveau sort normal n’est inventé après le niveau 12.

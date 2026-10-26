@@ -1,3 +1,4 @@
+import { emptyAllocation, fillUnlockedSlots } from '../data/progression.js';
 import { defaultLoadout } from '../data/spells.js';
 import { castSpell, stepSpells, receiveSpellDamage } from '../combat/spells.js';
 import { castCompanionSpell } from '../ai/spell-tactics.js';
@@ -5,7 +6,7 @@ import { nearForge } from '../game/forge.js';
 import { recordSetLoot, nearPetShop } from '../game/pet-quests.js';
 import { PET_SHOP, FORGE } from '../world/map.js';
 import { canWalkMap } from '../world/map.js';
-import { ELEMENTS, CORE_CHANCE, createCore, rollCoreEquipment, syncEquipmentHealth } from '../data/equipment.js';
+import { ELEMENTS, CORE_CHANCE, createCore, rollCoreEquipment, characterStats, syncEquipmentHealth } from '../data/equipment.js';
 import { createMonster, monsterDefinition } from '../data/monsters.js';
 import { stepAttacks } from '../combat/attacks.js';
 import { stepCompanions, placeAllies, clearRoute } from '../ai/companions.js';
@@ -14,12 +15,12 @@ import { createState, update as movePlayer } from '../game/state.js';
 export const ROLES = { melee: 'Corps à corps', support: 'Soutien', ranged: 'Distance' };
 export const COLORS = { melee: '#c0a16d', support: '#9db780', ranged: '#8bacae' };
 export const SLOTS = ['Coiffe', 'Cape', 'Ceinture', 'Bottes', 'Anneau 1', 'Anneau 2', 'Amulette', 'Arme', 'Bouclier', 'Familier', ...Array.from({ length: 6 }, (_, i) => `Trophée ${i + 1}`)];
-export const STATIONS = { maison: { x: 110, y: 135 }, combat: { x: 480, y: 255 }, atelier: { x: 190, y: 310 }, forge: { x: 212, y: 334 }, animalerie: { x:250,y:157 } };
+export const STATIONS = { maison: { x: 110, y: 135 }, combat: { x: 480, y: 255 }, atelier: { x: 190, y: 310 }, forge: { x: 212, y: 334 }, animalerie: { x:250,y:157 }, fontaine:{x:365,y:155} };
 export const ULTIMATE_DURATION = 30;
 export const ULTIMATE_COOLDOWN = 300;
 const names = ['Aëlan', 'Liora', 'Sylas'];
 export function makeMember(role, i) {
-  return { id: i, name: names[i], role, level: 1, xp: 0, hp: 100, maxHp: 100, equipment: {}, x: 280 - i * 20, y: 210 + i * 13, facing: 'down', moving: false, cooldown: 0, loadout:defaultLoadout(role), spellCooldowns:{}, buffs:{}, ultimateCharge:0, ultimateLock:0 };
+  return { id: i, name: names[i], role, level: 1, xp: 0, hp: 100, maxHp: 100, equipment: {}, x: 280 - i * 20, y: 210 + i * 13, facing: 'down', moving: false, cooldown: 0, loadout:defaultLoadout(role), spellCooldowns:{}, buffs:{}, ultimateCharge:0, ultimateLock:0, characteristicPoints:0, allocatedStats:emptyAllocation(), learnedUltimates:[] };
 }
 export function createSandbox() {
   const state = createState();
@@ -96,16 +97,20 @@ export function advanceUltimate(s, elapsed) {
   if (wasCooling && s.ultimate.cooldown === 0) note(s, 'Ultime prêt !');
 }
 export function grantXp(s, amount) {
+  const previousLevels=s.team.map(member=>member.level);
   s.team.forEach(m => {
-    m.xp += amount;
+    m.xp += Math.floor(amount * (1 + (characterStats(m).Sagesse || 0)/100));
     while (m.xp >= m.level * 50) {
       m.xp -= m.level * 50;
       m.level++;
+      m.characteristicPoints+=5;
+      fillUnlockedSlots(m);
       m.maxHp += 10;
       m.hp = m.maxHp;
     }
   });
-  note(s, `+${amount} XP pour chaque membre (règle de test).`);
+  note(s, `+${amount} XP de base par personnage (bonus de Sagesse appliqué).`);
+  if(s.team.some((member,index)=>member.level>previousLevels[index]))note(s,"Nouveaux points disponibles (P) · Consultez vos sorts (K).");
 }
 export function heal(s) {
   s.team.forEach(m => { m.hp = m.maxHp; });

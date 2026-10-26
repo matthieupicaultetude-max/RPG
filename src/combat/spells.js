@@ -1,3 +1,4 @@
+import { isSpellUnlocked } from '../data/progression.js';
 import { spellById, spellAmount } from "../data/spells.js";
 import { distance, lineClear } from "./attacks.js";
 const live = (s) =>
@@ -188,7 +189,7 @@ const nearLine = (p, a, b, width) => {
 };
 export function castSpell(s, owner, slot, point, ctx, options = {}) {
   const spell = spellById(owner.loadout?.[slot]);
-  if (!spell || spell.role !== owner.role || !active(s, owner.id)) return false;
+  if (!spell || spell.role !== owner.role || !isSpellUnlocked(owner,spell) || !active(s, owner.id)) return false;
   owner.buffs ??= {};
   owner.spellCooldowns ??= {};
   if (slot === 3 && owner.buffs.dance?.time > 0) {

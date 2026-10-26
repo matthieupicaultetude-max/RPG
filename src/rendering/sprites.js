@@ -407,7 +407,15 @@ function petshop(g) {
   g.fillStyle="#caba8f";g.fillRect(-12,0,25,3);
   g.fillStyle="#70583d";g.fillRect(-28,-1,12,4);g.fillStyle="#a9c0a2";g.fillRect(-26,0,8,2);
 }
+function fountain(g){
+ oval(g,2,4,25,8,'#52694744');
+ oval(g,0,0,25,13,'#6a786b');oval(g,0,-3,24,12,'#c7c3a0');oval(g,0,-4,19,8,'#528f9e');oval(g,0,-5,15,5,'#83bfc3');
+ g.fillStyle='#8d9a89';g.fillRect(-4,-21,8,19);g.fillStyle='#d0cfac';g.fillRect(-3,-21,3,18);
+ oval(g,0,-20,11,5,'#a9b59e');oval(g,0,-22,10,4,'#7bb6c0');
+ g.fillStyle='#d9edcf';g.fillRect(-1,-31,2,10);g.fillRect(-5,-26,2,9);g.fillRect(4,-26,2,9);g.fillStyle='#b5dfd3';g.fillRect(-15,-9,7,1);g.fillRect(7,-5,6,1);
+}
 const DEFINITIONS = {
+ fountain:{bounds:[-29,-35,59,47],origin:[0,0],paint:fountain},
   petshop:{bounds:[-47,-73,95,80],origin:[0,0],paint:petshop},
   house: { bounds: [40, 0, 140, 124], origin: [110, 108], paint: house },
   market: { bounds: [-42, -58, 86, 61], origin: [0, 0], paint: forge },

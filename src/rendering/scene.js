@@ -159,7 +159,7 @@ export function createRenderer(canvas) {
     drawSpellOverlays(ctx,s);
     if (s.aim.active) {
       const primary=spellById(s.team[s.main].loadout[0]);
-      const guide = primary.role==='support'?{target:null}:guidedTarget(s, s.aim, canStand);
+      const guide = primary?.role==='support'?{target:null}:guidedTarget(s, s.aim, canStand);
       const target = guide.target;
       const x = target ? target.x : s.aim.x;
       const y = target ? target.y - 8 : s.aim.y;
@@ -199,7 +199,7 @@ export function createRenderer(canvas) {
       ctx.arc(
         s.player.x,
         s.player.y - 5,
-        primary.range||20,
+        primary?.range||20,
         0,
         Math.PI * 2,
       );

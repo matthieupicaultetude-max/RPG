@@ -27,6 +27,7 @@ const ctx = {
 };
 function setup(role = 0) {
   const s = createSandbox();
+  s.team.forEach(member=>{member.level=20;member.learnedUltimates=["earth","fire","air","water"].map(element=>`${member.role}-${element}-3`);});
   chooseMain(s, role);
   Object.assign(s.player, { x: 420, y: 240 });
   Object.assign(s.team[role], s.player);

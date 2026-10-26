@@ -1,4 +1,5 @@
-import { ELEMENTS, equipmentStats } from "./equipment.js";
+import { isSpellUnlocked } from './progression.js';
+import { ELEMENTS, characterStats } from "./equipment.js";
 const kits = {
   melee: {
     earth: [
@@ -437,9 +438,9 @@ export const SPELLS = Object.freeze(
 );
 export const spellById = (id) => SPELLS.find((spell) => spell.id === id);
 export const defaultLoadout = (role) =>
-  [0, 1, 2, 3].map((index) => `${role}-earth-${index}`);
+  [`${role}-earth-0`, null, null, null];
 export function spellAmount(member, spell, base = spell.base) {
-  const stats = equipmentStats(member);
+  const stats = characterStats(member);
   return Math.max(
     0,
     Math.round(
@@ -458,6 +459,7 @@ export function equipSpell(state, memberIndex, slot, id) {
     !member ||
     !spell ||
     spell.role !== member.role ||
+    !isSpellUnlocked(member,spell) ||
     !Number.isInteger(slot) ||
     slot < 0 ||
     slot > 3 ||
