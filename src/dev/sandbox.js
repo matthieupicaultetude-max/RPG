@@ -4,7 +4,7 @@ import { createState, update as movePlayer } from '../game/state.js';
 
 export const ROLES = { melee: 'Corps à corps', support: 'Soutien', ranged: 'Distance' };
 export const COLORS = { melee: '#dbac66', support: '#78c4a6', ranged: '#9caff0' };
-export const SLOTS = ['Coiffe', 'Cape', 'Ceinture', 'Bottes', 'Anneau 1', 'Anneau 2', 'Amulette', 'Arme', ...Array.from({ length: 6 }, (_, i) => `Trophée ${i + 1}`)];
+export const SLOTS = ['Coiffe', 'Cape', 'Ceinture', 'Bottes', 'Anneau 1', 'Anneau 2', 'Amulette', 'Arme', 'Bouclier', ...Array.from({ length: 6 }, (_, i) => `Trophée ${i + 1}`)];
 export const STATIONS = { maison: { x: 110, y: 135 }, combat: { x: 480, y: 255 }, atelier: { x: 190, y: 295 } };
 export const ULTIMATE_DURATION = 30;
 export const ULTIMATE_COOLDOWN = 300;

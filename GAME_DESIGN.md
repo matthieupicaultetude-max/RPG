@@ -128,10 +128,11 @@ Chaque personnage possède la grille d’équipement suivante :
 | Anneaux | 2 |
 | Amulette | 1 |
 | Arme | 1 |
+| Bouclier | 1 |
 | Trophées | 6 |
-| **Total** | **14** |
+| **Total** | **15** |
 
-Les deux anneaux occupent des emplacements indépendants. Les six trophées sont des emplacements dédiés, séparés des bijoux et de l’arme. Aucun emplacement de torse ou de bouclier n’est ajouté à cette liste.
+Les deux anneaux occupent des emplacements indépendants. Les six trophées sont des emplacements dédiés, séparés des bijoux et de l’arme. Un emplacement de bouclier distinct de l’arme est ajouté. Aucun emplacement de torse n’est prévu.
 
 Le sac d’inventaire est distinct de ces emplacements équipés. Il stocke les objets non équipés et les ressources de butin, en préservant leur identité et leur variante.
 
@@ -215,7 +216,7 @@ Les conventions suivantes s’appliquent **uniquement à cette zone** :
 - Trois personnages, un seul actif hors ultime, changement par **molette** ou portraits. **E** réunit la troupe pendant 30 s, toutes les 5 min. Le suivi autonome par rôle pendant l’ultime est décrit en section 5. Les rôles sont fixes dans ce banc d’essai.
 - Combat temps réel au clic droit avec visée guidée vers le curseur, animations par rôle et dégâts à l’impact ; soutien IA soignant les alliés vivants. Les compétences et le ciblage définitifs ne sont pas implémentés.
 - XP identique pour les trois membres, sac partagé sans capacité maximale et aucun métier.
-- Quatorze emplacements individuels équipables ; coiffe/cape visibles et bonus de test de +5 dégâts pour l’arme du personnage contrôlé. Autres statistiques à définir.
+- Quinze emplacements individuels équipables ; coiffe/cape/bouclier visibles et bonus de test de +5 dégâts pour l’arme du personnage contrôlé. Autres statistiques à définir.
 - Un objet par victoire : 20 % de loot rare, 10 % de variante chromatique indépendante. Ces taux ne constituent pas un équilibrage validé. Les quatre variantes peuvent aussi être générées manuellement.
 - Soin/réanimation, XP et téléportation disponibles par boutons dev ; retour automatique à la maison et restauration de l’équipe après défaite complète.
 - Pas de sauvegarde, de serveur ni de joueurs distants. Le rechargement remet à zéro la session. Aucun menu ne suspend les combats.
@@ -243,3 +244,16 @@ Pendant l’ouverture, la molette fait défiler le panneau et ne change pas de p
 - Le bouton d’attaque demeure disponible au tactile. Sans curseur actif, il sélectionne automatiquement un monstre proche à portée. L’inventaire ouvert bloque l’attaque directe.
 
 Les distances d’accroche, portées et vitesses de projectile sont des réglages d’essai, à équilibrer avec les futures classes.
+
+## 17. Disposition de l’inventaire
+
+Le panneau rassemble l’équipement et le sac dans une même vue :
+
+- Tout à gauche : les **six trophées en colonne verticale**.
+- Au centre : aperçu du personnage, avec **coiffe, amulette, arme, anneau 1 et ceinture à gauche**, **cape, bouclier, anneau 2 et bottes à droite**.
+- À droite : grille du sac, filtre Tous/Équipements/Ressources et compteur d’or.
+- En bas : fiche de l’objet sélectionné, indiquant son nom, son type, sa variante, sa quantité et ses effets actuellement implémentés.
+
+Un clic sélectionne un objet ou un emplacement sans modifier l’équipement. La fiche propose **Équiper** pour un équipement du sac, ou **Retirer** pour un objet équipé. Un emplacement vide affiche une explication ; une ressource n’offre pas d’action d’équipement. Les trois personnages sont consultables dans le panneau, avec leur équipement individuel.
+
+Le bouclier porte le total à **15 emplacements**, dont les six trophées. Il peut être généré dans les outils dev, équipé et retiré indépendamment de l’arme. Il est visible dans l’aperçu et sur le personnage en jeu. Ses statistiques défensives restent à définir.

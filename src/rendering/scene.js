@@ -80,6 +80,7 @@ export function createRenderer(canvas) {
     if(p.facing!=='up') { ctx.fillStyle='#2e383e'; if(p.facing!=='right')ctx.fillRect(x-3,y-18,1,2); if(p.facing!=='left')ctx.fillRect(x+2,y-18,1,2); }
     ctx.fillStyle=p.role==='support'?'#a7dcb1':'#c6c7b5'; ctx.fillRect(x+7,y-13,2,p.role==='ranged'?12:16);
     if(p.role==='support') {ctx.fillStyle='#8cddb5';ctx.fillRect(x+5,y-17,6,6);}
+    if(p.equipment?.Bouclier) {ctx.fillStyle='#bbc5af';ctx.fillRect(x-12,y-13,8,12);ctx.fillStyle='#567380';ctx.fillRect(x-11,y-12,6,9);ctx.fillStyle='#d9bd77';ctx.fillRect(x-9,y-11,2,8);}
     if(main) {ctx.strokeStyle='#ead394';ctx.lineWidth=1;ctx.strokeRect(x-9,y-1,18,8);ctx.fillStyle='#eed796';ctx.fillRect(x-2,y-33,5,3);}
     if(p.hp!==undefined) {ctx.fillStyle='#24372f';ctx.fillRect(x-10,y-29,20,2);ctx.fillStyle=p.hp>0?'#91c897':'#cf7970';ctx.fillRect(x-10,y-29,20*p.hp/p.maxHp,2);}
     label(bot?`${p.name} · BOT`:p.name,x,y+16);

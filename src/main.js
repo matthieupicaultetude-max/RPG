@@ -1,3 +1,4 @@
+import { renderInventory } from './ui/inventory.js';
 import './style.css';
 import { createGame } from './game/create-game.js';
 import { ROLES, COLORS, SLOTS, teleport, chooseMain, grantXp, heal, grantLoot, giveEquipment, equip, unequip, attack, note, activateUltimate } from './dev/sandbox.js';
@@ -14,12 +15,14 @@ app.innerHTML = `
   <div id="inventory-backdrop" class="inventory-backdrop" hidden></div>
   <section id="inventory" class="inventory-window" role="dialog" aria-modal="true" aria-labelledby="inventory-title" hidden>
     <div class="inventory-title"><div><p class="eyebrow">VOTRE ÉQUIPEMENT & VOTRE BUTIN</p><h2 id="inventory-title">Inventaire</h2></div><button data-action="close-inventory" aria-label="Fermer l’inventaire">✕ <kbd>Échap</kbd></button></div>
-    <nav class="tabs" aria-label="Panneaux de l’inventaire"><button data-tab="equipment" aria-pressed="true">Personnage</button><button data-tab="bag" aria-pressed="false">Sac <span id="bag-count">0</span></button><button data-tab="tools" aria-pressed="false">Outils dev</button></nav>
+    <nav class="tabs" aria-label="Panneaux de l’inventaire"><button data-tab="equipment" aria-pressed="true">Équipement & sac <span id="bag-count">0</span></button><button data-tab="tools" aria-pressed="false">Outils dev</button></nav>
     <div id="panel"></div><div class="local-notice">Zone de test locale · Sans sauvegarde · Le monde continue pendant l’inventaire.</div>
   </section>
 </main>`;
 let inventoryOpen = false;
 let currentTab = 'equipment';
+let selectedItem = null;
+let bagFilter = 'all';
 const panel = app.querySelector('#panel');
 function refresh(s) {
   app.querySelector('#team').innerHTML = s.team.map((m,i)=>`<button class="member ${i===s.main?'selected':''} ${m.hp===0?'fallen':''}" data-main="${i}" style="--role:${COLORS[m.role]}" aria-pressed="${i===s.main}"><span class="portrait">${m.role==='melee'?'⚔':m.role==='support'?'✧':'➶'}</span><span class="member-text"><strong>${m.name}<small>Niv. ${m.level}</small></strong><span>${ROLES[m.role]}</span><span class="hp-track"><span style="width:${m.hp/m.maxHp*100}%"></span></span><small>${m.hp} / ${m.maxHp} PV</small></span></button>`).join('');
@@ -29,16 +32,17 @@ function refresh(s) {
   if (!inventoryOpen) return;
   const previousSlot = panel.querySelector('#equipment-slot')?.value;
   const focus = panel.contains(document.activeElement) ? document.activeElement : null;
-  const focusKey = focus?.id ? `#${CSS.escape(focus.id)}` : focus?.dataset.action ? `[data-action="${CSS.escape(focus.dataset.action)}"]` : null;
+  const focusAttribute = focus && ['data-action','data-inspect-slot','data-inspect-bag','data-slot','data-equip'].find(name=>focus.hasAttribute(name));
+  const focusKey = focus?.id ? `#${CSS.escape(focus.id)}` : focusAttribute ? `[${focusAttribute}="${CSS.escape(focus.getAttribute(focusAttribute))}"]` : null;
   const scrollTop = panel.scrollTop;
   const m = s.team[s.main];
-  if(currentTab==='equipment') panel.innerHTML = `<div class="panel-heading"><p class="eyebrow">PERSONNAGE PRINCIPAL</p><h2>${m.name} <span>Niv. ${m.level}</span></h2><p>${ROLES[m.role]} · ${s.gold} pièces</p><div class="xp-track"><span style="width:${m.xp/(m.level*50)*100}%"></span></div><small>${m.xp} / ${m.level*50} XP · Courbe de test</small></div><div class="equipment-grid">${SLOTS.map((slot,i)=>`<button class="slot ${m.equipment[slot]?'filled':''}" data-slot="${slot}" title="${m.equipment[slot]?'Retirer '+m.equipment[slot].name:'Emplacement vide : '+slot}" ${!m.equipment[slot]?'disabled':''}><span>${i>=8?'◇':i===7?'⚔':i===0?'♜':i===1?'◩':i===3?'♟':'◈'}</span><small>${slot}</small>${m.equipment[slot]?'<b>Équipé</b>':''}</button>`).join('')}</div><p class="panel-hint">14 emplacements · Sélectionnez un objet du sac pour l’équiper. Cliquez sur un objet équipé pour le retirer. Coiffe et cape modifient le sprite ; l’arme ajoute 5 dégâts de test.</p><div class="composition"><h3>Une équipe, trois rôles</h3><p>Corps à corps · Soutien · Distance</p><small>Hors ultime, un seul personnage est présent. L’ultime réunit les trois pendant 30 secondes.</small></div>`;
-  if(currentTab==='bag') panel.innerHTML = `<div class="panel-heading"><p class="eyebrow">INVENTAIRE D’ÉQUIPE · TEST</p><h2>Le sac de voyage</h2><p>${s.bag.length} piles · ${s.gold} pièces</p></div><div class="bag-list">${s.bag.length?s.bag.map(item=>`<div class="bag-item ${item.chromatic?'chromatic':''}"><span class="item-icon">${item.slot?'◈':item.chromatic?'✦':item.type==='rare'?'◆':'●'}</span><div><strong>${item.name}</strong><small>${item.slot?'Équipement':item.type==='rare'?'Rare':'Normal'}${item.chromatic?' · Chromatique':''} · ×${item.quantity}</small></div>${item.slot?`<button data-equip="${item.id}">Équiper</button>`:''}</div>`).join(''):'<div class="empty-bag">◇<h3>Tout reste à découvrir</h3><p>Affrontez les monstres ou générez des objets dans les outils dev.</p></div>'}</div><p class="panel-hint">Sac partagé et sans limite pour les essais. Les variantes chromatiques restent dans des piles distinctes.</p>`;
+  if(currentTab==='equipment') panel.innerHTML = renderInventory(s, selectedItem, bagFilter);
   if(currentTab==='tools') panel.innerHTML = `<div class="panel-heading"><p class="eyebrow">BAC À SABLE</p><h2>Outils de développement</h2><p>Essayez sans attendre ni farmer.</p></div><section class="tool-group"><h3>Progression & combat</h3><div class="tool-buttons"><button data-action="xp">+50 XP à l’équipe</button><button data-action="heal">Soigner / réanimer</button><button data-action="auto" aria-pressed="${s.autoAttack}">Attaque auto : ${s.autoAttack?'oui':'non'}</button></div></section><section class="tool-group"><h3>Générer du loot · Slime</h3><div class="loot-buttons"><button data-loot="normal">Normal</button><button data-loot="rare">Rare</button><button data-loot="normal" data-chromatic="true">✦ Normal chromatique</button><button data-loot="rare" data-chromatic="true">✦ Rare chromatique</button></div><p class="panel-hint">Combat de test : 20 % rare et 10 % chromatique. Ces taux ne fixent pas l’équilibrage final.</p></section><section class="tool-group"><h3>Générer un équipement</h3><label for="equipment-slot">Emplacement</label><select id="equipment-slot">${SLOTS.map(slot=>`<option>${slot}</option>`).join('')}</select><button data-action="equipment">Ajouter au sac</button></section><section class="tool-group"><h3>Déplacements rapides</h3><div class="tool-buttons"><button data-action="home">Maison</button><button data-action="atelier">Atelier</button><button data-action="combat">Combat</button></div></section><section class="journal"><h3>Journal de test</h3><ul>${s.log.map(line=>`<li>${line}</li>`).join('')}</ul></section>`;
+  app.querySelector('#inventory').classList.toggle('tools-open', currentTab==='tools');
   const slotSelect = panel.querySelector('#equipment-slot');
   if (slotSelect && previousSlot) slotSelect.value = previousSlot;
   panel.scrollTop = scrollTop;
-  if (focusKey) panel.querySelector(focusKey)?.focus({ preventScroll: true });
+  if (focusKey) (panel.querySelector(focusKey) || panel.querySelector('.item-details button') || app.querySelector('[data-action="close-inventory"]')).focus({ preventScroll: true });
 }
 function refreshUltimate(s) {
   const active = s.ultimate.remaining > 0;
@@ -59,6 +63,7 @@ function setInventory(open, tab = currentTab) {
   app.querySelector('#inventory').hidden = !open;
   app.querySelector('#inventory-backdrop').hidden = !open;
   app.querySelector('[data-action="inventory"]').setAttribute('aria-expanded', String(open));
+  app.querySelector('#inventory').classList.toggle('tools-open', tab==='tools');
   app.querySelectorAll('[data-tab]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.tab === currentTab)));
   game.setInterfaceOpen(open);
   if (open) {
@@ -81,14 +86,21 @@ app.addEventListener('click',event=>{
   }
   if(button.dataset.tab){currentTab=button.dataset.tab;app.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));}
   if(button.dataset.main!==undefined)chooseMain(s,Number(button.dataset.main));
-  if(button.dataset.slot)unequip(s,button.dataset.slot);
-  if(button.dataset.equip)equip(s,Number(button.dataset.equip));
+  if(button.dataset.inspectSlot) selectedItem = { source:'equipment', slot:button.dataset.inspectSlot };
+  if(button.dataset.inspectBag) selectedItem = { source:'bag', id:Number(button.dataset.inspectBag) };
+  if(button.dataset.slot) { unequip(s,button.dataset.slot); selectedItem = null; }
+  if(button.dataset.equip) {
+    const item = s.bag.find(item=>item.id===Number(button.dataset.equip));
+    equip(s,Number(button.dataset.equip));
+    selectedItem = item ? { source:'equipment', slot:item.slot } : null;
+  }
   if(button.dataset.loot)grantLoot(s,button.dataset.loot,button.dataset.chromatic==='true');
   const actions={ attack:()=>attack(s),heal:()=>heal(s),home:()=>teleport(s,'maison'),combat:()=>teleport(s,'combat'),atelier:()=>teleport(s,'atelier'),xp:()=>grantXp(s,50),equipment:()=>giveEquipment(s,app.querySelector('#equipment-slot').value),auto:()=>{s.autoAttack=!s.autoAttack;note(s,`Attaque automatique ${s.autoAttack?'activée':'désactivée'}.`);},deploy:()=>activateUltimate(s)};
   if(actions[button.dataset.action])actions[button.dataset.action]();
   game.refresh();refresh(s);
   if(!inventoryOpen && (button.dataset.main!==undefined || ['attack','home','combat','atelier','deploy'].includes(button.dataset.action)))app.querySelector('canvas').focus({preventScroll:true});
 });
+app.addEventListener('change', event => { if(event.target.id==='bag-filter') { bagFilter=event.target.value; refresh(game.state); panel.querySelector('#bag-filter')?.focus(); } });
 const uiController = new AbortController();
 const uiOptions = { signal: uiController.signal };
 app.querySelector('#inventory-backdrop').addEventListener('click', () => setInventory(false), uiOptions);

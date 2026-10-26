@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createSandbox, SLOTS, teleport, grantLoot, giveEquipment, equip, unequip, grantXp, stepSandbox, chooseMain, attack } from '../src/dev/sandbox.js';
 
 test('composition : exactement trois personnages, un par rôle',()=>{
- const s=createSandbox();assert.equal(s.team.length,3);assert.equal(SLOTS.length,14);
+ const s=createSandbox();assert.equal(s.team.length,3);assert.equal(SLOTS.length,15);
  assert.deepEqual(s.team.map(m=>m.role),['melee','support','ranged']);
 });
 test('les quatre variations de butin restent distinctes et les piles se cumulent',()=>{
@@ -46,4 +46,10 @@ test('défaite complète : retour maison sans supprimer le sac ni la progression
  s.team[0].hp=1;Object.assign(s.player,{x:s.monsters[0].x,y:s.monsters[0].y});
  stepSandbox(s,{x:0,y:0},.05);
  assert.ok(s.team.every(m=>m.hp===m.maxHp));assert.equal(s.player.x,110);assert.equal(s.bag.length,1);assert.equal(s.team[0].level,2);
+});
+test('bouclier indépendant de l’arme, transfert et conservation par personnage',()=>{
+ const s=createSandbox();giveEquipment(s,'Arme');giveEquipment(s,'Bouclier');
+ equip(s,1);equip(s,2);assert.equal(s.team[0].equipment.Arme.id,1);assert.equal(s.team[0].equipment.Bouclier.id,2);
+ unequip(s,'Bouclier');assert.equal(s.team[0].equipment.Arme.id,1);assert.equal(s.bag[0].id,2);
+ chooseMain(s,1);equip(s,2);assert.equal(s.team[1].equipment.Bouclier.id,2);assert.equal(s.team[0].equipment.Bouclier,undefined);
 });
