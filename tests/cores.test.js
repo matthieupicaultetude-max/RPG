@@ -14,6 +14,7 @@ import {
   createSandbox,
   grantCore,
   openCore,
+  openCores,
   teleport,
   equip,
   unequip,
@@ -126,4 +127,33 @@ test("récompenses : noyau de la caractéristique principale en plus du loot, ti
     s.bag.some((i) => i.kind === "core"),
     false,
   );
+});
+
+
+test("ouverture en lot : 20 tirages indépendants, quantité restante et collection suivie", () => {
+  const s = createSandbox();
+  teleport(s, 'maison');
+  for (let i=0;i<23;i++) grantCore(s,'earth');
+  const id=s.bag[0].id;
+  let draws=0;
+  const rewards=openCores(s,id,20,()=>((draws++%9)+0.1)/9);
+  assert.equal(rewards.length,20);
+  assert.equal(draws,20);
+  assert.equal(new Set(rewards.map(item=>item.id)).size,20);
+  assert.equal(s.bag.find(item=>item.id===id).quantity,3);
+  assert.equal(s.collections.earth.length,9);
+  assert.equal(openCores(s,id,20).length,3);
+  assert.equal(s.bag.some(item=>item.id===id),false);
+});
+test("lots : quantité invalide, lieu interdit et tranche indisponible ne consomment rien", () => {
+  const s=createSandbox();
+  grantCore(s,'fire');
+  const id=s.bag[0].id;
+  assert.deepEqual(openCores(s,id,20),[]);
+  teleport(s,'maison');
+  for (const quantity of [0,-1,1.5,NaN,Infinity,'2']) assert.deepEqual(openCores(s,id,quantity),[]);
+  assert.equal(s.bag[0].quantity,1);
+  grantCore(s,'air',11);
+  assert.deepEqual(openCores(s,s.bag[1].id,20),[]);
+  assert.equal(s.bag[1].quantity,1);
 });

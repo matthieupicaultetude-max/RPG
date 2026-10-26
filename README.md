@@ -43,7 +43,7 @@ npm run build
 npm run preview
 ```
 
-Cinquante-quatre tests couvrent déplacement, composition à trois, variantes de butin, échanges d’équipement, XP, combat/récompenses/respawn, collisions de la maison, soutien IA, retour après défaite, ultime (30 s / 300 s), changements de personnage, filtrage de la molette, ciblage guidé, impacts différés, projectiles, conversion caméra/curseur, contournement de la maison, espacement au repos, recul du distance et regroupement. Les parcours navigateur vérifient également les commandes, les panneaux et le petit écran.
+Cinquante-six tests couvrent déplacement, composition à trois, variantes de butin, échanges d’équipement, XP, combat/récompenses/respawn, collisions de la maison, soutien IA, retour après défaite, ultime (30 s / 300 s), changements de personnage, filtrage de la molette, ciblage guidé, impacts différés, projectiles, conversion caméra/curseur, contournement de la maison, espacement au repos, recul du distance et regroupement. Les parcours navigateur vérifient également les commandes, les panneaux et le petit écran.
 
 ## Organisation
 
@@ -128,3 +128,10 @@ Chaque panoplie dispose d’une quête et d’un certificat remis à l’accepta
 | Rosée | Gélutin | Cœur de gelée du slime |
 
 Sélectionner le familier dans le sac ou son emplacement équipé, puis **Nourrir**. Une ressource donne 10 XP ; passer au niveau suivant demande `niveau × 10` XP. Le plafond de test est 20, avec un bonus de `niveau + 1` dans la caractéristique de son élément. Les ressources normales chromatiques ne sont pas consommées : elles sont réservées au futur artisanat des armures. Les recettes restent à définir. Toute progression reste locale à la session actuelle.
+
+
+### Raccourcis et ouverture en quantité
+
+Dans le sac, **Maj + clic** sur un équipement l’équipe directement sur le personnage actif, avec les mêmes restrictions de niveau que le bouton Équiper. Le matériel remplacé revient dans le sac.
+
+La fiche d’un noyau propose une **quantité** réglable (par exemple 20), puis **Ouvrir la quantité**. Chaque noyau effectue son propre tirage. Le bouton **Ouvrir le noyau** garde l’ouverture à l’unité. La sélection et le défilement du sac restent sur la pile de noyaux tant qu’elle existe ; les récompenses ne sont plus sélectionnées automatiquement. Une pile épuisée laisse la fiche vide.

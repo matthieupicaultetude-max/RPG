@@ -133,6 +133,21 @@ export function openCore(s,id,random=Math.random) {
   note(s,`Noyau ouvert : ${reward.name}${reward.chromatic?' chromatique':''} !`);
   return reward;
 }
+// Each opening keeps its own independent draw and collection tracking.
+export function openCores(s, id, quantity, random = Math.random) {
+  if (!Number.isSafeInteger(quantity) || quantity < 1) return [];
+  const core = s.bag.find(item => item.id === id && item.kind === 'core');
+  if (!core) return [];
+  const count = Math.min(quantity, core.quantity);
+  const rewards = [];
+  for (let i = 0; i < count; i++) {
+    const reward = openCore(s, id, random);
+    if (!reward) break;
+    rewards.push(reward);
+  }
+  if (rewards.length > 1) note(s, `${rewards.length} noyaux ouverts : ${rewards.length} équipements ajoutés au sac.`);
+  return rewards;
+}
 export function giveEquipment(s, slot) {
   if (!SLOTS.includes(slot)) return;
   s.bag.push({ id: s.nextItem++, name: `${slot} d’essai`, slot, quantity: 1 });

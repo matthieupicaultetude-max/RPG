@@ -355,7 +355,7 @@ Les noyaux sont **exclusivement standards**, avec **25 %** de chance par victoir
 
 Dans la zone d’essai, le village est matérialisé près de la maison. Le joueur doit être dans cette zone pour ouvrir un noyau depuis sa fiche d’inventaire. Aucune monnaie n’est nécessaire.
 
-Une ouverture consomme **un seul noyau** et donne **une pièce aléatoire** de la panoplie de son élément et de sa tranche. Chaque pièce a une probabilité de **1/9** ; les doublons sont possibles. Un noyau donne uniquement une pièce standard. Les armures chromatiques seront obtenues par artisanat ; les recettes et les règles de fabrication seront définies plus tard. Le résultat est immédiatement sélectionné dans le sac et peut être équipé. Un noyau d’une tranche non disponible ne peut pas être consommé. Les outils dev permettent de générer les quatre noyaux débutants et de revenir à la maison pour tester la boucle.
+Une ouverture consomme **un seul noyau** et donne **une pièce aléatoire** de la panoplie de son élément et de sa tranche. Chaque pièce a une probabilité de **1/9** ; les doublons sont possibles. Un noyau donne uniquement une pièce standard. Les armures chromatiques seront obtenues par artisanat ; les recettes et les règles de fabrication seront définies plus tard. Le résultat est ajouté au sac et peut être équipé ; la sélection reste sur la pile de noyaux utilisée. Un noyau d’une tranche non disponible ne peut pas être consommé. Les outils dev permettent de générer les quatre noyaux débutants et de revenir à la maison pour tester la boucle.
 
 ## 21. Direction graphique : village pastoral
 
@@ -405,3 +405,10 @@ L’animalerie du village est tenue par **Nola**, PNJ accessible avec **F** à p
 Le familier commence au niveau 1. Le nourrissage consomme une seule ressource rare chromatique du monstre associé et accorde **10 XP**. Le seuil du prochain niveau vaut **niveau actuel × 10 XP**. Le plafond provisoire est **20** ; au plafond, aucune nourriture n’est consommée. Le bonus vaut **niveau + 1** dans la caractéristique principale de l’élément, sans effet secondaire. La progression reste attachée à l’objet lors des échanges d’équipement. Le familier est un compagnon visuel passif, sans attaque autonome.
 
 Les ressources **normales chromatiques** sont réservées au craft des armures chromatiques. Elles ne nourrissent aucun familier. Les recettes d’artisanat restent à concevoir ; ce craft n’est pas encore implémenté. La sauvegarde persistante et la validation serveur ne font pas partie de cette étape : collections, certificats et familiers appartiennent à la session locale.
+
+
+## 25. Utilisation en quantité et équipement rapide
+
+La fiche des noyaux permet de choisir une quantité entière positive et d’ouvrir un lot au village. Chaque noyau produit un tirage indépendant avec les règles de collection habituelles. La quantité réellement consommée est limitée à la pile disponible ; les tranches indisponibles et les ouvertures hors village ne consomment rien. L’ouverture à l’unité reste accessible.
+
+Après ouverture, la sélection reste sur la pile utilisée et le défilement du sac est conservé. Aucune récompense n’est sélectionnée automatiquement ; quand la pile est épuisée, sa fiche devient vide. **Maj + clic** sur un équipement du sac l’équipe sur le personnage actif, en respectant le niveau requis et en replaçant l’ancien équipement dans le sac.

@@ -609,3 +609,12 @@ canvas { cursor: crosshair; }
 @media (max-width:700px) { .adoption-grid { grid-template-columns: 1fr; }.adoption-card { padding: 12px; }.petshop-heading h2 { font-size: 21px; }.pet-detail-actions { width: 100%; flex-direction: row; justify-content: flex-end; }.world-interaction { bottom: 145px; font-size: 10px; }.inventory-footer .tabs { gap: 1px; }.inventory-footer .tabs button { padding: 7px 4px; font-size: 8px; } }
 
 @media (max-width:700px) { .inventory-footer .tabs { flex: 1; min-width: 0; }.inventory-footer .tabs button { flex: 1 1 auto; white-space: normal; line-height: 1.4; }.inventory-footer > button { flex-shrink: 0; } }
+
+.item-details > .core-actions { flex: 0 0 auto; }
+.core-actions { display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
+.core-actions button { font-size: 10px; }
+.core-batch { display: grid; grid-template-columns: auto 60px; gap: 6px; align-items: center; }
+.core-batch label { color: #b3c09c; font-size: 10px; }
+.core-batch input { width: 60px; min-width: 0; padding: 6px; color: #e4d2ab; background: #14261f; border: 1px solid #69764e; border-radius: 4px; }
+.core-batch button { grid-column: 1 / -1; }
+@media (max-width:700px) { .item-details > .core-actions { flex: 0 0 100%; width: 100%; }.core-batch { grid-template-columns: auto 60px 1fr; }.core-batch button { grid-column: auto; } }

@@ -6,7 +6,7 @@ import { renderBestiary, bestiaryValues, coreDropMarkup } from './ui/bestiary.js
 import { renderInventory } from './ui/inventory.js';
 import './style.css';
 import { createGame } from './game/create-game.js';
-import { ROLES, COLORS, SLOTS, teleport, chooseMain, grantXp, heal, grantLoot, grantCore, openCore, giveEquipment, equip, unequip, attack, note, activateUltimate } from './dev/sandbox.js';
+import { ROLES, COLORS, SLOTS, teleport, chooseMain, grantXp, heal, grantLoot, grantCore, openCore, openCores, giveEquipment, equip, unequip, attack, note, activateUltimate } from './dev/sandbox.js';
 
 const app = document.querySelector('#app');
 app.innerHTML = `
@@ -38,11 +38,14 @@ function refresh(s) {
   refreshUltimate(s);
   app.querySelector('#notification').textContent = s.log[0];
   if (!inventoryOpen) return;
+  const previousCore = panel.querySelector('[data-open-core]')?.dataset.openCore;
+  const previousQuantity = panel.querySelector('#core-quantity')?.value;
   const previousSlot = panel.querySelector('#equipment-slot')?.value;
   const focus = panel.contains(document.activeElement) ? document.activeElement : null;
-  const focusAttribute = focus && ['data-action','data-adopt','data-claim-pet','data-feed-pet','data-core','data-open-core','data-monster','data-inspect-slot','data-inspect-bag','data-slot','data-equip'].find(name=>focus.hasAttribute(name));
+  const focusAttribute = focus && ['data-action','data-adopt','data-claim-pet','data-feed-pet','data-core','data-open-cores','data-open-core','data-monster','data-inspect-slot','data-inspect-bag','data-slot','data-equip'].find(name=>focus.hasAttribute(name));
   const focusKey = focus?.id ? `#${CSS.escape(focus.id)}` : focusAttribute ? `[${focusAttribute}="${CSS.escape(focus.getAttribute(focusAttribute))}"]` : null;
   const scrollTop = panel.scrollTop;
+  const bagScrollTop = panel.querySelector('.inventory-items')?.scrollTop || 0;
   const m = s.team[s.main];
   if(currentTab==='bestiary' && panel.querySelector('.monster-sheet')?.dataset.species!==bestiaryMonster) {
     panel.innerHTML = renderBestiary(bestiaryMonster,bestiaryLevel);
@@ -57,7 +60,12 @@ function refresh(s) {
   app.querySelector('#inventory').classList.toggle('tools-open', currentTab==='tools');
   const slotSelect = panel.querySelector('#equipment-slot');
   if (slotSelect && previousSlot) slotSelect.value = previousSlot;
+  const quantityInput = panel.querySelector('#core-quantity');
+  if (quantityInput && previousCore === panel.querySelector('[data-open-core]')?.dataset.openCore && previousQuantity) {
+    quantityInput.value = Math.min(Number(previousQuantity), Number(quantityInput.max));
+  }
   panel.scrollTop = scrollTop;
+  if (panel.querySelector('.inventory-items')) panel.querySelector('.inventory-items').scrollTop = bagScrollTop;
   if (focusKey) (panel.querySelector(focusKey) || panel.querySelector('.item-details button') || app.querySelector('[data-action="close-inventory"]')).focus({ preventScroll: true });
 }
 function refreshUltimate(s) {
@@ -107,7 +115,15 @@ app.addEventListener('click',event=>{
   if(button.dataset.monster) bestiaryMonster = button.dataset.monster;
   if(button.dataset.main!==undefined)chooseMain(s,Number(button.dataset.main));
   if(button.dataset.inspectSlot) selectedItem = { source:'equipment', slot:button.dataset.inspectSlot };
-  if(button.dataset.inspectBag) selectedItem = { source:'bag', id:Number(button.dataset.inspectBag) };
+  if(button.dataset.inspectBag) {
+    const id = Number(button.dataset.inspectBag);
+    const item = s.bag.find(item => item.id === id);
+    if (event.shiftKey && item?.slot) {
+      equip(s, id);
+      selectedItem = s.team[s.main].equipment[item.slot]?.id === id
+        ? { source:'equipment', slot:item.slot } : { source:'bag', id };
+    } else selectedItem = { source:'bag', id };
+  }
   if(button.dataset.slot) { unequip(s,button.dataset.slot); selectedItem = null; }
   if(button.dataset.equip) {
     const item = s.bag.find(item=>item.id===Number(button.dataset.equip));
@@ -118,7 +134,11 @@ app.addEventListener('click',event=>{
   if(button.dataset.claimPet){const pet=claimPet(s,button.dataset.claimPet);if(pet)selectedItem={source:'bag',id:pet.id};}
   if(button.dataset.feedPet)feedPet(s,Number(button.dataset.feedPet));
   if(button.dataset.core)grantCore(s,button.dataset.core);
-  if(button.dataset.openCore) { const item=openCore(s,Number(button.dataset.openCore)); if(item)selectedItem={source:'bag',id:item.id}; }
+  if(button.dataset.openCore) openCore(s,Number(button.dataset.openCore));
+  if(button.dataset.openCores) {
+    const input = panel.querySelector('#core-quantity');
+    if (input.reportValidity()) openCores(s,Number(button.dataset.openCores),Number(input.value));
+  }
   if(button.dataset.loot)grantLoot(s,button.dataset.loot,button.dataset.chromatic==='true',devLootMonster);
   const actions={ attack:()=>attack(s),heal:()=>heal(s),home:()=>teleport(s,'maison'),combat:()=>teleport(s,'combat'),atelier:()=>teleport(s,'atelier'),animalerie:()=>teleport(s,'animalerie'),xp:()=>grantXp(s,50),equipment:()=>giveEquipment(s,app.querySelector('#equipment-slot').value),auto:()=>{s.autoAttack=!s.autoAttack;note(s,`Attaque automatique ${s.autoAttack?'activée':'désactivée'}.`);},deploy:()=>activateUltimate(s)};
   if(actions[button.dataset.action])actions[button.dataset.action]();
