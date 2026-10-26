@@ -22,7 +22,7 @@ test('XP multi-niveau conserve le reste et augmente les PV',()=>{
 test('combat de test : portée, délai, mort, récompenses puis respawn',()=>{
  const s=createSandbox();s.deployed=false;attack(s);assert.equal(s.monsters[0].hp,45);
  Object.assign(s.player,{x:455,y:245});attack(s);assert.equal(s.monsters[0].hp,45);
- for(let i=0;i<4;i++){s.team[0].cooldown=0;attack(s);}
+ for(let i=0;i<4;i++){s.team[0].cooldown=0;attack(s);stepSandbox(s,{x:0,y:0},.13);}
  assert.equal(s.monsters[0].hp,0);assert.equal(s.gold,5);assert.equal(s.bag.length,1);
  teleport(s,'maison');for(let i=0;i<150;i++)stepSandbox(s,{x:0,y:0},.05);
  assert.equal(s.monsters[0].hp,s.monsters[0].maxHp);

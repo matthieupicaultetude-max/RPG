@@ -1,4 +1,6 @@
-import { COLORS } from '../dev/sandbox.js';
+import { viewport } from './viewport.js';
+import { guidedTarget, ATTACK_RANGE } from '../combat/attacks.js';
+import { COLORS, canStand } from '../dev/sandbox.js';
 
 export function createRenderer(canvas) {
   const frame = document.createElement('canvas');
@@ -66,8 +68,9 @@ export function createRenderer(canvas) {
     ctx.fillStyle = '#192b2bcb'; ctx.fillRect(x-width/2,y-9,width,14);
     ctx.fillStyle = '#e7e5cb'; ctx.fillText(text,x,y+1);
   }
-  function person(p, time, main = false, bot = false) {
-    const x=Math.round(p.x), y=Math.round(p.y), step=p.moving ? Math.sin(time*12+p.x*.02)*1.5 : 0;
+  function person(p, time, main = false, bot = false, animation = null) {
+    const thrust = animation ? Math.sin(Math.min(1,animation.age/.3)*Math.PI)*3 : 0;
+    const x=Math.round(p.x + (animation ? Math.cos(animation.angle)*thrust : 0)), y=Math.round(p.y + (animation ? Math.sin(animation.angle)*thrust : 0)), step=p.moving ? Math.sin(time*12+p.x*.02)*1.5 : 0;
     ctx.fillStyle='#344d4377'; ctx.fillRect(x-7,y+2,14,4);
     ctx.fillStyle='#323d46'; ctx.fillRect(x-5,y-2+step,4,6); ctx.fillRect(x+1,y-2-step,4,6);
     ctx.fillStyle=COLORS[p.role]; ctx.fillRect(x-6,y-14,12,13);
@@ -84,7 +87,7 @@ export function createRenderer(canvas) {
   return s => {
     ctx.drawImage(ground,0,0);
     label('MAISON',110,124); label('ATELIER',190,319);label('AIRE DE COMBAT',495,352);label('PROMENADE DES BOTS',320,65);
-    [...s.bots.map(p=>({p,bot:true})),...s.team.filter((p,i)=>p.hp>0&&(i===s.main||s.deployed)).map(p=>({p,main:p.id===s.main}))].sort((a,b)=>a.p.y-b.p.y).forEach(({p,main,bot})=>person(p,s.time,main,bot));
+    [...s.bots.map(p=>({p,bot:true})),...s.team.filter((p,i)=>p.hp>0&&(i===s.main||s.deployed)).map(p=>({p,main:p.id===s.main}))].sort((a,b)=>a.p.y-b.p.y).forEach(({p,main,bot})=>person(p,s.time,main,bot,s.attacks.find(a=>a.owner===p.id && !bot && a.age<.3)));
     for(const m of s.monsters) {
       if(m.hp<=0){label(`Retour ${Math.ceil(m.respawn)}s`,m.homeX,m.homeY);continue;}
       const x=Math.round(m.x), y=Math.round(m.y), bob=Math.round(Math.sin(s.time*4)*1.5);
@@ -94,16 +97,53 @@ export function createRenderer(canvas) {
       ctx.fillStyle='#253e38';ctx.fillRect(x-5,y-5,2,3);ctx.fillRect(x+3,y-5,2,3);
       ctx.fillStyle='#3a4538';ctx.fillRect(x-14,y-23,28,3);ctx.fillStyle='#d18e77';ctx.fillRect(x-14,y-23,28*m.hp/m.maxHp,3);label(m.name,x,y+18);
     }
-    if(s.attackFlash>0){ctx.strokeStyle='#fff0b3';ctx.lineWidth=3;ctx.beginPath();ctx.arc(s.player.x,s.player.y-7,22,-1,1.8);ctx.stroke();}
-    for(const e of s.effects){ctx.globalAlpha=Math.min(1,e.life*2);if(e.toX!==undefined){ctx.strokeStyle=e.color;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(e.x,e.y);ctx.lineTo(e.toX,e.toY);ctx.stroke();}ctx.font='bold 11px monospace';ctx.textAlign='center';ctx.fillStyle=e.color;ctx.fillText(e.text,e.x,e.y);ctx.globalAlpha=1;}
+    for (const a of s.attacks) {
+      const member = s.team[a.owner];
+      const progress = Math.min(1, a.age / .3);
+      ctx.save();
+      if (a.role === 'melee') {
+        ctx.translate(member.x,member.y-10);
+        ctx.rotate(a.angle);
+        const swing = -1.1 + progress * 2.2;
+        ctx.globalAlpha = 1-progress*.7;
+        ctx.strokeStyle = '#ffe6a1'; ctx.lineWidth = 3;
+        ctx.beginPath();ctx.arc(0,0,29,swing-.6,swing);ctx.stroke();
+        ctx.rotate(swing);ctx.fillStyle='#ddbd6e';ctx.fillRect(7,-4,3,8);
+        ctx.fillStyle='#f0f4e4';ctx.fillRect(9,-2,25,3);
+      } else {
+        ctx.translate(a.x,a.y-10);ctx.rotate(a.angle);
+        if (a.role==='ranged') {
+          ctx.strokeStyle='#b5cce3';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(-17,0);ctx.lineTo(0,0);ctx.stroke();
+          ctx.fillStyle='#eedab4';ctx.fillRect(-8,-1,13,2);
+          ctx.fillStyle='#e6f3ff';ctx.beginPath();ctx.moveTo(7,0);ctx.lineTo(0,-3);ctx.lineTo(0,3);ctx.fill();
+        } else {
+          ctx.shadowColor='#89efc1';ctx.shadowBlur=8;ctx.fillStyle='#68bdad';ctx.beginPath();ctx.arc(0,0,6,0,Math.PI*2);ctx.fill();
+          ctx.fillStyle='#ddffd9';ctx.fillRect(-2,-2,4,4);
+          for(let i=1;i<4;i++){ctx.globalAlpha=1-i*.23;ctx.fillRect(-i*6,Math.sin(a.age*20+i)*3,3,3);}
+        }
+      }
+      ctx.restore();
+    }
+    if (s.aim.active) {
+      const guide = guidedTarget(s,s.aim,canStand);
+      const target = guide.target;
+      const x = target ? target.x : s.aim.x;
+      const y = target ? target.y-8 : s.aim.y;
+      const color = target ? guide.inRange && guide.clear ? '#ffdf91' : '#e69b83' : '#e4e8ce';
+      ctx.save();ctx.strokeStyle=color;ctx.lineWidth=1;ctx.globalAlpha=.55;
+      ctx.setLineDash([3,4]);ctx.beginPath();ctx.moveTo(s.player.x,s.player.y-10);ctx.lineTo(x,y);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
+      const radius=target?17:5;
+      ctx.beginPath();ctx.arc(x,y,radius,0,Math.PI*2);ctx.stroke();
+      for(const sign of [-1,1]) {ctx.fillStyle=color;ctx.fillRect(x+sign*(radius+2)-1,y-1,3,2);ctx.fillRect(x-1,y+sign*(radius+2)-1,2,3);}
+      if(target) label(!guide.clear?'OBSTACLE':guide.inRange?'CIBLE':'HORS PORTÉE',x,y+35);
+      ctx.globalAlpha=.22;ctx.beginPath();ctx.arc(s.player.x,s.player.y-5,ATTACK_RANGE[s.team[s.main].role],0,Math.PI*2);ctx.stroke();ctx.restore();
+    }
+    for(const e of s.effects){ctx.globalAlpha=Math.min(1,e.life*2);if(e.toX!==undefined){ctx.strokeStyle=e.color;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(e.x,e.y);ctx.lineTo(e.toX,e.toY);ctx.stroke();}ctx.font='bold 11px monospace';ctx.textAlign='center';ctx.fillStyle=e.color;if(e.particle)ctx.fillRect(Math.round(e.x),Math.round(e.y),2,2);else ctx.fillText(e.text,e.x,e.y);ctx.globalAlpha=1;}
     const width = Math.round(canvas.clientWidth), height = Math.round(canvas.clientHeight);
     if (canvas.width !== width || canvas.height !== height) { canvas.width = width; canvas.height = height; }
     screen.imageSmoothingEnabled = false;
     // Fill every viewport without stretching sprites. Follow the player when cropped.
-    const scale = Math.max(width / 640, height / 400);
-    const viewWidth = width / scale, viewHeight = height / scale;
-    const cameraX = Math.max(0, Math.min(640 - viewWidth, s.player.x - viewWidth / 2));
-    const cameraY = Math.max(0, Math.min(400 - viewHeight, s.player.y - viewHeight / 2));
-    screen.drawImage(frame, cameraX, cameraY, viewWidth, viewHeight, 0, 0, width, height);
+    const view = viewport(width,height,s.player);
+    screen.drawImage(frame, view.x, view.y, view.viewWidth, view.viewHeight, 0, 0, width, height);
   };
 }

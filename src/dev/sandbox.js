@@ -1,3 +1,4 @@
+import { ATTACK_RANGE, guidedTarget, launchAttack, stepAttacks, lineClear } from '../combat/attacks.js';
 import { stepCompanions, placeAllies, clearRoute } from '../ai/companions.js';
 import { createState, update as movePlayer } from '../game/state.js';
 
@@ -19,7 +20,7 @@ export function createSandbox() {
     bag: [], nextItem: 1, gold: 0, log: ['Bienvenue dans le jardin des essais.'], revision: 0,
     monsters: [{ name: 'Slime', x: 455, y: 220, homeX: 455, homeY: 220, hp: 45, maxHp: 45, cooldown: 0, respawn: 0 }, { name: 'Sanglier', x: 535, y: 285, homeX: 535, homeY: 285, hp: 70, maxHp: 70, cooldown: 0, respawn: 0 }],
     bots: Array.from({ length: 3 }, (_, i) => ({ name: ['Milo', 'Éline', 'Orin'][i], x: 290 + i * 70, y: 110, role: ['melee', 'support', 'ranged'][i], facing: 'down', moving: true, phase: i * 2, target: { x: 270 + i * 70, y: 110 } })),
-    effects: [], attackFlash: 0, autoAttack: false,
+    effects: [], attacks: [], aim: { x: 0, y: 0, active: false }, autoAttack: false,
   });
   state.team[0].x = state.player.x;
   state.team[0].y = state.player.y;
@@ -143,6 +144,10 @@ function walk(entity, x, y, speed, dt) {
 function hitMonster(s, monster, damage, member) {
   monster.hp = Math.max(0, monster.hp - damage);
   s.effects.push({ x: monster.x, y: monster.y - 15, text: `−${damage}`, color: '#ffe7a2', life: .8 });
+  for (let i = 0; i < 6; i++) {
+    const angle = i * Math.PI / 3;
+    s.effects.push({ x: monster.x, y: monster.y - 8, vx: Math.cos(angle)*28, vy: Math.sin(angle)*22, particle: true, color: '#fce2a4', life: .32 });
+  }
   const d = Math.hypot(monster.x - member.x, monster.y - member.y) || 1;
   const nx = monster.x + (monster.x - member.x) / d * 5;
   const ny = monster.y + (monster.y - member.y) / d * 5;
@@ -155,14 +160,24 @@ function hitMonster(s, monster, damage, member) {
     grantLoot(s, Math.random() < .2 ? 'rare' : 'normal', Math.random() < .1, monster.name);
   }
 }
-export function attack(s) {
+export function attack(s, point = s.aim.active ? s.aim : null) {
   const member = s.team[s.main];
-  if (member.hp <= 0 || member.cooldown > 0) return;
+  Object.assign(member, s.player);
+  if (member.hp <= 0 || member.cooldown > 0) return false;
+  let target;
+  if (point) {
+    const guided = guidedTarget(s, point, canStand);
+    if (guided.inRange && guided.clear) target = guided.target;
+  } else {
+    target = s.monsters.filter(m => m.hp > 0 && Math.hypot(m.x-s.player.x,m.y-s.player.y)<=ATTACK_RANGE[member.role] && lineClear(s.player,m,canStand))
+      .sort((a,b)=>Math.hypot(a.x-s.player.x,a.y-s.player.y)-Math.hypot(b.x-s.player.x,b.y-s.player.y))[0];
+  }
+  const facing = { up: [0,-1], down: [0,1], left: [-1,0], right: [1,0] }[member.facing];
+  const destination = target || (point ? { x:point.x,y:point.y+8 } : {x:s.player.x+facing[0]*ATTACK_RANGE[member.role],y:s.player.y+facing[1]*ATTACK_RANGE[member.role]});
   member.cooldown = .6;
-  s.attackFlash = .18;
-  const range = member.role === 'ranged' ? 125 : member.role === 'support' ? 85 : 45;
-  const target = s.monsters.filter(m => m.hp > 0 && Math.hypot(m.x - s.player.x, m.y - s.player.y) < range).sort((a, b) => Math.hypot(a.x - s.player.x, a.y - s.player.y) - Math.hypot(b.x - s.player.x, b.y - s.player.y))[0];
-  if (target) hitMonster(s, target, 12 + (member.equipment.Arme ? 5 : 0), s.player);
+  launchAttack(s, member, destination, target, 12 + (member.equipment.Arme ? 5 : 0));
+  s.player.facing = member.facing;
+  return true;
 }
 export function stepSandbox(s, direction, dt, elapsed = dt) {
   advanceUltimate(s, Math.max(0, elapsed));
@@ -172,8 +187,8 @@ export function stepSandbox(s, direction, dt, elapsed = dt) {
   if (!canStand(s.player.x, old.y)) s.player.x = old.x;
   if (!canStand(s.player.x, s.player.y)) s.player.y = old.y;
   Object.assign(s.team[s.main], s.player);
-  s.attackFlash = Math.max(0, s.attackFlash - dt);
-  s.effects = s.effects.filter(e => { e.life -= dt; e.y -= dt * 12; return e.life > 0; });
+  stepAttacks(s, dt, canStand, hitMonster);
+  s.effects = s.effects.filter(e => { e.life -= dt; e.x += (e.vx || 0)*dt; e.y += (e.vy ?? -12)*dt; return e.life > 0; });
   s.team.forEach(m => { m.cooldown = Math.max(0, m.cooldown - dt); });
   if (s.autoAttack) attack(s);
   stepCompanions(s, dt, canStand, hitMonster);
@@ -189,6 +204,7 @@ export function stepSandbox(s, direction, dt, elapsed = dt) {
       if (Math.hypot(monster.x - target.x, monster.y - target.y) > 22) walk(monster, target.x, target.y, 32, dt);
       else if (monster.cooldown === 0) {
         target.hp = Math.max(0, target.hp - 8); monster.cooldown = 1.2;
+        s.effects.push({ x: monster.x, y: monster.y-8, toX: target.x, toY: target.y-8, text: '', color: '#f0a28e', life: .22 });
         s.effects.push({ x: target.x, y: target.y - 25, text: '−8', color: '#ffa3a3', life: .8 }); s.revision++;
         if (s.team.every(m => m.hp <= 0)) { endUltimate(s); teleport(s, 'maison'); heal(s); note(s, 'Défaite : retour à la maison (règle de test).'); }
       }

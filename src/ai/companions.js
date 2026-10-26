@@ -1,3 +1,4 @@
+import { launchAttack } from '../combat/attacks.js';
 // Local steering prototype. Companions receive intentions, never player inputs.
 const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
@@ -172,8 +173,8 @@ export function stepCompanions(state, dt, canStand, hitMonster) {
       }
       const reach = member.role === 'melee' ? 34 : 118;
       if (member.role !== 'support' && gap < reach && member.cooldown === 0 && visible(member,target,canStand)) {
-        hitMonster(state,target,7,member); member.cooldown = member.role === 'ranged' ? 1.15 : .9;
-        state.effects.push({ x: member.x, y: member.y - 14, toX: target.x, toY: target.y - 6, text: '', color: member.role === 'ranged' ? '#c4d6ff' : '#f5cf8a', life: .18 });
+        launchAttack(state,member,target,target,7); member.cooldown = member.role === 'ranged' ? 1.15 : .9;
+
       }
     } else {
       const moved = !motion.anchor || distance(motion.anchor,leader) > 16;

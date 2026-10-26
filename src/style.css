@@ -383,3 +383,6 @@ select {
 @media (max-height: 550px) {
   .zone-card { padding: 8px 12px; }.zone-card h1 { font-size: 16px; }.zone-card .eyebrow { display: none; }.hud-team { top: 105px; width: 145px; }.hud-hint { display: none; }.member { padding: 6px; }.portrait { height: 28px; }.member-text > small { display: none; }.controls-hint { display: none; }.hud-notification { top: 75px; }.hud-bottom { left: auto; right: 15px; transform: none; bottom: 12px; }
 }
+
+canvas { cursor: crosshair; }
+.action-bar > button kbd { font-size: 8px; white-space: nowrap; }

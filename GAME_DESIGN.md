@@ -213,7 +213,7 @@ Le jardin des essais sert à éprouver les interfaces et les personnages avant d
 Les conventions suivantes s’appliquent **uniquement à cette zone** :
 
 - Trois personnages, un seul actif hors ultime, changement par **molette** ou portraits. **E** réunit la troupe pendant 30 s, toutes les 5 min. Le suivi autonome par rôle pendant l’ultime est décrit en section 5. Les rôles sont fixes dans ce banc d’essai.
-- Combat temps réel avec acquisition automatique du monstre le plus proche à portée ; soutien IA soignant les alliés vivants. Les compétences et le ciblage définitifs ne sont pas implémentés.
+- Combat temps réel au clic droit avec visée guidée vers le curseur, animations par rôle et dégâts à l’impact ; soutien IA soignant les alliés vivants. Les compétences et le ciblage définitifs ne sont pas implémentés.
 - XP identique pour les trois membres, sac partagé sans capacité maximale et aucun métier.
 - Quatorze emplacements individuels équipables ; coiffe/cape visibles et bonus de test de +5 dégâts pour l’arme du personnage contrôlé. Autres statistiques à définir.
 - Un objet par victoire : 20 % de loot rare, 10 % de variante chromatique indépendante. Ces taux ne constituent pas un équilibrage validé. Les quatre variantes peuvent aussi être générées manuellement.
@@ -231,3 +231,15 @@ L’interface est superposée à la scène : zone et statut de session en haut, 
 **I** ouvre ou ferme l’inventaire ; **Échap**, le bouton Fermer et le clic sur le fond extérieur permettent aussi de le fermer. Un bouton visible permet de l’ouvrir au tactile. Le panneau contient l’équipement du personnage, le sac et, dans la zone de développement, les outils de test. Il est fermé au départ.
 
 Pendant l’ouverture, la molette fait défiler le panneau et ne change pas de personnage. Les commandes directes de déplacement et d’attaque sont suspendues pour éviter les actions accidentelles dans les menus ; le monde, les compagnons et les délais d’ultime continuent. La fermeture ne conserve pas une touche de déplacement bloquée. Les gestes de molette sont filtrés pour éviter plusieurs changements involontaires sur un seul cran ou un court geste de pavé tactile.
+
+## 16. Attaque au clic droit et visée guidée
+
+- Le **clic droit** déclenche une attaque, à la place d’Espace. Le menu contextuel est désactivé uniquement sur la scène de jeu. Un clic déclenche un coup, soumis au délai d’attaque.
+- Le curseur définit la direction. La visée accroche les monstres proches du curseur, avec une légère assistance dans sa direction ; elle ne choisit pas systématiquement le monstre le plus proche du joueur.
+- Un réticule et une ligne de visée montrent l’accroche, la portée et les obstacles. La conversion du curseur utilise la caméra réelle, quelle que soit la taille de fenêtre. Les PNJ, bots et alliés ne sont pas des cibles offensives.
+- Le corps à corps exécute un coup de taille orienté, avec une brève préparation ; une cible sortie de portée ou de l’arc avant l’impact évite le coup.
+- Le distance tire une flèche, le soutien lance un orbe. Une cible accrochée guide le projectile pendant son trajet limité ; les obstacles arrêtent le projectile et les dégâts arrivent à l’impact.
+- Les compagnons IA utilisent les animations et impacts différés correspondant à leur rôle. Les impacts affichent particules, recul et nombre de dégâts.
+- Le bouton d’attaque demeure disponible au tactile. Sans curseur actif, il sélectionne automatiquement un monstre proche à portée. L’inventaire ouvert bloque l’attaque directe.
+
+Les distances d’accroche, portées et vitesses de projectile sont des réglages d’essai, à équilibrer avec les futures classes.

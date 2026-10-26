@@ -1,3 +1,4 @@
+import { stepAttacks } from '../src/combat/attacks.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createSandbox, canStand, activateUltimate, teleport, stepSandbox } from '../src/dev/sandbox.js';
@@ -7,6 +8,7 @@ function simulate(s,seconds,hit=()=>{}) {
  for(let i=0;i<seconds*60;i++) {
   s.time+=1/60;s.team.forEach(m=>m.cooldown=Math.max(0,m.cooldown-1/60));
   stepCompanions(s,1/60,canStand,hit);
+  stepAttacks(s,1/60,canStand,hit);
   for(const m of s.team)assert.ok(canStand(m.x,m.y),`${m.name} crossed obstacle at ${m.x},${m.y}`);
  }
 }
