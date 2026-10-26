@@ -482,7 +482,7 @@ canvas { cursor: crosshair; }
 }
 @media (min-width: 521px) {
   .inventory-window { height: min(820px, calc(100dvh - 40px)); }
-  .inventory-window:not(.tools-open):not(.bestiary-open):not(.petshop-open):not(.forge-open) #panel { display: flex; flex-direction: column; }
+  .inventory-window:not(.tools-open):not(.bestiary-open):not(.petshop-open):not(.forge-open):not(.spells-open) #panel { display: flex; flex-direction: column; }
   .inventory-character-bar, .item-details { flex-shrink: 0; }
   .paper-layout { flex: 1; min-height: 0; overflow-y: auto; padding: 2px; }
   .paper-slot { height: 54px; flex-shrink: 0; }
@@ -637,3 +637,18 @@ canvas { cursor: crosshair; }
 @keyframes chromatic-shimmer { to { filter: drop-shadow(0 0 6px #c9d2ff); } }
 @media (prefers-reduced-motion:reduce) { .chromatic-art { animation: none; } }
 @media (max-width:700px) { .forge-layout { grid-template-columns: 1fr; }.forge-items { max-height: 180px; }.forge-recipe { padding: 12px; }.inventory-footer .tabs button { padding: 6px 3px; font-size: 7px; } }
+.spells-open #panel { display:block; }
+.spell-icon { display:inline-flex; position:relative; align-items:center; justify-content:center; width:34px; height:34px; flex-shrink:0; border:1px solid var(--spell-color); background:color-mix(in srgb,var(--spell-color) 24%,#172c23); color:#f3e2bb; border-radius:7px; font-size:23px; }
+.spell-icon b { position:absolute; top:-5px; right:-4px; font-size:12px; color:#f2cd85; }
+.spellbar { display:flex; gap:6px; }
+.spellbar > button { position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; width:102px; padding:7px 5px; border-color:var(--spell-color); }
+.spellbar > button strong { max-width:100%; font-size:9px; line-height:1.3; font-weight:500; min-height:24px; }
+.spellbar > button kbd { font-size:8px; }.spellbar > button:disabled { opacity:.65; }.spellbar .spell-timer { font-size:8px; }
+.spell-charge-track { display:block; height:3px; width:100%; background:#10251d; }.spell-charge-track > span { display:block; height:100%; background:var(--spell-color); }
+.spellbook-party { display:flex; gap:6px; margin:12px 0; }.spellbook-party button { font-size:11px; }.spellbook-party button[aria-pressed=true] { border-color:#d8be80; }
+.spell-loadout { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; }.spell-loadout button { display:flex; flex-direction:column; align-items:center; gap:7px; padding:12px 5px; }.spell-loadout button[aria-pressed=true] { border-color:#e3c481; background:#3a4831; }.spell-loadout strong { font-size:12px; }.spell-loadout small,.spell-loadout span:not(.spell-icon) { font-size:9px; color:#b3c09c; }
+.spellbook-filter { display:flex; justify-content:space-between; align-items:center; gap:12px; margin:18px 0; }.spellbook-filter h3 { font-size:17px; color:#e5d3ab; }.spellbook-filter label { font-size:10px; color:#b7c29d; }.spellbook-filter select { margin-left:8px; }
+.spell-catalog { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }.spell-card { display:flex; flex-direction:column; padding:14px; border:1px solid var(--spell-color); border-radius:7px; background:#14261f88; }.spell-card > div { display:flex; align-items:center; gap:9px; }.spell-card h4 { margin:0; color:#e7d5ad; font-size:14px; }.spell-card h4 small { display:block; color:#a8b99a; font-size:9px; margin-top:5px; }.spell-card p { font-size:11px; line-height:1.7; color:#b2c19e; flex:1; }.spell-card > small { font-size:9px; line-height:1.7; color:#92a88b; }.spell-card > button { font-size:10px; margin-top:12px; }
+@media (max-width:700px) { .spell-catalog { grid-template-columns:1fr; }.spell-loadout { grid-template-columns:repeat(2,minmax(0,1fr)); }.spellbook-filter { align-items:flex-start; flex-direction:column; }.spellbook-filter h3 { margin:0; }.spellbar { gap:3px; }.spellbar > button { width:50px; padding:5px 2px; }.spellbar > button strong { font-size:7px; min-height:27px; }.spellbar .spell-icon { width:24px; height:24px; font-size:17px; }.spellbar .spell-timer { font-size:7px; }.hud-bottom { right:7px; }.ultimate-box { width:90px; }#deploy { padding:6px 3px; font-size:9px; }#ultimate-status { font-size:7px; }.hud-menu [data-action="spells"] span { display:none; }.inventory-footer .tabs { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:2px; }.inventory-footer .tabs button { font-size:8px; padding:5px 3px; }.inventory-footer { align-items:center; }.world-interaction { bottom:175px; } }
+
+@media (max-width:700px) { .touch-controls { bottom:135px; left:12px; } }

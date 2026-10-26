@@ -128,7 +128,7 @@ function steer(state, member, goal, dt, canStand) {
   if (member.moving) member.facing = Math.abs(ax) > Math.abs(ay) ? (ax > 0 ? 'right' : 'left') : (ay > 0 ? 'down' : 'up');
 }
 
-export function stepCompanions(state, dt, canStand, hitMonster) {
+export function stepCompanions(state, dt, canStand, hitMonster, cast = null) {
   const leader = state.player;
   state.heading ??= { x: 0, y: 1 };
   if (leader.moving) {
@@ -148,7 +148,7 @@ export function stepCompanions(state, dt, canStand, hitMonster) {
     motion.nextDecision -= dt;
     const tooFar = distance(member, leader) > 150;
     const retreating = leader.moving && distance(member, leader) > 90;
-    if (member.role === 'support' && member.cooldown === 0) {
+    if (!cast && member.role === 'support' && member.cooldown === 0) {
       const injured = state.team.filter(ally => ally.hp > 0 && ally.hp < ally.maxHp && distance(member,ally) < 120).sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp)[0];
       if (injured) {
         injured.hp = Math.min(injured.maxHp, injured.hp + 8); member.cooldown = 2;
@@ -172,8 +172,9 @@ export function stepCompanions(state, dt, canStand, hitMonster) {
           motion.goal = safeGoal({ x: target.x + Math.cos(angle) * 88, y: target.y + Math.sin(angle) * 88 }, canStand);
         } else if (gap >= 78) motion.goal = { x: member.x, y: member.y };
       }
+      if(cast)cast(member,target);
       const reach = member.role === 'melee' ? 34 : 118;
-      if (member.role !== 'support' && gap < reach && member.cooldown === 0 && visible(member,target,canStand)) {
+      if (!cast && member.role !== 'support' && gap < reach && member.cooldown === 0 && visible(member,target,canStand)) {
         launchAttack(state,member,target,target,weaponDamage(member,7)); member.cooldown = member.role === 'ranged' ? 1.15 : .9;
 
       }
@@ -190,6 +191,7 @@ export function stepCompanions(state, dt, canStand, hitMonster) {
         motion.nextDecision = 1.7 + index*.23;
       }
     }
+    if(cast&&!target&&!tooFar&&!retreating)cast(member,null);
     steer(state,member,motion.goal || member,dt,canStand);
   });
 }

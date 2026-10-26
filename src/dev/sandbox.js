@@ -1,10 +1,13 @@
+import { defaultLoadout } from '../data/spells.js';
+import { castSpell, stepSpells, receiveSpellDamage } from '../combat/spells.js';
+import { castCompanionSpell } from '../ai/spell-tactics.js';
 import { nearForge } from '../game/forge.js';
 import { recordSetLoot, nearPetShop } from '../game/pet-quests.js';
 import { PET_SHOP, FORGE } from '../world/map.js';
 import { canWalkMap } from '../world/map.js';
-import { ELEMENTS, CORE_CHANCE, createCore, rollCoreEquipment, weaponDamage, syncEquipmentHealth } from '../data/equipment.js';
+import { ELEMENTS, CORE_CHANCE, createCore, rollCoreEquipment, syncEquipmentHealth } from '../data/equipment.js';
 import { createMonster, monsterDefinition } from '../data/monsters.js';
-import { ATTACK_RANGE, guidedTarget, launchAttack, stepAttacks, lineClear } from '../combat/attacks.js';
+import { stepAttacks } from '../combat/attacks.js';
 import { stepCompanions, placeAllies, clearRoute } from '../ai/companions.js';
 import { createState, update as movePlayer } from '../game/state.js';
 
@@ -16,7 +19,7 @@ export const ULTIMATE_DURATION = 30;
 export const ULTIMATE_COOLDOWN = 300;
 const names = ['Aëlan', 'Liora', 'Sylas'];
 export function makeMember(role, i) {
-  return { id: i, name: names[i], role, level: 1, xp: 0, hp: 100, maxHp: 100, equipment: {}, x: 280 - i * 20, y: 210 + i * 13, facing: 'down', moving: false, cooldown: 0 };
+  return { id: i, name: names[i], role, level: 1, xp: 0, hp: 100, maxHp: 100, equipment: {}, x: 280 - i * 20, y: 210 + i * 13, facing: 'down', moving: false, cooldown: 0, loadout:defaultLoadout(role), spellCooldowns:{}, buffs:{}, ultimateCharge:0, ultimateLock:0 };
 }
 export function createSandbox() {
   const state = createState();
@@ -27,7 +30,7 @@ export function createSandbox() {
     bag: [], nextItem: 1, gold: 0, log: ['Bienvenue dans le jardin des essais.'], revision: 0,
     monsters: [createMonster('slime',455,220), createMonster('boar',535,285),createMonster('firefly',530,165),createMonster('moth',585,240)],
     bots: Array.from({ length: 3 }, (_, i) => ({ name: ['Milo', 'Éline', 'Orin'][i], x: 290 + i * 70, y: 110, role: ['melee', 'support', 'ranged'][i], facing: 'down', moving: true, phase: i * 2, target: { x: 270 + i * 70, y: 110 } })),
-    effects: [], attacks: [], aim: { x: 0, y: 0, active: false }, autoAttack: false,
+    effects: [], attacks: [], spellEvents:[], spellAreas:[], spellMissiles:[], spellVisuals:[], nextSpell:1, aim: { x: 0, y: 0, active: false }, autoAttack: false,
   });
   state.team[0].x = state.player.x;
   state.team[0].y = state.player.y;
@@ -209,25 +212,12 @@ export function rewardMonster(s,monster,random=Math.random) {
   grantLoot(s,random()<definition.rareChance?'rare':'normal',random()<definition.chromaticChance,monster.name);
   if(random()<CORE_CHANCE)grantCore(s,definition.element,monster.level);
 }
-export function attack(s, point = s.aim.active ? s.aim : null) {
-  const member = s.team[s.main];
-  Object.assign(member, s.player);
-  if (member.hp <= 0 || member.cooldown > 0) return false;
-  let target;
-  if (point) {
-    const guided = guidedTarget(s, point, canStand);
-    if (guided.inRange && guided.clear) target = guided.target;
-  } else {
-    target = s.monsters.filter(m => m.hp > 0 && Math.hypot(m.x-s.player.x,m.y-s.player.y)<=ATTACK_RANGE[member.role] && lineClear(s.player,m,canStand))
-      .sort((a,b)=>Math.hypot(a.x-s.player.x,a.y-s.player.y)-Math.hypot(b.x-s.player.x,b.y-s.player.y))[0];
-  }
-  const facing = { up: [0,-1], down: [0,1], left: [-1,0], right: [1,0] }[member.facing];
-  const destination = target || (point ? { x:point.x,y:point.y+8 } : {x:s.player.x+facing[0]*ATTACK_RANGE[member.role],y:s.player.y+facing[1]*ATTACK_RANGE[member.role]});
-  member.cooldown = .6;
-  launchAttack(s, member, destination, target, weaponDamage(member));
-  s.player.facing = member.facing;
-  return true;
+export const spellContext = {canStand,hitMonster};
+export function castEquipped(s,slot,point=s.aim.active?s.aim:null,options={}) {
+ const member=s.team[s.main];Object.assign(member,s.player);
+ return castSpell(s,member,slot,point?{x:point.x,y:point.y+8}:null,spellContext,options);
 }
+export function attack(s,point=s.aim.active?s.aim:null) {return castEquipped(s,0,point);}
 export function stepSandbox(s, direction, dt, elapsed = dt) {
   advanceUltimate(s, Math.max(0, elapsed));
   const old = { x: s.player.x, y: s.player.y };
@@ -237,10 +227,11 @@ export function stepSandbox(s, direction, dt, elapsed = dt) {
   if (!canStand(s.player.x, s.player.y)) s.player.y = old.y;
   Object.assign(s.team[s.main], s.player);
   stepAttacks(s, dt, canStand, hitMonster);
+  stepSpells(s,dt,spellContext);
   s.effects = s.effects.filter(e => { e.life -= dt; e.x += (e.vx || 0)*dt; e.y += (e.vy ?? -12)*dt; return e.life > 0; });
   s.team.forEach(m => { m.cooldown = Math.max(0, m.cooldown - dt); });
   if (s.autoAttack) attack(s);
-  stepCompanions(s, dt, canStand, hitMonster);
+  stepCompanions(s, dt, canStand, hitMonster,(member,target)=>castCompanionSpell(s,member,target,spellContext));
   s.monsters.forEach(monster => {
     monster.cooldown = Math.max(0, monster.cooldown - dt);
     if (monster.hp <= 0) {
@@ -250,14 +241,14 @@ export function stepSandbox(s, direction, dt, elapsed = dt) {
     }
     const target = s.team.filter((m, i) => m.hp > 0 && (i === s.main || s.deployed)).sort((a, b) => Math.hypot(a.x - monster.x, a.y - monster.y) - Math.hypot(b.x - monster.x, b.y - monster.y))[0];
     if (target && Math.hypot(target.x - monster.homeX, target.y - monster.homeY) < monster.detection) {
-      if (Math.hypot(monster.x - target.x, monster.y - target.y) > 22) walk(monster, target.x, target.y, monster.speed, dt);
+      if (Math.hypot(monster.x - target.x, monster.y - target.y) > 22) {if(!(monster.spellState?.root>0))walk(monster, target.x, target.y, monster.speed, dt);}
       else if (monster.cooldown === 0) {
-        target.hp = Math.max(0, target.hp - monster.damage); monster.cooldown = monster.attackDelay;
+        const taken=receiveSpellDamage(s,target,monster.damage,monster); monster.cooldown = monster.attackDelay;
         s.effects.push({ x: monster.x, y: monster.y-8, toX: target.x, toY: target.y-8, text: '', color: '#f0a28e', life: .22 });
-        s.effects.push({ x: target.x, y: target.y - 25, text: `−${monster.damage}`, color: '#ffa3a3', life: .8 }); s.revision++;
+        s.effects.push({ x: target.x, y: target.y - 25, text: `−${taken}`, color: '#ffa3a3', life: .8 }); s.revision++;
         if (s.team.every(m => m.hp <= 0)) { endUltimate(s); teleport(s, 'maison'); heal(s); note(s, 'Défaite : retour à la maison (règle de test).'); }
       }
-    } else walk(monster, monster.homeX + Math.sin(s.time * .5 + monster.homeX) * 20, monster.homeY + Math.cos(s.time * .4) * 15, monster.patrolSpeed, dt);
+    } else if(!(monster.spellState?.root>0))walk(monster, monster.homeX + Math.sin(s.time * .5 + monster.homeX) * 20, monster.homeY + Math.cos(s.time * .4) * 15, monster.patrolSpeed, dt);
   });
   s.bots.forEach(bot => {
     if (Math.hypot(bot.x - bot.target.x, bot.y - bot.target.y) < 8) {

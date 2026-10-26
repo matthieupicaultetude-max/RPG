@@ -1,3 +1,5 @@
+import { drawSpellGround, drawSpellOverlays } from './spells.js';
+import { spellById } from '../data/spells.js';
 import { createEnvironment } from "./environment.js";
 import { drawAdventurer, drawCreature } from "./actors.js";
 import { viewport } from "./viewport.js";
@@ -44,6 +46,7 @@ export function createRenderer(canvas) {
   }
   return (s) => {
     ctx.drawImage(environment.ground, 0, 0);
+    drawSpellGround(ctx,s);
     const layers = [
       ...environment.props.map((prop) => ({
         y: prop.y,
@@ -77,7 +80,7 @@ export function createRenderer(canvas) {
               s.time,
               p.id === s.main,
               false,
-              s.attacks.find((a) => a.owner === p.id && a.age < 0.3),
+              s.attacks.find((a) => a.owner === p.id && a.age < 0.3) || (()=>{const v=s.spellVisuals.find(v=>v.owner===p.id&&v.age<.3);return v?{age:v.age,angle:Math.atan2(v.y-p.y,v.x-p.x)}:null;})(),
             ),
         })),
       ...s.monsters.map((m) => ({
@@ -153,8 +156,10 @@ export function createRenderer(canvas) {
       }
       ctx.restore();
     }
+    drawSpellOverlays(ctx,s);
     if (s.aim.active) {
-      const guide = guidedTarget(s, s.aim, canStand);
+      const primary=spellById(s.team[s.main].loadout[0]);
+      const guide = primary.role==='support'?{target:null}:guidedTarget(s, s.aim, canStand);
       const target = guide.target;
       const x = target ? target.x : s.aim.x;
       const y = target ? target.y - 8 : s.aim.y;
@@ -194,7 +199,7 @@ export function createRenderer(canvas) {
       ctx.arc(
         s.player.x,
         s.player.y - 5,
-        ATTACK_RANGE[s.team[s.main].role],
+        primary.range||20,
         0,
         Math.PI * 2,
       );

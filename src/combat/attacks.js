@@ -1,3 +1,4 @@
+import { spellById } from '../data/spells.js';
 export const ATTACK_RANGE = { melee: 45, support: 85, ranged: 125 };
 export const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 export function lineClear(a, b, canStand) {
@@ -17,7 +18,7 @@ export function guidedTarget(state, point, canStand) {
     return { monster:m, score:cursorGap, eligible:cursorGap<28 || (difference<.22 && cursorGap<60) };
   }).filter(c => c.eligible).sort((a,b)=>a.score-b.score);
   const target = candidates[0]?.monster;
-  return { target, inRange: !!target && distance(state.player,target)<=ATTACK_RANGE[member.role], clear: !!target && lineClear(state.player,target,canStand) };
+  return { target, inRange: !!target && distance(state.player,target)<=(spellById(member.loadout?.[0])?.range ?? ATTACK_RANGE[member.role]), clear: !!target && lineClear(state.player,target,canStand) };
 }
 export function launchAttack(state, member, point, target, damage) {
   const angle = Math.atan2(point.y-member.y, point.x-member.x);

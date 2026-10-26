@@ -1,8 +1,9 @@
+import { spellById } from '../data/spells.js';
 import { nearForge } from './forge.js';
 import { nearPetShop } from './pet-quests.js';
 import { screenToWorld } from '../rendering/viewport.js';
 import { createCharacterWheel } from '../input/character-wheel.js';
-import { createSandbox, stepSandbox, attack, teleport, activateUltimate, cycleMain } from '../dev/sandbox.js';
+import { createSandbox, stepSandbox, attack, teleport, activateUltimate, cycleMain, castEquipped } from '../dev/sandbox.js';
 import { createControls } from '../input/controls.js';
 import { createRenderer } from '../rendering/scene.js';
 
@@ -17,6 +18,8 @@ export function createGame(canvas, touchControls, onChange, onTimers = () => {},
   canvas.addEventListener('keydown', event => {
     if (interfaceOpen) return;
     if (event.code === 'KeyF' && !event.repeat) {event.preventDefault();if(nearForge(state))onInteraction('forge');else if(nearPetShop(state))onInteraction('petshop');}
+    const slot={KeyR:1,KeyC:2,KeyT:3}[event.code];
+    if(slot!==undefined&&!event.repeat){event.preventDefault();castEquipped(state,slot);}
     if (event.code === 'KeyE' && !event.repeat) { event.preventDefault(); activateUltimate(state); }
   }, { signal: controller.signal });
   let pointer = null;
@@ -32,12 +35,16 @@ export function createGame(canvas, touchControls, onChange, onTimers = () => {},
     event.preventDefault();
     canvas.focus({ preventScroll: true });
     updateAim(event);
-    attack(state);
+    if(spellById(state.team[state.main].loadout[0]).effect==='pierce')state.spellCharge={time:0,owner:state.main};else attack(state);
   }, { signal: controller.signal });
+  window.addEventListener('pointerup',event=>{if(event.button===2&&state.spellCharge){if(!interfaceOpen&&state.spellCharge.owner===state.main)castEquipped(state,0,undefined,{charge:state.spellCharge.time});state.spellCharge=null;}},{signal:controller.signal});
+  window.addEventListener('blur',()=>{state.spellCharge=null;},{signal:controller.signal});
+  canvas.addEventListener('blur',()=>{state.spellCharge=null;},{signal:controller.signal});
   function tick(now) {
     const elapsed = previous === undefined ? 0 : Math.max(0, (now - previous) / 1000);
     const dt = document.hidden ? 0 : Math.min(elapsed, .05);
     previous = now;
+    if(state.spellCharge){if(interfaceOpen||state.spellCharge.owner!==state.main)state.spellCharge=null;else{state.spellCharge.time+=dt;if(state.spellCharge.time>=1){castEquipped(state,0,undefined,{charge:1});state.spellCharge=null;}}}
     if (pointer && !interfaceOpen) updateAim(pointer);
     const autoAttack = state.autoAttack;
     if (interfaceOpen) state.autoAttack = false;
@@ -52,5 +59,5 @@ export function createGame(canvas, touchControls, onChange, onTimers = () => {},
     frame = requestAnimationFrame(tick);
   }
   frame = requestAnimationFrame(tick);
-  return { state, setInterfaceOpen(open) { interfaceOpen = open; state.aim.active = false; controls.clear(); }, refresh() { state.revision++; }, reset() { teleport(state, 'maison'); }, destroy() { cancelAnimationFrame(frame); controls.destroy(); controller.abort(); } };
+  return { state, setInterfaceOpen(open) { interfaceOpen = open; state.spellCharge=null; state.aim.active = false; controls.clear(); }, refresh() { state.revision++; }, reset() { teleport(state, 'maison'); }, destroy() { cancelAnimationFrame(frame); controls.destroy(); controller.abort(); } };
 }

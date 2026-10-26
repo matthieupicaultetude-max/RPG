@@ -341,7 +341,7 @@ Réglages initiaux par pièce :
 - Chacune des sept autres pièces : **+3** dans la caractéristique élémentaire et **+3 Vitalité**.
 - Ensemble des neuf pièces : **+28** dans la caractéristique et **+27 Vitalité**.
 
-Dans le prototype, **1 Vitalité = 1 PV maximum**. Équiper ne soigne pas les PV actuels ; retirer un bonus peut les ramener au nouveau maximum. Une montée de niveau conserve les bonus équipés. Les attaques de base prennent l’élément de l’arme et sont multipliées par `1 + caractéristique correspondante / 100`, avec arrondi. Ce calcul s’applique aussi aux compagnons. Les compétences par élément seront travaillées ultérieurement. Les anciennes armes d’essai conservent leur bonus de débogage +5 dégâts ; elles ne sont pas des pièces de panoplie.
+Dans le prototype, **1 Vitalité = 1 PV maximum**. Équiper ne soigne pas les PV actuels ; retirer un bonus peut les ramener au nouveau maximum. Une montée de niveau conserve les bonus équipés. Les sorts prennent leur propre élément et sont multipliés par `1 + (caractéristique de cet élément + Puissance) / 100`, avec arrondi. Ce calcul s’applique aussi aux compagnons. Les sorts par élément sont implémentés selon la section 27 et le catalogue `docs/SPELLS.md`. Les anciennes armes d’essai sans statistiques ne donnent pas de bonus aux sorts.
 
 ### Acquisition
 
@@ -422,6 +422,23 @@ Chacune des neuf pièces des quatre panoplies débutantes possède une version c
 
 La recette consomme la pièce standard pour sa transformation, **1 ressource normale chromatique, 10 ressources normales standards et 5 ressources rares standards** du monstre associé à l’élément : sanglier/Ronce, luciole/Braise, phalène/Brise, slime/Rosée. Tous les coûts sont validés avant consommation ; aucun ingrédient ne disparaît en cas de manque. Les rares chromatiques restent destinés aux familiers. Aucun or, métier, hasard ou risque d’échec n’est ajouté à cette recette.
 
-La Puissance est prise en compte dans les dégâts du joueur et de ses alliés : la caractéristique de l’élément de l’arme et la Puissance s’additionnent dans le multiplicateur de dégâts. Les autres statistiques des pièces restent identiques.
+La Puissance est prise en compte dans les dégâts du joueur et de ses alliés : la caractéristique de l’élément du sort et la Puissance s’additionnent dans le multiplicateur de dégâts. Les autres statistiques des pièces restent identiques.
 
 Chaque pièce chromatique présente une palette distincte, une aura dans ses icônes et des éclats en jeu. Les **neuf pièces chromatiques d’une même panoplie équipées par un seul personnage** activent une aura de déplacement : halo au sol et particules derrière le personnage en mouvement. L’effet n’est pas actif au repos, avec des pièces réparties entre les personnages, une pièce standard ou des panoplies mélangées. L’aura complète reste purement visuelle, sans bonus additionnel.
+
+
+## 27. Classes, équipement des sorts et ultimes personnels
+
+Les trois rôles deviennent trois classes jouables : **Combattant, Soutien et Distance**. Chacune dispose de trois sorts normaux et un ultime dans chacun des quatre éléments, soit **48 sorts**. Le catalogue des effets, valeurs, portées et recharges est documenté dans `docs/SPELLS.md` et défini dans `src/data/spells.js`.
+
+Le grimoire **K** permet d’équiper **trois sorts normaux distincts et un ultime personnel de la classe**, en mélangeant librement les éléments. Aucun élément de spécialisation exclusif n’est imposé. Chaque personnage conserve sa propre barre. Les changements sont libres dans le jardin des essais, mais ne réinitialisent ni recharges, ni jauge. Les autres classes ne sont pas équipables sur ce personnage.
+
+**Commandes : clic droit / R / C / T.** A est conservé pour le déplacement WASD ; il n’est donc pas utilisé comme raccourci de sort. Les boutons de la barre offrent les mêmes actions au tactile. Le Trait perforant peut être chargé par maintien du clic droit puis relâchement. **E reste le déploiement commun de troupe** (30 secondes, 300 secondes entre activations), indépendant de T.
+
+Les dégâts élémentaires valent `arrondi(base du sort × [1 + (caractéristique de l’élément du sort + Puissance) / 100])`. L’arme ne convertit pas l’élément. Les soins et valeurs de bouclier élémentaires utilisent la même échelle ; aucune caractéristique ne reçoit un effet secondaire automatique. Les résistances élémentaires, si une cible en possède, sont appliquées ensuite. Les combos précisent leurs coefficients additionnels.
+
+Un délai commun de **0,35 s** sépare les sorts. Chaque sort conserve en plus sa recharge propre par identifiant. Chaque personnage possède une jauge personnelle **0–100**, initialement vide, alimentée par dégâts, soins effectifs et absorption. Un ultime consomme 100 et impose une recharge de **20 s** ; les gains de jauge sont bloqués pendant les **8 s** suivantes. Soigner sans PV manquants ne remplit pas la jauge. Les outils dev proposent de la charger pour les essais.
+
+Les alliés contrôlés par l’IA utilisent la même barre, les mêmes formules et les mêmes règles de recharge. Les soins nécessaires sont prioritaires ; les comportements prennent notamment en compte Fractures, Braises, Ancrage et flaques. Le suivi naturel et les distances propres au rôle sont conservés. Un personnage hors terrain n’agit plus et ses zones, événements et projectiles sont interrompus.
+
+Les animations distinguent impacts, projectiles, boucliers, zones persistantes et avertissements de zones différées, avec une couleur par élément. Les déplacements et tirs respectent les collisions du monde. Le prototype reste local, sans sauvegarde persistante ni autorité multijoueur ; les chiffres constituent des réglages initiaux.
