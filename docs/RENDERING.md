@@ -65,3 +65,5 @@ Les tests de rendu couvrent :
 - zoom et origine de caméra entiers.
 
 Les parcours navigateur vérifient aussi le remplissage opaque des quatre coins du canvas, la visée guidée avec la caméra entière, les impacts, l’inventaire et l’ouverture des noyaux. Les collisions et les échantillonneurs peuvent être testés sans DOM ; seuls les adaptateurs Canvas et l’atlas de sprites utilisent le navigateur.
+
+La maison utilise une géométrie de toit commune dans `src/rendering/house-geometry.js` : les deux versants, le faîtage et le pignon partagent exactement leurs sommets. Les tuiles sont découpées dans chaque versant ; aucun fond de toiture indépendant ne peut dépasser. Les tests vérifient aussi que le pignon masque le haut des poteaux de façade.

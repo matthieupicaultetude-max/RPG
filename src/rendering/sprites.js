@@ -1,3 +1,5 @@
+import { HOUSE_ROOF } from "./house-geometry.js";
+
 // Original pixel art, drawn once for the terrain and sorted by depth for the trees.
 const seed = (x, y, n = 0) => {
   const v = Math.sin(x * 127.1 + y * 311.7 + n * 74.7) * 43758.5453;
@@ -163,6 +165,9 @@ function tree(g, x, y, size = 1) {
   g.restore();
 }
 function roofPlane(g, corners, rows, columns, dark) {
+  g.save();
+  poly(g, corners, dark ? "#828174" : "#a3a294");
+  g.clip();
   const lerp = (a, b, t) => [
     a[0] + (b[0] - a[0]) * t,
     a[1] + (b[1] - a[1]) * t,
@@ -186,13 +191,14 @@ function roofPlane(g, corners, rows, columns, dark) {
       const palette = dark
         ? ["#747267", "#828174", "#908d7e"]
         : ["#929388", "#a3a294", "#b2ad99"];
-      poly(g, points, palette[(row * 7 + col * 3) % 3], "#665d4b");
+      poly(g, points, palette[(row * 7 + col * 5) % 3], "#665d4b");
       g.strokeStyle = dark ? "#a49c83" : "#c5bba2";
       g.beginPath();
       g.moveTo(points[0][0] + 1, points[0][1] + 1);
       g.lineTo(points[1][0] - 1, points[1][1] + 1);
       g.stroke();
     }
+  g.restore();
 }
 function house(g) {
   oval(g, 115, 111, 64, 10, "#5f633841");
@@ -248,60 +254,18 @@ function house(g) {
   }
   g.fillStyle = "#e1bc72";
   g.fillRect(115, 97, 2, 2);
-  poly(
-    g,
-    [
-      [48, 63],
-      [78, 17],
-      [111, 5],
-      [111, 34],
-      [72, 72],
-    ],
-    "#79776a",
-    "#65503a",
-  );
-  roofPlane(
-    g,
-    [
-      [78, 17],
-      [111, 5],
-      [111, 34],
-      [48, 63],
-    ],
-    6,
-    4,
-    false,
-  );
-  roofPlane(
-    g,
-    [
-      [111, 5],
-      [149, 24],
-      [173, 65],
-      [111, 34],
-    ],
-    6,
-    4,
-    true,
-  );
-  poly(
-    g,
-    [
-      [72, 65],
-      [111, 32],
-      [151, 65],
-    ],
-    "#bda477",
-    "#715136",
-  );
+  roofPlane(g, HOUSE_ROOF.left, 6, 5, false);
+  roofPlane(g, HOUSE_ROOF.right, 6, 5, true);
+  poly(g, HOUSE_ROOF.gable, "#bda477", "#715136");
+  // The visible timber follows the same front edge as the slate planes.
   g.strokeStyle = "#765138";
   g.lineWidth = 3;
   g.beginPath();
-  g.moveTo(73, 65);
-  g.lineTo(111, 32);
-  g.lineTo(151, 65);
-  g.moveTo(111, 35);
-  g.lineTo(111, 63);
+  HOUSE_ROOF.frontTrim.forEach(([x, y], i) =>
+    i ? g.lineTo(x, y) : g.moveTo(x, y),
+  );
+  g.moveTo(110, 33);
+  g.lineTo(110, 63);
   g.stroke();
   g.lineWidth = 1;
   g.fillStyle = "#735338";
