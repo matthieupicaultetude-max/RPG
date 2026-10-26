@@ -1,7 +1,10 @@
 import { COLORS } from '../dev/sandbox.js';
 
 export function createRenderer(canvas) {
-  const ctx = canvas.getContext('2d');
+  const frame = document.createElement('canvas');
+  frame.width = 640; frame.height = 400;
+  const ctx = frame.getContext('2d');
+  const screen = canvas.getContext('2d');
   ctx.imageSmoothingEnabled = false;
   const ground = document.createElement('canvas'); ground.width = 640; ground.height = 400;
   const g = ground.getContext('2d');
@@ -93,5 +96,14 @@ export function createRenderer(canvas) {
     }
     if(s.attackFlash>0){ctx.strokeStyle='#fff0b3';ctx.lineWidth=3;ctx.beginPath();ctx.arc(s.player.x,s.player.y-7,22,-1,1.8);ctx.stroke();}
     for(const e of s.effects){ctx.globalAlpha=Math.min(1,e.life*2);if(e.toX!==undefined){ctx.strokeStyle=e.color;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(e.x,e.y);ctx.lineTo(e.toX,e.toY);ctx.stroke();}ctx.font='bold 11px monospace';ctx.textAlign='center';ctx.fillStyle=e.color;ctx.fillText(e.text,e.x,e.y);ctx.globalAlpha=1;}
+    const width = Math.round(canvas.clientWidth), height = Math.round(canvas.clientHeight);
+    if (canvas.width !== width || canvas.height !== height) { canvas.width = width; canvas.height = height; }
+    screen.imageSmoothingEnabled = false;
+    // Fill every viewport without stretching sprites. Follow the player when cropped.
+    const scale = Math.max(width / 640, height / 400);
+    const viewWidth = width / scale, viewHeight = height / scale;
+    const cameraX = Math.max(0, Math.min(640 - viewWidth, s.player.x - viewWidth / 2));
+    const cameraY = Math.max(0, Math.min(400 - viewHeight, s.player.y - viewHeight / 2));
+    screen.drawImage(frame, cameraX, cameraY, viewWidth, viewHeight, 0, 0, width, height);
   };
 }

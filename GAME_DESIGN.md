@@ -59,7 +59,7 @@ Le joueur peut **refaire sa composition chaque fois qu’il revient à sa maison
 
 ### Contrôle de l’équipe
 
-Le joueur dirige uniquement son **personnage principal**. Hors ultime, seul ce personnage est présent sur le terrain. Les touches **1, 2 et 3** sélectionnent respectivement le corps à corps, le soutien et le distance ; les portraits servent aussi de boutons, notamment au tactile. Hors ultime, le nouveau personnage apparaît à la position actuelle, avec ses propres PV, équipement et délai d’attaque. Un personnage à terre ne peut pas être sélectionné.
+Le joueur dirige uniquement son **personnage principal**. Hors ultime, seul ce personnage est présent sur le terrain. La **molette de la souris** parcourt les personnages vivants dans les deux sens, avec retour au début de la liste. Les portraits servent aussi de boutons, notamment au tactile. Les touches 1, 2 et 3 ne changent plus de personnage. Hors ultime, le nouveau personnage apparaît à la position actuelle, avec ses propres PV, équipement et délai d’attaque. Un personnage à terre ne peut pas être sélectionné.
 
 ### Ultime : réunion de la troupe
 
@@ -82,7 +82,7 @@ La troupe s’articule autour du personnage principal, sans former une file rigi
 - Le soutien reste en retrait, suit la troupe et aide les alliés.
 - Quand le personnage principal s’éloigne, les compagnons abandonnent les combats trop éloignés et se regroupent autour de lui.
 
-Le changement de personnage principal est disponible au clavier et par les portraits, pendant et hors ultime. Les distances, vitesses et règles de priorité précises sont encore des réglages de test.
+Le changement de personnage principal est disponible à la molette et par les portraits, pendant et hors ultime. Les distances, vitesses et règles de priorité précises sont encore des réglages de test.
 
 L’IA des compagnons et les bots simulant d’autres joueurs sont deux systèmes distincts, même s’ils peuvent partager des briques de déplacement ou de combat.
 
@@ -212,7 +212,7 @@ Le jardin des essais sert à éprouver les interfaces et les personnages avant d
 
 Les conventions suivantes s’appliquent **uniquement à cette zone** :
 
-- Trois personnages, un seul actif hors ultime, changement par **1, 2, 3** ou portraits. **E** réunit la troupe pendant 30 s, toutes les 5 min. Le suivi autonome par rôle pendant l’ultime est décrit en section 5. Les rôles sont fixes dans ce banc d’essai.
+- Trois personnages, un seul actif hors ultime, changement par **molette** ou portraits. **E** réunit la troupe pendant 30 s, toutes les 5 min. Le suivi autonome par rôle pendant l’ultime est décrit en section 5. Les rôles sont fixes dans ce banc d’essai.
 - Combat temps réel avec acquisition automatique du monstre le plus proche à portée ; soutien IA soignant les alliés vivants. Les compétences et le ciblage définitifs ne sont pas implémentés.
 - XP identique pour les trois membres, sac partagé sans capacité maximale et aucun métier.
 - Quatorze emplacements individuels équipables ; coiffe/cape visibles et bonus de test de +5 dégâts pour l’arme du personnage contrôlé. Autres statistiques à définir.
@@ -221,3 +221,13 @@ Les conventions suivantes s’appliquent **uniquement à cette zone** :
 - Pas de sauvegarde, de serveur ni de joueurs distants. Le rechargement remet à zéro la session. Aucun menu ne suspend les combats.
 
 Ces essais ne tranchent pas les questions ouvertes des sections précédentes et ne définissent pas un nouveau périmètre MVP.
+
+## 15. Présentation du jeu et inventaire
+
+La scène occupe toute la fenêtre du navigateur. Le rendu conserve les proportions du pixel art ; la caméra suit le personnage sur les écrans étroits. Un bouton permet aussi de demander le plein écran natif du navigateur lorsque celui-ci est disponible.
+
+L’interface est superposée à la scène : zone et statut de session en haut, portraits avec PV sur le côté, attaque et ultime avec ses compteurs en bas. L’ancienne colonne latérale permanente et la page de présentation sont supprimées.
+
+**I** ouvre ou ferme l’inventaire ; **Échap**, le bouton Fermer et le clic sur le fond extérieur permettent aussi de le fermer. Un bouton visible permet de l’ouvrir au tactile. Le panneau contient l’équipement du personnage, le sac et, dans la zone de développement, les outils de test. Il est fermé au départ.
+
+Pendant l’ouverture, la molette fait défiler le panneau et ne change pas de personnage. Les commandes directes de déplacement et d’attaque sont suspendues pour éviter les actions accidentelles dans les menus ; le monde, les compagnons et les délais d’ultime continuent. La fermeture ne conserve pas une touche de déplacement bloquée. Les gestes de molette sont filtrés pour éviter plusieurs changements involontaires sur un seul cran ou un court geste de pavé tactile.

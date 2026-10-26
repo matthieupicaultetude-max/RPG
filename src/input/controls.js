@@ -26,6 +26,7 @@ export function createControls(canvas, touchControls) {
     }
   });
   return {
+    clear,
     direction() {
       const active = new Set([...keys].map(key => bindings[key]).concat([...pointers.values()]));
       return { x: Number(active.has('right')) - Number(active.has('left')), y: Number(active.has('down')) - Number(active.has('up')) };

@@ -8,7 +8,7 @@ Une **zone de développement locale**, pour tester les interfaces et les premiè
 
 - Maison, atelier et aire de combat dans une petite carte top-down.
 - Équipe de trois : corps à corps, soutien et distance. Aucun poste flexible.
-- Touches **1, 2, 3** ou portraits pour sélectionner le principal. Hors ultime, seul ce personnage est présent. **E** déclenche l’ultime : les trois personnages combattent pendant **30 secondes**, avec **5 minutes entre activations**. Les deux compagnons sont pilotés par l’IA pendant l’effet. Ils suivent avec des trajectoires individuelles, contournent la maison et s’espacent naturellement. Le corps à corps engage au contact, le distance garde son recul et le soutien accompagne et soigne. La troupe se regroupe quand le principal s’éloigne.
+- **Molette de souris** ou portraits pour sélectionner le principal. Hors ultime, seul ce personnage est présent. **E** déclenche l’ultime : les trois personnages combattent pendant **30 secondes**, avec **5 minutes entre activations**. Les deux compagnons sont pilotés par l’IA pendant l’effet. Ils suivent avec des trajectoires individuelles, contournent la maison et s’espacent naturellement. Le corps à corps engage au contact, le distance garde son recul et le soutien accompagne et soigne. La troupe se regroupe quand le principal s’éloigne.
 - Trois bots de promenade identifiés comme tels. Ils ne représentent pas des connexions humaines et ne possèdent pas encore leurs propres équipes.
 - Slime et sanglier : dégâts, recul, effets, récompenses, réapparition et retour à la maison après défaite complète.
 - Sac de test partagé, équipement individuel de 14 emplacements, équipement/retrait d’objets et variantes de loot dans des piles distinctes.
@@ -26,9 +26,11 @@ npm ci
 npm run dev
 ```
 
-Ouvrir l’adresse affichée par Vite. Cliquer sur la scène pour activer le clavier : flèches, ZQSD ou WASD pour bouger, Espace pour attaquer le monstre le plus proche à portée, **1, 2, 3** pour changer de personnage, **E** pour activer l’ultime (une pression, sans répétition en maintenant la touche). Les boutons sous la scène permettent d’attaquer, soigner et se téléporter. Sélectionner un portrait change le personnage contrôlé. La durée et la recharge de l’ultime sont affichées sous la scène ; changement de personnage, soin et téléportation ne réinitialisent pas ces délais.
+Ouvrir l’adresse affichée par Vite. Cliquer sur la scène pour activer le clavier : flèches, ZQSD ou WASD pour bouger, Espace pour attaquer le monstre le plus proche à portée, **molette** pour changer de personnage, **E** pour activer l’ultime (une pression, sans répétition en maintenant la touche). Les boutons sous la scène permettent d’attaquer, soigner et se téléporter. Sélectionner un portrait change le personnage contrôlé. La durée et la recharge de l’ultime sont affichées sous la scène ; changement de personnage, soin et téléportation ne réinitialisent pas ces délais.
 
-Dans **Outils dev**, générer un équipement puis ouvrir le **Sac** et cliquer sur **Équiper** pour l’attribuer au personnage principal. Le panneau **Personnage** présente ses 14 emplacements ; cliquer sur un objet équipé le remet dans le sac. Coiffe et cape modifient le sprite ; une arme équipée ajoute 5 dégâts au coup du personnage principal. Les autres bonus restent à concevoir.
+Le jeu remplit la fenêtre, avec portraits, PV et actions en surimpression. **I** ou le bouton **Inventaire** ouvre le panneau d’équipement et de sac ; **I**, **Échap** ou le bouton Fermer le referme. Les anciens raccourcis 1/2/3 sont retirés. La molette dans le panneau fait défiler son contenu sans changer de personnage. Le monde et l’ultime continuent pendant les menus. Un bouton ⛶ active le plein écran natif si disponible.
+
+Dans **Outils dev** (bouton en haut ou onglet de l’inventaire), générer un équipement puis ouvrir le **Sac** et cliquer sur **Équiper** pour l’attribuer au personnage principal. Le panneau **Personnage** présente ses 14 emplacements ; cliquer sur un objet équipé le remet dans le sac. Coiffe et cape modifient le sprite ; une arme équipée ajoute 5 dégâts au coup du personnage principal. Les autres bonus restent à concevoir.
 
 ## Vérification
 
@@ -38,7 +40,7 @@ npm run build
 npm run preview
 ```
 
-Dix-huit tests couvrent déplacement, composition à trois, variantes de butin, échanges d’équipement, XP, combat/récompenses/respawn, collisions de la maison, soutien IA, retour après défaite, ultime (30 s / 300 s), changements de personnage, contournement de la maison, espacement au repos, recul du distance et regroupement. Les parcours navigateur vérifient également les commandes, les panneaux et le petit écran.
+Vingt tests couvrent déplacement, composition à trois, variantes de butin, échanges d’équipement, XP, combat/récompenses/respawn, collisions de la maison, soutien IA, retour après défaite, ultime (30 s / 300 s), changements de personnage, filtrage de la molette, contournement de la maison, espacement au repos, recul du distance et regroupement. Les parcours navigateur vérifient également les commandes, les panneaux et le petit écran.
 
 ## Organisation
 

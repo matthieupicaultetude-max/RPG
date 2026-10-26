@@ -49,6 +49,15 @@ export function chooseMain(s, i) {
   note(s, `${s.team[i].name} est votre personnage principal.`);
   return true;
 }
+export function cycleMain(s, direction) {
+  if (!direction) return false;
+  const step = Math.sign(direction);
+  for (let offset = 1; offset < s.team.length; offset++) {
+    const index = (s.main + step * offset + s.team.length) % s.team.length;
+    if (s.team[index].hp > 0) return chooseMain(s, index);
+  }
+  return false;
+}
 export function activateUltimate(s) {
   if (s.ultimate.remaining > 0 || s.ultimate.cooldown > 0 || s.team[s.main].hp <= 0) return false;
   s.ultimate.remaining = ULTIMATE_DURATION;
