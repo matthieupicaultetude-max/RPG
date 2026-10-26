@@ -1,7 +1,7 @@
 import { ROLES, COLORS, SLOTS } from '../dev/sandbox.js';
 
-const LEFT = ['Coiffe', 'Amulette', 'Arme', 'Anneau 1', 'Ceinture'];
-const RIGHT = ['Cape', 'Bouclier', null, 'Anneau 2', 'Bottes'];
+const LEFT = ['Amulette', 'Anneau 1', 'Anneau 2', 'Arme'];
+const RIGHT = ['Coiffe', 'Cape', 'Ceinture', 'Bottes'];
 export function itemIcon(slot = '', chromatic = false) {
   const color = chromatic ? '#c5a4e9' : '#d9b76b';
   let shape;
@@ -14,6 +14,7 @@ export function itemIcon(slot = '', chromatic = false) {
     Bottes: '<path d="M7 4h7v16l4 3v5H3v-7l4-2zm12 0h7v16l4 3v5H19"/>',
     Amulette: '<path d="M7 4v10l9 10 9-10V4M16 18l5 6-5 6-5-6z"/>',
     Arme: '<path d="M24 3h5v5L13 24l-5-5zM5 17l12 12M3 29l7-7"/>',
+    Familier: '<path d="m7 14-2-9 9 5h4l9-5-2 9v9l-9 6-9-6zM11 17v3m10-3v3m-8 4h6"/>',
     Bouclier: '<path d="m16 3 12 5v10l-4 7-8 5-8-5-4-7V8zM16 7v18M8 11h16"/>',
   }[slot] || '<path d="m16 3 10 11-3 12H9L6 14zM16 3v23M6 14h20"/>';
   return `<svg viewBox="0 0 32 32" aria-hidden="true" fill="${color}22" stroke="${color}" stroke-width="2" stroke-linejoin="round">${shape}</svg>`;
@@ -34,6 +35,7 @@ function avatar(member) {
     ${e.Ceinture?'<path d="M38 104h44v9H38z" fill="#735339"/><path d="M55 103h12v11H55z" fill="#dfbd6f"/>':''}
     ${e.Amulette?'<path d="m51 64 9 13 10-13" fill="none" stroke="#d8bd79" stroke-width="2"/><path d="m60 73 5 6-5 6-5-6z" fill="#8bcebc"/>':''}
     ${e.Arme?'<path d="M94 70h5v49h-5z" fill="#e1e5d4"/><path d="M88 112h16v5H88z" fill="#d4af65"/><path d="M94 116h5v16h-5z" fill="#785b40"/>':''}
+    ${e.Familier?'<path d="M82 142h17v10H82zm0-6 6 4h5l6-4v9H82z" fill="#cfa56c"/><path d="M86 143h2v2h-2zm9 0h2v2h-2z" fill="#243a39"/>':''}
     ${e.Bouclier?'<path d="m27 84 17 6v22l-17 12-17-12V90z" fill="#879d9d"/><path d="m27 89 11 4v16l-11 8-11-8V93z" fill="#475e6a"/><path d="M25 93h4v18h-4z" fill="#d5b974"/>':''}
   </svg>`;
 }
@@ -45,7 +47,7 @@ function objectDetails(state, selection) {
   const item = selectedObject(state,selection);
   if (!item) return `<div class="item-details empty-details"><span class="detail-icon">${itemIcon(selection?.slot)}</span><div><p class="eyebrow">INFORMATIONS SUR L’OBJET</p><h3>${selection?.slot || 'Sélectionnez un objet'}</h3><p>${selection?.slot?'Cet emplacement est vide. Choisissez un équipement dans le sac pour le remplir.':'Cliquez sur un objet du sac ou un emplacement équipé pour consulter sa description et ses effets.'}</p></div></div>`;
   const equipped = selection.source==='equipment';
-  const effect = item.slot==='Arme'?'+5 dégâts sur les attaques du personnage principal.':item.slot==='Bouclier'?'Bouclier de test visible sur le personnage. Les bonus défensifs restent à définir.':item.slot==='Coiffe'||item.slot==='Cape'?'Modifie l’apparence du personnage. Aucun bonus chiffré pour le moment.':item.slot?'Équipement de test. Les caractéristiques et bonus seront définis plus tard.':'Ressource obtenue sur un monstre. Les usages et la valeur marchande restent à définir.';
+  const effect = item.slot==='Familier'?'Familier de test, visible dans l’aperçu. Aucun bonus ni comportement de combat pour le moment.':item.slot==='Arme'?'+5 dégâts sur les attaques du personnage principal.':item.slot==='Bouclier'?'Bouclier de test visible sur le personnage. Les bonus défensifs restent à définir.':item.slot==='Coiffe'||item.slot==='Cape'?'Modifie l’apparence du personnage. Aucun bonus chiffré pour le moment.':item.slot?'Équipement de test. Les caractéristiques et bonus seront définis plus tard.':'Ressource obtenue sur un monstre. Les usages et la valeur marchande restent à définir.';
   return `<div class="item-details ${item.chromatic?'chromatic':''}"><span class="detail-icon">${itemIcon(item.slot,item.chromatic)}</span><div><p class="eyebrow">${item.slot || (item.type==='rare'?'BUTIN RARE':'BUTIN NORMAL')}${item.chromatic?' · CHROMATIQUE':''} · ${equipped?'ÉQUIPÉ':'DANS LE SAC'}</p><h3>${item.name}${item.chromatic?' chromatique':''}</h3><p>${effect}</p><small>Quantité : ${item.quantity} ${equipped?'· '+state.team[state.main].name:''}</small></div>${item.slot?`<button ${equipped?`data-slot="${item.slot}"`:`data-equip="${item.id}"`}>${equipped?'Retirer':'Équiper'}</button>`:''}</div>`;
 }
 export function renderInventory(state, selection, filter='all') {
@@ -59,8 +61,7 @@ export function renderInventory(state, selection, filter='all') {
   const emptyCount=Math.max(0,24-items.length);
   return `<div class="inventory-character-bar"><div><p class="eyebrow">${ROLES[m.role]}</p><h3>${m.name} <small>Niveau ${m.level}</small></h3></div><div class="inventory-party">${state.team.map((member,i)=>`<button data-main="${i}" aria-pressed="${state.main===i}">${member.name}</button>`).join('')}</div></div>
   <div class="paper-layout">
-    <section class="trophy-column" aria-label="Six trophées"><h3>Trophées</h3>${SLOTS.filter(name=>name.startsWith('Trophée')).map(slot).join('')}</section>
-    <section class="character-loadout" aria-label="Équipement du personnage"><div class="gear-column">${LEFT.map(slot).join('')}</div><div class="character-stage"><div class="character-halo"></div>${avatar(m)}<div class="avatar-caption"><strong>${m.name}</strong><span>${m.hp} / ${m.maxHp} PV</span><div class="xp-track"><span style="width:${m.xp/(m.level*50)*100}%"></span></div><small>${m.xp} / ${m.level*50} XP</small></div></div><div class="gear-column">${RIGHT.map(name=>name?slot(name):'<div class="gear-spacer" aria-hidden="true"></div>').join('')}</div></section>
+    <section class="character-equipment"><section class="character-loadout" aria-label="Équipement du personnage"><div class="gear-column">${LEFT.map(slot).join('')}</div><div class="character-stage"><div class="character-halo"></div>${avatar(m)}<div class="avatar-caption"><strong>${m.name}</strong><span>${m.hp} / ${m.maxHp} PV</span><div class="xp-track"><span style="width:${m.xp/(m.level*50)*100}%"></span></div><small>${m.xp} / ${m.level*50} XP</small></div></div><div class="gear-column">${RIGHT.map(name=>name?slot(name):'<div class="gear-spacer" aria-hidden="true"></div>').join('')}</div></section><div class="loadout-extras">${slot('Bouclier')}${slot('Familier')}</div><section class="trophy-row" aria-label="Six trophées en bas">${SLOTS.filter(name=>name.startsWith('Trophée')).map(slot).join('')}</section></section>
     <section class="inventory-bag" aria-label="Objets du sac"><div class="bag-heading"><h3>Sac de voyage <small>${state.bag.length} piles</small></h3><label class="sr-only" for="bag-filter">Filtrer les objets</label><select id="bag-filter"><option value="all" ${filter==='all'?'selected':''}>Tous les objets</option><option value="equipment" ${filter==='equipment'?'selected':''}>Équipements</option><option value="loot" ${filter==='loot'?'selected':''}>Ressources</option></select></div><div class="inventory-items">${items.map(item=>`<button class="bag-cell ${item.chromatic?'chromatic':''} ${item.type==='rare'?'rare':''} ${selection?.source==='bag'&&selection.id===item.id?'inspected':''}" data-inspect-bag="${item.id}" aria-label="${item.name}${item.chromatic?' chromatique':''}, quantité ${item.quantity}" aria-pressed="${selection?.source==='bag'&&selection.id===item.id}" title="${item.name}${item.chromatic?' chromatique':''}">${itemIcon(item.slot,item.chromatic)}<small>${item.quantity}</small></button>`).join('')}${Array.from({length:emptyCount},()=>'<div class="bag-cell empty" aria-hidden="true"></div>').join('')}</div>${!items.length?'<p class="bag-empty-hint">Aucun objet. Générez du matériel dans les outils dev ou récupérez du butin.</p>':''}<div class="bag-currency"><span>◈ ${state.gold} pièces</span><small>Sac partagé · Test</small></div></section>
   </div>${objectDetails(state,selection)}`;
 }

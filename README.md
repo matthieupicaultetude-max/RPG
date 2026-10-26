@@ -11,7 +11,7 @@ Une **zone de développement locale**, pour tester les interfaces et les premiè
 - **Molette de souris** ou portraits pour sélectionner le principal. Hors ultime, seul ce personnage est présent. **E** déclenche l’ultime : les trois personnages combattent pendant **30 secondes**, avec **5 minutes entre activations**. Les deux compagnons sont pilotés par l’IA pendant l’effet. Ils suivent avec des trajectoires individuelles, contournent la maison et s’espacent naturellement. Le corps à corps engage au contact, le distance garde son recul et le soutien accompagne et soigne. La troupe se regroupe quand le principal s’éloigne.
 - Trois bots de promenade identifiés comme tels. Ils ne représentent pas des connexions humaines et ne possèdent pas encore leurs propres équipes.
 - Slime et sanglier : dégâts, recul, effets, récompenses, réapparition et retour à la maison après défaite complète.
-- Sac de test partagé, équipement individuel de 15 emplacements, équipement/retrait d’objets et variantes de loot dans des piles distinctes.
+- Sac de test partagé, équipement individuel de 16 emplacements, équipement/retrait d’objets et variantes de loot dans des piles distinctes.
 - Outils dev : téléportation, soin/réanimation, XP, génération d’équipements et des quatre variantes de loot, attaque automatique.
 - Clavier et commandes tactiles, interface responsive, journal d’événements.
 
@@ -30,9 +30,9 @@ Ouvrir l’adresse affichée par Vite. Cliquer sur la scène pour activer le cla
 
 Le jeu remplit la fenêtre, avec portraits, PV et actions en surimpression. **I** ou le bouton **Inventaire** ouvre le panneau d’équipement et de sac ; **I**, **Échap** ou le bouton Fermer le referme. Les anciens raccourcis 1/2/3 sont retirés. La molette dans le panneau fait défiler son contenu sans changer de personnage. Le monde et l’ultime continuent pendant les menus. Un bouton ⛶ active le plein écran natif si disponible.
 
-L’inventaire rassemble l’aperçu du personnage au centre, les **six trophées verticalement à gauche**, les équipements autour du personnage et la grille du sac à droite. La fiche de l’objet sélectionné est placée en bas. Le sac propose un filtre Équipements/Ressources ; cliquer sur un objet ne l’équipe pas immédiatement.
+L’inventaire rassemble l’aperçu du personnage au centre, les **six trophées alignés en bas**, les bijoux à gauche (amulette et deux anneaux), l’arme en bas à gauche et les vêtements à droite (coiffe, cape, ceinture, bottes) et la grille du sac à droite. La fiche de l’objet sélectionné est placée en bas. Le sac propose un filtre Équipements/Ressources ; cliquer sur un objet ne l’équipe pas immédiatement.
 
-Dans **Outils dev**, générer un équipement, puis revenir à **Équipement & sac**, sélectionner l’objet et choisir **Équiper** dans sa fiche. Sélectionner ensuite son emplacement équipé permet de **Retirer** l’objet. Les 15 emplacements comprennent désormais un **bouclier**, indépendant de l’arme. Coiffe, cape et bouclier modifient l’apparence ; une arme équipée ajoute 5 dégâts au coup du personnage principal. Les autres bonus restent à concevoir.
+Dans **Outils dev**, générer un équipement, puis revenir à **Équipement & sac**, sélectionner l’objet et choisir **Équiper** dans sa fiche. Sélectionner ensuite son emplacement équipé permet de **Retirer** l’objet. Les 16 emplacements comprennent un **bouclier** indépendant de l’arme et un **familier**. Le familier de test est visible dans l’aperçu, sans bonus ni IA propre. Coiffe, cape et bouclier modifient l’apparence ; une arme équipée ajoute 5 dégâts au coup du personnage principal. Les autres bonus restent à concevoir.
 
 
 ## Vérification

@@ -518,3 +518,35 @@ canvas { cursor: crosshair; }
   .item-details .detail-icon { height: 54px; width: 48px; }
   .inventory-items { max-height: 192px; }
 }
+
+/* Jewelry left, clothing right, weapon and boots at the feet, trophies below. */
+.paper-layout { grid-template-columns: minmax(330px, 1.4fr) minmax(260px, 1fr); }
+.character-equipment { display: flex; flex-direction: column; gap: 9px; min-height: 0; }
+.character-loadout { flex: 1; min-height: 0; }
+.gear-column { grid-template-rows: repeat(4, var(--gear-height)); align-content: space-between; gap: 8px; }
+.character-stage { border-radius: 65px 65px 8px 8px; }
+.paper-avatar { height: 195px; }
+.avatar-caption { padding-bottom: 8px; }
+.loadout-extras { display: flex; justify-content: center; gap: 8px; }
+.loadout-extras .paper-slot { width: 54px; height: var(--gear-height); }
+.trophy-row { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; padding-top: 8px; border-top: 1px solid #7582604d; }
+.trophy-row .paper-slot { width: 100%; height: var(--gear-height); }
+@media (max-width: 780px) {
+  .paper-layout { grid-template-columns: minmax(230px, 1.4fr) minmax(140px, 1fr); }
+  .loadout-extras .paper-slot { width: 41px; }
+  .trophy-row { gap: 5px; }
+}
+@media (max-width: 520px) {
+  .paper-layout { grid-template-columns: minmax(160px, 1.4fr) minmax(82px, 1fr); }
+  .character-equipment { gap: 6px; }
+  .paper-avatar { height: 162px; }
+  .loadout-extras .paper-slot { width: 28px; height: 34px; }
+  .trophy-row { gap: 3px; padding-top: 6px; }
+  .trophy-row .paper-slot { height: 34px; }
+  .trophy-row .paper-slot svg { width: 22px; height: 22px; }
+}
+@media (min-width: 521px) and (max-height: 760px) {
+  .paper-avatar { height: 115px; }
+  .character-equipment { gap: 6px; }
+  .trophy-row { padding-top: 6px; gap: 6px; }
+}

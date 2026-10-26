@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createSandbox, SLOTS, teleport, grantLoot, giveEquipment, equip, unequip, grantXp, stepSandbox, chooseMain, attack } from '../src/dev/sandbox.js';
 
 test('composition : exactement trois personnages, un par rôle',()=>{
- const s=createSandbox();assert.equal(s.team.length,3);assert.equal(SLOTS.length,15);
+ const s=createSandbox();assert.equal(s.team.length,3);assert.equal(SLOTS.length,16);
  assert.deepEqual(s.team.map(m=>m.role),['melee','support','ranged']);
 });
 test('les quatre variations de butin restent distinctes et les piles se cumulent',()=>{
