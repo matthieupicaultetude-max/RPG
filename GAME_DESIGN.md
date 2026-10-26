@@ -1,6 +1,6 @@
 # Auroria — Document de conception
 
-Statut : vision de référence en cours de définition. Ce document précède le développement des systèmes décrits. La version jouable actuelle contient uniquement une clairière et un personnage déplaçable ; elle ne dispose pas encore de multijoueur.
+Statut : vision de référence en cours de définition. Ce document précède le développement des systèmes décrits. La version jouable actuelle est une zone de développement locale pour essayer les interfaces et les mécaniques ; elle ne dispose pas encore de multijoueur.
 
 Les décisions explicitement définies ci-dessous constituent la cible. Les propositions et questions ouvertes sont identifiées comme telles : elles ne valent pas validation. Le précédent périmètre MVP est abandonné ; aucun plafond de contenu ni ordre de développement n’est fixé pour le moment.
 
@@ -191,3 +191,19 @@ Avant de coder ces systèmes, préciser en priorité :
 8. Place du PvP, identité des joueurs et architecture serveur.
 
 Il s’agit d’une liste de conception à compléter, pas d’un MVP ni d’un engagement à implémenter tous ces systèmes immédiatement.
+
+## 14. Zone de développement actuelle
+
+Le jardin des essais sert à éprouver les interfaces et les personnages avant de choisir les règles finales. Il comprend une maison, un atelier, deux monstres de test, quatre membres contrôlables et trois bots de promenade explicitement identifiés. Ces bots n’ont pas encore d’équipe autonome.
+
+Les conventions suivantes s’appliquent **uniquement à cette zone** :
+
+- Un personnage principal contrôlé, trois compagnons IA rappelables, sélection du principal à tout moment. Les trois premiers rôles restent fixes ; seul le poste flexible est modifiable à la maison.
+- Combat temps réel avec acquisition automatique du monstre le plus proche à portée ; soutien IA soignant les alliés vivants. Les compétences et le ciblage définitifs ne sont pas implémentés.
+- XP identique pour les quatre membres, sac partagé sans capacité maximale et aucun métier.
+- Quatorze emplacements individuels équipables ; coiffe/cape visibles et bonus de test de +5 dégâts pour l’arme du personnage contrôlé. Autres statistiques à définir.
+- Un objet par victoire : 20 % de loot rare, 10 % de variante chromatique indépendante. Ces taux ne constituent pas un équilibrage validé. Les quatre variantes peuvent aussi être générées manuellement.
+- Soin/réanimation, XP et téléportation disponibles par boutons dev ; retour automatique à la maison et restauration de l’équipe après défaite complète.
+- Pas de sauvegarde, de serveur ni de joueurs distants. Le rechargement remet à zéro la session. Aucun menu ne suspend les combats.
+
+Ces essais ne tranchent pas les questions ouvertes des sections précédentes et ne définissent pas un nouveau périmètre MVP.

@@ -1,24 +1,27 @@
-import { SPAWN } from './config.js';
-import { createState, update } from './state.js';
+import { createSandbox, stepSandbox, attack, teleport } from '../dev/sandbox.js';
 import { createControls } from '../input/controls.js';
 import { createRenderer } from '../rendering/scene.js';
 
-export function createGame(canvas, touchControls) {
-  const state = createState();
+export function createGame(canvas, touchControls, onChange) {
+  const state = createSandbox();
   const controls = createControls(canvas, touchControls);
   const render = createRenderer(canvas);
-  let previous;
-  let frame;
+  const controller = new AbortController();
+  let previous, frame, lastRevision = -1, lastHome;
+  canvas.addEventListener('keydown', event => {
+    if (event.code === 'Space') { event.preventDefault(); attack(state); }
+  }, { signal: controller.signal });
   function tick(now) {
-    const dt = previous === undefined ? 0 : Math.min((now - previous) / 1000, 0.05);
+    const dt = previous === undefined || document.hidden ? 0 : Math.min((now - previous) / 1000, .05);
     previous = now;
-    update(state, controls.direction(), dt);
+    stepSandbox(state, controls.direction(), dt);
     render(state);
+    const home = Math.hypot(state.player.x - 110, state.player.y - 135) < 65;
+    if (lastRevision !== state.revision || lastHome !== home) {
+      lastRevision = state.revision; lastHome = home; onChange(state);
+    }
     frame = requestAnimationFrame(tick);
   }
   frame = requestAnimationFrame(tick);
-  return {
-    reset() { Object.assign(state.player, SPAWN, { facing: 'down', moving: false }); canvas.focus({ preventScroll: true }); },
-    destroy() { cancelAnimationFrame(frame); controls.destroy(); },
-  };
+  return { state, refresh() { state.revision++; }, reset() { teleport(state, 'maison'); }, destroy() { cancelAnimationFrame(frame); controls.destroy(); controller.abort(); } };
 }

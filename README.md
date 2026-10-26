@@ -1,8 +1,21 @@
 # Auroria
 
-Nouveau départ du RPG en pixel art sur navigateur. Le projet se trouve directement à la racine du dépôt, sans application imbriquée.
+RPG fantasy en pixel art sur navigateur. La vision multijoueur, les rôles, les équipes et les objets sont décrits dans [GAME_DESIGN.md](GAME_DESIGN.md).
 
-Cette version contient uniquement une clairière et un personnage déplaçable. Les anciennes villes, classes, combats, inventaires et sauvegardes ne sont plus utilisés. L’ancienne version reste accessible dans l’historique Git, au commit `6225b31`.
+## Version actuelle : jardin des essais
+
+Une **zone de développement locale**, pour tester les interfaces et les premières mécaniques avant leur intégration au monde partagé :
+
+- Maison, atelier et aire de combat dans une petite carte top-down.
+- Équipe de quatre : corps à corps, soutien, distance et poste flexible.
+- Sélection du personnage principal ; trois compagnons IA déployables/rappelables. Le soutien soigne, les autres alliés combattent.
+- Trois bots de promenade identifiés comme tels. Ils ne représentent pas des connexions humaines et ne possèdent pas encore leurs propres équipes.
+- Slime et sanglier : dégâts, recul, effets, récompenses, réapparition et retour à la maison après défaite complète.
+- Sac de test partagé, équipement individuel de 14 emplacements, équipement/retrait d’objets et variantes de loot dans des piles distinctes.
+- Outils dev : téléportation, soin/réanimation, XP, génération d’équipements et des quatre variantes de loot, attaque automatique.
+- Clavier et commandes tactiles, interface responsive, journal d’événements.
+
+**Pas de serveur multijoueur ni de sauvegarde dans cette zone.** Recharger réinitialise la session. Les règles de contrôle de l’équipe, les statistiques, les probabilités de loot, la capacité du sac et les gains d’XP sont des conventions de test, pas des décisions définitives de game design. Tous les outils sont volontairement accessibles sans limite.
 
 ## Démarrer
 
@@ -13,7 +26,11 @@ npm ci
 npm run dev
 ```
 
-Ouvrir l’adresse affichée par Vite. Cliquer sur la scène pour utiliser les flèches, ZQSD ou WASD. Les boutons directionnels permettent aussi de jouer au tactile.
+Ouvrir l’adresse affichée par Vite. Cliquer sur la scène pour activer le clavier : flèches, ZQSD ou WASD pour bouger, Espace pour attaquer le monstre le plus proche à portée. Les boutons sous la scène permettent d’attaquer, soigner et se téléporter. Sélectionner un portrait change le personnage contrôlé. À la maison, choisir le rôle du quatrième membre dans le panneau Personnage.
+
+Dans **Outils dev**, générer un équipement puis ouvrir le **Sac** et cliquer sur **Équiper** pour l’attribuer au personnage principal. Le panneau **Personnage** présente ses 14 emplacements ; cliquer sur un objet équipé le remet dans le sac. Coiffe et cape modifient le sprite ; une arme équipée ajoute 5 dégâts au coup du personnage principal. Les autres bonus restent à concevoir.
+
+## Vérification
 
 ```sh
 npm test
@@ -21,21 +38,26 @@ npm run build
 npm run preview
 ```
 
+Dix tests couvrent déplacement, composition à la maison, variantes de butin, échanges d’équipement, XP, combat/récompenses/respawn collisions de la maison, soutien IA et retour après défaite. Les parcours navigateur vérifient également les commandes, les panneaux et le petit écran.
+
 ## Organisation
 
 - `index.html` : point d’entrée HTML.
-- `src/main.js` : interface et démarrage.
-- `src/game/` : configuration, état et boucle du jeu.
-- `src/input/` : clavier et commandes tactiles.
-- `src/rendering/` : rendu Canvas et terrain.
-- `src/style.css` : présentation responsive.
-- `tests/` : règles de déplacement.
-- `.github/workflows/deploy.yml` : publication sur GitHub Pages après un push sur `main`.
+- `src/main.js` : interface de la zone et actions des panneaux.
+- `src/game/` : boucle du jeu et déplacement de base.
+- `src/dev/sandbox.js` : état et règles provisoires du banc d’essai.
+- `src/input/` : commandes clavier/tactiles et gestion du focus.
+- `src/rendering/` : terrain et rendu Canvas des personnages/monstres.
+- `src/style.css` : interface responsive.
+- `tests/` : règles et invariants des essais.
+- `.github/workflows/deploy.yml` : publication du client statique sur GitHub Pages.
 
-La logique du jeu est indépendante du rendu. Les déplacements diagonaux sont normalisés, le personnage reste dans la scène, et les commandes se relâchent lorsque la fenêtre perd le focus. Aucune dépendance graphique ni ressource externe n’est nécessaire.
+Le code du banc d’essai est isolé pour éviter de confondre ses règles locales avec la future logique serveur. `window.auroria.snapshot()` fournit une copie de l’état pour l’inspection navigateur.
 
 ## Publication
 
-Le workflow existant est conservé. Le dépôt doit avoir GitHub Pages activé avec la source **GitHub Actions**.
+Le workflow publie le client après un push sur `main`. GitHub Pages doit utiliser la source **GitHub Actions**. Le serveur multijoueur nécessitera un hébergement distinct.
 
-Jeu : https://matthieupicaultetude-max.github.io/RPG/
+Zone jouable : https://matthieupicaultetude-max.github.io/RPG/
+
+L’ancienne version du jeu reste accessible dans l’historique Git au commit `6225b31`.
