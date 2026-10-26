@@ -14,9 +14,9 @@ app.innerHTML = `
   <nav class="touch-controls" aria-label="Déplacement tactile"><button data-direction="up" aria-label="Haut">↑</button><div><button data-direction="left" aria-label="Gauche">←</button><button data-direction="down" aria-label="Bas">↓</button><button data-direction="right" aria-label="Droite">→</button></div></nav>
   <div id="inventory-backdrop" class="inventory-backdrop" hidden></div>
   <section id="inventory" class="inventory-window" role="dialog" aria-modal="true" aria-labelledby="inventory-title" hidden>
-    <div class="inventory-title"><div><p class="eyebrow">VOTRE ÉQUIPEMENT & VOTRE BUTIN</p><h2 id="inventory-title">Inventaire</h2></div><button data-action="close-inventory" aria-label="Fermer l’inventaire">✕ <kbd>Échap</kbd></button></div>
-    <nav class="tabs" aria-label="Panneaux de l’inventaire"><button data-tab="equipment" aria-pressed="true">Équipement & sac <span id="bag-count">0</span></button><button data-tab="tools" aria-pressed="false">Outils dev</button></nav>
-    <div id="panel"></div><div class="local-notice">Zone de test locale · Sans sauvegarde · Le monde continue pendant l’inventaire.</div>
+    <h2 id="inventory-title" class="sr-only">Inventaire</h2>
+    <div id="panel"></div>
+    <div class="inventory-footer"><nav class="tabs" aria-label="Panneaux de l’inventaire"><button data-tab="equipment" aria-pressed="true">Équipement & sac <span id="bag-count">0</span></button><button data-tab="tools" aria-pressed="false">Outils dev</button></nav><button data-action="close-inventory" aria-label="Fermer l’inventaire">✕ <kbd>Échap</kbd></button></div>
   </section>
 </main>`;
 let inventoryOpen = false;

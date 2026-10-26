@@ -257,3 +257,5 @@ Le panneau rassemble l’équipement et le sac dans une même vue :
 Un clic sélectionne un objet ou un emplacement sans modifier l’équipement. La fiche propose **Équiper** pour un équipement du sac, ou **Retirer** pour un objet équipé. Un emplacement vide affiche une explication ; une ressource n’offre pas d’action d’équipement. Les trois personnages sont consultables dans le panneau, avec leur équipement individuel.
 
 Le bouclier porte le total à **15 emplacements**, dont les six trophées. Il peut être généré dans les outils dev, équipé et retiré indépendamment de l’arme. Il est visible dans l’aperçu et sur le personnage en jeu. Ses statistiques défensives restent à définir.
+
+L’inventaire n’a pas de grand en-tête : le personnage et les objets occupent directement le haut du panneau. Les commandes Équipement & sac, Outils dev et Fermer sont compactées dans la barre du bas pour éviter le défilement de la vue principale. Seule la grille du sac défile si elle contient beaucoup d’objets.
