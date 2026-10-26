@@ -1,8 +1,9 @@
-import { renderBestiary, bestiaryValues } from './ui/bestiary.js';
+import { ELEMENTS } from './data/equipment.js';
+import { renderBestiary, bestiaryValues, coreDropMarkup } from './ui/bestiary.js';
 import { renderInventory } from './ui/inventory.js';
 import './style.css';
 import { createGame } from './game/create-game.js';
-import { ROLES, COLORS, SLOTS, teleport, chooseMain, grantXp, heal, grantLoot, giveEquipment, equip, unequip, attack, note, activateUltimate } from './dev/sandbox.js';
+import { ROLES, COLORS, SLOTS, teleport, chooseMain, grantXp, heal, grantLoot, grantCore, openCore, giveEquipment, equip, unequip, attack, note, activateUltimate } from './dev/sandbox.js';
 
 const app = document.querySelector('#app');
 app.innerHTML = `
@@ -35,7 +36,7 @@ function refresh(s) {
   if (!inventoryOpen) return;
   const previousSlot = panel.querySelector('#equipment-slot')?.value;
   const focus = panel.contains(document.activeElement) ? document.activeElement : null;
-  const focusAttribute = focus && ['data-action','data-monster','data-inspect-slot','data-inspect-bag','data-slot','data-equip'].find(name=>focus.hasAttribute(name));
+  const focusAttribute = focus && ['data-action','data-core','data-open-core','data-monster','data-inspect-slot','data-inspect-bag','data-slot','data-equip'].find(name=>focus.hasAttribute(name));
   const focusKey = focus?.id ? `#${CSS.escape(focus.id)}` : focusAttribute ? `[${focusAttribute}="${CSS.escape(focus.getAttribute(focusAttribute))}"]` : null;
   const scrollTop = panel.scrollTop;
   const m = s.team[s.main];
@@ -46,7 +47,7 @@ function refresh(s) {
   app.querySelector('#inventory-title').textContent = currentTab==='bestiary' ? 'Bestiaire' : 'Inventaire';
   app.querySelector('#inventory').classList.toggle('bestiary-open',currentTab==='bestiary');
   if(currentTab==='equipment') panel.innerHTML = renderInventory(s, selectedItem, bagFilter);
-  if(currentTab==='tools') panel.innerHTML = `<div class="panel-heading"><p class="eyebrow">BAC À SABLE</p><h2>Outils de développement</h2><p>Essayez sans attendre ni farmer.</p></div><section class="tool-group"><h3>Progression & combat</h3><div class="tool-buttons"><button data-action="xp">+50 XP à l’équipe</button><button data-action="heal">Soigner / réanimer</button><button data-action="auto" aria-pressed="${s.autoAttack}">Attaque auto : ${s.autoAttack?'oui':'non'}</button></div></section><section class="tool-group"><h3>Générer du loot · Slime</h3><div class="loot-buttons"><button data-loot="normal">Normal</button><button data-loot="rare">Rare</button><button data-loot="normal" data-chromatic="true">✦ Normal chromatique</button><button data-loot="rare" data-chromatic="true">✦ Rare chromatique</button></div><p class="panel-hint">Combat de test : 20 % rare et 10 % chromatique. Ces taux ne fixent pas l’équilibrage final.</p></section><section class="tool-group"><h3>Générer un équipement</h3><label for="equipment-slot">Emplacement</label><select id="equipment-slot">${SLOTS.map(slot=>`<option>${slot}</option>`).join('')}</select><button data-action="equipment">Ajouter au sac</button></section><section class="tool-group"><h3>Déplacements rapides</h3><div class="tool-buttons"><button data-action="home">Maison</button><button data-action="atelier">Atelier</button><button data-action="combat">Combat</button></div></section><section class="journal"><h3>Journal de test</h3><ul>${s.log.map(line=>`<li>${line}</li>`).join('')}</ul></section>`;
+  if(currentTab==='tools') panel.innerHTML = `<div class="panel-heading"><p class="eyebrow">BAC À SABLE</p><h2>Outils de développement</h2><p>Essayez sans attendre ni farmer.</p></div><section class="tool-group"><h3>Progression & combat</h3><div class="tool-buttons"><button data-action="xp">+50 XP à l’équipe</button><button data-action="heal">Soigner / réanimer</button><button data-action="auto" aria-pressed="${s.autoAttack}">Attaque auto : ${s.autoAttack?'oui':'non'}</button></div></section><section class="tool-group"><h3>Noyaux débutants · 1–10</h3><div class="tool-buttons">${Object.entries(ELEMENTS).map(([element,e])=>`<button data-core="${element}">Noyau de ${e.name}</button>`).join('')}</div><p class="panel-hint">Ouvrez-les au village près de la maison pour obtenir une pièce aléatoire.</p></section><section class="tool-group"><h3>Générer du loot · Slime</h3><div class="loot-buttons"><button data-loot="normal">Normal</button><button data-loot="rare">Rare</button><button data-loot="normal" data-chromatic="true">✦ Normal chromatique</button><button data-loot="rare" data-chromatic="true">✦ Rare chromatique</button></div><p class="panel-hint">Combat de test : 20 % rare et 10 % chromatique. Ces taux ne fixent pas l’équilibrage final.</p></section><section class="tool-group"><h3>Générer un équipement</h3><label for="equipment-slot">Emplacement</label><select id="equipment-slot">${SLOTS.map(slot=>`<option>${slot}</option>`).join('')}</select><button data-action="equipment">Ajouter au sac</button></section><section class="tool-group"><h3>Déplacements rapides</h3><div class="tool-buttons"><button data-action="home">Maison</button><button data-action="atelier">Atelier</button><button data-action="combat">Combat</button></div></section><section class="journal"><h3>Journal de test</h3><ul>${s.log.map(line=>`<li>${line}</li>`).join('')}</ul></section>`;
   app.querySelector('#inventory').classList.toggle('tools-open', currentTab==='tools');
   const slotSelect = panel.querySelector('#equipment-slot');
   if (slotSelect && previousSlot) slotSelect.value = previousSlot;
@@ -105,6 +106,8 @@ app.addEventListener('click',event=>{
     equip(s,Number(button.dataset.equip));
     selectedItem = item ? { source:'equipment', slot:item.slot } : null;
   }
+  if(button.dataset.core)grantCore(s,button.dataset.core);
+  if(button.dataset.openCore) { const item=openCore(s,Number(button.dataset.openCore)); if(item)selectedItem={source:'bag',id:item.id}; }
   if(button.dataset.loot)grantLoot(s,button.dataset.loot,button.dataset.chromatic==='true');
   const actions={ attack:()=>attack(s),heal:()=>heal(s),home:()=>teleport(s,'maison'),combat:()=>teleport(s,'combat'),atelier:()=>teleport(s,'atelier'),xp:()=>grantXp(s,50),equipment:()=>giveEquipment(s,app.querySelector('#equipment-slot').value),auto:()=>{s.autoAttack=!s.autoAttack;note(s,`Attaque automatique ${s.autoAttack?'activée':'désactivée'}.`);},deploy:()=>activateUltimate(s)};
   if(actions[button.dataset.action])actions[button.dataset.action]();
@@ -115,6 +118,7 @@ app.addEventListener('change', event => { if(event.target.id==='bag-filter') { b
 app.addEventListener('input', event => {
   if(event.target.id!=='monster-level') return;
   bestiaryLevel = Number(event.target.value);
+  panel.querySelector('.bestiary-core').innerHTML=coreDropMarkup(bestiaryMonster,bestiaryLevel);
   panel.querySelector('#monster-level-value').textContent = bestiaryLevel;
   for(const [stat,value] of Object.entries(bestiaryValues(bestiaryMonster,bestiaryLevel))) panel.querySelector(`[data-monster-stat="${stat}"]`).textContent=value;
 });

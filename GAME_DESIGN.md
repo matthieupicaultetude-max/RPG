@@ -210,7 +210,7 @@ Il s’agit d’une liste de conception à compléter, pas d’un MVP ni d’un 
 
 ## 14. Zone de développement actuelle
 
-Le jardin des essais sert à éprouver les interfaces et les personnages avant de choisir les règles finales. Il comprend une maison, un atelier, deux monstres de test, trois membres contrôlables et trois bots de promenade explicitement identifiés. Ces bots n’ont pas encore d’équipe autonome.
+Le jardin des essais sert à éprouver les interfaces et les personnages avant de choisir les règles finales. Il comprend une maison, un atelier, quatre monstres de test, trois membres contrôlables et trois bots de promenade explicitement identifiés. Ces bots n’ont pas encore d’équipe autonome.
 
 Les conventions suivantes s’appliquent **uniquement à cette zone** :
 
@@ -263,7 +263,7 @@ L’inventaire n’a pas de grand en-tête : le personnage et les objets occupen
 
 ## 18. Bestiaire et consultation par niveau
 
-Le bestiaire est accessible par **B**, un bouton visible et un onglet du panneau. Il recense toutes les espèces actuellement implémentées : slime et sanglier. La fiche comprend une illustration, la famille, l’habitat, une description, les PV, les dégâts, le délai d’attaque, la vitesse de poursuite, le rayon d’engagement, le délai de réapparition, l’XP et l’or.
+Le bestiaire est accessible par **B**, un bouton visible et un onglet du panneau. Il recense toutes les espèces actuellement implémentées : slime, sanglier, luciole ardente et phalène. La fiche comprend une illustration, la famille, l’habitat, une description, les PV, les dégâts, le délai d’attaque, la vitesse de poursuite, le rayon d’engagement, le délai de réapparition, l’XP et l’or.
 
 Un curseur de **niveau 1 à 100** recalcule les statistiques consultées, sans modifier les monstres présents ni leurs récompenses. Le niveau consulté est conservé lors du changement de fiche et pendant la session. Il s’agit d’une plage de consultation d’essai, pas d’une décision de plafond pour la progression des personnages.
 
@@ -281,7 +281,7 @@ Le catalogue de monstres est partagé entre le combat et le bestiaire ; les donn
 
 ## 19. Caractéristiques des personnages
 
-Le système s’inspire de Dofus en version simplifiée. Les règles ci-dessous remplacent la première proposition de caractéristiques. Elles décrivent la cible de conception ; elles ne sont pas encore implémentées dans le combat, l’XP ou le butin du jardin d’essai.
+Le système s’inspire de Dofus en version simplifiée. Les règles ci-dessous remplacent la première proposition de caractéristiques. Elles décrivent la cible de conception ; les bonus de Vitalité et de dégâts élémentaires des premières panoplies sont implémentés en section 20. Sagesse, Prospection, Puissance, résistances et critiques restent à implémenter.
 
 ### Caractéristiques principales
 
@@ -320,3 +320,39 @@ La Prospection est indépendante de la Chance. Aucun bonus de vitesse de déplac
 - Compétences des classes pour chaque élément, ainsi que les règles de soins, protections et améliorations : conception ultérieure. Aucun bonus de soin n’est attribué implicitement à l’Intelligence.
 
 Les statistiques et chances affichées dans le bestiaire restent les valeurs de base des monstres. Les futurs bonus de Sagesse et de Prospection devront être distingués de ces valeurs et ne pas modifier silencieusement les probabilités de base affichées.
+
+## 20. Panoplies débutantes et noyaux élémentaires
+
+### Quatre panoplies niveau 1
+
+| Panoplie | Élément | Caractéristique principale | Monstre source actuel |
+| --- | --- | --- | --- |
+| Ronce | Terre | Force | Sanglier |
+| Braise | Feu | Intelligence | Luciole ardente |
+| Brise | Air | Agilité | Phalène |
+| Rosée | Eau | Chance | Slime |
+
+Chaque panoplie comporte **neuf pièces équipables dès le niveau 1** : coiffe, cape, ceinture, bottes, amulette, anneau 1, anneau 2, arme et bouclier. Familiers et trophées ne font pas partie de ces panoplies. Tous les rôles peuvent porter les quatre panoplies. Il n’y a pas de bonus conditionnel de panoplie complète pour le moment.
+
+Réglages initiaux par pièce :
+
+- Arme : **+5** dans la caractéristique élémentaire et **+1 Vitalité**.
+- Bouclier : **+2** dans la caractéristique élémentaire et **+5 Vitalité**.
+- Chacune des sept autres pièces : **+3** dans la caractéristique élémentaire et **+3 Vitalité**.
+- Ensemble des neuf pièces : **+28** dans la caractéristique et **+27 Vitalité**.
+
+Dans le prototype, **1 Vitalité = 1 PV maximum**. Équiper ne soigne pas les PV actuels ; retirer un bonus peut les ramener au nouveau maximum. Une montée de niveau conserve les bonus équipés. Les attaques de base prennent l’élément de l’arme et sont multipliées par `1 + caractéristique correspondante / 100`, avec arrondi. Ce calcul s’applique aussi aux compagnons. Les compétences par élément seront travaillées ultérieurement. Les anciennes armes d’essai conservent leur bonus de débogage +5 dégâts ; elles ne sont pas des pièces de panoplie.
+
+### Acquisition
+
+Chaque monstre possède un élément principal, associé à une caractéristique élémentaire. À sa défaite, un tirage de **25 %** peut donner un **noyau de cet élément**, en plus du loot normal/rare existant. Ce taux est un réglage de test ; la Prospection n’intervient pas encore. Le bestiaire expose l’affinité, le noyau et ses chances. Les équipements réels de panoplie ne tombent pas directement sur les monstres. Les générateurs d’équipements d’essai restent des outils dev.
+
+Le noyau mémorise une tranche de dix niveaux : **1–10**, **11–20**, etc., calculée d’après le niveau du monstre. Seule la tranche 1–10 possède actuellement des panoplies, toutes équipables niveau 1. Le curseur du bestiaire ne change pas le niveau des monstres de la carte ni la tranche des noyaux qu’ils donnent.
+
+Les noyaux ont une variation chromatique, avec **10 %** de chance conditionnelle : par victoire, noyau standard **22,5 %**, noyau chromatique **2,5 %**. Les piles sont séparées par élément, tranche et variation.
+
+### Ouverture au village
+
+Dans la zone d’essai, le village est matérialisé près de la maison. Le joueur doit être dans cette zone pour ouvrir un noyau depuis sa fiche d’inventaire. Aucune monnaie n’est nécessaire.
+
+Une ouverture consomme **un seul noyau** et donne **une pièce aléatoire** de la panoplie de son élément et de sa tranche. Chaque pièce a une probabilité de **1/9** ; les doublons sont possibles. Un noyau chromatique donne une pièce chromatique, sans puissance supplémentaire. Le résultat est immédiatement sélectionné dans le sac et peut être équipé. Un noyau d’une tranche non disponible ne peut pas être consommé. Les outils dev permettent de générer les quatre noyaux débutants et de revenir à la maison pour tester la boucle.

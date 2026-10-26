@@ -10,7 +10,7 @@ Une **zone de développement locale**, pour tester les interfaces et les premiè
 - Équipe de trois : corps à corps, soutien et distance. Aucun poste flexible.
 - **Molette de souris** ou portraits pour sélectionner le principal. Hors ultime, seul ce personnage est présent. **E** déclenche l’ultime : les trois personnages combattent pendant **30 secondes**, avec **5 minutes entre activations**. Les deux compagnons sont pilotés par l’IA pendant l’effet. Ils suivent avec des trajectoires individuelles, contournent la maison et s’espacent naturellement. Le corps à corps engage au contact, le distance garde son recul et le soutien accompagne et soigne. La troupe se regroupe quand le principal s’éloigne.
 - Trois bots de promenade identifiés comme tels. Ils ne représentent pas des connexions humaines et ne possèdent pas encore leurs propres équipes.
-- Slime et sanglier : dégâts, recul, effets, récompenses, réapparition et retour à la maison après défaite complète.
+- Slime, sanglier, luciole ardente et phalène : dégâts, recul, effets, récompenses, réapparition et retour à la maison après défaite complète.
 - Sac de test partagé, équipement individuel de 16 emplacements, équipement/retrait d’objets et variantes de loot dans des piles distinctes.
 - Outils dev : téléportation, soin/réanimation, XP, génération d’équipements et des quatre variantes de loot, attaque automatique.
 - Clavier et commandes tactiles, interface responsive, journal d’événements.
@@ -43,7 +43,7 @@ npm run build
 npm run preview
 ```
 
-Trente et un tests couvrent déplacement, composition à trois, variantes de butin, échanges d’équipement, XP, combat/récompenses/respawn, collisions de la maison, soutien IA, retour après défaite, ultime (30 s / 300 s), changements de personnage, filtrage de la molette, ciblage guidé, impacts différés, projectiles, conversion caméra/curseur, contournement de la maison, espacement au repos, recul du distance et regroupement. Les parcours navigateur vérifient également les commandes, les panneaux et le petit écran.
+Trente-sept tests couvrent déplacement, composition à trois, variantes de butin, échanges d’équipement, XP, combat/récompenses/respawn, collisions de la maison, soutien IA, retour après défaite, ultime (30 s / 300 s), changements de personnage, filtrage de la molette, ciblage guidé, impacts différés, projectiles, conversion caméra/curseur, contournement de la maison, espacement au repos, recul du distance et regroupement. Les parcours navigateur vérifient également les commandes, les panneaux et le petit écran.
 
 ## Organisation
 
@@ -77,8 +77,18 @@ Chaque rôle a son animation : taille d’épée orientée, flèche guidée ou o
 
 ## Bestiaire
 
-**B**, le bouton Bestiaire en haut ou l’onglet du panneau ouvre les fiches du slime et du sanglier. Chaque fiche présente son apparence, son habitat, ses statistiques et ses quatre issues de butin avec leurs probabilités : normal standard 72 %, normal chromatique 8 %, rare standard 18 %, rare chromatique 2 %.
+**B**, le bouton Bestiaire en haut ou l’onglet du panneau ouvre les fiches des quatre espèces du jardin. Chaque fiche présente son apparence, son habitat, ses statistiques et ses quatre issues de butin avec leurs probabilités : normal standard 72 %, normal chromatique 8 %, rare standard 18 %, rare chromatique 2 %.
 
 Le curseur de niveau **1 à 100** actualise PV, dégâts, XP et or ; vitesse et délais restent fixes. Il s’agit d’une consultation, qui ne modifie pas les monstres présents. Les statistiques de base et les tables de butin du combat et des fiches proviennent de `src/data/monsters.js`. Les règles de croissance sont provisoires : par niveau supplémentaire, +12 % des PV de base, +8 % des dégâts de base, +10 % de l’XP de base et +5 % de l’or de base, arrondis à l’entier.
 
 **B** ou **Échap** ferme le bestiaire ; **I** revient à l’inventaire. Le monde continue pendant la consultation. Les tests couvrent aussi les bornes de niveau, la progression des statistiques, les probabilités et leur cohérence avec la simulation.
+
+## Panoplies et noyaux
+
+Quatre panoplies débutantes de **niveau 1**, tranche **1–10** : **Ronce** (Terre/Force), **Braise** (Feu/Intelligence), **Brise** (Air/Agilité), **Rosée** (Eau/Chance). Chaque panoplie comprend neuf pièces : coiffe, cape, ceinture, bottes, amulette, deux anneaux distincts, arme et bouclier. Trophées et familiers sont hors de ces panoplies.
+
+Les monstres peuvent donner un noyau en plus de leur ressource : slime → Eau, sanglier → Terre, luciole ardente → Feu, phalène → Air. Taux d’essai : **25 %**, dont 10 % de variantes chromatiques parmi les noyaux obtenus. Le noyau conserve l’élément et la tranche de dix niveaux du monstre.
+
+Revenir au **village, près de la maison**, ouvrir **I**, sélectionner le noyau dans le sac puis cliquer **Ouvrir le noyau**. Un noyau est consommé pour une pièce aléatoire du bon élément et de la bonne tranche ; neuf choix équiprobables, doublons possibles. Un noyau chromatique donne une pièce chromatique avec les mêmes bonus. Les autres tranches n’ont pas encore d’équipements et leurs noyaux ne peuvent pas être consommés.
+
+Les pièces donnent Vitalité et caractéristique élémentaire, sans bonus de panoplie supplémentaire. Dans le prototype, 1 Vitalité donne 1 PV maximum ; le bonus élémentaire de l’arme renforce les dégâts selon la caractéristique correspondante (+1 % par point). Les PV actuels ne sont pas restaurés par un échange d’équipement. Les compétences élémentaires restent à concevoir. Les outils dev proposent les quatre noyaux et la téléportation **Maison**, pour tester sans attendre un drop.

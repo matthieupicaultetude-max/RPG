@@ -1,3 +1,4 @@
+import { ELEMENTS, CORE_CHANCE, createCore, rollCoreEquipment, weaponDamage, syncEquipmentHealth } from '../data/equipment.js';
 import { createMonster, monsterDefinition } from '../data/monsters.js';
 import { ATTACK_RANGE, guidedTarget, launchAttack, stepAttacks, lineClear } from '../combat/attacks.js';
 import { stepCompanions, placeAllies, clearRoute } from '../ai/companions.js';
@@ -19,7 +20,7 @@ export function createSandbox() {
     team: ['melee', 'support', 'ranged'].map(makeMember), main: 0, deployed: false,
     ultimate: { remaining: 0, cooldown: 0 },
     bag: [], nextItem: 1, gold: 0, log: ['Bienvenue dans le jardin des essais.'], revision: 0,
-    monsters: [createMonster('slime',455,220), createMonster('boar',535,285)],
+    monsters: [createMonster('slime',455,220), createMonster('boar',535,285),createMonster('firefly',530,165),createMonster('moth',585,240)],
     bots: Array.from({ length: 3 }, (_, i) => ({ name: ['Milo', 'Éline', 'Orin'][i], x: 290 + i * 70, y: 110, role: ['melee', 'support', 'ranged'][i], facing: 'down', moving: true, phase: i * 2, target: { x: 270 + i * 70, y: 110 } })),
     effects: [], attacks: [], aim: { x: 0, y: 0, active: false }, autoAttack: false,
   });
@@ -110,6 +111,24 @@ export function grantLoot(s, type = 'normal', chromatic = false, monster = 'Slim
   else s.bag.push({ id: s.nextItem++, name, type, chromatic, quantity: 1 });
   note(s, `Butin : ${name}${chromatic ? ' chromatique' : ''}.`);
 }
+export function grantCore(s,element,level=1,chromatic=false) {
+  const core=createCore(element,level,chromatic);
+  const existing=s.bag.find(item=>item.kind==='core'&&item.element===element&&item.band.min===core.band.min&&item.chromatic===chromatic);
+  if(existing)existing.quantity++;
+  else s.bag.push({...core,id:s.nextItem++});
+  note(s,`Noyau de ${ELEMENTS[element].name} obtenu · niveaux ${core.band.min}–${core.band.max}.`);
+}
+export function openCore(s,id,random=Math.random) {
+  const index=s.bag.findIndex(item=>item.id===id&&item.kind==='core');
+  if(index<0)return null;
+  if(!atHome(s)){note(s,'Revenez au village pour ouvrir ce noyau.');return null;}
+  const item=rollCoreEquipment(s.bag[index],random);
+  if(!item){note(s,'Aucune panoplie disponible pour cette tranche de niveaux.');return null;}
+  if(--s.bag[index].quantity===0)s.bag.splice(index,1);
+  const reward={...item,id:s.nextItem++};s.bag.push(reward);
+  note(s,`Noyau ouvert : ${reward.name}${reward.chromatic?' chromatique':''} !`);
+  return reward;
+}
 export function giveEquipment(s, slot) {
   if (!SLOTS.includes(slot)) return;
   s.bag.push({ id: s.nextItem++, name: `${slot} d’essai`, slot, quantity: 1 });
@@ -118,10 +137,12 @@ export function giveEquipment(s, slot) {
 export function equip(s, id) {
   const index = s.bag.findIndex(item => item.id === id);
   if (index < 0 || !s.bag[index].slot) return;
-  const item = s.bag.splice(index, 1)[0];
   const member = s.team[s.main];
+  if ((s.bag[index].requiredLevel || 1)>member.level) { note(s,'Niveau insuffisant pour cet équipement.'); return; }
+  const item = s.bag.splice(index, 1)[0];
   if (member.equipment[item.slot]) s.bag.push(member.equipment[item.slot]);
   member.equipment[item.slot] = item;
+  syncEquipmentHealth(member);
   note(s, `${member.name} équipe : ${item.name}.`);
 }
 export function unequip(s, slot) {
@@ -129,6 +150,7 @@ export function unequip(s, slot) {
   if (!member.equipment[slot]) return;
   s.bag.push(member.equipment[slot]);
   delete member.equipment[slot];
+  syncEquipmentHealth(member);
   note(s, `${slot} retiré.`);
 }
 export function canStand(x, y) {
@@ -157,11 +179,15 @@ function hitMonster(s, monster, damage, member) {
   s.revision++;
   if (monster.hp === 0) {
     monster.respawn = monster.respawnDelay;
-    s.gold += monster.gold;
-    grantXp(s, monster.xp);
-    const definition = monsterDefinition(monster.species);
-    grantLoot(s, Math.random() < definition.rareChance ? 'rare' : 'normal', Math.random() < definition.chromaticChance, monster.name);
+    rewardMonster(s,monster);
   }
+}
+export function rewardMonster(s,monster,random=Math.random) {
+  s.gold += monster.gold;
+  grantXp(s, monster.xp);
+  const definition=monsterDefinition(monster.species);
+  grantLoot(s,random()<definition.rareChance?'rare':'normal',random()<definition.chromaticChance,monster.name);
+  if(random()<CORE_CHANCE)grantCore(s,definition.element,monster.level,random()<definition.chromaticChance);
 }
 export function attack(s, point = s.aim.active ? s.aim : null) {
   const member = s.team[s.main];
@@ -178,7 +204,7 @@ export function attack(s, point = s.aim.active ? s.aim : null) {
   const facing = { up: [0,-1], down: [0,1], left: [-1,0], right: [1,0] }[member.facing];
   const destination = target || (point ? { x:point.x,y:point.y+8 } : {x:s.player.x+facing[0]*ATTACK_RANGE[member.role],y:s.player.y+facing[1]*ATTACK_RANGE[member.role]});
   member.cooldown = .6;
-  launchAttack(s, member, destination, target, 12 + (member.equipment.Arme ? 5 : 0));
+  launchAttack(s, member, destination, target, weaponDamage(member));
   s.player.facing = member.facing;
   return true;
 }

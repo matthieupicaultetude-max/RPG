@@ -1,3 +1,4 @@
+import { weaponDamage } from '../data/equipment.js';
 import { launchAttack } from '../combat/attacks.js';
 // Local steering prototype. Companions receive intentions, never player inputs.
 const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
@@ -173,7 +174,7 @@ export function stepCompanions(state, dt, canStand, hitMonster) {
       }
       const reach = member.role === 'melee' ? 34 : 118;
       if (member.role !== 'support' && gap < reach && member.cooldown === 0 && visible(member,target,canStand)) {
-        launchAttack(state,member,target,target,7); member.cooldown = member.role === 'ranged' ? 1.15 : .9;
+        launchAttack(state,member,target,target,weaponDamage(member,7)); member.cooldown = member.role === 'ranged' ? 1.15 : .9;
 
       }
     } else {

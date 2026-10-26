@@ -22,7 +22,7 @@ export function guidedTarget(state, point, canStand) {
 export function launchAttack(state, member, point, target, damage) {
   const angle = Math.atan2(point.y-member.y, point.x-member.x);
   member.facing = Math.abs(Math.cos(angle)) > Math.abs(Math.sin(angle)) ? (Math.cos(angle)>0?'right':'left') : (Math.sin(angle)>0?'down':'up');
-  state.attacks.push({ role: member.role, owner: member.id, x: member.x, y: member.y, startX: member.x, startY: member.y, angle, age: 0, duration: member.role==='melee'?.3:.85, target, damage, hit: false });
+  state.attacks.push({ element: member.equipment.Arme?.element || null, role: member.role, owner: member.id, x: member.x, y: member.y, startX: member.x, startY: member.y, angle, age: 0, duration: member.role==='melee'?.3:.85, target, damage, hit: false });
 }
 export function stepAttacks(state, dt, canStand, hitMonster) {
   state.attacks = state.attacks.filter(a => {

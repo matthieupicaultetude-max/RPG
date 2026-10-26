@@ -74,7 +74,7 @@ export function createRenderer(canvas) {
     ctx.fillStyle='#344d4377'; ctx.fillRect(x-7,y+2,14,4);
     ctx.fillStyle='#323d46'; ctx.fillRect(x-5,y-2+step,4,6); ctx.fillRect(x+1,y-2-step,4,6);
     ctx.fillStyle=COLORS[p.role]; ctx.fillRect(x-6,y-14,12,13);
-    ctx.fillStyle=p.equipment?.Cape ? '#b99ade' : '#506b67'; ctx.fillRect(x-4,y-12,8,10);
+    ctx.fillStyle=p.equipment?.Cape ? p.equipment.Cape.color || '#b99ade' : '#506b67'; ctx.fillRect(x-4,y-12,8,10);
     ctx.fillStyle='#e3b98d'; ctx.fillRect(x-4,y-22,8,9);
     ctx.fillStyle=p.equipment?.Coiffe ? '#b1bdc8' : '#594536'; ctx.fillRect(x-5,y-24,10,p.facing==='up'?10:5);
     if(p.facing!=='up') { ctx.fillStyle='#2e383e'; if(p.facing!=='right')ctx.fillRect(x-3,y-18,1,2); if(p.facing!=='left')ctx.fillRect(x+2,y-18,1,2); }
@@ -87,13 +87,14 @@ export function createRenderer(canvas) {
   }
   return s => {
     ctx.drawImage(ground,0,0);
-    label('MAISON',110,124); label('ATELIER',190,319);label('AIRE DE COMBAT',495,352);label('PROMENADE DES BOTS',320,65);
+    label('VILLAGE',110,124); label('ATELIER',190,319);label('AIRE DE COMBAT',495,352);label('PROMENADE DES BOTS',320,65);
     [...s.bots.map(p=>({p,bot:true})),...s.team.filter((p,i)=>p.hp>0&&(i===s.main||s.deployed)).map(p=>({p,main:p.id===s.main}))].sort((a,b)=>a.p.y-b.p.y).forEach(({p,main,bot})=>person(p,s.time,main,bot,s.attacks.find(a=>a.owner===p.id && !bot && a.age<.3)));
     for(const m of s.monsters) {
       if(m.hp<=0){label(`Retour ${Math.ceil(m.respawn)}s`,m.homeX,m.homeY);continue;}
       const x=Math.round(m.x), y=Math.round(m.y), bob=Math.round(Math.sin(s.time*4)*1.5);
       ctx.fillStyle='#3c513c66';ctx.fillRect(x-12,y+3,25,5);
       if(m.name==='Slime') {ctx.fillStyle='#4d9c8f';ctx.fillRect(x-12,y-9+bob,24,13);ctx.fillRect(x-8,y-14+bob,16,10);ctx.fillStyle='#8dd7a2';ctx.fillRect(x-8,y-11+bob,13,5);}
+      else if(m.species==='firefly'||m.species==='moth'){ctx.fillStyle=m.species==='firefly'?'#edba77':'#b9dbb5';const wing=2+Math.round(Math.sin(s.time*15)*2);ctx.fillRect(x-17,y-13+wing,13,10);ctx.fillRect(x+4,y-13-wing,13,10);ctx.fillStyle=m.species==='firefly'?'#ba704b':'#648d8c';ctx.fillRect(x-4,y-16,8,20);ctx.fillStyle='#f8dc8c';ctx.fillRect(x-3,y-1,6,4);}
       else {ctx.fillStyle='#8b6754';ctx.fillRect(x-14,y-13,27,17);ctx.fillStyle='#b18a68';ctx.fillRect(x-8,y-16,17,8);ctx.fillStyle='#e1ce9f';ctx.fillRect(x-14,y-3,3,5);ctx.fillRect(x+10,y-3,3,5);}
       ctx.fillStyle='#253e38';ctx.fillRect(x-5,y-5,2,3);ctx.fillRect(x+3,y-5,2,3);
       ctx.fillStyle='#3a4538';ctx.fillRect(x-14,y-23,28,3);ctx.fillStyle='#d18e77';ctx.fillRect(x-14,y-23,28*m.hp/m.maxHp,3);label(m.name,x,y+18);

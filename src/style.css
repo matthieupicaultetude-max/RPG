@@ -582,3 +582,7 @@ canvas { cursor: crosshair; }
   .monster-loot-grid { grid-template-columns: 1fr; }.bestiary-heading { margin-bottom: 12px; }.bestiary-heading h2 { font-size: 23px; }
   .inventory-footer .tabs button { padding: 7px 5px; font-size: 8px; }
 }
+.avatar-caption .gear-bonuses { display: block; line-height: 1.6; margin-top: 7px; color: #b8cf9b; overflow-wrap: anywhere; }
+.item-details .set-info { color: #b9c59a; font-size: 10px; }
+.core-details .detail-icon { background: radial-gradient(circle, #76926a44, #20352a); }
+@media (max-width: 520px) { .item-details .set-info { font-size: 8px; } .avatar-caption .gear-bonuses { font-size: 6px; } }
