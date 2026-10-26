@@ -1,4 +1,4 @@
-import { createSandbox, stepSandbox, attack, teleport } from '../dev/sandbox.js';
+import { createSandbox, stepSandbox, attack, teleport, toggleAllies } from '../dev/sandbox.js';
 import { createControls } from '../input/controls.js';
 import { createRenderer } from '../rendering/scene.js';
 
@@ -9,6 +9,7 @@ export function createGame(canvas, touchControls, onChange) {
   const controller = new AbortController();
   let previous, frame, lastRevision = -1, lastHome;
   canvas.addEventListener('keydown', event => {
+    if (event.code === 'KeyE' && !event.repeat) { event.preventDefault(); toggleAllies(state); }
     if (event.code === 'Space') { event.preventDefault(); attack(state); }
   }, { signal: controller.signal });
   function tick(now) {

@@ -66,9 +66,20 @@ Le joueur peut **refaire sa composition chaque fois qu’il revient à sa maison
 
 **À définir :** acquisition de nouveaux personnages, taille de la réserve, coût éventuel d’une recomposition et possibilité d’enregistrer des compositions. Aucun coût ni limite de fréquence n’est imposé à ce stade. La maison pourrait être une instance personnelle accessible depuis le village ; son implantation reste à décider.
 
-### Contrôle de l’équipe : proposition à confirmer
+### Contrôle de l’équipe
 
-Dans la continuité de l’idée précédente, le joueur contrôlerait un personnage principal et les trois autres seraient pilotés par l’IA. Cette adaptation à quatre personnages reste à confirmer, tout comme le changement de personnage principal et le déploiement/rappel des alliés. L’ancien raccourci E n’est pas réservé tant que ces règles ne sont pas tranchées.
+Le joueur dirige uniquement son **personnage principal**. Les trois autres membres sont pilotés par l’IA. La touche **E** déploie ou rappelle les alliés ; elle reste disponible en déplacement comme en combat. Une pression maintenue ne répète pas le basculement. Un bouton équivalent est disponible dans l’interface et au tactile.
+
+La troupe s’articule autour du personnage principal, sans former une file rigide ni recopier ses pas :
+
+- Chaque compagnon choisit sa destination et son chemin, contourne les obstacles et garde un espace personnel.
+- Les changements de direction et de vitesse sont progressifs. À l’arrêt, les compagnons se stabilisent au lieu de tourner constamment autour du joueur.
+- Le corps à corps approche les ennemis et engage au contact.
+- Le personnage à distance conserve une zone de tir et recule lorsqu’un ennemi s’approche trop.
+- Le soutien reste en retrait, suit la troupe et aide les alliés.
+- Quand le personnage principal s’éloigne, les compagnons abandonnent les combats trop éloignés et se regroupent autour de lui.
+
+Le changement de personnage principal est disponible par les portraits dans la zone d’essai ; ses restrictions éventuelles dans le monde partagé restent à définir. Les distances, vitesses et règles de priorité précises sont encore des réglages de test.
 
 L’IA des compagnons et les bots simulant d’autres joueurs sont deux systèmes distincts, même s’ils peuvent partager des briques de déplacement ou de combat.
 
@@ -181,7 +192,7 @@ GitHub Pages peut continuer à héberger le client statique ; il ne peut pas hé
 
 Avant de coder ces systèmes, préciser en priorité :
 
-1. Contrôle des quatre personnages, personnage principal et déploiement des compagnons.
+1. Restrictions éventuelles du changement de personnage principal et priorités avancées des compagnons IA.
 2. Confirmation du temps réel, compétences, ciblage et coopération entre équipes.
 3. Capacité des zones, population de bots et activités simulées.
 4. XP par personnage ou par équipe, progression des réservistes et acquisition des personnages.
@@ -198,7 +209,7 @@ Le jardin des essais sert à éprouver les interfaces et les personnages avant d
 
 Les conventions suivantes s’appliquent **uniquement à cette zone** :
 
-- Un personnage principal contrôlé, trois compagnons IA rappelables, sélection du principal à tout moment. Les trois premiers rôles restent fixes ; seul le poste flexible est modifiable à la maison.
+- Un personnage principal contrôlé, trois compagnons IA déployables/rappelables avec **E**, sélection du principal à tout moment. Le suivi autonome par rôle est décrit en section 5. Les trois premiers rôles restent fixes ; seul le poste flexible est modifiable à la maison.
 - Combat temps réel avec acquisition automatique du monstre le plus proche à portée ; soutien IA soignant les alliés vivants. Les compétences et le ciblage définitifs ne sont pas implémentés.
 - XP identique pour les quatre membres, sac partagé sans capacité maximale et aucun métier.
 - Quatorze emplacements individuels équipables ; coiffe/cape visibles et bonus de test de +5 dégâts pour l’arme du personnage contrôlé. Autres statistiques à définir.

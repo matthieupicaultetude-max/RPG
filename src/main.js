@@ -1,6 +1,6 @@
 import './style.css';
 import { createGame } from './game/create-game.js';
-import { ROLES, COLORS, SLOTS, atHome, teleport, chooseMain, changeFlex, grantXp, heal, grantLoot, giveEquipment, equip, unequip, attack, note } from './dev/sandbox.js';
+import { ROLES, COLORS, SLOTS, atHome, teleport, chooseMain, changeFlex, grantXp, heal, grantLoot, giveEquipment, equip, unequip, attack, note, toggleAllies } from './dev/sandbox.js';
 
 const app = document.querySelector('#app');
 app.innerHTML = `
@@ -8,7 +8,7 @@ app.innerHTML = `
 <main>
   <section class="page-heading"><div><p class="eyebrow">ZONE DE DÉVELOPPEMENT</p><h1>Le jardin des possibles<span>.</span></h1><p>Une petite zone pour donner vie aux prochaines aventures.</p></div><div class="world-info"><strong>01</strong><span>ZONE D’ESSAI<br>Équipe de 4 · 3 bots locaux</span></div></section>
   <div class="workspace"><section class="play-column">
-    <div class="scene"><div class="scene-top"><span><i></i> Jardin des essais</span><span>Vue top-down · Temps réel</span></div><canvas width="640" height="400" tabindex="0" aria-label="Zone de développement. Cliquez pour jouer, flèches ou ZQSD pour bouger, Espace pour attaquer."></canvas><div class="scene-bottom"><span><kbd>↑↓←→</kbd> / <kbd>ZQSD</kbd> Bouger <kbd>Espace</kbd> Attaquer</span><button data-action="deploy" id="deploy">Rappeler les alliés</button></div></div>
+    <div class="scene"><div class="scene-top"><span><i></i> Jardin des essais</span><span>Vue top-down · Temps réel</span></div><canvas width="640" height="400" tabindex="0" aria-label="Zone de développement. Cliquez pour jouer, flèches ou ZQSD pour bouger, Espace pour attaquer, E pour déployer ou rappeler les alliés."></canvas><div class="scene-bottom"><span><kbd>↑↓←→</kbd> / <kbd>ZQSD</kbd> Bouger <kbd>Espace</kbd> Attaquer <kbd>E</kbd> Alliés</span><button data-action="deploy" id="deploy">Rappeler les alliés · E</button></div></div>
     <div class="team-heading"><h2>Votre équipe</h2><span>Cliquez sur un portrait pour prendre le contrôle</span></div><div id="team" class="team-grid"></div>
     <div class="quick-actions"><button data-action="attack">⚔ Attaquer</button><button data-action="heal">✧ Soigner l’équipe</button><button data-action="home">⌂ Retour maison</button><button data-action="combat">Aller au combat →</button></div>
     <nav class="touch-controls" aria-label="Déplacement tactile"><button data-direction="up" aria-label="Haut">↑</button><div><button data-direction="left" aria-label="Gauche">←</button><button data-direction="down" aria-label="Bas">↓</button><button data-direction="right" aria-label="Droite">→</button></div></nav>
@@ -24,7 +24,7 @@ const panel = app.querySelector('#panel');
 function refresh(s) {
   app.querySelector('#team').innerHTML = s.team.map((m,i)=>`<button class="member ${i===s.main?'selected':''} ${m.hp===0?'fallen':''}" data-main="${i}" style="--role:${COLORS[m.role]}" aria-pressed="${i===s.main}"><span class="portrait">${m.role==='melee'?'⚔':m.role==='support'?'✧':'➶'}</span><span class="member-text"><strong>${m.name}<small>Niv. ${m.level}</small></strong><span>${i===3?'Flex · ':''}${ROLES[m.role]}</span><span class="hp-track"><span style="width:${m.hp/m.maxHp*100}%"></span></span><small>${m.hp} / ${m.maxHp} PV</small></span></button>`).join('');
   app.querySelector('#bag-count').textContent = s.bag.reduce((sum,item)=>sum+item.quantity,0);
-  app.querySelector('#deploy').textContent = s.deployed ? 'Rappeler les alliés' : 'Déployer les alliés';
+  app.querySelector('#deploy').textContent = s.deployed ? 'Rappeler les alliés · E' : 'Déployer les alliés · E';
   app.querySelector('#log').innerHTML = s.log.map(line=>`<li>${line}</li>`).join('');
   const m = s.team[s.main];
   if(currentTab==='equipment') panel.innerHTML = `<div class="panel-heading"><p class="eyebrow">PERSONNAGE PRINCIPAL</p><h2>${m.name} <span>Niv. ${m.level}</span></h2><p>${ROLES[m.role]} · ${s.gold} pièces</p><div class="xp-track"><span style="width:${m.xp/(m.level*50)*100}%"></span></div><small>${m.xp} / ${m.level*50} XP · Courbe de test</small></div><div class="equipment-grid">${SLOTS.map((slot,i)=>`<button class="slot ${m.equipment[slot]?'filled':''}" data-slot="${slot}" title="${m.equipment[slot]?'Retirer '+m.equipment[slot].name:'Emplacement vide : '+slot}" ${!m.equipment[slot]?'disabled':''}><span>${i>=8?'◇':i===7?'⚔':i===0?'♜':i===1?'◩':i===3?'♟':'◈'}</span><small>${slot}</small>${m.equipment[slot]?'<b>Équipé</b>':''}</button>`).join('')}</div><p class="panel-hint">14 emplacements · Sélectionnez un objet du sac pour l’équiper. Cliquez sur un objet équipé pour le retirer. Coiffe et cape modifient le sprite ; l’arme ajoute 5 dégâts de test.</p><div class="composition"><h3>Composition à la maison</h3><p>${atHome(s)?'Vous êtes à la maison. Modifiez le quatrième poste.':'Revenez à la maison pour modifier le poste flexible.'}</p><div class="role-buttons">${Object.entries(ROLES).map(([role,label])=>`<button data-flex="${role}" ${!atHome(s)?'disabled':''} aria-pressed="${s.team[3].role===role}">${label}</button>`).join('')}</div><small>Postes 1 à 3 fixes pour ce banc d’essai.</small></div>`;
@@ -42,7 +42,7 @@ app.addEventListener('click',event=>{
   if(button.dataset.slot)unequip(s,button.dataset.slot);
   if(button.dataset.equip)equip(s,Number(button.dataset.equip));
   if(button.dataset.loot)grantLoot(s,button.dataset.loot,button.dataset.chromatic==='true');
-  const actions={ attack:()=>attack(s),heal:()=>heal(s),home:()=>teleport(s,'maison'),combat:()=>teleport(s,'combat'),atelier:()=>teleport(s,'atelier'),xp:()=>grantXp(s,50),equipment:()=>giveEquipment(s,app.querySelector('#equipment-slot').value),auto:()=>{s.autoAttack=!s.autoAttack;note(s,`Attaque automatique ${s.autoAttack?'activée':'désactivée'}.`);},deploy:()=>{s.deployed=!s.deployed;note(s,s.deployed?'Alliés déployés.':'Alliés rappelés.');}};
+  const actions={ attack:()=>attack(s),heal:()=>heal(s),home:()=>teleport(s,'maison'),combat:()=>teleport(s,'combat'),atelier:()=>teleport(s,'atelier'),xp:()=>grantXp(s,50),equipment:()=>giveEquipment(s,app.querySelector('#equipment-slot').value),auto:()=>{s.autoAttack=!s.autoAttack;note(s,`Attaque automatique ${s.autoAttack?'activée':'désactivée'}.`);},deploy:()=>toggleAllies(s)};
   if(actions[button.dataset.action])actions[button.dataset.action]();
   game.refresh();refresh(s);
   if(['attack','home','combat','atelier','deploy'].includes(button.dataset.action))app.querySelector('canvas').focus({preventScroll:true});

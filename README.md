@@ -8,7 +8,7 @@ Une **zone de développement locale**, pour tester les interfaces et les premiè
 
 - Maison, atelier et aire de combat dans une petite carte top-down.
 - Équipe de quatre : corps à corps, soutien, distance et poste flexible.
-- Sélection du personnage principal ; trois compagnons IA déployables/rappelables. Le soutien soigne, les autres alliés combattent.
+- Sélection du personnage principal ; touche **E** pour déployer/rappeler les trois compagnons IA. Ils suivent avec des trajectoires individuelles, contournent la maison et s’espacent naturellement. Le corps à corps engage au contact, le distance garde son recul et le soutien accompagne et soigne. La troupe se regroupe quand le principal s’éloigne.
 - Trois bots de promenade identifiés comme tels. Ils ne représentent pas des connexions humaines et ne possèdent pas encore leurs propres équipes.
 - Slime et sanglier : dégâts, recul, effets, récompenses, réapparition et retour à la maison après défaite complète.
 - Sac de test partagé, équipement individuel de 14 emplacements, équipement/retrait d’objets et variantes de loot dans des piles distinctes.
@@ -26,7 +26,7 @@ npm ci
 npm run dev
 ```
 
-Ouvrir l’adresse affichée par Vite. Cliquer sur la scène pour activer le clavier : flèches, ZQSD ou WASD pour bouger, Espace pour attaquer le monstre le plus proche à portée. Les boutons sous la scène permettent d’attaquer, soigner et se téléporter. Sélectionner un portrait change le personnage contrôlé. À la maison, choisir le rôle du quatrième membre dans le panneau Personnage.
+Ouvrir l’adresse affichée par Vite. Cliquer sur la scène pour activer le clavier : flèches, ZQSD ou WASD pour bouger, Espace pour attaquer le monstre le plus proche à portée, **E** pour déployer/rappeler les alliés (une pression, sans répétition en maintenant la touche). Les boutons sous la scène permettent d’attaquer, soigner et se téléporter. Sélectionner un portrait change le personnage contrôlé. À la maison, choisir le rôle du quatrième membre dans le panneau Personnage.
 
 Dans **Outils dev**, générer un équipement puis ouvrir le **Sac** et cliquer sur **Équiper** pour l’attribuer au personnage principal. Le panneau **Personnage** présente ses 14 emplacements ; cliquer sur un objet équipé le remet dans le sac. Coiffe et cape modifient le sprite ; une arme équipée ajoute 5 dégâts au coup du personnage principal. Les autres bonus restent à concevoir.
 
@@ -38,7 +38,7 @@ npm run build
 npm run preview
 ```
 
-Dix tests couvrent déplacement, composition à la maison, variantes de butin, échanges d’équipement, XP, combat/récompenses/respawn collisions de la maison, soutien IA et retour après défaite. Les parcours navigateur vérifient également les commandes, les panneaux et le petit écran.
+Quatorze tests couvrent déplacement, composition à la maison, variantes de butin, échanges d’équipement, XP, combat/récompenses/respawn collisions de la maison, soutien IA, retour après défaite, déploiement, contournement de la maison, espacement au repos, recul du distance et regroupement. Les parcours navigateur vérifient également les commandes, les panneaux et le petit écran.
 
 ## Organisation
 
@@ -46,6 +46,7 @@ Dix tests couvrent déplacement, composition à la maison, variantes de butin, �
 - `src/main.js` : interface de la zone et actions des panneaux.
 - `src/game/` : boucle du jeu et déplacement de base.
 - `src/dev/sandbox.js` : état et règles provisoires du banc d’essai.
+- `src/ai/companions.js` : intentions par rôle, navigation individuelle et mouvement lissé avec séparation.
 - `src/input/` : commandes clavier/tactiles et gestion du focus.
 - `src/rendering/` : terrain et rendu Canvas des personnages/monstres.
 - `src/style.css` : interface responsive.

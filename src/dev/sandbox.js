@@ -1,3 +1,4 @@
+import { stepCompanions, placeAllies, clearRoute } from '../ai/companions.js';
 import { createState, update as movePlayer } from '../game/state.js';
 
 export const ROLES = { melee: 'Corps à corps', support: 'Soutien', ranged: 'Distance' };
@@ -31,7 +32,8 @@ export function teleport(s, station) {
   const point = STATIONS[station];
   if (!point) return;
   Object.assign(s.player, point, { moving: false });
-  s.team.forEach((m, i) => { m.x = point.x + (i % 2) * 20; m.y = point.y + 18 * i; });
+  Object.assign(s.team[s.main], s.player);
+  placeAllies(s, canStand);
   note(s, `Téléportation de test : ${station}.`);
 }
 export function chooseMain(s, i) {
@@ -39,7 +41,14 @@ export function chooseMain(s, i) {
   Object.assign(s.team[s.main], s.player);
   s.main = i;
   Object.assign(s.player, { x: s.team[i].x, y: s.team[i].y, facing: s.team[i].facing });
+  s.team.forEach(clearRoute);
   note(s, `${s.team[i].name} est votre personnage principal.`);
+}
+export function toggleAllies(s) {
+  s.deployed = !s.deployed;
+  if (s.deployed) placeAllies(s, canStand);
+  else s.team.forEach(clearRoute);
+  note(s, s.deployed ? 'Alliés déployés.' : 'Alliés rappelés.');
 }
 export function changeFlex(s, role) {
   if (!atHome(s)) { note(s, 'Revenez à la maison pour modifier la composition.'); return false; }
@@ -139,22 +148,7 @@ export function stepSandbox(s, direction, dt) {
   s.effects = s.effects.filter(e => { e.life -= dt; e.y -= dt * 12; return e.life > 0; });
   s.team.forEach(m => { m.cooldown = Math.max(0, m.cooldown - dt); });
   if (s.autoAttack) attack(s);
-  s.team.forEach((m, i) => {
-    if (i === s.main || m.hp <= 0 || !s.deployed) return;
-    const target = s.monsters.find(enemy => enemy.hp > 0 && Math.hypot(enemy.x - s.player.x, enemy.y - s.player.y) < 120);
-    if (m.role === 'support') {
-      const injured = s.team.find(ally => ally.hp > 0 && ally.hp < ally.maxHp);
-      if (injured && m.cooldown === 0 && Math.hypot(m.x - injured.x, m.y - injured.y) < 120) {
-        injured.hp = Math.min(injured.maxHp, injured.hp + 8); m.cooldown = 2;
-        s.effects.push({ x: injured.x, y: injured.y - 25, text: '+8', color: '#8ce2b0', life: 1 }); s.revision++;
-      }
-    }
-    if (target && m.role !== 'support') {
-      const range = m.role === 'ranged' ? 100 : 30;
-      if (Math.hypot(m.x - target.x, m.y - target.y) > range) walk(m, target.x, target.y, 70, dt);
-      else { m.moving = false; if (m.cooldown === 0) { hitMonster(s, target, 7, m); m.cooldown = 1; } }
-    } else walk(m, s.player.x + Math.cos(i * 2.2) * 27, s.player.y + Math.sin(i * 2.2) * 27, 86, dt);
-  });
+  stepCompanions(s, dt, canStand, hitMonster);
   s.monsters.forEach(monster => {
     monster.cooldown = Math.max(0, monster.cooldown - dt);
     if (monster.hp <= 0) {

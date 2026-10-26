@@ -92,6 +92,6 @@ export function createRenderer(canvas) {
       ctx.fillStyle='#3a4538';ctx.fillRect(x-14,y-23,28,3);ctx.fillStyle='#d18e77';ctx.fillRect(x-14,y-23,28*m.hp/m.maxHp,3);label(m.name,x,y+18);
     }
     if(s.attackFlash>0){ctx.strokeStyle='#fff0b3';ctx.lineWidth=3;ctx.beginPath();ctx.arc(s.player.x,s.player.y-7,22,-1,1.8);ctx.stroke();}
-    for(const e of s.effects){ctx.globalAlpha=Math.min(1,e.life*2);ctx.font='bold 11px monospace';ctx.textAlign='center';ctx.fillStyle=e.color;ctx.fillText(e.text,e.x,e.y);ctx.globalAlpha=1;}
+    for(const e of s.effects){ctx.globalAlpha=Math.min(1,e.life*2);if(e.toX!==undefined){ctx.strokeStyle=e.color;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(e.x,e.y);ctx.lineTo(e.toX,e.toY);ctx.stroke();}ctx.font='bold 11px monospace';ctx.textAlign='center';ctx.fillStyle=e.color;ctx.fillText(e.text,e.x,e.y);ctx.globalAlpha=1;}
   };
 }
