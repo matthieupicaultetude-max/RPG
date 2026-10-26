@@ -5,14 +5,17 @@ export const ROLES = { melee: 'Corps à corps', support: 'Soutien', ranged: 'Dis
 export const COLORS = { melee: '#dbac66', support: '#78c4a6', ranged: '#9caff0' };
 export const SLOTS = ['Coiffe', 'Cape', 'Ceinture', 'Bottes', 'Anneau 1', 'Anneau 2', 'Amulette', 'Arme', ...Array.from({ length: 6 }, (_, i) => `Trophée ${i + 1}`)];
 export const STATIONS = { maison: { x: 110, y: 135 }, combat: { x: 480, y: 255 }, atelier: { x: 190, y: 295 } };
-const names = ['Aëlan', 'Liora', 'Sylas', 'Nora'];
+export const ULTIMATE_DURATION = 30;
+export const ULTIMATE_COOLDOWN = 300;
+const names = ['Aëlan', 'Liora', 'Sylas'];
 export function makeMember(role, i) {
   return { id: i, name: names[i], role, level: 1, xp: 0, hp: 100, maxHp: 100, equipment: {}, x: 280 - i * 20, y: 210 + i * 13, facing: 'down', moving: false, cooldown: 0 };
 }
 export function createSandbox() {
   const state = createState();
   Object.assign(state, {
-    team: ['melee', 'support', 'ranged', 'melee'].map(makeMember), main: 0, deployed: true,
+    team: ['melee', 'support', 'ranged'].map(makeMember), main: 0, deployed: false,
+    ultimate: { remaining: 0, cooldown: 0 },
     bag: [], nextItem: 1, gold: 0, log: ['Bienvenue dans le jardin des essais.'], revision: 0,
     monsters: [{ name: 'Slime', x: 455, y: 220, homeX: 455, homeY: 220, hp: 45, maxHp: 45, cooldown: 0, respawn: 0 }, { name: 'Sanglier', x: 535, y: 285, homeX: 535, homeY: 285, hp: 70, maxHp: 70, cooldown: 0, respawn: 0 }],
     bots: Array.from({ length: 3 }, (_, i) => ({ name: ['Milo', 'Éline', 'Orin'][i], x: 290 + i * 70, y: 110, role: ['melee', 'support', 'ranged'][i], facing: 'down', moving: true, phase: i * 2, target: { x: 270 + i * 70, y: 110 } })),
@@ -37,25 +40,40 @@ export function teleport(s, station) {
   note(s, `Téléportation de test : ${station}.`);
 }
 export function chooseMain(s, i) {
-  if (!s.team[i] || s.team[i].hp <= 0) return;
+  if (i === s.main || !s.team[i] || s.team[i].hp <= 0) return false;
   Object.assign(s.team[s.main], s.player);
+  if (!s.deployed) Object.assign(s.team[i], s.player);
   s.main = i;
-  Object.assign(s.player, { x: s.team[i].x, y: s.team[i].y, facing: s.team[i].facing });
+  Object.assign(s.player, { x: s.team[i].x, y: s.team[i].y, facing: s.team[i].facing, moving: false });
   s.team.forEach(clearRoute);
   note(s, `${s.team[i].name} est votre personnage principal.`);
-}
-export function toggleAllies(s) {
-  s.deployed = !s.deployed;
-  if (s.deployed) placeAllies(s, canStand);
-  else s.team.forEach(clearRoute);
-  note(s, s.deployed ? 'Alliés déployés.' : 'Alliés rappelés.');
-}
-export function changeFlex(s, role) {
-  if (!atHome(s)) { note(s, 'Revenez à la maison pour modifier la composition.'); return false; }
-  if (!ROLES[role]) return false;
-  s.team[3].role = role;
-  note(s, `Poste flexible : ${ROLES[role]}.`);
   return true;
+}
+export function activateUltimate(s) {
+  if (s.ultimate.remaining > 0 || s.ultimate.cooldown > 0 || s.team[s.main].hp <= 0) return false;
+  s.ultimate.remaining = ULTIMATE_DURATION;
+  s.ultimate.cooldown = ULTIMATE_COOLDOWN;
+  s.deployed = true;
+  placeAllies(s, canStand);
+  note(s, 'Ultime : la troupe est réunie pendant 30 secondes !');
+  return true;
+}
+export function endUltimate(s) {
+  s.ultimate.remaining = 0;
+  s.deployed = false;
+  s.team.forEach(clearRoute);
+}
+export function advanceUltimate(s, elapsed) {
+  const countdown = value => value - elapsed < 1e-8 ? 0 : value - elapsed;
+  const wasActive = s.ultimate.remaining > 0;
+  const wasCooling = s.ultimate.cooldown > 0;
+  s.ultimate.remaining = countdown(s.ultimate.remaining);
+  s.ultimate.cooldown = countdown(s.ultimate.cooldown);
+  if (wasActive && s.ultimate.remaining === 0) {
+    endUltimate(s);
+    note(s, 'Ultime terminé : les compagnons se retirent.');
+  }
+  if (wasCooling && s.ultimate.cooldown === 0) note(s, 'Ultime prêt !');
 }
 export function grantXp(s, amount) {
   s.team.forEach(m => {
@@ -137,7 +155,8 @@ export function attack(s) {
   const target = s.monsters.filter(m => m.hp > 0 && Math.hypot(m.x - s.player.x, m.y - s.player.y) < range).sort((a, b) => Math.hypot(a.x - s.player.x, a.y - s.player.y) - Math.hypot(b.x - s.player.x, b.y - s.player.y))[0];
   if (target) hitMonster(s, target, 12 + (member.equipment.Arme ? 5 : 0), s.player);
 }
-export function stepSandbox(s, direction, dt) {
+export function stepSandbox(s, direction, dt, elapsed = dt) {
+  advanceUltimate(s, Math.max(0, elapsed));
   const old = { x: s.player.x, y: s.player.y };
   if (s.team[s.main].hp > 0) movePlayer(s, direction, dt);
   else { s.time += dt; s.player.moving = false; }
@@ -162,7 +181,7 @@ export function stepSandbox(s, direction, dt) {
       else if (monster.cooldown === 0) {
         target.hp = Math.max(0, target.hp - 8); monster.cooldown = 1.2;
         s.effects.push({ x: target.x, y: target.y - 25, text: '−8', color: '#ffa3a3', life: .8 }); s.revision++;
-        if (s.team.every(m => m.hp <= 0)) { teleport(s, 'maison'); heal(s); note(s, 'Défaite : retour à la maison (règle de test).'); }
+        if (s.team.every(m => m.hp <= 0)) { endUltimate(s); teleport(s, 'maison'); heal(s); note(s, 'Défaite : retour à la maison (règle de test).'); }
       }
     } else walk(monster, monster.homeX + Math.sin(s.time * .5 + monster.homeX) * 20, monster.homeY + Math.cos(s.time * .4) * 15, 14, dt);
   });

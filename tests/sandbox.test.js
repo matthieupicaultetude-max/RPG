@@ -1,11 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createSandbox, SLOTS, changeFlex, teleport, grantLoot, giveEquipment, equip, unequip, grantXp, stepSandbox, chooseMain, attack } from '../src/dev/sandbox.js';
+import { createSandbox, SLOTS, teleport, grantLoot, giveEquipment, equip, unequip, grantXp, stepSandbox, chooseMain, attack } from '../src/dev/sandbox.js';
 
-test('composition : trois rôles fixes, quatrième modifiable seulement à la maison',()=>{
- const s=createSandbox();assert.equal(s.team.length,4);assert.equal(SLOTS.length,14);
- assert.equal(changeFlex(s,'support'),false);teleport(s,'maison');assert.equal(changeFlex(s,'support'),true);
- assert.deepEqual(s.team.map(m=>m.role),['melee','support','ranged','support']);
+test('composition : exactement trois personnages, un par rôle',()=>{
+ const s=createSandbox();assert.equal(s.team.length,3);assert.equal(SLOTS.length,14);
+ assert.deepEqual(s.team.map(m=>m.role),['melee','support','ranged']);
 });
 test('les quatre variations de butin restent distinctes et les piles se cumulent',()=>{
  const s=createSandbox();for(const type of ['normal','rare'])for(const chromatic of [false,true])grantLoot(s,type,chromatic);
@@ -34,7 +33,7 @@ test('déplacement bloqué par la maison et bots locaux actifs',()=>{
  assert.ok(s.player.y>=108);assert.ok(s.bots.some((b,i)=>Math.abs(b.x-before[i])>1));
 });
 test('compagnons : le soutien soigne et le rappel suspend leurs déplacements',()=>{
- const s=createSandbox();s.team[0].hp=50;s.team[1].x=s.player.x;s.team[1].y=s.player.y;
+ const s=createSandbox();s.deployed=true;s.team[0].hp=50;s.team[1].x=s.player.x;s.team[1].y=s.player.y;
  stepSandbox(s,{x:0,y:0},.05);assert.equal(s.team[0].hp,58);
  s.deployed=false;const position={x:s.team[2].x,y:s.team[2].y};
  stepSandbox(s,{x:1,y:0},.05);assert.equal(s.team[2].x,position.x);assert.equal(s.team[2].y,position.y);
