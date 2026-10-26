@@ -1,3 +1,4 @@
+import { completeChromaticSet } from '../data/chromatic.js';
 import { petDefinition, foodQuantity, PET_MAX_LEVEL, petLevelXp } from "../data/pets.js";
 import { adoptionProgress } from "../game/pet-quests.js";
 import { renderItemIcon, elementSigil } from "./item-art.js";
@@ -112,8 +113,8 @@ function objectDetails(state, selection) {
             : item.slot
               ? "Équipement de test. Les caractéristiques et bonus seront définis plus tard."
               : "Ressource obtenue sur un monstre.";
-  const usage = !item.slot && item.chromatic ? (item.type==='rare' ? `Nourriture du familier associé : ${petDefinition(Object.keys(ELEMENTS).find(element=>petDefinition(element)?.food===item.name))?.name || 'voir l’animalerie'}.` : 'Matériau réservé au futur craft des armures chromatiques.') : '';
-  return `<div class="item-details ${item.chromatic ? "chromatic" : ""}"><span class="detail-icon">${itemIcon(item.kind === "core" ? "Noyau" : item.slot, item.chromatic, item.color, item)}</span><div><p class="eyebrow">${item.slot || (item.type === "rare" ? "BUTIN RARE" : "BUTIN NORMAL")}${item.chromatic ? " · CHROMATIQUE" : ""} · ${equipped ? "ÉQUIPÉ" : "DANS LE SAC"}</p><h3>${item.name}${item.chromatic ? " chromatique" : ""}</h3><p>${effect}</p>${usage?`<p class="resource-purpose">${usage}</p>`:""}${item.setId ? `<p class="set-info">${item.setName} · Niveau requis ${item.requiredLevel} · ${Object.values(state.team[state.main].equipment).filter((piece) => piece.setId === item.setId).length}/9 pièces équipées</p>` : ""}<small>Quantité : ${item.quantity} ${equipped ? "· " + state.team[state.main].name : ""}</small></div>${item.slot ? `<button ${equipped ? `data-slot="${item.slot}"` : `data-equip="${item.id}"`}>${equipped ? "Retirer" : "Équiper"}</button>` : ""}</div>`;
+  const usage = !item.slot && item.chromatic ? (item.type==='rare' ? `Nourriture du familier associé : ${petDefinition(Object.keys(ELEMENTS).find(element=>petDefinition(element)?.food===item.name))?.name || 'voir l’animalerie'}.` : 'Matériau de forge : améliore une pièce de sa panoplie en chromatique.') : '';
+  return `<div class="item-details ${item.chromatic ? "chromatic" : ""}"><span class="detail-icon">${itemIcon(item.kind === "core" ? "Noyau" : item.slot, item.chromatic, item.color, item)}</span><div><p class="eyebrow">${item.slot || (item.type === "rare" ? "BUTIN RARE" : "BUTIN NORMAL")}${item.chromatic ? " · CHROMATIQUE" : ""} · ${equipped ? "ÉQUIPÉ" : "DANS LE SAC"}</p><h3>${item.name}${item.chromatic ? " chromatique" : ""}</h3><p>${effect}</p>${usage?`<p class="resource-purpose">${usage}</p>`:""}${item.setId ? `<p class="set-info">${item.setName}${item.chromatic ? " · Aura chromatique" : ""} · Niveau requis ${item.requiredLevel} · ${Object.values(state.team[state.main].equipment).filter((piece) => piece.setId === item.setId).length}/9 pièces équipées</p>` : ""}<small>Quantité : ${item.quantity} ${equipped ? "· " + state.team[state.main].name : ""}</small></div>${item.slot ? `<button ${equipped ? `data-slot="${item.slot}"` : `data-equip="${item.id}"`}>${equipped ? "Retirer" : "Équiper"}</button>` : ""}</div>`;
 }
 export function renderInventory(state, selection, filter = "all") {
   const m = state.team[state.main];
@@ -140,7 +141,7 @@ export function renderInventory(state, selection, filter = "all") {
         .filter(([, v]) => v > 0)
         .map(([stat, v]) => `+${v} ${stat}`)
         .join(" · ") || "Aucun bonus d’équipement"
-    }</small></div></div><div class="gear-column">${RIGHT.map((name) => (name ? slot(name) : '<div class="gear-spacer" aria-hidden="true"></div>')).join("")}</div></section><div class="loadout-extras">${slot("Bouclier")}${slot("Familier")}</div><section class="trophy-row" aria-label="Six trophées en bas">${SLOTS.filter(
+    }</small><small class="set-aura-status">${completeChromaticSet(m) ? "✦ Panoplie chromatique complète · Aura de déplacement" : ""}</small></div></div><div class="gear-column">${RIGHT.map((name) => (name ? slot(name) : '<div class="gear-spacer" aria-hidden="true"></div>')).join("")}</div></section><div class="loadout-extras">${slot("Bouclier")}${slot("Familier")}</div><section class="trophy-row" aria-label="Six trophées en bas">${SLOTS.filter(
       (name) => name.startsWith("Trophée"),
     )
       .map(slot)

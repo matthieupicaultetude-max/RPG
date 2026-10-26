@@ -83,6 +83,9 @@ test("navigation: village, workshop and combat area connected; water and solid r
     targets = [
       [110, 135],
       [190, 295],
+      [212, 314],
+      [212, 334],
+      [250, 157],
       [480, 255],
       [530, 165],
       [585, 240],

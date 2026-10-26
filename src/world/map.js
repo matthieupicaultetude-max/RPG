@@ -94,6 +94,7 @@ function smooth(points) {
   }
   return result;
 }
+export const FORGE = Object.freeze({npc:{id:'borin',name:'Borin',x:212,y:314,role:'melee',facing:'down',moving:false,equipment:{}}});
 export const PET_SHOP = Object.freeze({x:250,y:138,npc:{id:'nola',name:'Nola',x:268,y:153,role:'support',facing:'down',moving:false,equipment:{}}});
 export const ROADS = [
   {id:'petshop',width:20,points:[[250,148],[250,180]]},
@@ -251,7 +252,7 @@ export const PROPS = [
   },
   ...[
     [140, 139, "VILLAGE"],
-    [218, 303, "ATELIER"],
+    [218, 303, "FORGE"],
     [397, 326, "PRAIRIE"],
   ].map(([x, y, text], i) => ({
     id: `sign-${i}`,

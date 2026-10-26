@@ -1,3 +1,4 @@
+import { nearForge } from './forge.js';
 import { nearPetShop } from './pet-quests.js';
 import { screenToWorld } from '../rendering/viewport.js';
 import { createCharacterWheel } from '../input/character-wheel.js';
@@ -15,7 +16,7 @@ export function createGame(canvas, touchControls, onChange, onTimers = () => {},
   canvas.addEventListener('wheel', createCharacterWheel(direction => { if (!interfaceOpen) cycleMain(state, direction); }), { passive: false, signal: controller.signal });
   canvas.addEventListener('keydown', event => {
     if (interfaceOpen) return;
-    if (event.code === 'KeyF' && !event.repeat) {event.preventDefault();if(nearPetShop(state))onInteraction(state);}
+    if (event.code === 'KeyF' && !event.repeat) {event.preventDefault();if(nearForge(state))onInteraction('forge');else if(nearPetShop(state))onInteraction('petshop');}
     if (event.code === 'KeyE' && !event.repeat) { event.preventDefault(); activateUltimate(state); }
   }, { signal: controller.signal });
   let pointer = null;

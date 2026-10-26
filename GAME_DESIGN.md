@@ -355,7 +355,7 @@ Les noyaux sont **exclusivement standards**, avec **25 %** de chance par victoir
 
 Dans la zone d’essai, le village est matérialisé près de la maison. Le joueur doit être dans cette zone pour ouvrir un noyau depuis sa fiche d’inventaire. Aucune monnaie n’est nécessaire.
 
-Une ouverture consomme **un seul noyau** et donne **une pièce aléatoire** de la panoplie de son élément et de sa tranche. Chaque pièce a une probabilité de **1/9** ; les doublons sont possibles. Un noyau donne uniquement une pièce standard. Les armures chromatiques seront obtenues par artisanat ; les recettes et les règles de fabrication seront définies plus tard. Le résultat est ajouté au sac et peut être équipé ; la sélection reste sur la pile de noyaux utilisée. Un noyau d’une tranche non disponible ne peut pas être consommé. Les outils dev permettent de générer les quatre noyaux débutants et de revenir à la maison pour tester la boucle.
+Une ouverture consomme **un seul noyau** et donne **une pièce aléatoire** de la panoplie de son élément et de sa tranche. Chaque pièce a une probabilité de **1/9** ; les doublons sont possibles. Un noyau donne uniquement une pièce standard. Les armures chromatiques sont obtenues par amélioration à la forge, selon la section 26. Le résultat est ajouté au sac et peut être équipé ; la sélection reste sur la pile de noyaux utilisée. Un noyau d’une tranche non disponible ne peut pas être consommé. Les outils dev permettent de générer les quatre noyaux débutants et de revenir à la maison pour tester la boucle.
 
 ## 21. Direction graphique : village pastoral
 
@@ -388,7 +388,7 @@ Les neuf catégories restent reconnaissables entre les panoplies. Les icônes so
 
 **Suppression des noyaux chromatiques :** ni le tirage sur les monstres ni l’ouverture d’un noyau ne peuvent donner un équipement chromatique. Même un ancien marqueur chromatique sur un noyau ne doit pas être transmis à sa récompense. Le taux global de noyau reste 25 %.
 
-Les équipements chromatiques relèveront de **l’artisanat**. Cette étape réserve leur provenance sans inventer de recettes, de coûts, de métier ou de bonus supplémentaires. Le système de fabrication reste à concevoir. Les ressources normales/rares et leurs variations chromatiques conservent leurs tirages actuels.
+Les équipements chromatiques relèvent de **l’artisanat** : amélioration chez Borin selon la section 26. La progression générale des métiers reste à concevoir. Les ressources normales/rares et leurs variations chromatiques conservent leurs tirages actuels.
 
 
 ## 24. Animalerie, certificats et progression des familiers
@@ -404,7 +404,7 @@ L’animalerie du village est tenue par **Nola**, PNJ accessible avec **F** à p
 
 Le familier commence au niveau 1. Le nourrissage consomme une seule ressource rare chromatique du monstre associé et accorde **10 XP**. Le seuil du prochain niveau vaut **niveau actuel × 10 XP**. Le plafond provisoire est **20** ; au plafond, aucune nourriture n’est consommée. Le bonus vaut **niveau + 1** dans la caractéristique principale de l’élément, sans effet secondaire. La progression reste attachée à l’objet lors des échanges d’équipement. Le familier est un compagnon visuel passif, sans attaque autonome.
 
-Les ressources **normales chromatiques** sont réservées au craft des armures chromatiques. Elles ne nourrissent aucun familier. Les recettes d’artisanat restent à concevoir ; ce craft n’est pas encore implémenté. La sauvegarde persistante et la validation serveur ne font pas partie de cette étape : collections, certificats et familiers appartiennent à la session locale.
+Les ressources **normales chromatiques** sont réservées au craft des armures chromatiques. Elles ne nourrissent aucun familier. Leur recette d’amélioration à la forge est décrite en section 26. La sauvegarde persistante et la validation serveur ne font pas partie de cette étape : collections, certificats et familiers appartiennent à la session locale.
 
 
 ## 25. Utilisation en quantité et équipement rapide
@@ -412,3 +412,16 @@ Les ressources **normales chromatiques** sont réservées au craft des armures c
 La fiche des noyaux permet de choisir une quantité entière positive et d’ouvrir un lot au village. Chaque noyau produit un tirage indépendant avec les règles de collection habituelles. La quantité réellement consommée est limitée à la pile disponible ; les tranches indisponibles et les ouvertures hors village ne consomment rien. L’ouverture à l’unité reste accessible.
 
 Après ouverture, la sélection reste sur la pile utilisée et le défilement du sac est conservé. Aucune récompense n’est sélectionnée automatiquement ; quand la pile est épuisée, sa fiche devient vide. **Maj + clic** sur un équipement du sac l’équipe sur le personnage actif, en respectant le niveau requis et en replaçant l’ancien équipement dans le sac.
+
+
+## 26. Forge et versions chromatiques des panoplies
+
+Borin est le PNJ de la forge du village, accessible avec **F** à proximité. L’onglet Forge affiche les pièces standards possédées dans le sac ou équipées sur les trois personnages et les ressources nécessaires. Les échanges sont bloqués hors de portée du PNJ.
+
+Chacune des neuf pièces des quatre panoplies débutantes possède une version chromatique, soit **36 versions**. La transformation conserve le niveau requis, la panoplie, l’emplacement et toutes les statistiques existantes, et ajoute **+2 Puissance** par pièce (réglage initial). Elle transforme l’objet d’origine sans duplication, sans changer ses PV ni offrir de soin gratuit s’il est équipé. Elle ne peut pas se cumuler sur une pièce déjà chromatique. Les familiers et trophées ne sont pas concernés.
+
+La recette consomme la pièce standard pour sa transformation, **1 ressource normale chromatique, 10 ressources normales standards et 5 ressources rares standards** du monstre associé à l’élément : sanglier/Ronce, luciole/Braise, phalène/Brise, slime/Rosée. Tous les coûts sont validés avant consommation ; aucun ingrédient ne disparaît en cas de manque. Les rares chromatiques restent destinés aux familiers. Aucun or, métier, hasard ou risque d’échec n’est ajouté à cette recette.
+
+La Puissance est prise en compte dans les dégâts du joueur et de ses alliés : la caractéristique de l’élément de l’arme et la Puissance s’additionnent dans le multiplicateur de dégâts. Les autres statistiques des pièces restent identiques.
+
+Chaque pièce chromatique présente une palette distincte, une aura dans ses icônes et des éclats en jeu. Les **neuf pièces chromatiques d’une même panoplie équipées par un seul personnage** activent une aura de déplacement : halo au sol et particules derrière le personnage en mouvement. L’effet n’est pas actif au repos, avec des pièces réparties entre les personnages, une pièce standard ou des panoplies mélangées. L’aura complète reste purement visuelle, sans bonus additionnel.

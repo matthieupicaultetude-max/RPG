@@ -1,3 +1,5 @@
+import { renderForge } from './ui/forge.js';
+import { nearForge, upgradeChromatic } from './game/forge.js';
 import { renderPetShop } from "./ui/petshop.js";
 import { acceptAdoption, claimPet, feedPet, nearPetShop } from "./game/pet-quests.js";
 import { MONSTERS } from "./data/monsters.js";
@@ -16,12 +18,12 @@ app.innerHTML = `
   <div class="hud-team"><p class="hud-hint">VOTRE TROUPE <span>↕ Molette pour changer</span></p><div id="team" class="team-grid"></div></div>
   <div class="hud-notification" id="notification" role="status"></div>
   <div class="hud-bottom"><div class="controls-hint"><kbd>ZQSD</kbd> Bouger <span>·</span> <kbd>Clic droit</kbd> Attaquer <span>·</span> <kbd>↕</kbd> Changer</div><div class="action-bar"><button data-action="attack">⚔<small>Attaquer</small><kbd>Clic droit</kbd></button><div class="ultimate-box"><button data-action="deploy" id="deploy">Ultime prêt · E</button><div class="ultimate-track"><span id="ultimate-progress"></span></div><span id="ultimate-status">Ultime prêt · Troupe réunie 30 s</span></div></div></div>
-  <button id="petshop-interaction" data-action="petshop" class="world-interaction" hidden>Parler à Nola · F</button><nav class="touch-controls" aria-label="Déplacement tactile"><button data-direction="up" aria-label="Haut">↑</button><div><button data-direction="left" aria-label="Gauche">←</button><button data-direction="down" aria-label="Bas">↓</button><button data-direction="right" aria-label="Droite">→</button></div></nav>
+  <button id="forge-interaction" data-action="forge" class="world-interaction" hidden>Parler à Borin · F</button><button id="petshop-interaction" data-action="petshop" class="world-interaction" hidden>Parler à Nola · F</button><nav class="touch-controls" aria-label="Déplacement tactile"><button data-direction="up" aria-label="Haut">↑</button><div><button data-direction="left" aria-label="Gauche">←</button><button data-direction="down" aria-label="Bas">↓</button><button data-direction="right" aria-label="Droite">→</button></div></nav>
   <div id="inventory-backdrop" class="inventory-backdrop" hidden></div>
   <section id="inventory" class="inventory-window" role="dialog" aria-modal="true" aria-labelledby="inventory-title" hidden>
     <h2 id="inventory-title" class="sr-only">Inventaire</h2>
     <div id="panel"></div>
-    <div class="inventory-footer"><nav class="tabs" aria-label="Panneaux de l’inventaire"><button data-tab="equipment" aria-pressed="true">Équipement & sac <span id="bag-count">0</span></button><button data-tab="bestiary" aria-pressed="false">Bestiaire</button><button data-tab="petshop" aria-pressed="false">Animalerie</button><button data-tab="tools" aria-pressed="false">Outils dev</button></nav><button data-action="close-inventory" aria-label="Fermer l’inventaire">✕ <kbd>Échap</kbd></button></div>
+    <div class="inventory-footer"><nav class="tabs" aria-label="Panneaux de l’inventaire"><button data-tab="equipment" aria-pressed="true">Équipement & sac <span id="bag-count">0</span></button><button data-tab="bestiary" aria-pressed="false">Bestiaire</button><button data-tab="petshop" aria-pressed="false">Animalerie</button><button data-tab="forge" aria-pressed="false">Forge</button><button data-tab="tools" aria-pressed="false">Outils dev</button></nav><button data-action="close-inventory" aria-label="Fermer l’inventaire">✕ <kbd>Échap</kbd></button></div>
   </section>
 </main>`;
 let inventoryOpen = false;
@@ -30,6 +32,7 @@ let selectedItem = null;
 let bagFilter = 'all';
 let bestiaryMonster = 'slime';
 let bestiaryLevel = 1;
+let forgeItem = null;
 let devLootMonster = 'slime';
 const panel = app.querySelector('#panel');
 function refresh(s) {
@@ -42,7 +45,7 @@ function refresh(s) {
   const previousQuantity = panel.querySelector('#core-quantity')?.value;
   const previousSlot = panel.querySelector('#equipment-slot')?.value;
   const focus = panel.contains(document.activeElement) ? document.activeElement : null;
-  const focusAttribute = focus && ['data-action','data-adopt','data-claim-pet','data-feed-pet','data-core','data-open-cores','data-open-core','data-monster','data-inspect-slot','data-inspect-bag','data-slot','data-equip'].find(name=>focus.hasAttribute(name));
+  const focusAttribute = focus && ['data-forge-select','data-forge-upgrade','data-action','data-adopt','data-claim-pet','data-feed-pet','data-core','data-open-cores','data-open-core','data-monster','data-inspect-slot','data-inspect-bag','data-slot','data-equip'].find(name=>focus.hasAttribute(name));
   const focusKey = focus?.id ? `#${CSS.escape(focus.id)}` : focusAttribute ? `[${focusAttribute}="${CSS.escape(focus.getAttribute(focusAttribute))}"]` : null;
   const scrollTop = panel.scrollTop;
   const bagScrollTop = panel.querySelector('.inventory-items')?.scrollTop || 0;
@@ -51,12 +54,14 @@ function refresh(s) {
     panel.innerHTML = renderBestiary(bestiaryMonster,bestiaryLevel);
     panel.querySelector('.monster-sheet').dataset.species = bestiaryMonster;
   }
-  app.querySelector('#inventory-title').textContent = currentTab==='bestiary' ? 'Bestiaire' : currentTab==='petshop' ? 'Animalerie' : 'Inventaire';
+  app.querySelector('#inventory-title').textContent = currentTab==='bestiary' ? 'Bestiaire' : currentTab==='petshop' ? 'Animalerie' : currentTab==='forge' ? 'Forge' : 'Inventaire';
   app.querySelector('#inventory').classList.toggle('bestiary-open',currentTab==='bestiary');
+  if(currentTab==='forge') panel.innerHTML = renderForge(s,forgeItem);
+  app.querySelector('#inventory').classList.toggle('forge-open',currentTab==='forge');
   if(currentTab==='petshop') panel.innerHTML = renderPetShop(s);
   app.querySelector('#inventory').classList.toggle('petshop-open',currentTab==='petshop');
   if(currentTab==='equipment') panel.innerHTML = renderInventory(s, selectedItem, bagFilter);
-  if(currentTab==='tools') panel.innerHTML = `<div class="panel-heading"><p class="eyebrow">BAC À SABLE</p><h2>Outils de développement</h2><p>Essayez sans attendre ni farmer.</p></div><section class="tool-group"><h3>Progression & combat</h3><div class="tool-buttons"><button data-action="xp">+50 XP à l’équipe</button><button data-action="heal">Soigner / réanimer</button><button data-action="auto" aria-pressed="${s.autoAttack}">Attaque auto : ${s.autoAttack?'oui':'non'}</button></div></section><section class="tool-group"><h3>Noyaux débutants · 1–10</h3><div class="tool-buttons">${Object.entries(ELEMENTS).map(([element,e])=>`<button data-core="${element}">Noyau de ${e.name}</button>`).join('')}</div><p class="panel-hint">Ouvrez-les au village près de la maison pour obtenir une pièce aléatoire.</p></section><section class="tool-group"><h3>Générer du loot</h3><label for="loot-monster">Monstre source</label><select id="loot-monster">${MONSTERS.map(monster=>`<option value="${monster.id}" ${devLootMonster===monster.id?'selected':''}>${monster.name}</option>`).join('')}</select><div class="loot-buttons"><button data-loot="normal">Normal</button><button data-loot="rare">Rare</button><button data-loot="normal" data-chromatic="true">✦ Normal chromatique</button><button data-loot="rare" data-chromatic="true">✦ Rare chromatique</button></div><p class="panel-hint">Combat de test : 20 % rare et 10 % chromatique. Ces taux ne fixent pas l’équilibrage final.</p></section><section class="tool-group"><h3>Générer un équipement</h3><label for="equipment-slot">Emplacement</label><select id="equipment-slot">${SLOTS.map(slot=>`<option>${slot}</option>`).join('')}</select><button data-action="equipment">Ajouter au sac</button></section><section class="tool-group"><h3>Déplacements rapides</h3><div class="tool-buttons"><button data-action="home">Maison</button><button data-action="atelier">Atelier</button><button data-action="animalerie">Animalerie</button><button data-action="combat">Combat</button></div></section><section class="journal"><h3>Journal de test</h3><ul>${s.log.map(line=>`<li>${line}</li>`).join('')}</ul></section>`;
+  if(currentTab==='tools') panel.innerHTML = `<div class="panel-heading"><p class="eyebrow">BAC À SABLE</p><h2>Outils de développement</h2><p>Essayez sans attendre ni farmer.</p></div><section class="tool-group"><h3>Progression & combat</h3><div class="tool-buttons"><button data-action="xp">+50 XP à l’équipe</button><button data-action="heal">Soigner / réanimer</button><button data-action="auto" aria-pressed="${s.autoAttack}">Attaque auto : ${s.autoAttack?'oui':'non'}</button></div></section><section class="tool-group"><h3>Noyaux débutants · 1–10</h3><div class="tool-buttons">${Object.entries(ELEMENTS).map(([element,e])=>`<button data-core="${element}">Noyau de ${e.name}</button>`).join('')}</div><p class="panel-hint">Ouvrez-les au village près de la maison pour obtenir une pièce aléatoire.</p></section><section class="tool-group"><h3>Générer du loot</h3><label for="loot-monster">Monstre source</label><select id="loot-monster">${MONSTERS.map(monster=>`<option value="${monster.id}" ${devLootMonster===monster.id?'selected':''}>${monster.name}</option>`).join('')}</select><div class="loot-buttons"><button data-loot="normal">Normal</button><button data-loot="rare">Rare</button><button data-loot="normal" data-chromatic="true">✦ Normal chromatique</button><button data-loot="rare" data-chromatic="true">✦ Rare chromatique</button></div><p class="panel-hint">Combat de test : 20 % rare et 10 % chromatique. Ces taux ne fixent pas l’équilibrage final.</p></section><section class="tool-group"><h3>Générer un équipement</h3><label for="equipment-slot">Emplacement</label><select id="equipment-slot">${SLOTS.map(slot=>`<option>${slot}</option>`).join('')}</select><button data-action="equipment">Ajouter au sac</button></section><section class="tool-group"><h3>Déplacements rapides</h3><div class="tool-buttons"><button data-action="home">Maison</button><button data-action="forge-teleport">Forge</button><button data-action="animalerie">Animalerie</button><button data-action="combat">Combat</button></div></section><section class="journal"><h3>Journal de test</h3><ul>${s.log.map(line=>`<li>${line}</li>`).join('')}</ul></section>`;
   app.querySelector('#inventory').classList.toggle('tools-open', currentTab==='tools');
   const slotSelect = panel.querySelector('#equipment-slot');
   if (slotSelect && previousSlot) slotSelect.value = previousSlot;
@@ -69,6 +74,7 @@ function refresh(s) {
   if (focusKey) (panel.querySelector(focusKey) || panel.querySelector('.item-details button') || app.querySelector('[data-action="close-inventory"]')).focus({ preventScroll: true });
 }
 function refreshUltimate(s) {
+  app.querySelector('#forge-interaction').hidden = inventoryOpen || !nearForge(s);
   app.querySelector('#petshop-interaction').hidden = inventoryOpen || !nearPetShop(s);
   const active = s.ultimate.remaining > 0;
   const seconds = Math.ceil(active ? s.ultimate.remaining : s.ultimate.cooldown);
@@ -96,13 +102,14 @@ function setInventory(open, tab = currentTab) {
     app.querySelector('[data-action="close-inventory"]').focus();
   } else app.querySelector('canvas').focus({ preventScroll: true });
 }
-const game = createGame(app.querySelector('canvas'),app.querySelector('.touch-controls'),refresh,refreshUltimate,()=>setInventory(true,'petshop'));
+const game = createGame(app.querySelector('canvas'),app.querySelector('.touch-controls'),refresh,refreshUltimate,tab=>setInventory(true,tab));
 refresh(game.state);
 app.addEventListener('click',event=>{
   const button=event.target.closest('button'); if(!button)return;
   const s=game.state;
   if (button.dataset.action === 'inventory') { setInventory(!(inventoryOpen && currentTab==='equipment'), 'equipment'); return; }
   if (button.dataset.action === 'bestiary') { setInventory(!(inventoryOpen && currentTab==='bestiary'), 'bestiary'); return; }
+  if (button.dataset.action === 'forge') { if(nearForge(s))setInventory(true,'forge'); return; }
   if (button.dataset.action === 'petshop') { if(nearPetShop(s))setInventory(true,'petshop'); return; }
   if (button.dataset.action === 'tools') { setInventory(true, 'tools'); return; }
   if (button.dataset.action === 'close-inventory') { setInventory(false); return; }
@@ -130,6 +137,8 @@ app.addEventListener('click',event=>{
     equip(s,Number(button.dataset.equip));
     selectedItem = item ? { source:'equipment', slot:item.slot } : null;
   }
+  if(button.dataset.forgeSelect)forgeItem=Number(button.dataset.forgeSelect);
+  if(button.dataset.forgeUpgrade)upgradeChromatic(s,Number(button.dataset.forgeUpgrade));
   if(button.dataset.adopt)acceptAdoption(s,button.dataset.adopt);
   if(button.dataset.claimPet){const pet=claimPet(s,button.dataset.claimPet);if(pet)selectedItem={source:'bag',id:pet.id};}
   if(button.dataset.feedPet)feedPet(s,Number(button.dataset.feedPet));
@@ -140,7 +149,7 @@ app.addEventListener('click',event=>{
     if (input.reportValidity()) openCores(s,Number(button.dataset.openCores),Number(input.value));
   }
   if(button.dataset.loot)grantLoot(s,button.dataset.loot,button.dataset.chromatic==='true',devLootMonster);
-  const actions={ attack:()=>attack(s),heal:()=>heal(s),home:()=>teleport(s,'maison'),combat:()=>teleport(s,'combat'),atelier:()=>teleport(s,'atelier'),animalerie:()=>teleport(s,'animalerie'),xp:()=>grantXp(s,50),equipment:()=>giveEquipment(s,app.querySelector('#equipment-slot').value),auto:()=>{s.autoAttack=!s.autoAttack;note(s,`Attaque automatique ${s.autoAttack?'activée':'désactivée'}.`);},deploy:()=>activateUltimate(s)};
+  const actions={ attack:()=>attack(s),heal:()=>heal(s),home:()=>teleport(s,'maison'),combat:()=>teleport(s,'combat'),atelier:()=>teleport(s,'atelier'),'forge-teleport':()=>teleport(s,'forge'),animalerie:()=>teleport(s,'animalerie'),xp:()=>grantXp(s,50),equipment:()=>giveEquipment(s,app.querySelector('#equipment-slot').value),auto:()=>{s.autoAttack=!s.autoAttack;note(s,`Attaque automatique ${s.autoAttack?'activée':'désactivée'}.`);},deploy:()=>activateUltimate(s)};
   if(actions[button.dataset.action])actions[button.dataset.action]();
   game.refresh();refresh(s);
   if(!inventoryOpen && (button.dataset.main!==undefined || ['attack','home','combat','atelier','animalerie','deploy'].includes(button.dataset.action)))app.querySelector('canvas').focus({preventScroll:true});

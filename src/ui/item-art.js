@@ -1,3 +1,4 @@
+import { CHROMATIC_COLORS } from '../data/chromatic.js';
 // Original, name-driven inventory art. Geometry is shared by bag, slots and bestiary.
 const PALETTES = {
   earth: {
@@ -278,7 +279,8 @@ function petArt(item,p) {
   return path('M12 14 3 4 1 15l10 10m9-11L29 4l2 11-10 10z',p.light)+path('M12 7h8v22h-8z',p.base)+path('M14 4V1m4 3V1M14 13v2m4-2v2','none',p.dark,2)+path('M13 22h6v6h-6z',p.gem);
 }
 export function renderItemIcon(item = {}) {
-  const p = PALETTES[item.element] || PALETTES.neutral;
+  const original = PALETTES[item.element] || PALETTES.neutral;
+  const p = item.chromatic && item.setId ? {...original,base:CHROMATIC_COLORS[item.element],light:'#f1e1ff',gem:'#fff5ce'} : original;
   let art = item.kind==='pet' ? petArt(item,p) : resourceArt(item);
   if(item.kind==='certificate')art=path('M7 3h21v24H6V8H3V3z','#dfd0a4')+path('M7 3v5H3m4 19h21v-4H9','none','#a08b62')+path('M11 10h12m-12 4h8','none','#9d8a61')+path('m20 17 5 3-1 7-4-2-4 2-1-7z',p.base)+elementSigil(item.element,14,15,.38,p.gem);
   if (item.kind === "core" || item.slot === "Noyau")
@@ -292,5 +294,5 @@ export function renderItemIcon(item = {}) {
     item.chromatic && item.kind !== "core" && item.slot !== "Noyau"
       ? '<path d="m26 1 1 3 4 1-4 1-1 4-1-4-4-1 4-1z" fill="#efcaff" stroke="#8f6da8" stroke-width=".5"/>'
       : "";
-  return `<svg viewBox="0 0 32 32" aria-hidden="true" class="item-art" data-art="${item.kind === "core" ? "core" : item.setId || item.slot || "resource"}" stroke-linecap="round">${art}${sparkle}</svg>`;
+  return `<svg viewBox="0 0 32 32" aria-hidden="true" class="item-art${item.chromatic && item.setId ? " chromatic-art" : ""}" data-art="${item.kind === "core" ? "core" : item.setId || item.slot || "resource"}" stroke-linecap="round">${item.chromatic && item.setId ? `<ellipse cx="16" cy="17" rx="14" ry="13" fill="${CHROMATIC_COLORS[item.element]}" opacity=".22"/>` : ""}${art}${sparkle}</svg>`;
 }

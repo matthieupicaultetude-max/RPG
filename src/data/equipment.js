@@ -106,10 +106,11 @@ export function syncEquipmentHealth(member) {
 
 export function weaponDamage(member, baseDamage = 12) {
   const weapon = member.equipment.Arme;
+  const stats = equipmentStats(member);
   const bonus = weapon?.element
-    ? equipmentStats(member)[ELEMENTS[weapon.element].stat]
+    ? stats[ELEMENTS[weapon.element].stat]
     : 0;
   return Math.round(
-    (baseDamage + (weapon && !weapon.setId ? 5 : 0)) * (1 + bonus / 100),
+    (baseDamage + (weapon && !weapon.setId ? 5 : 0)) * (1 + (bonus + (stats.Puissance || 0)) / 100),
   );
 }

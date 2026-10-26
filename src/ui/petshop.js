@@ -19,5 +19,5 @@ export function renderPetShop(state) {
     },
   ).join(
     "",
-  )}</div><p class="panel-hint">Neuf pièces distinctes obtenues dans les noyaux, sans obligation de les porter ensemble. Une adoption par panoplie dans cette session. Les ressources normales chromatiques sont réservées au futur craft des armures.</p>`;
+  )}</div><p class="panel-hint">Neuf pièces distinctes obtenues dans les noyaux, sans obligation de les porter ensemble. Une adoption par panoplie dans cette session. Les ressources normales chromatiques sont utilisées à la forge pour améliorer les armures.</p>`;
 }

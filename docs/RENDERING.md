@@ -67,3 +67,8 @@ Les tests de rendu couvrent :
 Les parcours navigateur vérifient aussi le remplissage opaque des quatre coins du canvas, la visée guidée avec la caméra entière, les impacts, l’inventaire et l’ouverture des noyaux. Les collisions et les échantillonneurs peuvent être testés sans DOM ; seuls les adaptateurs Canvas et l’atlas de sprites utilisent le navigateur.
 
 La maison utilise une géométrie de toit commune dans `src/rendering/house-geometry.js` : les deux versants, le faîtage et le pignon partagent exactement leurs sommets. Les tuiles sont découpées dans chaque versant ; aucun fond de toiture indépendant ne peut dépasser. Les tests vérifient aussi que le pignon masque le haut des poteaux de façade.
+
+
+### Auras chromatiques
+
+`src/rendering/chromatic-aura.js` sépare les éclats de chaque pièce du halo de panoplie complète. Le halo est dessiné avant le personnage, uniquement en mouvement avec neuf pièces chromatiques du même ensemble ; les éclats des pièces sont dessinés après. Les particules utilisent des positions arrondies et des rectangles de pixels, sans flou de sprite. Les icônes conservent les silhouettes de panoplie avec une palette et une aura distinctes.

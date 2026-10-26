@@ -328,6 +328,16 @@ function market(g) {
   g.fillStyle = "#d7bd77";
   g.fillRect(-11, -24, 10, 2);
 }
+function forge(g) {
+  market(g);
+  // Brick hearth and anvil inside the existing workshop footprint.
+  g.fillStyle='#6c655a';g.fillRect(-25,-41,19,24);
+  g.fillStyle='#afa189';g.fillRect(-24,-40,17,3);g.fillRect(-24,-33,17,2);
+  g.fillStyle='#4f4338';g.fillRect(-21,-30,11,11);
+  g.fillStyle='#b85e3c';g.fillRect(-20,-27,9,8);g.fillStyle='#efc56c';g.fillRect(-18,-25,5,6);
+  g.fillStyle='#495958';g.fillRect(9,-24,10,6);g.fillRect(5,-29,20,5);g.fillRect(12,-20,5,3);
+  g.fillStyle='#a8b5a6';g.fillRect(5,-29,20,2);
+}
 function bench(g) {
   g.fillStyle = "#6f5135";
   g.fillRect(-13, -7, 4, 7);
@@ -400,7 +410,7 @@ function petshop(g) {
 const DEFINITIONS = {
   petshop:{bounds:[-47,-73,95,80],origin:[0,0],paint:petshop},
   house: { bounds: [40, 0, 140, 124], origin: [110, 108], paint: house },
-  market: { bounds: [-42, -58, 86, 61], origin: [0, 0], paint: market },
+  market: { bounds: [-42, -58, 86, 61], origin: [0, 0], paint: forge },
   tree: {
     bounds: [-35, -72, 75, 82],
     origin: [0, 0],

@@ -1,8 +1,10 @@
+import { drawSetAura, drawEquipmentGlints } from './chromatic-aura.js';
 const ROLE_COLOR={melee:'#c0a16d',support:'#9db780',ranged:'#8bacae'};
 export function drawAdventurer(ctx,p,time,animation){
  const step=p.moving?Math.round(Math.sin(time*12+(p.id??p.phase??0)*.9)*1.3):0;
  const thrust=animation?Math.round(Math.sin(Math.min(1,animation.age/.3)*Math.PI)*2):0;
  const x=Math.round(p.x+(animation?Math.cos(animation.angle)*thrust:0)),y=Math.round(p.y+(animation?Math.sin(animation.angle)*thrust:0));
+ drawSetAura(ctx,p,time);
  ctx.save();ctx.translate(x,y);if(p.facing==='left')ctx.scale(-1,1);
  ctx.fillStyle='#4c573943';ctx.beginPath();ctx.ellipse(2,3,8,3,0,0,Math.PI*2);ctx.fill();
  // Boots and trousers have independent walking frames.
@@ -42,6 +44,7 @@ export function drawAdventurer(ctx,p,time,animation){
   ctx.fillStyle='#334b3b';ctx.fillRect(-1,-4,1,1);ctx.fillRect(2,-4,1,1);ctx.restore();
  }
  ctx.restore();
+ drawEquipmentGlints(ctx,p,time);
 }
 export function drawCreature(ctx,m,time){
  if(m.hp<=0)return;
