@@ -278,3 +278,45 @@ Croissance provisoire, calculée à partir des valeurs du niveau 1, avec `n = ni
 La fiche expose les quatre résultats du tirage de butin et leurs probabilités effectives : normal standard **72 %**, normal chromatique **8 %**, rare standard **18 %**, rare chromatique **2 %**. Ces valeurs correspondent au tirage de test existant : 20 % rare et 10 % chromatique indépendant, un objet par victoire. Le niveau ne modifie pas ces chances pour le moment.
 
 Le catalogue de monstres est partagé entre le combat et le bestiaire ; les données ne doivent pas être dupliquées dans l’interface. Le monde continue pendant la consultation. Les statistiques et règles de croissance restent des paramètres d’essai.
+
+## 19. Caractéristiques des personnages
+
+Le système s’inspire de Dofus en version simplifiée. Les règles ci-dessous remplacent la première proposition de caractéristiques. Elles décrivent la cible de conception ; elles ne sont pas encore implémentées dans le combat, l’XP ou le butin du jardin d’essai.
+
+### Caractéristiques principales
+
+| Caractéristique | Effet unique |
+| --- | --- |
+| Vitalité | Augmente les PV maximum |
+| Force | Augmente les dégâts de Terre |
+| Intelligence | Augmente les dégâts de Feu |
+| Agilité | Augmente les dégâts d’Air |
+| Chance | Augmente les dégâts d’Eau |
+| Sagesse | Augmente l’XP gagnée |
+
+Vitalité, Force, Intelligence, Agilité et Chance ne donnent aucun bonus secondaire : ni poids transportable, ni soins, ni critique, ni esquive, ni prospection. La Sagesse renforce uniquement le gain d’XP ; elle ne renforce pas les boucliers ou les améliorations d’alliés. Les caractéristiques élémentaires ne sont pas liées de façon obligatoire aux rôles corps à corps, soutien ou distance.
+
+### Statistiques complémentaires
+
+| Statistique | Fonction |
+| --- | --- |
+| Puissance | Augmente les dégâts des quatre éléments sans augmenter directement les caractéristiques élémentaires |
+| Résistance Terre | Réduit les dégâts de Terre reçus |
+| Résistance Feu | Réduit les dégâts de Feu reçus |
+| Résistance Air | Réduit les dégâts d’Air reçus |
+| Résistance Eau | Réduit les dégâts d’Eau reçus |
+| Critique | Augmente la probabilité de coup critique |
+| Prospection | Améliore les chances d’obtenir du butin |
+
+La Prospection est indépendante de la Chance. Aucun bonus de vitesse de déplacement ou de réduction des délais de compétences n’est retenu dans ce système de caractéristiques. Les vitesses et délais techniques du prototype restent des paramètres de combat, pas des statistiques à augmenter avec l’équipement.
+
+### Réglages et compétences à définir plus tard
+
+- Coefficients de PV, dégâts, XP et prospection, valeurs de départ, limites et règles d’arrondi.
+- Attribution des points par niveau, redistribution et bonus des équipements/trophées/familiers. Les cinq points par niveau de la première proposition ne constituent pas encore une règle validée.
+- Intensité des critiques, compétences concernées et plafonds des critiques/résistances. Les plafonds évoqués dans la première proposition ne sont pas fixés.
+- Formule de Prospection, prise en compte individuelle ou par équipe, effets sur le loot normal, rare et chromatique, et articulation avec le tirage actuel d’un objet par victoire.
+- Conditions d’attribution de l’XP et de la Prospection aux personnages actifs, compagnons et réservistes.
+- Compétences des classes pour chaque élément, ainsi que les règles de soins, protections et améliorations : conception ultérieure. Aucun bonus de soin n’est attribué implicitement à l’Intelligence.
+
+Les statistiques et chances affichées dans le bestiaire restent les valeurs de base des monstres. Les futurs bonus de Sagesse et de Prospection devront être distingués de ces valeurs et ne pas modifier silencieusement les probabilités de base affichées.
