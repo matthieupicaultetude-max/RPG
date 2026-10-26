@@ -586,3 +586,11 @@ canvas { cursor: crosshair; }
 .item-details .set-info { color: #b9c59a; font-size: 10px; }
 .core-details .detail-icon { background: radial-gradient(circle, #76926a44, #20352a); }
 @media (max-width: 520px) { .item-details .set-info { font-size: 8px; } .avatar-caption .gear-bonuses { font-size: 6px; } }
+/* Keep the upper-left village architecture visible behind the game HUD. */
+@media (min-width: 800px) and (min-height: 700px) and (pointer: fine) {
+  .hud-team { top: auto; bottom: 145px; }
+}
+.zone-card { border-color: #b5a36b77; background: #263125e8; }
+.member { border-color: #8e946450; }
+.member.selected { border-color: #d3b77c; background: #454a2de8; }
+.action-bar { border-color: #b7a37480; background: #273222ed; }

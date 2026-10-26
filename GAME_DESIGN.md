@@ -356,3 +356,9 @@ Les noyaux ont une variation chromatique, avec **10 %** de chance conditionnelle
 Dans la zone d’essai, le village est matérialisé près de la maison. Le joueur doit être dans cette zone pour ouvrir un noyau depuis sa fiche d’inventaire. Aucune monnaie n’est nécessaire.
 
 Une ouverture consomme **un seul noyau** et donne **une pièce aléatoire** de la panoplie de son élément et de sa tranche. Chaque pièce a une probabilité de **1/9** ; les doublons sont possibles. Un noyau chromatique donne une pièce chromatique, sans puissance supplémentaire. Le résultat est immédiatement sélectionné dans le sac et peut être équipé. Un noyau d’une tranche non disponible ne peut pas être consommé. Les outils dev permettent de générer les quatre noyaux débutants et de revenir à la maison pour tester la boucle.
+
+## 21. Direction graphique : village pastoral
+
+Premier passage inspiré des références de village en pixel art : herbe jaune-verte nuancée, terre sableuse, bois miel, façades de pierre et colombages, toitures d’ardoise chaude et eau turquoise. Les végétaux utilisent des silhouettes irrégulières, des troncs clairs et des feuillages en plusieurs tons. Fleurs, caisses, tonneaux, bancs et panneaux ancrent la zone dans un village habité.
+
+Les contours et les ombres restent modérés ; les chemins ont des raccords continus et des bordures usées plutôt qu’une grille visible. Les personnages et les monstres gardent des silhouettes distinctes, des orientations lisibles et leurs animations de combat. Le tri vertical permet l’occultation par les arbres ; une transparence de proximité aide à retrouver le personnage principal. Cette étape porte sur le rendu du jardin existant, avant une éventuelle refonte de sa géométrie et de son contenu.
