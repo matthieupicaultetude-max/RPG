@@ -124,3 +124,9 @@ Le slime se comprime avant son départ ; sa hauteur visuelle suit une parabole s
 `rendering/slime-depths.js` dessine le gouffre marin, la cascade extérieure, les cascades de la grotte, les champignons lumineux, les avertissements de fusion et l’atmosphère froide. Le terrain de grotte conserve sa palette ; la passe golden hour et les ombres de soleil y sont désactivées. Les zones d’impact restent au-dessus du décor de sol et les effets atmosphériques sont légers.
 
 Les slimes des profondeurs reprennent la silhouette de gelée avec palettes Eau et Terre, une taille de 1 à 3 et des touches des deux couleurs après une fusion mixte. Les personnages conservent leur sprite original. La traversée du gouffre interpole la troupe vers le trou avec un arc de saut et une transition sombre avant le changement de carte. Les fusions annoncées relient les deux slimes par des anneaux et une ligne dorés pendant une seconde.
+
+## 13. Gorgelimon
+
+`rendering/depths-boss.js` dessine la silhouette originale du boss, la carapace de limon, les crêtes rocheuses et le cœur cristallin, ainsi que le repaire et les annonces d’éboulement. Le sprite est propre au boss : aucun changement de gabarit des personnages. Les états sommeil, scission, exposition et rage changent les yeux, la carapace et la lumière du cœur.
+
+Les cercles d’éboulement sont dessinés au même niveau que les autres annonces, au-dessus des zones de sorts au sol, avant les acteurs. Le cœur en scission est relié aux aspects par des lignes élémentaires, avec un compte à rebours. La barre de vie HTML reste hors du traitement de la scène et affiche les seuils de phase et les fenêtres de vulnérabilité. Le bestiaire et les deux ressources du boss disposent d’illustrations SVG distinctes.

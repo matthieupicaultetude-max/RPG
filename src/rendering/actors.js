@@ -1,3 +1,4 @@
+import {drawBossActor} from './depths-boss.js';
 import {slimeScale} from '../game/slime-marsh.js';
 import { drawSetAura, drawEquipmentGlints } from "./chromatic-aura.js";
 import { CLASS_STYLES } from "../data/appearance.js";
@@ -219,6 +220,7 @@ export function drawAdventurer(ctx, p, time, animation) {
 }
 export function drawCreature(ctx, m, time) {
   if (m.hp <= 0) return;
+  if(m.boss){drawBossActor(ctx,m,time);return;}
   const x = Math.round(m.x),
     y = Math.round(m.y),
     bob = Math.round(Math.sin(time * 4 + m.homeX) * 1);

@@ -192,6 +192,11 @@ function equipmentArt(item, p) {
 function resourceArt(item) {
   const c = item.chromatic;
   switch (item.name) {
+    case "Éclat de carapace abyssale":
+      return path('m3 24 5-14 8-7 11 11-3 14-12 2z',c?'#9e84bf':'#667c80')+path('m8 11 8 6 10-3m-10 3-4 13','none',c?'#d9b5ef':'#b5c9ba',2)+path('m8 23 6 3 8-3','none','#958461',2);
+    case "Cœur de Gorgelimon":
+      return path('m16 1 11 11-2 14-10 5L5 21 4 11z',c?'#a17dc2':'#315e78')+path('m16 5 7 9-2 10-6 3-6-9 1-8z',c?'#edc9f4':'#a8e7e4')+path('m16 6 2 8-4 5 2 6','none','#f1d28e',2);
+
     case "Gelée abyssale":
       return path('M3 24 7 13l6-6h8l4 7 4 10-5 5H8z',c?'#b89bd9':'#4d9dbc')+path('m8 20 4-7h7l3 6','none',c?'#e5c6f2':'#a1e5ec',2);
     case "Limon humide":

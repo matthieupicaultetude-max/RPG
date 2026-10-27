@@ -1,3 +1,4 @@
+import {onBossLanding} from '../game/depths-boss.js';
 import { onDepthsLanding } from '../game/slime-depths.js';
 import {onSlimeLanding,slimeVulnerable} from '../game/slime-marsh.js';
 import { monsterAttack, monsterAttackDamage } from "../data/monster-attacks.js";
@@ -109,6 +110,7 @@ export function startMonsterAttack(state, monster, ctx) {
     if (distance(from, to) < 8) return false;
   }
   monster.intent = {
+    spec: { ...spec },
     kind: spec.kind,
     element: spec.element,
     phase: "windup",
@@ -170,7 +172,7 @@ function strikePath(state, attack, from, to, monster, ctx) {
     }
 }
 export function stepMonsterAbility(state, monster, dt, ctx) {
-  const spec = monsterAttack(monster),
+  const spec = monster.intent?.spec || monsterAttack(monster),
     a = monster.intent;
   if (!spec) return false;
   if (monster.hp <= 0) {
@@ -232,6 +234,7 @@ export function stepMonsterAbility(state, monster, dt, ctx) {
           ){ctx.damage(member, a.damage, monster, a.element, a.kind);hitCount++;}
         onSlimeLanding(state,monster,a.to,hitCount);
         onDepthsLanding(state,monster,a.to,hitCount);
+        onBossLanding(state,monster,hitCount);
         state.monsterImpacts ??= [];
         state.monsterImpacts.push({
           ...a.to,

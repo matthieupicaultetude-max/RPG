@@ -315,3 +315,15 @@ La crevasse est une carte distincte : sol rocheux humide sans pavage, mares infr
 - Ressources propres aux créatures : **Gelée abyssale / Perle des profondeurs** et **Limon humide / Géode suintante**, avec variantes chromatiques ; noyaux Eau ou Terre selon le monstre. Fiches disponibles dans le bestiaire avec aperçu par niveau.
 
 Les ennemis vaincus restent morts pendant l’expédition. Une crevasse entièrement nettoyée se repeuple à la prochaine entrée ; sinon ses blessures et transformations restent conservées pendant la session. Une défaite ramène la troupe soignée sur la berge d’entrée, avec son or et ses objets.
+
+### Boss — Gorgelimon, Cœur du gouffre
+
+Au sud-est de la crevasse sommeille **Gorgelimon**, un boss **niveau 8 Eau / Terre** : une énorme gelée bleu pétrole, une carapace de limon et de stalagmites, et un cœur cristallin lumineux. Approchez et appuyez sur **F** (ou le bouton contextuel) pour l’éveiller ; une attaque du personnage principal peut également commencer le combat. Les alliés ne le réveillent pas seuls. Pour un accès rapide : **Outils dev → Approcher Gorgelimon**.
+
+- **Marée d’impact · Eau** : un grand bond annoncé. Esquiver complètement le boss fissure son cœur pendant **2 s**, avec **+50 % de dégâts reçus**.
+- **Ruée de limon · Terre** : une charge dont le couloir est annoncé et figé avant le départ.
+- **Éboulement du gouffre · Terre** : des cercles apparaissent aux positions des personnages avant les impacts. Les cercles restent fixes et un même éboulement ne touche chaque personnage qu’une fois, même si plusieurs zones se superposent.
+- À **70 % puis 35 % de PV**, la carapace se scinde en **deux aspects de taille 2, Eau et Terre**. Le cœur central est protégé. Détruisez tous les aspects et leurs descendants en **12 s** : le boss expose son cœur pendant **5 s**, avec **+50 % de dégâts reçus**. Sinon il absorbe les survivants et récupère **4 % de ses PV maximum par unité de taille survivante**, jusqu’à 16 %.
+- Les aspects peuvent se scinder et fusionner entre eux ; ils ne fusionnent pas avec les slimes ordinaires. La dernière phase accélère les attaques.
+
+La barre de vie indique les seuils, la phase et le temps avant réabsorption. Sa fiche de bestiaire décrit ses attaques et son butin : **Éclat de carapace abyssale**, **Cœur de Gorgelimon**, leurs variantes chromatiques, plus **un noyau Eau et un noyau Terre garantis** à la victoire. Les réabsorptions ne donnent aucune récompense. Une fuite, une défaite ou un départ de la zone remet le boss vivant au repos avec tous ses PV et supprime ses aspects. Un boss vaincu reste mort pendant l’expédition ; il revient avec la population suivante une fois la grotte entièrement nettoyée.

@@ -1,3 +1,4 @@
+import {resetDepthsBoss} from './depths-boss.js';
 import { movePartyToZone } from "../world/zones.js";
 import {
   MARSH_ENTRY,
@@ -59,6 +60,7 @@ export function travelToZone(state, destination) {
     return false;
   const origin = state.zone;
   // Cancel on the departing world before replacing its monster array.
+  resetDepthsBoss(state);
   clearMonsterAttacks(state);
   clearDepthsFusions(state);
   state.zoneWorlds ??= {};

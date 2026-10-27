@@ -1,6 +1,7 @@
 import { polygonDistance, inFootprint, footprintPoints } from "./map.js";
 import { texturePixel as basePixel, hash } from "../rendering/textures.js";
 export const MAP_SIZE = { width: 640, height: 400 };
+export const DEPTHS_BOSS_HOME = { x: 462, y: 292 };
 export const DEPTHS_ENTRY = { x: 88, y: 210 };
 export const DEPTHS_SPAWN = { x: 105, y: 230 };
 export const LAND = [
@@ -123,7 +124,7 @@ export function validateMap() {
   const errors = [];
   for (const prop of [...PROPS, ...DECORATIONS])
     if (!placementOnLand(prop)) errors.push(`${prop.id}: outside land`);
-  for (const p of [DEPTHS_ENTRY, DEPTHS_SPAWN, ...DEPTHS_SLIMES])
+  for (const p of [DEPTHS_ENTRY, DEPTHS_SPAWN, DEPTHS_BOSS_HOME, ...DEPTHS_SLIMES])
     if (!canWalkDepths(p.x, p.y)) errors.push("invalid spawn");
   return errors;
 }

@@ -1,3 +1,4 @@
+import {resetDepthsBoss} from '../game/depths-boss.js';
 import { canWalkDepths } from './slime-depths-map.js';
 import { clearDepthsFusions } from '../game/slime-depths.js';
 import {canWalkMarsh} from './slime-marsh-map.js';
@@ -15,6 +16,7 @@ export const nearTutorialExit = (state) =>
     state.player.y - TUTORIAL_EXIT.y,
   ) < 30;
 export function movePartyToZone(state, zone, point) {
+  resetDepthsBoss(state);
   clearDepthsFusions(state);
   state.zone = zone;
   clearMonsterAttacks(state);

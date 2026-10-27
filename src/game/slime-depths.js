@@ -1,3 +1,4 @@
+import { createDepthsBoss } from "./depths-boss.js";
 import { createMonster } from "../data/monsters.js";
 import { DEPTHS_SLIMES, canWalkDepths } from "../world/slime-depths-map.js";
 import { lineClear } from "../combat/attacks.js";
@@ -12,13 +13,16 @@ export const DEPTHS_RULES = {
 export const isDepthsSlime = (m) => m.depthsSlime === true;
 export function createDepthsWorld(time = 0) {
   return {
-    monsters: DEPTHS_SLIMES.map((p) => {
-      const m = createMonster(p.species, p.x, p.y, 5);
-      m.growth = p.growth;
-      resize(m, 1);
-      m.fusionReadyAt = time + 3;
-      return m;
-    }),
+    monsters: [
+      ...DEPTHS_SLIMES.map((p) => {
+        const m = createMonster(p.species, p.x, p.y, 5);
+        m.growth = p.growth;
+        resize(m, 1);
+        m.fusionReadyAt = time + 3;
+        return m;
+      }),
+      createDepthsBoss(),
+    ],
     bots: [],
     npcs: [],
     trees: [],
@@ -65,6 +69,12 @@ export function onDepthsLanding(s, m, point, hits) {
   const child = createMonster(m.species, spawn.x, spawn.y, m.level);
   child.fusionReadyAt = m.fusionReadyAt;
   child.dualElement = m.dualElement;
+  child.bossOwner = m.bossOwner;
+  if (m.bossOwner !== undefined) {
+    child.baseMaxHp = m.baseMaxHp;
+    child.maxHp = m.baseMaxHp;
+    child.hp = child.maxHp;
+  }
   child.cooldown = 0.8;
   s.monsters.push(child);
   effect(s, m, "Scission !");
@@ -136,6 +146,7 @@ export function stepDepthsSlimes(s) {
     const j = s.monsters.findIndex(
       (b, k) =>
         k > i &&
+        a.bossOwner === b.bossOwner &&
         available(b, s) &&
         b.fusionWith === undefined &&
         a.growth + b.growth <= DEPTHS_RULES.maxSize &&

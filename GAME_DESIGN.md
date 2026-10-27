@@ -579,3 +579,27 @@ Deux slimes à moins de 30 px, à portée visuelle, sans attaque, immobilisation
 Chaque espèce possède ses ressources normale et rare, leurs variations chromatiques et les noyaux de son élément. Les ressources des profondeurs sont distinctes des ingrédients des recettes débutantes actuelles. Les fiches du bestiaire expliquent les transformations et permettent de consulter les statistiques de taille 1 à chaque niveau.
 
 Les ennemis de cette expédition n’ont pas de réapparition individuelle : une population complètement vaincue est renouvelée à la prochaine visite. Sinon, le monde reste conservé en session. La masse ne peut donc pas croître indéfiniment à force de fusionner et de se diviser. La défaite soigne la troupe à l’entrée sans perte d’or ni de sac. Un changement de zone annule les préparations de fusion et les attaques en cours avant de sauvegarder le monde quitté.
+
+## 40. Gorgelimon, Cœur du gouffre
+
+Boss facultatif de niveau 8 de la Crevasse des profondeurs, au sud-est, à proximité de la cascade orientale. Il reste endormi jusqu’à une interaction F à moins de 65 px ou une attaque du personnage principal à proximité. Les compagnons ignorent le boss endormi et concentrent leurs attaques sur les aspects lorsque le cœur est protégé. Le joueur peut nettoyer les slimes ordinaires avant de commencer le défi.
+
+**Direction artistique.** Gelée massive bleu pétrole et turquoise, carapace asymétrique de limon brun, crêtes de pierre humides et cœur cristallin fendu d’or. Les yeux s’illuminent au réveil. En scission, la silhouette se réduit à un cœur protégé entre des fragments de carapace ; des liens élémentaires le relient à ses aspects. En exposition, le cœur pâlit et projette des éclats dorés. La phase finale réchauffe ses yeux et fissures. La taille des personnages reste inchangée.
+
+**Statistiques initiales.** 773 PV au niveau 8 ; la vie de base au niveau 1 vaut 420 et utilise la progression habituelle (+12 % par niveau). Dégâts de base 11 avec +8 % par niveau, puis multiplicateur propre à l’attaque. Pas de résistance cachée ou de vulnérabilité à un élément imposé : chaque composition peut exploiter ses ouvertures.
+
+| Attaque | Élément | Annonce | Effet et réponse du joueur |
+| --- | --- | --- | --- |
+| Marée d’impact | Eau | 1,4 s, cercle de 40 px | Bond sur la cible isolée, dégâts ×1,5. Esquiver toute la troupe expose le cœur 2 s (+50 % de dégâts reçus). |
+| Ruée de limon | Terre | 1,35 s, couloir de 21 px de demi-largeur | Charge à 180 px/s, dégâts ×1,4 ; sortir latéralement du couloir. |
+| Éboulement du gouffre | Terre | 1,6 s, cercles de 27 px | Positions de chaque personnage figées à l’annonce, dégâts ×1,25, au plus une touche par personnage. Se déplacer avant l’impact ; un enracinement interrompt la préparation. |
+
+Les attaques suivent ce cycle. Les spécifications sont figées lors de l’annonce, y compris la durée du vol et la vitesse, pour éviter qu’un changement vers l’attaque suivante ne modifie l’attaque en cours. Le repos est de 1,8 s. La dernière phase réduit les annonces à 1,05 / 1 / 1,2 s et le repos à 1,25 s ; toutes les zones restent visibles avant les dégâts.
+
+**Scission de la carapace.** À 70 % et 35 % de vie, une seule fois par seuil, l’attaque courante est interrompue et deux aspects Eau et Terre de taille 2 apparaissent sur des positions voisines praticables. Chaque aspect dispose de 45 % de la vie de base d’un slime normal de même niveau, avant son multiplicateur de taille. Les scissions des aspects conservent cette fragilité et leur appartenance au boss. Ils suivent les règles de fusion de la zone entre eux, jamais avec les monstres ordinaires.
+
+Le cœur est invulnérable pendant cette séquence, jusqu’à 12 secondes. Éliminer tous les aspects et descendants déclenche immédiatement une exposition de 5 secondes, avec +50 % de dégâts reçus et une pause des attaques. En cas d’échec, la masse survivante est réabsorbée : 4 % des PV maximum par unité de taille, jusqu’à 16 %, sans dépasser la vie maximum. Les transformations ne créent pas de masse supplémentaire. Aucune récompense n’est donnée pour une absorption ; un aspect tué donne son butin habituel. La copie de dégâts des cibles bonus n’applique pas une seconde fois la vulnérabilité.
+
+**Lisibilité et cycle de vie.** Barre de boss avec marqueurs 70/35 %, état du cœur, compte à rebours et indication de rage. Cercles Eau bleus, couloir et éboulements Terre dorés. Le joueur peut revenir sur la berge : si aucun membre vivant déployé ne reste dans un rayon de 200 px du repaire, le boss vivant retourne au sommeil, récupère toute sa vie et supprime ses aspects sans récompense. Même réinitialisation après une défaite ou un changement de zone. Un boss mort ne réapparaît pas individuellement.
+
+**Récompenses.** XP et or du boss, une ressource normale ou rare (Éclat de carapace abyssale / Cœur de Gorgelimon, avec variation chromatique indépendante), et un noyau Eau ainsi qu’un noyau Terre garantis. La récompense de victoire est attribuée une seule fois. La fiche du bestiaire permet de consulter ses statistiques par niveau et explique les trois attaques et les deux scissions. Le boss et ses ressources ont des illustrations propres.

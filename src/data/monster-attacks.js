@@ -45,6 +45,14 @@ export const MONSTER_ATTACKS = Object.freeze({
   },
 });
 export const monsterAttack = (monster) => {
+ if(monster.boss||monster.species==='gorgelimon'){
+   const rage=(monster.bossStage||0)>=2,serial=(monster.attackSerial||0)%3;
+   const common={range:230,recovery:rage?1.25:1.8};
+   if(serial===0)return {...common,kind:'leap',name:'Marée d’impact',element:'water',windup:rage?1.05:1.4,radius:40,flight:.7,multiplier:1.5};
+   if(serial===1)return {...common,kind:'charge',name:'Ruée de limon',element:'earth',windup:rage?1:1.35,radius:21,speed:180,multiplier:1.4};
+   return {...common,kind:'quake',name:'Éboulement du gouffre',element:'earth',windup:rage?1.2:1.6,radius:27,multiplier:1.25};
+ }
+
  if(monster.depthsSlime||monster.species?.startsWith('depths-')) {
    const size=Math.max(1,Math.min(3,monster.growth||1));
    const element=monster.dualElement?((monster.attackSerial||0)%2?'earth':'water'):(monster.element||(monster.species==='depths-earth-slime'?'earth':'water'));

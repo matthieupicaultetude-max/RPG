@@ -1,3 +1,4 @@
+import {stepDepthsBoss,awakenDepthsBoss,finishDepthsBoss} from '../game/depths-boss.js';
 import {stepDepthsSlimes} from '../game/slime-depths.js';
 import {DEPTHS_SPAWN} from '../world/slime-depths-map.js';
 import {travelToZone,stepZoneDive} from '../game/zone-travel.js';
@@ -201,6 +202,10 @@ function walk(entity, x, y, speed, dt, canStand) {
 function hitMonster(s, monster, damage, member, options={}) {
   const canStand=(x,y)=>canWalkZone(x,y,s.zone);
   if(monster.hp<=0||!Number.isFinite(damage)||damage<=0)return;
+  if(monster.boss){
+    if(monster.bossPhase==='dormant'&&(member.id!==s.main||!awakenDepthsBoss(s,monster)))return;
+    if(monster.bossPhase==='split')return;
+  }
   if(!options.bonus&&slimeVulnerable(s,monster))damage=Math.round(damage*1.5);
   monster.hp = Math.max(0, monster.hp - damage);
   emitSound(s,options.bonus?"bonus":options.sound||impactKind(member),monster,{owner:member.id,element:options.element,damage});
@@ -212,16 +217,18 @@ function hitMonster(s, monster, damage, member, options={}) {
   const d = Math.hypot(monster.x - member.x, monster.y - member.y) || 1;
   const nx = monster.x + (monster.x - member.x) / d * 5;
   const ny = monster.y + (monster.y - member.y) / d * 5;
-  if (canStand(nx, ny)) { monster.x = nx; monster.y = ny; }
+  if (!monster.boss && canStand(nx, ny)) { monster.x = nx; monster.y = ny; }
   if(!options.bonus)recordBonusOpportunity(s,monster,damage,member,canStand);
   else if(monster.hp===0)delete monster.bonusTarget;
   s.revision++;
   if (monster.hp === 0) {
+    if(monster.boss)finishDepthsBoss(s,monster);
     monster.respawn = monster.respawnDelay;
     rewardMonster(s,monster);
   }
 }
 export function rewardMonster(s,monster,random=Math.random) {
+  if(monster.boss){if(monster.rewarded)return;monster.rewarded=true;}
   if(monster.tutorial) {
     if(!s.tutorial || s.tutorial.defeated)return;
     s.tutorial.defeated=true;
@@ -230,7 +237,8 @@ export function rewardMonster(s,monster,random=Math.random) {
   grantXp(s, monster.xp);
   const definition=monsterDefinition(monster.species);
   grantLoot(s,random()<definition.rareChance?'rare':'normal',random()<definition.chromaticChance,monster.species);
-  if(monster.tutorial)s.tutorial.coreId=grantCore(s,definition.element,monster.level);
+  if(monster.boss){grantCore(s,'water',monster.level);grantCore(s,'earth',monster.level);}
+  else if(monster.tutorial)s.tutorial.coreId=grantCore(s,definition.element,monster.level);
   else if(random()<CORE_CHANCE)grantCore(s,definition.element,monster.level);
 }
 export function clickBonus(s,point) {const canStand=(x,y)=>canWalkZone(x,y,s.zone);Object.assign(s.team[s.main],s.player);const hit=clickBonusTarget(s,point,canStand,hitMonster);if(hit)cancelWoodcutting(s);return hit;}
@@ -283,11 +291,12 @@ export function stepSandbox(s, direction, dt, elapsed = dt) {
     if (monster.hp <= 0) {
       delete monster.intent;monster.lift=0;
       s.monsterTornadoes=s.monsterTornadoes.filter(a=>a.owner!==index);
-      if(monster.splitSpawn||monster.depthsSlime)return;
+      if(monster.splitSpawn||monster.depthsSlime||monster.boss)return;
       monster.respawn -= dt;
       if (monster.respawn <= 0) { resetMarshSlime(monster);monster.hp = monster.maxHp; delete monster.bonusTarget;delete monster.lastReceivedDamage;monster.bonusTargetCooldown=0; monster.x = monster.homeX; monster.y = monster.homeY;monster.cooldown=.6;s.revision++; }
       return;
     }
+    if(monster.boss){stepDepthsBoss(s,monster,dt,enemyContext);return;}
     if(monster.fusionWith!==undefined){monster.moving=false;return;}
     if(stepMonsterAbility(s,monster,dt,enemyContext))return;
     const target=activeParty(s).sort((a,b)=>Math.hypot(a.x-monster.x,a.y-monster.y)-Math.hypot(b.x-monster.x,b.y-monster.y))[0];

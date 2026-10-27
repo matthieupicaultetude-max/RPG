@@ -1,3 +1,4 @@
+import {drawBossGround} from './depths-boss.js';
 import * as depthsMap from '../world/slime-depths-map.js';
 import {drawSeaSinkhole,drawDepthsGround,drawDepthsAtmosphere} from './slime-depths.js';
 import * as marshMap from '../world/slime-marsh-map.js';
@@ -70,6 +71,7 @@ export function createRenderer(canvas) {
     for(const marker of environment.markers)label(marker.text,marker.x,marker.y);
     if(s.zone === "tutorial")drawTutorialGate(ctx,s);
     drawSpellGround(ctx,s);
+    drawBossGround(ctx,s);
     drawMonsterTelegraphs(ctx,s,environment.land);
     const layers = [
       ...environment.props.map((prop) => ({
@@ -78,7 +80,7 @@ export function createRenderer(canvas) {
           ctx.save();
           const felled=prop.kind==="tree"&&s.trees.find(tree=>tree.id===prop.id)?.respawn>0;
           if (
-            ["tree","house","petshop","market","sawmill","mushroom"].includes(prop.kind) && !felled &&
+            ["tree","house","petshop","market","sawmill","mushroom","stalagmite"].includes(prop.kind) && !felled &&
             s.player.y < prop.y &&
             s.player.x + 8 > prop.bounds.left &&
             s.player.x - 8 < prop.bounds.right &&
@@ -114,17 +116,17 @@ export function createRenderer(canvas) {
         y: m.y,
         draw: () => {
           if (m.hp <= 0) {
-            if(!m.tutorial&&!m.splitSpawn&&!m.depthsSlime)label(`Retour ${Math.ceil(m.respawn)}s`, m.homeX, m.homeY);
+            if(!m.tutorial&&!m.splitSpawn&&!m.depthsSlime&&!m.boss)label(`Retour ${Math.ceil(m.respawn)}s`, m.homeX, m.homeY);
             return;
           }
           drawCreature(ctx, m, s.time);
           const x = Math.round(m.x),
-            y = Math.round(m.y-(m.lift||0)-24*(slimeScale(m)-1));
+            y = Math.round(m.y-(m.lift||0)-24*(slimeScale(m)-1)-(m.boss?38:0));
           ctx.fillStyle = "#625d3e";
           ctx.fillRect(x - 14, y - 24, 28, 3);
           ctx.fillStyle = "#cfb17c";
           ctx.fillRect(x - 14, y - 24, (28 * m.hp) / m.maxHp, 2);
-          label(m.depthsSlime?`${m.dualElement?"Mixte":m.element==="earth"?"Limon":"Abyssal"} · ${m.growth}/3`:m.marshSlime?`Slime · ${m.growth}/3`:m.name, x, Math.round(m.y-(m.lift||0)+17));
+          label(m.boss?"Gorgelimon":m.depthsSlime?`${m.dualElement?"Mixte":m.element==="earth"?"Limon":"Abyssal"} · ${m.growth}/3`:m.marshSlime?`Slime · ${m.growth}/3`:m.name, x, Math.round(m.y-(m.lift||0)+17));
           drawMarshSlimeStatus(ctx,m,s);
         },
       })),

@@ -35,7 +35,7 @@ const setup = () => {
   return s;
 };
 const mass = (s) =>
-  s.monsters.filter((m) => m.hp > 0).reduce((n, m) => n + m.growth, 0);
+  s.monsters.filter((m) => m.hp > 0 && !m.boss).reduce((n, m) => n + m.growth, 0);
 function pair(s, a = 1, b = 1) {
   s.monsters = [
     createMonster("depths-water-slime", 350, 245, 5),
@@ -119,7 +119,7 @@ test("remontée : retour à la cascade, blessures persistantes, fusions et attaq
 test("agressivité : Eau et Terre, prévisualisations plus rapides et délai plus court que le marais", () => {
   const s = setup(),
     marsh = monsterAttack(createMonster("marsh-slime", 0, 0));
-  for (const m of s.monsters) {
+  for (const m of s.monsters.filter(m=>!m.boss)) {
     const spec = monsterAttack(m);
     assert.ok(spec.windup < marsh.windup);
     assert.ok(spec.recovery < marsh.recovery);
@@ -239,7 +239,7 @@ test("expédition : ennemis vaincus sans respawn individuel, renouvellement apr�
   travelToZone(s, "slime-marsh");
   travelToZone(s, "slime-depths");
   assert.notEqual(s.monsters, old);
-  assert.equal(s.monsters.length, 7);
+  assert.equal(s.monsters.length, 8);
   assert.ok(s.monsters.every((m) => m.hp > 0));
 });
 test("défaite : retour soigné sur la berge de la grotte, sans perdre or ni butin", () => {
@@ -289,7 +289,7 @@ test("horde en simulation : scissions et fusions naturelles, taille et masse bor
   for (let i = 0; i < 1600; i++) {
     stepSandbox(s, directions[Math.floor(i / 40) % 4], 0.05);
     assert.equal(mass(s), initialMass);
-    for (const m of s.monsters.filter((m) => m.hp > 0)) {
+    for (const m of s.monsters.filter((m) => m.hp > 0 && !m.boss)) {
       assert.ok(m.growth >= 1 && m.growth <= 3);
       if (m.intent?.phase !== "flight") assert.ok(map.canWalkDepths(m.x, m.y));
     }
