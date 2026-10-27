@@ -247,7 +247,7 @@ Les sons sont synthétisés dans le navigateur : aucun téléchargement audio ni
 
 ### Tutoriel guidé
 
-À chaque nouvelle session, le guide présente les trois classes (molette ou portraits), valide quelques pas puis propose un slime d’entraînement isolé. Il inflige 2 dégâts et donne assez d’XP pour monter de niveau : dépensez les 5 points du héros ayant commencé le combat avec **P**, puis équipez son nouveau sort Feu dans un des trois emplacements normaux avec **K**. Le guide explique les commandes, les éléments, le déploiement et les ultimes. Fermez le grimoire pour terminer le tutoriel et retrouver les monstres habituels. **Passer le tutoriel** restaure le monde sans accorder d’XP gratuite. Le vent a été retiré de l’audio et des réglages.
+À chaque nouvelle session, le guide présente les trois classes (molette ou portraits), valide quelques pas puis propose un slime d’entraînement isolé. Il inflige 2 dégâts et donne assez d’XP pour monter de niveau : dépensez les 5 points du héros ayant commencé le combat avec **P**, puis équipez son nouveau sort Feu dans un des trois emplacements normaux avec **K**. Le guide explique les commandes, les éléments, le déploiement et les ultimes. Fermez le grimoire pour continuer vers le bestiaire, l’équipement et les métiers. **Passer le tutoriel** restaure le monde sans accorder d’XP gratuite. Le vent a été retiré de l’audio et des réglages.
 
 Dans le grimoire, sélectionnez un emplacement puis **Déséquiper le sort sélectionné** pour le laisser vide. Ses délais de recharge sont conservés ; une montée de niveau ne remplit pas les emplacements volontairement vidés.
 
@@ -255,4 +255,12 @@ Dans le grimoire, sélectionnez un emplacement puis **Déséquiper le sort séle
 
 La nouvelle session fait apparaître le personnage sur une île dédiée au tutoriel, devant le pavillon d’accueil d’Iris. Les chemins rejoignent une cour d’entraînement clôturée et une porte vers le village. Cette carte possède son propre terrain, ses collisions et son décor ; les monstres, PNJ marchands et arbres récoltables du jardin restent dans leur zone. Le slime n’apparaît qu’au début de l’étape de combat.
 
-Après les caractéristiques et l’équipement du sort Feu dans un des trois emplacements normaux, **Terminer · Rejoindre le village** transfère toute la troupe au village. La porte permet aussi de sortir avec **F** à proximité. XP, caractéristiques, équipement et choix de sorts sont conservés. Passer le guide rejoint le village sans récompense gratuite.
+Après les sorts, le bestiaire, l’équipement et la fabrication d’une planche, **Terminer · Rejoindre le village** transfère toute la troupe au village. La porte permet aussi de sortir avec **F** à proximité. XP, caractéristiques, équipement et choix de sorts sont conservés. Passer le guide rejoint le village sans récompense gratuite.
+
+### Bestiaire, armures et métiers dans le guide
+
+Le parcours d’Iris compte désormais **13 étapes** : après les sorts, consulter le **Slime** dans **B** et déplacer sa barre de niveau au-dessus de 1. Le guide présente les statistiques, les ressources et les probabilités.
+
+Le slime d’entraînement donne **un noyau Eau garanti, une seule fois**, en plus de son butin habituel. Les monstres ordinaires gardent leur taux de noyau de 25 %. Le guide rejoint l’atelier d’Iris : dans **I**, ouvrir le noyau puis équiper la pièce Rosée obtenue, avec le bouton Équiper ou **Maj + clic**. Le guide explique les tranches de niveaux, les doublons et les améliorations chromatiques.
+
+Découvrir ensuite **L**, couper les **deux frênes récoltables** du bosquet de l’île, puis fabriquer **une Planche de frêne** à la scierie locale avec les deux bois récoltés. Le bouton Rejoindre et couper lance le déplacement normal vers l’arbre ; Rejoindre la scierie place la troupe à l’atelier de cette leçon. Coupe, cible bonus, interruptions, repousse, consommation et XP métier suivent les règles habituelles. La sortie s’active après la fabrication ; Passer le tutoriel reste disponible. Équipement, planche et progression métier sont conservés au village.

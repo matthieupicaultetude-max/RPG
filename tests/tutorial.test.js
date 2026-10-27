@@ -98,7 +98,7 @@ test("zone tutoriel : apparition sur terre, bâtiments solides et passages acces
   assert.ok(s.team.every((m) => m.x === s.player.x && m.y === s.player.y));
   assert.equal(s.npcs[0].id, "iris");
   assert.equal(s.bots.length, 0);
-  assert.equal(s.trees.length, 0);
+  assert.equal(s.trees.length, 2);
   const walkable = (x, y) => canWalkZone(x, y, s.zone);
   assert.equal(walkable(135, 180), false);
   assert.equal(walkable(5, 100), false);
@@ -152,4 +152,88 @@ test("sortie du tutoriel : village restauré et progression conservée", async (
   assert.equal(s.bag[0].name, "Souvenir");
   assert.equal(canWalkZone(s.player.x, s.player.y, s.zone), true);
   assert.equal(nearTutorialExit(s), false);
+});
+
+test("suite du guide : bestiaire vérifié, noyau garanti, armure et vrais crafts de métier", async () => {
+  const {
+    advanceTutorial,
+    inspectTutorialMonster,
+    visitTutorialPanel,
+    approachTutorialSawmill,
+    canLeaveTutorial,
+  } = await import("../src/game/tutorial.js");
+  const { openCore, equip, stepSandbox } = await import(
+    "../src/dev/sandbox.js"
+  );
+  const { equipSpell } = await import("../src/data/spells.js");
+  const { requestCut, craftPlanks, woodQuantity } = await import(
+    "../src/game/woodcutting.js"
+  );
+  const { canWalkZone } = await import("../src/world/zones.js");
+  const s = createSandbox(),
+    originalTrees = s.trees;
+  beginTutorial(s);
+  s.tutorial.step = "ready";
+  startTutorialFight(s);
+  s.monsters[0].hp = 0;
+  rewardMonster(s, s.monsters[0], () => 0.99);
+  stepTutorial(s);
+  const core = s.bag.find((item) => item.id === s.tutorial.coreId);
+  assert.equal(core.element, "water");
+  assert.equal(core.quantity, 1);
+  const count = s.bag.length;
+  rewardMonster(s, s.monsters[0]);
+  assert.equal(s.bag.length, count);
+  allocateCharacteristic(s, "Chance", 5);
+  stepTutorial(s);
+  equipSpell(s, 0, 2, "melee-fire-0");
+  stepTutorial(s);
+  assert.equal(advanceTutorial(s), true);
+  assert.equal(s.tutorial.step, "bestiary");
+  assert.equal(canLeaveTutorial(s), false);
+  assert.equal(advanceTutorial(s), false);
+  inspectTutorialMonster(s, "boar", 20);
+  assert.equal(advanceTutorial(s), false);
+  inspectTutorialMonster(s, "slime", 1);
+  assert.equal(advanceTutorial(s), false);
+  inspectTutorialMonster(s, "slime", 10);
+  assert.equal(advanceTutorial(s), true);
+  assert.equal(s.tutorial.step, "loot");
+  const item = openCore(s, core.id, () => 0.2);
+  stepTutorial(s);
+  assert.equal(s.tutorial.step, "armor");
+  assert.equal(s.tutorial.armorId, item.id);
+  equip(s, item.id);
+  stepTutorial(s);
+  assert.equal(s.tutorial.step, "professions");
+  assert.equal(advanceTutorial(s), false);
+  visitTutorialPanel(s, "equipment");
+  assert.equal(advanceTutorial(s), false);
+  visitTutorialPanel(s, "professions");
+  assert.equal(advanceTutorial(s), true);
+  const canStand = (x, y) => canWalkZone(x, y, s.zone);
+  for (const [i, tree] of s.trees.entries()) {
+    assert.equal(requestCut(s, tree.id, canStand), true);
+    for (let n = 0; n < 400 && s.woodcutting.action; n++) {
+      stepSandbox(s, { x: 0, y: 0 }, 0.05);
+      stepTutorial(s);
+    }
+    assert.equal(s.tutorial.harvested, i + 1);
+    assert.ok(tree.respawn > 0);
+  }
+  assert.equal(s.tutorial.step, "craft");
+  assert.equal(woodQuantity(s, "ash"), 2);
+  assert.equal(canLeaveTutorial(s), false);
+  assert.equal(approachTutorialSawmill(s), true);
+  assert.equal(craftPlanks(s, "ash", 1), true);
+  stepTutorial(s);
+  assert.equal(s.tutorial.step, "complete");
+  assert.equal(canLeaveTutorial(s), true);
+  assert.equal(woodQuantity(s, "ash"), 0);
+  assert.equal(woodQuantity(s, "ash", "plank"), 1);
+  const job = structuredClone(s.woodcutting);
+  finishTutorial(s);
+  assert.equal(s.trees, originalTrees);
+  assert.deepEqual(s.woodcutting, job);
+  assert.equal(s.team[0].equipment[item.slot].id, item.id);
 });

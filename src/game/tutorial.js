@@ -1,8 +1,12 @@
+import { createTrees } from "./woodcutting.js";
 import {
   TUTORIAL_SPAWN,
   TUTORIAL_COMBAT,
   TUTORIAL_MONSTER,
   NPCS,
+  TUTORIAL_TREES,
+  TUTORIAL_WORKSHOP,
+  TUTORIAL_SAWMILL,
 } from "../world/tutorial-map.js";
 import { movePartyToZone } from "../world/zones.js";
 import { createMonster } from "../data/monsters.js";
@@ -22,7 +26,7 @@ export function beginTutorial(state) {
   state.monsters = [];
   state.bots = [];
   state.npcs = NPCS.map((npc) => ({ ...npc }));
-  state.trees = [];
+  state.trees = createTrees(TUTORIAL_TREES);
   movePartyToZone(state, "tutorial", TUTORIAL_SPAWN);
   state.tutorial.previous = { ...state.player };
   state.autoAttack = false;
@@ -73,6 +77,27 @@ export function stepTutorial(state) {
     }
   }
   t.previous = { ...state.player };
+  if (t.step === "loot" && t.armorId) {
+    t.step = "armor";
+    state.revision++;
+  }
+  if (
+    t.step === "armor" &&
+    state.team.some((m) =>
+      Object.values(m.equipment).some((item) => item.id === t.armorId),
+    )
+  ) {
+    t.step = "professions";
+    state.revision++;
+  }
+  if (t.step === "gather" && t.harvested >= 2) {
+    t.step = "craft";
+    state.revision++;
+  }
+  if (t.step === "craft" && t.crafted) {
+    t.step = "complete";
+    state.revision++;
+  }
   if (
     t.step === "spells" &&
     t.manualSpell &&
@@ -110,4 +135,40 @@ export function finishTutorial(state, skipped = false) {
   state.attacks = [];
   t.step = skipped ? "skipped" : "done";
   state.revision++;
+}
+
+export const canLeaveTutorial = (state) =>
+  state.zone === "tutorial" && state.tutorial?.step === "complete";
+export function advanceTutorial(state) {
+  const t = state.tutorial;
+  if (t?.step === "spells" && t.spellRead) t.step = "bestiary";
+  else if (t?.step === "bestiary" && t.bestiaryRead) {
+    t.step = "loot";
+    movePartyToZone(state, "tutorial", TUTORIAL_WORKSHOP);
+  } else if (t?.step === "professions" && t.professionsRead) t.step = "gather";
+  else return false;
+  state.revision++;
+  return true;
+}
+export function visitTutorialPanel(state, tab) {
+  const t = state.tutorial;
+  if (t?.step === "professions" && tab === "professions") {
+    t.professionsRead = true;
+    state.revision++;
+  }
+}
+export function inspectTutorialMonster(state, species, level) {
+  const t = state.tutorial;
+  if (t?.step === "bestiary" && species === "slime" && level > 1) {
+    t.bestiaryRead = true;
+    state.revision++;
+  }
+}
+export function approachTutorialSawmill(state) {
+  if (state.tutorial?.step !== "craft") return false;
+  movePartyToZone(state, "tutorial", {
+    x: TUTORIAL_SAWMILL.x + 30,
+    y: TUTORIAL_SAWMILL.y - 25,
+  });
+  return true;
 }

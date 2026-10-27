@@ -1,3 +1,4 @@
+import { TUTORIAL_SAWMILL } from '../world/tutorial-map.js';
 import { emitSound } from "../audio/events.js";
 import { stepHarvestTarget } from './harvest-targets.js';
 import {
@@ -16,15 +17,15 @@ const tell = (s, message) => {
   s.log.length = Math.min(6, s.log.length);
   s.revision++;
 };
-export const createTrees = () =>
-  PROPS.filter((prop) => prop.kind === "tree").map((prop) => ({
+export const createTrees = (props=PROPS) =>
+  props.filter((prop) => prop.kind === "tree").map((prop) => ({
     id: prop.id,
     x: prop.x,
     y: prop.y,
     wood: prop.wood,
     respawn: 0,
   }));
-export const nearSawmill = (s) => s.zone !== "tutorial" && distance(s.player, SAWMILL) < 48;
+export const nearSawmill = (s) => distance(s.player, s.zone === "tutorial" ? TUTORIAL_SAWMILL : SAWMILL) < 48;
 export function grantWoodcuttingXp(s, amount) {
   if (!Number.isFinite(amount) || amount <= 0) return false;
   const job = s.woodcutting;
@@ -210,6 +211,7 @@ export function stepWoodcutting(s, direction, dt, elapsed, canStand) {
     emitSound(s,"gather",tree,{owner:s.main});
     s.woodcutting.action = null;
     addWoodItem(s, wood.id, "wood", 1);
+    if(s.zone === "tutorial" && s.tutorial?.step === "gather" && tree.id.startsWith("tutorial-ash-"))s.tutorial.harvested=(s.tutorial.harvested||0)+1;
     grantWoodcuttingXp(s, wood.xp);
     tell(s, `${wood.log} récolté · +${wood.xp} XP bûcheron.`);
   }
@@ -236,6 +238,7 @@ export function craftPlanks(s, id, quantity) {
   }
   s.bag = s.bag.filter((i) => i.quantity > 0);
   addWoodItem(s, id, "plank", quantity);
+  if(s.zone === "tutorial" && s.tutorial?.step === "craft" && id === "ash")s.tutorial.crafted=true;
   emitSound(s,"craft",s.player,{owner:s.main});
   grantWoodcuttingXp(s, quantity * 10);
   tell(

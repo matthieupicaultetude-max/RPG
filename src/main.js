@@ -1,5 +1,5 @@
-import { nearTutorialExit } from './world/zones.js';
-import { finishTutorial } from './game/tutorial.js';
+import { nearTutorialExit, canWalkZone } from './world/zones.js';
+import { finishTutorial, canLeaveTutorial, visitTutorialPanel, inspectTutorialMonster } from './game/tutorial.js';
 import { createTutorialUI } from './ui/tutorial.js';
 import { createAudioUI } from './ui/audio.js';
 import { renderProfessions } from './ui/professions.js';
@@ -19,7 +19,7 @@ import { renderBestiary, bestiaryValues, coreDropMarkup } from './ui/bestiary.js
 import { renderInventory } from './ui/inventory.js';
 import './style.css';
 import { createGame } from './game/create-game.js';
-import { ROLES, COLORS, SLOTS, teleport, chooseMain, grantXp, heal, grantLoot, grantCore, openCore, openCores, giveEquipment, equip, unequip, attack, note, activateUltimate, castEquipped, canStand } from './dev/sandbox.js';
+import { ROLES, COLORS, SLOTS, teleport, chooseMain, grantXp, heal, grantLoot, grantCore, openCore, openCores, giveEquipment, equip, unequip, attack, note, activateUltimate, castEquipped } from './dev/sandbox.js';
 
 const app = document.querySelector('#app');
 app.innerHTML = `
@@ -105,7 +105,7 @@ function refreshUltimate(s) {
   app.querySelector(".zone-card h1").textContent=isTutorial?"Île des premiers pas":"Jardin des essais";
   app.querySelector(".zone-card .eyebrow").textContent=isTutorial?"AURORIA · TUTORIEL":"AURORIA · ZONE DEV";
   app.querySelector(".session-label").textContent=isTutorial?"Initiation · Iris vous accompagne":"Session locale · 3 bots";
-  app.querySelector("#tutorial-exit").hidden=inventoryOpen||!nearTutorialExit(s)||!s.tutorial?.spellRead;
+  app.querySelector("#tutorial-exit").hidden=inventoryOpen||!nearTutorialExit(s)||!canLeaveTutorial(s);
   app.querySelector('#sawmill-interaction').hidden=inventoryOpen||!nearSawmill(s);
   const harvest=app.querySelector('#harvest-status'),action=s.woodcutting.action;harvest.hidden=!action;
   if(action){const tree=s.trees.find(t=>t.id===action.tree);harvest.querySelector('span').textContent=`${action.phase==='walk'?'En route':'Coupe'} · ${woodById(tree.wood).name}`;harvest.querySelector('progress').value=action.phase==='cut'?action.progress/action.duration:0;}
@@ -134,6 +134,7 @@ function setInventory(open, tab = currentTab) {
   if(currentTab!==tab)panel.scrollTop=0;
   inventoryOpen = open;
   currentTab = tab;
+  if(open)visitTutorialPanel(game.state,tab);
   app.querySelector('#inventory').hidden = !open;
   app.querySelector('#inventory-backdrop').hidden = !open;
   app.querySelector('[data-action="inventory"]').setAttribute('aria-expanded', String(open));
@@ -153,12 +154,12 @@ app.addEventListener('click',event=>{
   const button=event.target.closest('button'); if(!button)return;
   const s=game.state;
   if(button.dataset.action==='audio'||button.closest('#audio-settings')||button.closest('.tutorial'))return;
-  if(button.dataset.action === 'tutorial-exit'){if(nearTutorialExit(s)&&s.tutorial?.spellRead){finishTutorial(s);game.refresh();refresh(s);}return;}
+  if(button.dataset.action === 'tutorial-exit'){if(nearTutorialExit(s)&&canLeaveTutorial(s)){finishTutorial(s);game.refresh();refresh(s);}return;}
   if (button.dataset.action === 'inventory') { setInventory(!(inventoryOpen && currentTab==='equipment'), 'equipment'); return; }
   if (button.dataset.action === 'bestiary') { setInventory(!(inventoryOpen && currentTab==='bestiary'), 'bestiary'); return; }
   if (button.dataset.action === 'professions') {setInventory(true,'professions');return;}
   if (button.dataset.action === 'sawmill') {if(nearSawmill(s))setInventory(true,'professions');return;}
-  if(button.dataset.jobHarvest){const tree=s.trees.filter(t=>t.wood===button.dataset.jobHarvest&&t.respawn===0).sort((a,b)=>Math.hypot(a.x-s.player.x,a.y-s.player.y)-Math.hypot(b.x-s.player.x,b.y-s.player.y))[0];if(tree){setInventory(false);requestCut(s,tree.id,canStand);game.refresh();}return;}
+  if(button.dataset.jobHarvest){const tree=s.trees.filter(t=>t.wood===button.dataset.jobHarvest&&t.respawn===0).sort((a,b)=>Math.hypot(a.x-s.player.x,a.y-s.player.y)-Math.hypot(b.x-s.player.x,b.y-s.player.y))[0];if(tree){setInventory(false);requestCut(s,tree.id,(x,y)=>canWalkZone(x,y,s.zone));game.refresh();}return;}
   if(button.dataset.craftPlanks){const input=panel.querySelector('#plank-quantity');if(input.reportValidity())craftPlanks(s,button.dataset.craftPlanks,Number(input.value));}
   if (button.dataset.action === 'characteristics') {setInventory(true,'characteristics');return;}
   if (button.dataset.action === 'fountain') {if(nearFountain(s))setInventory(true,'characteristics');return;}
@@ -173,7 +174,7 @@ app.addEventListener('click',event=>{
     request?.catch(() => note(s, 'Le plein écran est indisponible dans ce navigateur.'));
     return;
   }
-  if(button.dataset.tab){if(currentTab!==button.dataset.tab)panel.scrollTop=0;currentTab=button.dataset.tab;app.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));}
+  if(button.dataset.tab){visitTutorialPanel(s,button.dataset.tab);if(currentTab!==button.dataset.tab)panel.scrollTop=0;currentTab=button.dataset.tab;app.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));}
   if(button.dataset.monster) bestiaryMonster = button.dataset.monster;
   if(button.dataset.main!==undefined)chooseMain(s,Number(button.dataset.main));
   if(button.dataset.inspectSlot) selectedItem = { source:'equipment', slot:button.dataset.inspectSlot };
@@ -221,6 +222,7 @@ app.addEventListener('input', event => {
 
   if(event.target.id!=='monster-level') return;
   bestiaryLevel = Number(event.target.value);
+  inspectTutorialMonster(game.state,bestiaryMonster,bestiaryLevel);
   panel.querySelector('.bestiary-core').innerHTML=coreDropMarkup(bestiaryMonster,bestiaryLevel);
   panel.querySelector('#monster-level-value').textContent = bestiaryLevel;
   for(const [stat,value] of Object.entries(bestiaryValues(bestiaryMonster,bestiaryLevel))) panel.querySelector(`[data-monster-stat="${stat}"]`).textContent=value;

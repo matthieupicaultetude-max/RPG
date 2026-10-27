@@ -10,6 +10,8 @@ export const MAP_SIZE = { width: 640, height: 400 };
 export const TUTORIAL_SPAWN = { x: 230, y: 250 };
 export const TUTORIAL_COMBAT = { x: 430, y: 255 };
 export const TUTORIAL_MONSTER = { x: 470, y: 245 };
+export const TUTORIAL_SAWMILL = { x: 301, y: 342 };
+export const TUTORIAL_WORKSHOP = { x: 135, y: 225 };
 export const TUTORIAL_EXIT = { x: 570, y: 255 };
 export const LAND = [
   [32, 150],
@@ -111,18 +113,32 @@ export const PROPS = [
     y: 170,
     footprint: { type: "box", left: -9, right: 9, top: -6, bottom: 0 },
   },
+  ...[
+    [230, 330],
+    [255, 342],
+  ].map(([x, y], i) => ({
+    id: `tutorial-ash-${i}`,
+    kind: "tree",
+    x,
+    y,
+    wood: "ash",
+    harvestable: true,
+    footprint: circle(9),
+    rootRadius: 12,
+  })),
   { id: "water-barrel", kind: "barrel", x: 75, y: 215, footprint: circle(6) },
   {
-    id: "rest-bench",
-    kind: "bench",
+    id: "tutorial-sawmill",
+    kind: "sawmill",
     x: 301,
     y: 342,
-    footprint: { type: "box", left: -18, right: 18, top: -4, bottom: 1 },
+    footprint: { type: "box", left: -20, right: 20, top: -7, bottom: 0 },
   },
 ];
 export const DECORATIONS = [
   { id: "welcome-sign", kind: "sign", x: 195, y: 222, text: "ACCUEIL" },
   { id: "arena-sign", kind: "sign", x: 389, y: 218, text: "ENTRAINEMENT" },
+  { id: "sawmill-sign", kind: "sign", x: 338, y: 354, text: "SCIERIE" },
   { id: "exit-sign", kind: "sign", x: 556, y: 286, text: "VILLAGE" },
   ...[
     [91, 180],
@@ -143,6 +159,7 @@ export const FENCES = [
   x: f.x1,
   footprint: { type: "box", left: 0, right: f.x2 - f.x1, top: -2, bottom: 4 },
 }));
+export const TUTORIAL_TREES = PROPS.filter((prop) => prop.harvestable);
 export const SOLIDS = [...PROPS, ...FENCES];
 export const MARKERS = [
   { x: 230, y: 276, text: "PLACE DES PREMIERS PAS" },

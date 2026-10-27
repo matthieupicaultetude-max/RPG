@@ -1,3 +1,4 @@
+import { TUTORIAL_WORKSHOP } from '../world/tutorial-map.js';
 import { canWalkZone } from '../world/zones.js';
 import { emitSound, impactKind } from '../audio/events.js';
 import { createTrees, stepWoodcutting, cancelWoodcutting } from '../game/woodcutting.js';
@@ -47,7 +48,7 @@ export function note(s, message) {
   s.log.length = Math.min(s.log.length, 6);
   s.revision++;
 }
-export function atHome(s) { return s.zone !== 'tutorial' && (Math.hypot(s.player.x - STATIONS.maison.x, s.player.y - STATIONS.maison.y) < 65 || nearPetShop(s) || nearForge(s)); }
+export function atHome(s) { return s.zone === "tutorial" ? Math.hypot(s.player.x-TUTORIAL_WORKSHOP.x,s.player.y-TUTORIAL_WORKSHOP.y)<48 : (Math.hypot(s.player.x - STATIONS.maison.x, s.player.y - STATIONS.maison.y) < 65 || nearPetShop(s) || nearForge(s)); }
 export function teleport(s, station) {
   if(s.zone === "tutorial") {note(s,"Terminez ou passez le tutoriel pour rejoindre le village.");return;}
   const point = STATIONS[station];
@@ -136,8 +137,9 @@ export function grantCore(s,element,level=1) {
   const core=createCore(element,level);
   const existing=s.bag.find(item=>item.kind==='core'&&item.element===element&&item.band.min===core.band.min&&!item.chromatic);
   if(existing)existing.quantity++;
-  else s.bag.push({...core,id:s.nextItem++});
+  else {core.id=s.nextItem++;s.bag.push(core);}
   note(s,`Noyau de ${ELEMENTS[element].name} obtenu · niveaux ${core.band.min}–${core.band.max}.`);
+  return existing?.id ?? core.id;
 }
 export function openCore(s,id,random=Math.random) {
   const index=s.bag.findIndex(item=>item.id===id&&item.kind==='core');
@@ -147,6 +149,7 @@ export function openCore(s,id,random=Math.random) {
   if(!item){note(s,'Aucune panoplie disponible pour cette tranche de niveaux.');return null;}
   if(--s.bag[index].quantity===0)s.bag.splice(index,1);
   const reward={...item,id:s.nextItem++};s.bag.push(reward);recordSetLoot(s,reward);
+  if(s.zone === "tutorial" && s.tutorial?.coreId === id)s.tutorial.armorId=reward.id;
   note(s,`Noyau ouvert : ${reward.name}${reward.chromatic?' chromatique':''} !`);
   return reward;
 }
@@ -232,7 +235,8 @@ export function rewardMonster(s,monster,random=Math.random) {
   grantXp(s, monster.xp);
   const definition=monsterDefinition(monster.species);
   grantLoot(s,random()<definition.rareChance?'rare':'normal',random()<definition.chromaticChance,monster.species);
-  if(random()<CORE_CHANCE)grantCore(s,definition.element,monster.level);
+  if(monster.tutorial)s.tutorial.coreId=grantCore(s,definition.element,monster.level);
+  else if(random()<CORE_CHANCE)grantCore(s,definition.element,monster.level);
 }
 export function clickBonus(s,point) {const canStand=(x,y)=>canWalkZone(x,y,s.zone);Object.assign(s.team[s.main],s.player);const hit=clickBonusTarget(s,point,canStand,hitMonster);if(hit)cancelWoodcutting(s);return hit;}
 export const spellContext = {canStand,hitMonster};

@@ -264,7 +264,7 @@ function drawTutorialGate(ctx,state) {
   for(let row=0;row<4;row++){ctx.fillStyle='#8f9271';ctx.fillRect(x+side*18-3,y-10-row*9,6,1);}
  }
  ctx.fillStyle='#b9b88e';ctx.fillRect(x-22,y-49,44,6);ctx.fillStyle='#ded3a7';ctx.fillRect(x-24,y-51,48,3);
- ctx.fillStyle=state.tutorial?.spellRead?'#8dcbb282':'#779b9255';ctx.fillRect(x-13,y-42,26,40);
+ ctx.fillStyle=state.tutorial?.step==='complete'?'#8dcbb282':'#779b9255';ctx.fillRect(x-13,y-42,26,40);
  ctx.strokeStyle='#bfe5bf';ctx.lineWidth=1;ctx.strokeRect(x-13,y-42,26,40);
  for(let i=0;i<5;i++){const yy=y-5-((state.time*12+i*8)%35);ctx.fillStyle='#e5ecc0';ctx.fillRect(x-9+(i*7)%20,Math.round(yy),1,2);}
 }
