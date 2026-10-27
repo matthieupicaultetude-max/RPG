@@ -7,6 +7,8 @@ import {
 } from "./map.js";
 import { texturePixel as basePixel } from "../rendering/textures.js";
 export const MAP_SIZE = { width: 640, height: 400 };
+export const MARSH_DEPTHS_GATE = { x: 577, y: 315 };
+export const SEA_SINKHOLE = { x: 590, y: 370 };
 export const MARSH_ENTRY = { x: 70, y: 220 };
 export const LAND = [
   [25, 110],
@@ -44,6 +46,7 @@ export const landDistance = (x, y) =>
   );
 export const isLand = (x, y) => landDistance(x, y) >= 0;
 export const ROADS = [
+  { width: 18, points: [[560,280],[577,315]] },
   {
     width: 24,
     points: [

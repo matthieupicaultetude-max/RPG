@@ -301,3 +301,17 @@ Le décor possède ses propres mares turquoise infranchissables, nénuphars, ros
 Inventaire, équipement, niveaux, métier et mode de combat sont conservés lors des trajets. Le village et les monstres blessés se retrouvent à chaque retour dans la même session. Les flaques expirent selon le temps de simulation ; un changement de zone annule les attaques en cours. Après une défaite complète dans le marais, la troupe est soignée à son entrée. Recharger la page réinitialise toujours cette progression locale.
 
 Un saut raté par un slime de taille 2 ou 3 provoque une scission : le parent perd une taille (3 → 2, 2 → 1), conserve son pourcentage de PV et devient vulnérable. Un nouveau slime de taille 1 apparaît à côté sur un terrain praticable, au même niveau. Ce saut ne permet pas de regrossir immédiatement grâce à une flaque ou une fleur. Les slimes issus de scission combattent et donnent leurs récompenses habituelles, mais ne réapparaissent pas après leur mort.
+
+### Crevasse des profondeurs
+
+Au **sud-est des Marais de Gelée**, un trou sombre dans la mer reçoit une cascade. Approchez-vous de sa lèvre et appuyez sur **F — Sauter par la cascade** : un bond et une chute animés emmènent toute la troupe dans la grotte. Le bouton contextuel fonctionne aussi sur mobile. **Outils dev → Crevasse des profondeurs** donne un accès direct.
+
+La crevasse est une carte distincte : sol rocheux humide sans pavage, mares infranchissables, trois cascades animées, stalagmites, champignons lumineux et éclairage souterrain bleuté. La lumière dorée extérieure s’efface dans cette zone. La **remontée lumineuse à l’ouest + F** ramène à la cascade des marais.
+
+- Sept slimes de **niveau 5**, Eau (abyssaux bleus) et Terre (limon brun), engagent de plus loin et bondissent plus vite que ceux des marais. Les cercles élémentaires annoncent chaque impact.
+- Un saut raté d’un gros slime produit **taille 3 → 2 + 1** ou **taille 2 → 1 + 1**, avec une brève vulnérabilité du parent.
+- Deux slimes proches, au sol et sans attaque en cours, peuvent fusionner : **1 + 1 → 2**, **1 + 2 → 3**. Un lien et des anneaux dorés l’annoncent pendant **1 s**. Les repousser, les immobiliser ou tuer un partenaire annule la fusion. Ils attendent **5 s** après une scission ou fusion avant de refusionner.
+- Les fusions mixtes alternent les bonds **Eau / Terre**. La masse totale de la horde est conservée lors des transformations : pas de multiplication sans fin des ennemis vivants. La fusion ne donne ni XP ni loot.
+- Ressources propres aux créatures : **Gelée abyssale / Perle des profondeurs** et **Limon humide / Géode suintante**, avec variantes chromatiques ; noyaux Eau ou Terre selon le monstre. Fiches disponibles dans le bestiaire avec aperçu par niveau.
+
+Les ennemis vaincus restent morts pendant l’expédition. Une crevasse entièrement nettoyée se repeuple à la prochaine entrée ; sinon ses blessures et transformations restent conservées pendant la session. Une défaite ramène la troupe soignée sur la berge d’entrée, avec son or et ses objets.

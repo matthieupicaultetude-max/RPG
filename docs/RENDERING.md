@@ -116,3 +116,11 @@ Le slime se comprime avant son départ ; sa hauteur visuelle suit une parabole s
 `src/game/zone-travel.js` sauvegarde les entités propres à chaque zone, puis déplace la troupe par les passages. `src/game/slime-marsh.js` gère les flaques, la croissance, la vulnérabilité et les temps des fleurs. Les paramètres de l’attaque sont calculés à la préparation et copiés dans l’intention, pour conserver la correspondance entre prévisualisation et impact.
 
 `src/rendering/slime-marsh.js` dessine les passages, les flaques, les fleurs ouvertes ou en repos, les éclats de nectar et les indications de vulnérabilité. Les flaques et éclats sont découpés sur le terrain en excluant les mares. Le slime grandit visuellement avec sa taille ; les sprites des personnages conservent leur gabarit d’origine.
+
+## 12. Gouffre et grotte des profondeurs
+
+`slime-depths-map.js` fournit une carte de grotte avec bassins exclus de la géométrie praticable. Son échantillonneur de terrain utilise des textures rocheuses périodiques et un grain humide sans grille de briques ; les matériaux conservent une période de 64 pixels. `terrain.js` accepte un échantillonneur de terrain spécifique, et l’environnement peut désactiver les fleurs de prairie. Les stalagmites ont des sprites mis en cache et des empreintes solides.
+
+`rendering/slime-depths.js` dessine le gouffre marin, la cascade extérieure, les cascades de la grotte, les champignons lumineux, les avertissements de fusion et l’atmosphère froide. Le terrain de grotte conserve sa palette ; la passe golden hour et les ombres de soleil y sont désactivées. Les zones d’impact restent au-dessus du décor de sol et les effets atmosphériques sont légers.
+
+Les slimes des profondeurs reprennent la silhouette de gelée avec palettes Eau et Terre, une taille de 1 à 3 et des touches des deux couleurs après une fusion mixte. Les personnages conservent leur sprite original. La traversée du gouffre interpole la troupe vers le trou avec un arc de saut et une transition sombre avant le changement de carte. Les fusions annoncées relient les deux slimes par des anneaux et une ligne dorés pendant une seconde.

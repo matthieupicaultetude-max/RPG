@@ -1,3 +1,5 @@
+import { canWalkDepths } from './slime-depths-map.js';
+import { clearDepthsFusions } from '../game/slime-depths.js';
 import {canWalkMarsh} from './slime-marsh-map.js';
 import { clearMonsterAttacks } from '../combat/monster-attacks.js';
 import { canWalkMap } from "./map.js";
@@ -5,7 +7,7 @@ import { canWalkTutorial, TUTORIAL_EXIT } from "./tutorial-map.js";
 import { clearRoute, placeAllies } from "../ai/companions.js";
 export const inTutorialZone = (state) => state.zone === "tutorial";
 export const canWalkZone = (x, y, zone) =>
-  zone === "tutorial" ? canWalkTutorial(x, y) : zone === "slime-marsh" ? canWalkMarsh(x,y) : canWalkMap(x, y);
+  zone === "slime-depths" ? canWalkDepths(x,y) : zone === "tutorial" ? canWalkTutorial(x, y) : zone === "slime-marsh" ? canWalkMarsh(x,y) : canWalkMap(x, y);
 export const nearTutorialExit = (state) =>
   inTutorialZone(state) &&
   Math.hypot(
@@ -13,6 +15,7 @@ export const nearTutorialExit = (state) =>
     state.player.y - TUTORIAL_EXIT.y,
   ) < 30;
 export function movePartyToZone(state, zone, point) {
+  clearDepthsFusions(state);
   state.zone = zone;
   clearMonsterAttacks(state);
   state.woodcutting.action = null;

@@ -2,6 +2,7 @@ import { landDistance, roadDistance } from "../world/map.js";
 import { texturePixel, hash } from "./textures.js";
 
 export function terrainPixel(x, y, map = {landDistance, roadDistance}) {
+  if(map.terrainPixel)return map.terrainPixel(x,y);
   const sample=map.texturePixel||texturePixel;
   const land = map.landDistance(x + 0.5, y + 0.5);
   if (land < -5) return sample("water", x, y);

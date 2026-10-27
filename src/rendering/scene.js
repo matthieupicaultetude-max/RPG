@@ -1,3 +1,5 @@
+import * as depthsMap from '../world/slime-depths-map.js';
+import {drawSeaSinkhole,drawDepthsGround,drawDepthsAtmosphere} from './slime-depths.js';
 import * as marshMap from '../world/slime-marsh-map.js';
 import {drawZonePassage,drawMarshGround,drawMarshSlimeStatus} from './slime-marsh.js';
 import {slimeScale} from '../game/slime-marsh.js';
@@ -25,7 +27,7 @@ export function createRenderer(canvas) {
   ctx.imageSmoothingEnabled = false;
   const village = createEnvironment();
   const lighting = createGoldenHour(frame.width,frame.height);
-  let tutorial, marsh;
+  let tutorial, marsh, depths;
   function label(text, x, y) {
     ctx.font = "8px monospace";
     ctx.textAlign = "center";
@@ -57,12 +59,14 @@ export function createRenderer(canvas) {
     label(bot ? `${p.name} · BOT` : p.name, x, y + 16);
   }
   const render = (s) => {
-    const environment = s.zone === "tutorial" ? (tutorial ||= createEnvironment(tutorialMap)) : s.zone==='slime-marsh'?(marsh ||= createEnvironment(marshMap)):village;
+    const environment = s.zone === "slime-depths" ? (depths ||= createEnvironment(depthsMap)) : s.zone === "tutorial" ? (tutorial ||= createEnvironment(tutorialMap)) : s.zone==='slime-marsh'?(marsh ||= createEnvironment(marshMap)):village;
     const canStand = (x,y)=>canWalkZone(x,y,s.zone);
     ctx.drawImage(environment.ground, 0, 0);
-    if(s.lighting!==false)drawSunShadows(ctx,environment,s);
+    if(s.lighting!==false && s.zone!=="slime-depths")drawSunShadows(ctx,environment,s);
     drawZonePassage(ctx,s);
     drawMarshGround(ctx,s);
+    drawSeaSinkhole(ctx,s);
+    drawDepthsGround(ctx,s);
     for(const marker of environment.markers)label(marker.text,marker.x,marker.y);
     if(s.zone === "tutorial")drawTutorialGate(ctx,s);
     drawSpellGround(ctx,s);
@@ -95,20 +99,22 @@ export function createRenderer(canvas) {
         .filter((p, i) => p.hp > 0 && (i === s.main || s.deployed))
         .map((p) => ({
           y: p.y,
-          draw: () =>
+          draw: () => {
+            ctx.save();if(s.zoneDive)ctx.translate(0,-Math.sin(Math.min(1,s.zoneDive.age/s.zoneDive.duration)*Math.PI)*22);
             person(
               p,
               s.time,
               p.id === s.main,
               false,
               (s.woodcutting.action?.owner===p.id&&s.woodcutting.action.phase==="cut"?{harvesting:true,age:0,angle:0}:null)||s.attacks.find((a) => a.owner === p.id && a.age < 0.3) || (()=>{const v=s.spellVisuals.find(v=>v.owner===p.id&&v.age<.3);return v?{age:v.age,angle:Math.atan2(v.y-p.y,v.x-p.x)}:null;})(),
-            ),
+            );ctx.restore();
+          },
         })),
       ...s.monsters.map((m) => ({
         y: m.y,
         draw: () => {
           if (m.hp <= 0) {
-            if(!m.tutorial)label(`Retour ${Math.ceil(m.respawn)}s`, m.homeX, m.homeY);
+            if(!m.tutorial&&!m.splitSpawn&&!m.depthsSlime)label(`Retour ${Math.ceil(m.respawn)}s`, m.homeX, m.homeY);
             return;
           }
           drawCreature(ctx, m, s.time);
@@ -118,7 +124,7 @@ export function createRenderer(canvas) {
           ctx.fillRect(x - 14, y - 24, 28, 3);
           ctx.fillStyle = "#cfb17c";
           ctx.fillRect(x - 14, y - 24, (28 * m.hp) / m.maxHp, 2);
-          label(m.marshSlime?`Slime · ${m.growth}/3`:m.name, x, Math.round(m.y-(m.lift||0)+17));
+          label(m.depthsSlime?`${m.dualElement?"Mixte":m.element==="earth"?"Limon":"Abyssal"} · ${m.growth}/3`:m.marshSlime?`Slime · ${m.growth}/3`:m.name, x, Math.round(m.y-(m.lift||0)+17));
           drawMarshSlimeStatus(ctx,m,s);
         },
       })),
@@ -248,6 +254,7 @@ export function createRenderer(canvas) {
     }
     drawBonusTargets(ctx,s);
     drawWoodcutting(ctx,s);
+    drawDepthsAtmosphere(ctx,s);
     const width = Math.round(canvas.clientWidth),
       height = Math.round(canvas.clientHeight);
     if (canvas.width !== width || canvas.height !== height) {
@@ -257,8 +264,9 @@ export function createRenderer(canvas) {
     screen.imageSmoothingEnabled = false;
     // Fill every viewport without stretching sprites. Follow the player when cropped.
     const view = viewport(width, height, s.player);
-    const litFrame = lighting.draw(frame,s.time,s.lighting!==false);
-    canvas.dataset.lighting=s.lighting===false?"off":lighting.mode;
+    const litFrame = lighting.draw(frame,s.time,s.lighting!==false&&s.zone!=="slime-depths");
+    canvas.dataset.zone=s.zone;
+    canvas.dataset.lighting=s.zone==="slime-depths"?"cave":s.lighting===false?"off":lighting.mode;
     screen.drawImage(
       litFrame,
       -view.x * view.scale,

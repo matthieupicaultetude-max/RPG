@@ -15,7 +15,7 @@ export function createEnvironment(map = villageMap) {
   paintTerrain(ctx, MAP_SIZE.width, MAP_SIZE.height, map);
   const spriteFor = createSpriteAtlas();
   // Ground decoration follows semantic material data, never sampled RGB values.
-  for (let i = 0; i < 80; i++) {
+  for (let i = 0; i < (map.floorDecorations===false?0:80); i++) {
     const x = 16 + (hash(i, 1, 47) % 608),
       y = 66 + (hash(i, 2, 47) % 312);
     if (!isLand(x, y) || isRoad(x, y) || landDistance(x, y) < 12) continue;

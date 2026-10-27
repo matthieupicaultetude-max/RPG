@@ -1,4 +1,6 @@
-import {travelToZone} from '../game/zone-travel.js';
+import {stepDepthsSlimes} from '../game/slime-depths.js';
+import {DEPTHS_SPAWN} from '../world/slime-depths-map.js';
+import {travelToZone,stepZoneDive} from '../game/zone-travel.js';
 import {MARSH_ENTRY} from '../world/slime-marsh-map.js';
 import {movePartyToZone} from '../world/zones.js';
 import {stepSlimeMarsh,resetMarshSlime,slimeVulnerable} from '../game/slime-marsh.js';
@@ -55,7 +57,7 @@ export function note(s, message) {
 }
 export function teleport(s, station) {
   if(s.zone === "tutorial") {note(s,"Terminez ou passez le tutoriel pour rejoindre le village.");return;}
-  if(s.zone==='slime-marsh')travelToZone(s,'garden');
+  if(['slime-marsh','slime-depths'].includes(s.zone))travelToZone(s,'garden');
   const point = STATIONS[station];
   if (!point) return;
   cancelWoodcutting(s);
@@ -66,6 +68,7 @@ export function teleport(s, station) {
   note(s, `Téléportation de test : ${station}.`);
 }
 export function chooseMain(s, i) {
+  if(s.zoneDive)return false;
   if (i === s.main || !s.team[i] || s.team[i].hp <= 0) return false;
   cancelWoodcutting(s);
   Object.assign(s.team[s.main], s.player);
@@ -77,6 +80,7 @@ export function chooseMain(s, i) {
   return true;
 }
 export function cycleMain(s, direction) {
+  if(s.zoneDive)return false;
   if (!direction) return false;
   const step = Math.sign(direction);
   for (let offset = 1; offset < s.team.length; offset++) {
@@ -86,6 +90,7 @@ export function cycleMain(s, direction) {
   return false;
 }
 export function setCombatMode(s, combat) {
+  if(s.zoneDive)return false;
   if(typeof combat !== 'boolean')return false;
   Object.assign(s.team[s.main],s.player);
   s.deployed = combat;
@@ -232,11 +237,13 @@ export function clickBonus(s,point) {const canStand=(x,y)=>canWalkZone(x,y,s.zon
 export const spellContext = {canStand,hitMonster};
 const contextFor=s=>({canStand:(x,y)=>canWalkZone(x,y,s.zone),hitMonster});
 export function castEquipped(s,slot,point=s.aim.active?s.aim:null,options={}) {
+ if(s.zoneDive)return false;
  const member=s.team[s.main];Object.assign(member,s.player);
  const result=castSpell(s,member,slot,point?{x:point.x,y:point.y+8}:null,contextFor(s),options);if(result)cancelWoodcutting(s);return result;
 }
 export function attack(s,point=s.aim.active?s.aim:null) {return castEquipped(s,0,point);}
 export function stepSandbox(s, direction, dt, elapsed = dt) {
+  if(stepZoneDive(s,dt))return;
   const spellContext=contextFor(s), canStand=spellContext.canStand;
   stepBonusTargets(s,elapsed,canStand);
   const old = { x: s.player.x, y: s.player.y };
@@ -276,11 +283,12 @@ export function stepSandbox(s, direction, dt, elapsed = dt) {
     if (monster.hp <= 0) {
       delete monster.intent;monster.lift=0;
       s.monsterTornadoes=s.monsterTornadoes.filter(a=>a.owner!==index);
-      if(monster.splitSpawn)return;
+      if(monster.splitSpawn||monster.depthsSlime)return;
       monster.respawn -= dt;
       if (monster.respawn <= 0) { resetMarshSlime(monster);monster.hp = monster.maxHp; delete monster.bonusTarget;delete monster.lastReceivedDamage;monster.bonusTargetCooldown=0; monster.x = monster.homeX; monster.y = monster.homeY;monster.cooldown=.6;s.revision++; }
       return;
     }
+    if(monster.fusionWith!==undefined){monster.moving=false;return;}
     if(stepMonsterAbility(s,monster,dt,enemyContext))return;
     const target=activeParty(s).sort((a,b)=>Math.hypot(a.x-monster.x,a.y-monster.y)-Math.hypot(b.x-monster.x,b.y-monster.y))[0];
     if(monster.spellState?.root>0){monster.moving=false;return;}
@@ -291,11 +299,12 @@ export function stepSandbox(s, direction, dt, elapsed = dt) {
       else monster.moving=false;
     }else walk(monster,monster.homeX+Math.sin(s.time*.5+monster.homeX)*20,monster.homeY+Math.cos(s.time*.4)*15,monster.patrolSpeed,dt,canStand);
   });
+  stepDepthsSlimes(s);
   stepMonsterHazards(s,dt,enemyContext);
   if(defeated&&s.team.every(m=>m.hp<=0)){
     clearMonsterAttacks(s);setCombatMode(s,true);
-    if(s.zone==='tutorial'){Object.assign(s.player,{x:230,y:250});s.team.forEach(m=>Object.assign(m,s.player));placeAllies(s,canStand);}else if(s.zone==='slime-marsh')movePartyToZone(s,'slime-marsh',{x:MARSH_ENTRY.x+30,y:MARSH_ENTRY.y});else teleport(s,'maison');
-    heal(s);if(s.deployed)placeAllies(s,canStand);note(s,s.zone==='tutorial'?'Iris vous remet sur pied. Réessayez !':s.zone==='slime-marsh'?'Défaite : retour à l’entrée des marais.':'Défaite : retour à la maison (règle de test).');
+    if(s.zone==='tutorial'){Object.assign(s.player,{x:230,y:250});s.team.forEach(m=>Object.assign(m,s.player));placeAllies(s,canStand);}else if(s.zone==='slime-depths')movePartyToZone(s,'slime-depths',DEPTHS_SPAWN);else if(s.zone==='slime-marsh')movePartyToZone(s,'slime-marsh',{x:MARSH_ENTRY.x+30,y:MARSH_ENTRY.y});else teleport(s,'maison');
+    heal(s);if(s.deployed)placeAllies(s,canStand);note(s,s.zone==='tutorial'?'Iris vous remet sur pied. Réessayez !':s.zone==='slime-depths'?'Défaite : retour sur la berge des profondeurs.':s.zone==='slime-marsh'?'Défaite : retour à l’entrée des marais.':'Défaite : retour à la maison (règle de test).');
   }
   if(s.player.moving&&s.time>=(s.nextFootstep||0)){s.nextFootstep=s.time+.32;emitSound(s,"step",s.player,{owner:s.main});}
   s.bots.forEach(bot => {

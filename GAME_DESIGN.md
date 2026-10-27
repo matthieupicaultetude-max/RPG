@@ -563,3 +563,19 @@ Un saut raté par un slime de taille 2 ou 3 le déséquilibre pendant 2,5 s et a
 Les états du village et du marais sont conservés séparément dans la session, avec les mêmes personnages et le même sac. Les flaques et recharges des fleurs utilisent l’horloge de simulation partagée. Les attaques sont annulées lors d’un trajet et un bond interrompu reprend un point de départ terrestre valide. Une défaite dans le marais ramène l’équipe soignée à son entrée. Les services du village restent accessibles dans leur propre zone.
 
 Un saut raté par un slime de taille 2 ou 3 provoque une scission : le parent perd une taille (3 → 2, 2 → 1), conserve son pourcentage de PV et devient vulnérable. Un nouveau slime de taille 1 apparaît à côté sur un terrain praticable, au même niveau. Ce saut ne permet pas de regrossir immédiatement grâce à une flaque ou une fleur. Les slimes issus de scission combattent et donnent leurs récompenses habituelles, mais ne réapparaissent pas après leur mort.
+
+## 39. Crevasse des profondeurs — scissions et fusions
+
+Une cascade au sud-est des marais se jette dans un gouffre marin. F près de la lèvre déclenche un saut suivi d’une chute de 1,1 s ; le déplacement et les attaques sont suspendus durant la traversée. La troupe arrive ensemble sur une berge sûre d’une carte souterraine distincte. Une remontée à l’ouest ramène au bord de la cascade. Personnages, mode combat/exploration, équipement, sac et progression sont conservés.
+
+La carte représente une grotte humide : parois sombres, roches naturelles, stalagmites, bassins non praticables, cascades et végétation luminescente. Les matériaux sont périodiques, le terrain et ses collisions partagent les mêmes distances signées. L’éclairage est froid et souterrain, sans soleil doré.
+
+La population initiale compte sept slimes de niveau 5, pour dix unités de taille. Deux espèces sont distinguées par leur couleur et leur élément : abyssal (Eau, bleu) et limon (Terre, brun). Le rayon d’engagement est de 240 px, la portée de bond de 210 px, la préparation de 0,85 / 0,97 / 1,09 s selon la taille, et le repos de 1,1 s. Tous les bonds restent annoncés avant les dégâts.
+
+Un saut raté retire une taille à un slime de taille 2 ou 3 et crée un slime de taille 1 du même niveau, sur une position praticable voisine. Le parent conserve son pourcentage de PV et devient vulnérable 1,5 s (+50 % de dégâts reçus). Les tailles 1 ne se divisent pas.
+
+Deux slimes à moins de 30 px, à portée visuelle, sans attaque, immobilisation ou vulnérabilité en cours, peuvent fusionner si la somme de leurs tailles ne dépasse pas trois. L’annonce dure une seconde et suspend leurs bonds. Éloigner les partenaires, les immobiliser ou en éliminer un annule la fusion. La transformation conserve leur pourcentage de PV combiné, leur masse et ne déclenche aucune récompense. Après une scission ou fusion, cinq secondes interdisent la prochaine fusion. Une fusion de deux éléments produit un slime mixte alternant Eau et Terre à chaque bond ; ses descendants conservent cette propriété.
+
+Chaque espèce possède ses ressources normale et rare, leurs variations chromatiques et les noyaux de son élément. Les ressources des profondeurs sont distinctes des ingrédients des recettes débutantes actuelles. Les fiches du bestiaire expliquent les transformations et permettent de consulter les statistiques de taille 1 à chaque niveau.
+
+Les ennemis de cette expédition n’ont pas de réapparition individuelle : une population complètement vaincue est renouvelée à la prochaine visite. Sinon, le monde reste conservé en session. La masse ne peut donc pas croître indéfiniment à force de fusionner et de se diviser. La défaite soigne la troupe à l’entrée sans perte d’or ni de sac. Un changement de zone annule les préparations de fusion et les attaques en cours avant de sauvegarder le monde quitté.

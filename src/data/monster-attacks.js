@@ -45,6 +45,11 @@ export const MONSTER_ATTACKS = Object.freeze({
   },
 });
 export const monsterAttack = (monster) => {
+ if(monster.depthsSlime||monster.species?.startsWith('depths-')) {
+   const size=Math.max(1,Math.min(3,monster.growth||1));
+   const element=monster.dualElement?((monster.attackSerial||0)%2?'earth':'water'):(monster.element||(monster.species==='depths-earth-slime'?'earth':'water'));
+   return {...MONSTER_ATTACKS.slime,name:element==='earth'?'Impact de limon':'Bond abyssal',element,windup:.85+.12*(size-1),radius:22+5*(size-1),range:210,flight:.45,multiplier:1.3+.25*(size-1),recovery:1.1};
+ }
  const base=MONSTER_ATTACKS[monster.species==='marsh-slime'?'slime':monster.species];
  if(!monster.marshSlime||!base)return base;
  const growth=Math.max(1,Math.min(3,monster.growth||1));

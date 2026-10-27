@@ -192,6 +192,16 @@ function equipmentArt(item, p) {
 function resourceArt(item) {
   const c = item.chromatic;
   switch (item.name) {
+    case "Gelée abyssale":
+      return path('M3 24 7 13l6-6h8l4 7 4 10-5 5H8z',c?'#b89bd9':'#4d9dbc')+path('m8 20 4-7h7l3 6','none',c?'#e5c6f2':'#a1e5ec',2);
+    case "Limon humide":
+      return path('M3 25 6 17l6-5 8 1 6 6 4 7-7 4H9z',c?'#9c88c4':'#a38b60')+path('m10 20 3-3 5 1m3 5 3 2','none',c?'#d7b7e8':'#e0c994',2);
+    case "Perle des profondeurs":
+    case "Géode suintante": {
+      const earth=item.name==='Géode suintante';
+      return path('m16 3 11 7 2 13-13 7-12-8 2-12z',c?'#9a74bf':earth?'#7f7059':'#356e94')+path('m16 8 7 6-2 9-6 3-7-7 3-8z',c?'#e3bbf4':earth?'#d7c48e':'#b3e6ed')+path('m10 12 4-2','none','#f2efd7',2);
+    }
+
     case "Gelée":
       return (
         path(

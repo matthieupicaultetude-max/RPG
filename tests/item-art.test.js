@@ -21,10 +21,10 @@ test("les 36 pièces possèdent un dessin identifié et distinct", () => {
     assert.equal(/undefined|NaN/.test(svg), false);
   }
 });
-test("les huit ressources ont des silhouettes distinctes et leurs variantes restent lisibles", () => {
+test("toutes les ressources ont des silhouettes distinctes et leurs variantes restent lisibles", () => {
   const drops = MONSTERS.flatMap((m) => monsterLoot(m.id)),
     standard = drops.filter((i) => !i.chromatic).map(renderItemIcon);
-  assert.equal(new Set(standard).size, 8);
+  assert.equal(new Set(standard).size, new Set(drops.filter(i=>!i.chromatic).map(i=>i.name)).size);
   for (const item of drops) {
     const svg = renderItemIcon(item);
     assert.equal(/undefined|NaN/.test(svg), false);

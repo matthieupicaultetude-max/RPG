@@ -21,9 +21,9 @@ export function createGame(canvas, touchControls, onChange, onTimers = () => {},
   const controller = new AbortController();
   let previous, frame, lastRevision = -1, lastHome;
   let interfaceOpen = false;
-  canvas.addEventListener('wheel', createCharacterWheel(direction => { if (!interfaceOpen) cycleMain(state, direction); }), { passive: false, signal: controller.signal });
+  canvas.addEventListener('wheel', createCharacterWheel(direction => { if (!interfaceOpen && !state.zoneDive) cycleMain(state, direction); }), { passive: false, signal: controller.signal });
   canvas.addEventListener('keydown', event => {
-    if (interfaceOpen) return;
+    if (interfaceOpen || state.zoneDive) return;
     if (event.code === 'KeyF' && !event.repeat) {event.preventDefault();if(nearZoneGate(state))useZoneGate(state);else if(nearTutorialExit(state)&&canLeaveTutorial(state))finishTutorial(state);else if(nearSawmill(state))onInteraction('professions');else if(nearFountain(state))onInteraction('characteristics');else if(nearForge(state))onInteraction('forge');else if(nearPetShop(state))onInteraction('petshop');}
     const slot={KeyR:1,KeyC:2,KeyT:3}[event.code];
     if(slot!==undefined&&!event.repeat){event.preventDefault();castEquipped(state,slot);}
@@ -32,13 +32,13 @@ export function createGame(canvas, touchControls, onChange, onTimers = () => {},
   let pointer = null;
   function updateAim(event) {
     pointer = { clientX: event.clientX, clientY: event.clientY };
-    Object.assign(state.aim, screenToWorld(event.clientX,event.clientY,canvas.getBoundingClientRect(),state.player), { active: !interfaceOpen });
+    Object.assign(state.aim, screenToWorld(event.clientX,event.clientY,canvas.getBoundingClientRect(),state.player), { active: !interfaceOpen && !state.zoneDive });
   }
   canvas.addEventListener('pointermove', updateAim, { signal: controller.signal });
   canvas.addEventListener('pointerleave', () => { pointer = null; state.aim.active = false; }, { signal: controller.signal });
   canvas.addEventListener('contextmenu', event => event.preventDefault(), { signal: controller.signal });
   canvas.addEventListener('pointerdown', event => {
-    if (![0,2].includes(event.button) || interfaceOpen) return;
+    if (![0,2].includes(event.button) || interfaceOpen || state.zoneDive) return;
     event.preventDefault();
     canvas.focus({ preventScroll: true });
     updateAim(event);

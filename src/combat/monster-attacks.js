@@ -1,3 +1,4 @@
+import { onDepthsLanding } from '../game/slime-depths.js';
 import {onSlimeLanding,slimeVulnerable} from '../game/slime-marsh.js';
 import { monsterAttack, monsterAttackDamage } from "../data/monster-attacks.js";
 import { distance, lineClear } from "./attacks.js";
@@ -230,6 +231,7 @@ export function stepMonsterAbility(state, monster, dt, ctx) {
             lineClear(a.to, member, ctx.canStand)
           ){ctx.damage(member, a.damage, monster, a.element, a.kind);hitCount++;}
         onSlimeLanding(state,monster,a.to,hitCount);
+        onDepthsLanding(state,monster,a.to,hitCount);
         state.monsterImpacts ??= [];
         state.monsterImpacts.push({
           ...a.to,

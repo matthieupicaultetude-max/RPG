@@ -375,6 +375,14 @@ function sign(g, text) {
   g.textAlign = "center";
   g.fillText(text, 1, -19);
 }
+function stalagmite(g) {
+  oval(g,1,2,10,3,'#12243277');
+  poly(g,[[-9,1],[-6,-13],[-3,-29],[0,-33],[3,-20],[7,-13],[10,1]],'#354752','#20313e');
+  poly(g,[[-6,-1],[-3,-28],[0,-32],[1,-15],[4,-4]],'#82969c');
+  poly(g,[[1,-2],[4,-16],[7,-19],[9,-8],[11,1]],'#526874','#293c47');
+  g.fillStyle='#3e7470';g.fillRect(-7,-3,6,3);g.fillRect(1,-4,4,2);
+  g.fillStyle='#b1ccd0';g.fillRect(-2,-22,1,6);
+}
 function rock(g) {
   poly(
     g,
@@ -430,6 +438,7 @@ function marshMushroom(g,p){
 function marshReeds(g){for(let i=0;i<5;i++){const x=-8+i*4,h=12+(i*7)%17;g.fillStyle='#416c54';g.fillRect(x,-h,2,h+1);g.fillStyle='#94ac6b';g.fillRect(x,-h,1,h);g.fillStyle='#886352';g.fillRect(x-1,-h-7,3,8);g.fillStyle='#bdac70';g.fillRect(x,-h-7,1,6);} }
 function waterLily(g){oval(g,0,-1,11,4,'#477f68');g.fillStyle='#80b28a';g.fillRect(-7,-3,10,2);poly(g,[[0,-3],[2,-9],[5,-6],[9,-8],[8,-3]],'#d7a6c5');g.fillStyle='#f4d4df';g.fillRect(3,-7,3,4);g.fillStyle='#f4dca0';g.fillRect(3,-4,3,2);}
 const DEFINITIONS = {
+ stalagmite:{bounds:[-12,-36,26,42],origin:[0,0],paint:stalagmite},
  mushroom:{bounds:[-22,-46,46,52],origin:[0,0],paint:marshMushroom},
  reeds:{bounds:[-12,-38,27,43],origin:[0,0],paint:marshReeds},
  waterlily:{bounds:[-14,-12,30,20],origin:[0,0],paint:waterLily},
