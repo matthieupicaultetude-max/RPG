@@ -55,5 +55,5 @@ export function createEnvironment(map = villageMap) {
         drawFence(g, fence);
       },
     });
-  return { ground, props, markers:map.MARKERS || [] };
+  return { ground, props, markers:map.MARKERS || [], land:map.LAND };
 }

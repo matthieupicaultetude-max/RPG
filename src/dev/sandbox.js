@@ -1,3 +1,4 @@
+import { CLASS_STYLES } from '../data/appearance.js';
 import { canWalkZone } from '../world/zones.js';
 import { emitSound, impactKind } from '../audio/events.js';
 import { createTrees, stepWoodcutting, cancelWoodcutting } from '../game/woodcutting.js';
@@ -16,7 +17,7 @@ import { stepCompanions, placeAllies, clearRoute } from '../ai/companions.js';
 import { createState, update as movePlayer } from '../game/state.js';
 
 export const ROLES = { melee: 'Corps à corps', support: 'Soutien', ranged: 'Distance' };
-export const COLORS = { melee: '#c0a16d', support: '#9db780', ranged: '#8bacae' };
+export const COLORS = Object.fromEntries(Object.entries(CLASS_STYLES).map(([role,style])=>[role,style.accent]));
 export const SLOTS = ['Coiffe', 'Cape', 'Ceinture', 'Bottes', 'Anneau 1', 'Anneau 2', 'Amulette', 'Arme', 'Bouclier', 'Familier', ...Array.from({ length: 6 }, (_, i) => `Trophée ${i + 1}`)];
 export const STATIONS = { maison: { x: 110, y: 135 }, combat: { x: 480, y: 255 }, atelier: { x: 190, y: 310 }, forge: { x: 212, y: 334 }, animalerie: { x:250,y:157 }, fontaine:{x:365,y:155}, scierie:{x:76,y:222}, bucheron:{x:207,y:108} };
 const names = ['Aëlan', 'Liora', 'Sylas'];
@@ -26,7 +27,7 @@ export function makeMember(role, i) {
 export function createSandbox() {
   const state = createState();
   Object.assign(state, {
-    zone: 'garden',
+    zone: 'garden', lighting:true,
     team: ['melee', 'support', 'ranged'].map(makeMember), main: 0, deployed: true,
     collections: {}, petQuests: {}, npcs:[{...PET_SHOP.npc},{...FORGE.npc}],
     bag: [], nextItem: 1, gold: 0, log: ['Bienvenue dans le jardin des essais.'], revision: 0,

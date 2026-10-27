@@ -1,3 +1,4 @@
+import { characterArt, paintCharacterArt } from './ui/character-art.js';
 import { nearTutorialExit, canWalkZone } from './world/zones.js';
 import { finishTutorial, canLeaveTutorial, visitTutorialPanel, inspectTutorialMonster } from './game/tutorial.js';
 import { createTutorialUI } from './ui/tutorial.js';
@@ -25,7 +26,7 @@ const app = document.querySelector('#app');
 app.innerHTML = `
 <main class="game-screen">
   <canvas width="640" height="400" tabindex="0" aria-label="Jardin des essais. Flèches ou ZQSD pour bouger, molette pour changer de personnage, clic gauche sur les cibles bonus, clic droit, R et C pour les sorts, T pour l’ultime personnel, E pour basculer combat ou exploration, K pour le grimoire, P pour les caractéristiques, I pour l’inventaire."></canvas>
-  <div class="hud-top"><div class="zone-card"><span class="eyebrow">AURORIA · ZONE DEV</span><h1>Jardin des essais</h1><span class="session-label"><i></i> Session locale · 3 bots</span></div><div class="hud-menu"><button data-action="inventory" aria-controls="inventory" aria-expanded="false">▣ Inventaire <kbd>I</kbd></button><button data-action="bestiary" aria-label="Bestiaire B">☷ <span>Bestiaire</span> <kbd>B</kbd></button><button data-action="characteristics">◈ <span>Carac.</span> <kbd>P</kbd></button><button data-action="spells">✦ <span>Grimoire</span> <kbd>K</kbd></button><button data-action="professions">🪓 <span>Métiers</span> <kbd>L</kbd></button><button data-action="tools">⚙ Outils dev</button><button data-action="audio" aria-label="Réglages audio">🔊</button><button data-action="fullscreen" aria-label="Basculer le plein écran">⛶</button></div></div>
+  <div class="hud-top"><div class="zone-card"><span class="eyebrow">AURORIA · ZONE DEV</span><h1>Jardin des essais</h1><span class="session-label"><i></i> Session locale · 3 bots</span></div><div class="hud-menu"><button data-action="inventory" aria-controls="inventory" aria-expanded="false">▣ Inventaire <kbd>I</kbd></button><button data-action="bestiary" aria-label="Bestiaire B">☷ <span>Bestiaire</span> <kbd>B</kbd></button><button data-action="characteristics">◈ <span>Carac.</span> <kbd>P</kbd></button><button data-action="spells">✦ <span>Grimoire</span> <kbd>K</kbd></button><button data-action="professions">🪓 <span>Métiers</span> <kbd>L</kbd></button><button data-action="tools">⚙ Outils dev</button><button data-action="audio" aria-label="Réglages audio">🔊</button><button data-action="lighting" aria-label="Lumière dorée" aria-pressed="true" title="Désactiver la lumière dorée">☀</button><button data-action="fullscreen" aria-label="Basculer le plein écran">⛶</button></div></div>
   <div class="hud-team"><p class="hud-hint">VOTRE TROUPE <span>↕ Molette pour changer</span></p><div id="team" class="team-grid"></div></div>
   <div class="hud-notification" id="notification" role="status"></div>
   <div class="hud-bottom"><div class="controls-hint"><kbd>ZQSD</kbd> Bouger <span>·</span> <kbd>Clic droit</kbd> Attaquer <span>·</span> <kbd>Clic gauche</kbd> Cible bonus <span>·</span> <kbd>↕</kbd> Changer</div><div class="action-bar"><div id="spellbar" class="spellbar"></div><div class="ultimate-box"><button data-action="deploy" id="deploy">Exploration · E</button><span id="combat-status">Combat · 3 personnages · Vitesse normale</span></div></div></div>
@@ -50,7 +51,8 @@ let forgeItem = null;
 let devLootMonster = 'slime';
 const panel = app.querySelector('#panel');
 function refresh(s) {
-  app.querySelector('#team').innerHTML = s.team.map((m,i)=>`<button class="member ${i===s.main?'selected':''} ${m.hp===0?'fallen':''}" data-main="${i}" style="--role:${COLORS[m.role]}" aria-pressed="${i===s.main}"><span class="portrait">${m.role==='melee'?'⚔':m.role==='support'?'✧':'➶'}</span><span class="member-text"><strong>${m.name}<small>Niv. ${m.level}</small></strong><span>${ROLES[m.role]}</span><span class="hp-track"><span style="width:${m.hp/m.maxHp*100}%"></span></span><small>${m.hp} / ${m.maxHp} PV</small></span></button>`).join('');
+  app.querySelector('#team').innerHTML = s.team.map((m,i)=>`<button class="member ${i===s.main?'selected':''} ${m.hp===0?'fallen':''}" data-main="${i}" style="--role:${COLORS[m.role]}" aria-pressed="${i===s.main}"><span class="portrait">${characterArt(m,true)}</span><span class="member-text"><strong>${m.name}<small>Niv. ${m.level}</small></strong><span>${ROLES[m.role]}</span><span class="hp-track"><span style="width:${m.hp/m.maxHp*100}%"></span></span><small>${m.hp} / ${m.maxHp} PV</small></span></button>`).join('');
+  paintCharacterArt(app.querySelector('#team'),s.team);
   app.querySelector('#bag-count').textContent = s.bag.reduce((sum,item)=>sum+item.quantity,0);
   refreshUltimate(s);
   app.querySelector('#notification').textContent = s.log[0];
@@ -82,7 +84,7 @@ function refresh(s) {
   app.querySelector('#inventory').classList.toggle('forge-open',currentTab==='forge');
   if(currentTab==='petshop') panel.innerHTML = renderPetShop(s);
   app.querySelector('#inventory').classList.toggle('petshop-open',currentTab==='petshop');
-  if(currentTab==='equipment') panel.innerHTML = renderInventory(s, selectedItem, bagFilter);
+  if(currentTab==='equipment') {panel.innerHTML = renderInventory(s, selectedItem, bagFilter);paintCharacterArt(panel,s.team);}
   if(currentTab==='tools') panel.innerHTML = `<div class="panel-heading"><p class="eyebrow">BAC À SABLE</p><h2>Outils de développement</h2><p>Essayez sans attendre ni farmer.</p></div><section class="tool-group"><h3>Progression & combat</h3><div class="tool-buttons"><button data-action="xp">+50 XP à l’équipe</button><button data-action="heal">Soigner / réanimer</button><button data-action="spell-charge">Charger les ultimes personnels</button><button data-action="auto" aria-pressed="${s.autoAttack}">Attaque auto : ${s.autoAttack?'oui':'non'}</button></div></section><section class="tool-group"><h3>Bûcheron · Essais</h3><div class="tool-buttons"><button data-action="job-xp">+30 XP bûcheron</button><button data-action="job-wood">10 Bois de frêne (test)</button><button data-action="sawmill-teleport">Scierie</button><button data-action="woodcutting-teleport">Bosquet</button></div></section><section class="tool-group"><h3>Noyaux débutants · 1–10</h3><div class="tool-buttons">${Object.entries(ELEMENTS).map(([element,e])=>`<button data-core="${element}">Noyau de ${e.name}</button>`).join('')}</div><p class="panel-hint">Ouvrez-les où vous voulez pour obtenir une pièce aléatoire.</p></section><section class="tool-group"><h3>Générer du loot</h3><label for="loot-monster">Monstre source</label><select id="loot-monster">${MONSTERS.map(monster=>`<option value="${monster.id}" ${devLootMonster===monster.id?'selected':''}>${monster.name}</option>`).join('')}</select><div class="loot-buttons"><button data-loot="normal">Normal</button><button data-loot="rare">Rare</button><button data-loot="normal" data-chromatic="true">✦ Normal chromatique</button><button data-loot="rare" data-chromatic="true">✦ Rare chromatique</button></div><p class="panel-hint">Combat de test : 20 % rare et 10 % chromatique. Ces taux ne fixent pas l’équilibrage final.</p></section><section class="tool-group"><h3>Générer un équipement</h3><label for="equipment-slot">Emplacement</label><select id="equipment-slot">${SLOTS.map(slot=>`<option>${slot}</option>`).join('')}</select><button data-action="equipment">Ajouter au sac</button></section><section class="tool-group"><h3>Déplacements rapides</h3><div class="tool-buttons"><button data-action="home">Maison</button><button data-action="forge-teleport">Forge</button><button data-action="animalerie">Animalerie</button><button data-action="fountain-teleport">Fontaine</button><button data-action="combat">Combat</button></div></section><section class="journal"><h3>Journal de test</h3><ul>${s.log.map(line=>`<li>${line}</li>`).join('')}</ul></section>`;
   app.querySelector('#inventory').classList.toggle('tools-open', currentTab==='tools');
   const slotSelect = panel.querySelector('#equipment-slot');
@@ -100,6 +102,9 @@ function refresh(s) {
 }
 function refreshUltimate(s) {
   sound.update(s);
+  const sunButton=app.querySelector('[data-action="lighting"]');
+  sunButton.setAttribute("aria-pressed",String(s.lighting!==false));
+  sunButton.title=s.lighting!==false?"Désactiver la lumière dorée":"Activer la lumière dorée";
   tutorial?.update();
   const isTutorial=s.zone === "tutorial";
   app.querySelector(".zone-card h1").textContent=isTutorial?"Île des premiers pas":"Jardin des essais";
@@ -149,6 +154,7 @@ app.addEventListener('click',event=>{
   const s=game.state;
   if(button.dataset.action==='audio'||button.closest('#audio-settings')||button.closest('.tutorial'))return;
   if(button.dataset.action === 'tutorial-exit'){if(nearTutorialExit(s)&&canLeaveTutorial(s)){finishTutorial(s);game.refresh();refresh(s);}return;}
+  if(button.dataset.action === 'lighting'){s.lighting=!s.lighting;try{localStorage.setItem('auroria-lighting-v1',s.lighting?'on':'off');}catch{}note(s,s.lighting?'Lumière dorée activée.':'Éclairage neutre activé.');game.refresh();refresh(s);return;}
   if (button.dataset.action === 'inventory') { setInventory(!(inventoryOpen && currentTab==='equipment'), 'equipment'); return; }
   if (button.dataset.action === 'bestiary') { setInventory(!(inventoryOpen && currentTab==='bestiary'), 'bestiary'); return; }
   if (button.dataset.action === 'professions') {setInventory(true,'professions');return;}

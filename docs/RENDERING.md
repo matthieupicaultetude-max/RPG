@@ -82,3 +82,21 @@ La maison utilise une géométrie de toit commune dans `src/rendering/house-geom
 ### Arbres récoltables
 
 Les arbres de `PROPS` gardent leurs emprises physiques et portent une essence. Leurs états de récolte/repousse sont stockés séparément dans la simulation. L’environnement met en cache couronne et souche ; le rendu choisit la souche sans modifier le terrain ou les collisions. La palette d’essence entre dans la clé du cache. Les constructions deviennent translucides lorsqu’elles masquent le joueur ; le rendu de hache et des copeaux reste distinct du rendu des armes de combat.
+
+## 8. Silhouettes des classes et aperçu partagé
+
+`src/data/appearance.js` définit les palettes de classe. Le combattant a une silhouette large, une armure d’acier, un heaume à cimier, une cape rouge et une grande lame. Le soutien porte une robe ivoire et violette, une capuche haute et un bâton à cristal. Le distance garde une silhouette plus légère, une capuche verte, un carquois et un arc long.
+
+`actors.js` conserve les différences de largeur, de vêtement et d’arme même quand plusieurs personnages portent les mêmes couleurs d’équipement. Les coiffes, capes, bottes, ceintures, amulettes, anneaux, armes, boucliers et familiers gardent leurs variations visuelles. Faces, dos, côtés et pas sont dessinés dans le repère local du personnage ; les coordonnées finales restent arrondies. Les barres de vie et le marqueur du principal sont placés au-dessus des nouvelles coiffes.
+
+`ui/character-art.js` utilise exactement le même dessin pour les portraits et l’aperçu d’inventaire : aucun second modèle SVG à maintenir. Les aperçus sont peints à une échelle interne entière, avec le lissage désactivé.
+
+## 9. Golden hour
+
+Le passage `src/rendering/golden-hour.js` est un vrai post-traitement **WebGL / GLSL**, appliqué à la scène de **640 × 400** avant sa présentation à zoom entier. Il réchauffe les hautes lumières, conserve des ombres légèrement froides, ajoute un bloom modéré des zones lumineuses, de légers rayons venant du haut gauche et une vignette douce. La texture de scène utilise NEAREST et CLAMP_TO_EDGE ; les pixels du monde ne sont pas interpolés. Les interfaces HTML restent hors de ce passage.
+
+`sun-shadows.js` projette les silhouettes des arbres et constructions vers le bas droit. Leur masque est mis en cache par carte et état des souches, puis découpé sur la terre. Le flou très léger concerne uniquement les ombres au niveau du pixel natif. Les personnages et monstres reçoivent des ombres de contact allongées. Les collisions et les matériaux ne dépendent pas de ces effets.
+
+Le bouton **☀** active ou désactive cet ensemble d’effets, avec préférence locale `auroria-lighting-v1`. Les rayons restent immobiles lorsque `prefers-reduced-motion` est actif. En absence de WebGL ou pendant la perte du contexte, une passe Canvas 2D légère assure un rendu chaud ; la restauration du contexte reconstruit le programme. La fermeture du renderer libère textures, buffers, programme et écouteurs.
+
+La vérification navigateur couvre la compilation réelle du shader, l’orientation de la texture, l’égalité des blocs de pixels après agrandissement, les silhouettes distinctes même sous la même panoplie, le repli 2D, la perte/restauration de contexte, les préférences, l’inventaire et l’écran mobile.

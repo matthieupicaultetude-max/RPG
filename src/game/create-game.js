@@ -14,6 +14,7 @@ import { createRenderer } from '../rendering/scene.js';
 
 export function createGame(canvas, touchControls, onChange, onTimers = () => {}, onInteraction = () => {}) {
   const state = createSandbox();
+  try { state.lighting=localStorage.getItem("auroria-lighting-v1")!=="off"; } catch {}
   const controls = createControls(canvas, touchControls);
   const render = createRenderer(canvas);
   const controller = new AbortController();
@@ -65,5 +66,5 @@ export function createGame(canvas, touchControls, onChange, onTimers = () => {},
     frame = requestAnimationFrame(tick);
   }
   frame = requestAnimationFrame(tick);
-  return { state, setInterfaceOpen(open) { interfaceOpen = open;if(open)cancelWoodcutting(state); state.spellCharge=null; state.aim.active = false; controls.clear(); }, refresh() { state.revision++; }, reset() { teleport(state, 'maison'); }, destroy() { cancelAnimationFrame(frame); controls.destroy(); controller.abort(); } };
+  return { state, setInterfaceOpen(open) { interfaceOpen = open;if(open)cancelWoodcutting(state); state.spellCharge=null; state.aim.active = false; controls.clear(); }, refresh() { state.revision++; }, reset() { teleport(state, 'maison'); }, destroy() { cancelAnimationFrame(frame); controls.destroy(); render.destroy?.(); controller.abort(); } };
 }

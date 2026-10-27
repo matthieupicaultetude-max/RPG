@@ -270,3 +270,9 @@ Découvrir ensuite **L**, couper les **deux frênes récoltables** du bosquet de
 À la forge (**F** près de Borin), la section **Recycler les pièces normales** accepte les pièces du sac et celles équipées : armures, bijoux, armes et boucliers possédant un élément. Chaque pièce consommée donne **un fragment du même élément et de la même tranche de dix niveaux**. Les pièces chromatiques, familiers et trophées ne sont pas recyclables. Retirer une pièce équipée recalcule les PV sans soigner.
 
 La section **Échanger les fragments** transforme **10 fragments identiques en un noyau correspondant**, sans coût en or. Les éléments et tranches ne se mélangent pas. Les fragments ont une icône propre et apparaissent dans le filtre **Noyaux & fragments** du sac. Le noyau reçu peut être ouvert immédiatement, partout dans le monde.
+
+### Skins de classes et lumière dorée
+
+Les classes ont des silhouettes propres : **combattant en armure d’acier et cape rouge**, **soutien en robe ivoire/violette avec bâton de cristal**, **archer à capuche verte avec carquois et arc long**. Les mêmes sprites sont utilisés dans le monde, les portraits et l’inventaire ; une panoplie conserve ses couleurs sans effacer la silhouette de classe.
+
+Le shader **golden hour** ajoute lumière chaude, ombres projetées, rayons discrets et léger halo sur les zones lumineuses, à la résolution native du pixel art. Le bouton **☀**, en haut à droite, permet de revenir à l’éclairage neutre et mémorise ce choix. L’interface garde ses couleurs. Une version légère en Canvas 2D prend le relais lorsque WebGL est indisponible ; les préférences de réduction du mouvement sont respectées.

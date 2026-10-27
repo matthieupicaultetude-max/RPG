@@ -1,9 +1,10 @@
+import { characterArt } from './character-art.js';
 import { completeChromaticSet } from '../data/chromatic.js';
 import { petDefinition, foodQuantity, PET_MAX_LEVEL, petLevelXp } from "../data/pets.js";
 import { adoptionProgress } from "../game/pet-quests.js";
-import { renderItemIcon, elementSigil } from "./item-art.js";
+import { renderItemIcon } from "./item-art.js";
 import { ELEMENTS, setForCore, equipmentStats } from "../data/equipment.js";
-import { ROLES, COLORS, SLOTS } from "../dev/sandbox.js";
+import { ROLES, SLOTS } from "../dev/sandbox.js";
 
 const LEFT = ["Amulette", "Anneau 1", "Anneau 2", "Arme"];
 const RIGHT = ["Coiffe", "Cape", "Ceinture", "Bottes"];
@@ -20,60 +21,7 @@ export function itemIcon(
     color: tint,
   });
 }
-function headArt(item) {
-  if (!item) return "";
-  const color = item.color || "#c6b58b";
-  const shapes = {
-    earth: `<path d="m40 32 2-16 7 6 5-13 8 12 12-9 1 15 5-4v12H40z" fill="${color}" stroke="#596040" stroke-width="2"/><path d="m48 23 8-8 5 12 9-9" fill="none" stroke="#c7d394" stroke-width="2"/>`,
-    fire: `<path d="m40 34 2-16 8 6 10-18 9 18 9-6 2 16z" fill="${color}" stroke="#6f4d3a" stroke-width="2"/><path d="m60 9 4 16-4 8-4-8z" fill="#f3d38c"/>`,
-    air: `<path d="m39 34 7-17 23-6 12 23z" fill="${color}" stroke="#617e73" stroke-width="2"/><path d="m62 22 12-20 7 3-8 19" fill="#e4e8c4" stroke="#8caa91" stroke-width="2"/>`,
-    water: `<path d="M39 43V28c0-30 42-30 42 0v15l-6-7V27c-2-19-28-19-30 0v9z" fill="${color}" stroke="#3b6c85" stroke-width="2"/><path d="M44 22c5-17 28-17 32 0" fill="none" stroke="#b6dfdf" stroke-width="3"/>`,
-  };
-  return (
-    shapes[item.element] ||
-    `<path d="M44 18h31v10H44zM53 12h13v8H53z" fill="${color}"/>`
-  );
-}
-function weaponArt(item) {
-  if (!item) return "";
-  const shapes = {
-    earth:
-      '<path d="m96 133 8-55" stroke="#695333" stroke-width="5"/><path d="m100 99-8-6 10-1-3-12 7 5 4-12 2 16-6 9" fill="#8fa458" stroke="#566138" stroke-width="2"/>',
-    fire: '<path d="M96 128V86" stroke="#b39b74" stroke-width="5"/><path d="M96 104c-11-6 4-16 0-26 13 8 14 20 3 26z" fill="#d37c4c" stroke="#70493c" stroke-width="2"/><path d="m97 86 3 12-4 3" fill="#f9daa0"/><path d="M89 111h16" stroke="#dbb876" stroke-width="4"/>',
-    air: '<path d="m93 132 5-22" stroke="#647869" stroke-width="4"/><path d="M97 112c-11-16 5-22 12-37 6 22-5 35-12 37z" fill="#d3ddc3" stroke="#739788" stroke-width="2"/>',
-    water:
-      '<path d="M96 134V87" stroke="#597380" stroke-width="4"/><path d="M97 95c-24-10-7-36 12-26-17-3-21 16-4 14l-8 12z" fill="#7db8c8" stroke="#3b627e" stroke-width="2"/><path d="M99 71c-11 6-9 15-1 17" fill="none" stroke="#c6e8dc" stroke-width="2"/>',
-  };
-  return (
-    shapes[item.element] ||
-    '<path d="M94 70h5v49h-5z" fill="#e1e5d4"/><path d="M88 112h16v5H88z" fill="#d4af65"/><path d="M94 116h5v16h-5z" fill="#785b40"/>'
-  );
-}
-function avatar(member) {
-  const e = member.equipment,
-    color = COLORS[member.role];
-  return `<svg class="paper-avatar" viewBox="0 0 120 170" role="img" aria-label="Apparence de ${member.name}" shape-rendering="crispEdges">
-    <ellipse cx="60" cy="151" rx="29" ry="7" fill="#0b161a" opacity=".45"/>
-    ${e.Cape ? `<path d="M37 62H82L94 140 68 131 33 139z" fill="${e.Cape?.color || "#8370ab"}"/><path d="M37 62H47L40 132 33 139z" fill="#26352d66"/>` : ""}
-    <path d="M43 114H58V145H36v-10h7zm19 0h15v21h7v10H62z" fill="#36434b"/>
-    <path d="M36 143h22v8H33v-7zm26 0h24v8H62z" fill="${e.Bottes?.color || (e.Bottes ? "#b8a276" : "#594737")}"/>
-    <path d="M38 63h44v53H38z" fill="${color}"/><path d="M38 100h44v16H38z" fill="#365950"/>
-    <path d="M45 65h29v35H45z" fill="#526e69"/><path d="M48 68h7v23h-7z" fill="#ffffff16"/>
-    <path d="M27 67h11v35H27zm55 0h11v35H82z" fill="${color}"/><path d="M27 96h11v11H27zm55 0h11v11H82z" fill="#dbb58f"/>
-    <path d="M44 31h31v31H44z" fill="#deb891"/><path d="M41 25h37v15H41zm0 13h7v14h-7z" fill="${e.Coiffe?.color || (e.Coiffe ? "#acbac0" : "#554438")}"/>
-    ${headArt(e.Coiffe)}
-    <path d="M50 45h4v5h-4zm17 0h4v5h-4z" fill="#29343c"/><path d="M55 57h10v3H55z" fill="#a9745b"/>
-    ${e.Ceinture ? '<path d="M38 104h44v9H38z" fill="#735339"/><path d="M55 103h12v11H55z" fill="#dfbd6f"/>' : ""}
-    ${e.Amulette ? `<path d="m51 64 9 13 10-13" fill="none" stroke="#d8bd79" stroke-width="2"/><path d="m60 73 5 6-5 6-5-6z" fill="${e.Amulette.color || "#8bcebc"}"/>` : ""}
-    ${weaponArt(e.Arme)}
-    ${e.Familier?.kind==='pet'?renderItemIcon(e.Familier).replace('<svg ', '<svg x="77" y="126" width="28" height="28" '):e.Familier?'<path d="M82 142h17v10H82zm0-6 6 4h5l6-4v9H82z" fill="#cfa56c"/>':''}
-    ${e.Bouclier ? `<path d="m27 84 17 6v22l-17 12-17-12V90z" fill="${e.Bouclier?.color || "#879d9d"}"/><path d="m27 89 11 4v16l-11 8-11-8V93z" fill="#475e6a"/><path d="M25 93h4v18h-4z" fill="#d5b974"/>` : ""}
-    ${e.Bouclier?.element ? elementSigil(e.Bouclier.element, 17, 93, 0.62) : ""}
-    ${e.Cape?.element ? elementSigil(e.Cape.element, 31, 117, 0.5) : ""}
-    ${e["Anneau 1"] ? `<rect x="27" y="100" width="4" height="4" fill="${e["Anneau 1"].color || "#d4bb77"}"/>` : ""}
-    ${e["Anneau 2"] ? `<rect x="87" y="100" width="4" height="4" fill="${e["Anneau 2"].color || "#d4bb77"}"/>` : ""}
-  </svg>`;
-}
+const avatar = member => characterArt(member);
 export function selectedObject(state, selection) {
   if (!selection) return null;
   return selection.source === "bag"

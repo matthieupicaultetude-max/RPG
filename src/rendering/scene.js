@@ -1,3 +1,5 @@
+import { createGoldenHour } from './golden-hour.js';
+import { drawSunShadows } from './sun-shadows.js';
 import * as tutorialMap from '../world/tutorial-map.js';
 import { canWalkZone } from '../world/zones.js';
 import { drawWoodcutting } from './woodcutting.js';
@@ -18,6 +20,7 @@ export function createRenderer(canvas) {
   const screen = canvas.getContext("2d");
   ctx.imageSmoothingEnabled = false;
   const village = createEnvironment();
+  const lighting = createGoldenHour(frame.width,frame.height);
   let tutorial;
   function label(text, x, y) {
     ctx.font = "8px monospace";
@@ -39,20 +42,21 @@ export function createRenderer(canvas) {
       ctx.ellipse(x, y + 2, 10, 4, 0, 0, Math.PI * 2);
       ctx.stroke();
       ctx.fillStyle = "#eed796";
-      ctx.fillRect(x - 2, y - 40, 5, 3);
+      ctx.fillRect(x - 2, y - 49, 5, 3);
     }
     if (p.hp !== undefined) {
       ctx.fillStyle = "#24372f";
-      ctx.fillRect(x - 10, y - 34, 20, 2);
+      ctx.fillRect(x - 10, y - 43, 20, 2);
       ctx.fillStyle = p.hp > 0 ? "#91c897" : "#cf7970";
-      ctx.fillRect(x - 10, y - 34, (20 * p.hp) / p.maxHp, 2);
+      ctx.fillRect(x - 10, y - 43, (20 * p.hp) / p.maxHp, 2);
     }
     label(bot ? `${p.name} · BOT` : p.name, x, y + 16);
   }
-  return (s) => {
+  const render = (s) => {
     const environment = s.zone === "tutorial" ? (tutorial ||= createEnvironment(tutorialMap)) : village;
     const canStand = (x,y)=>canWalkZone(x,y,s.zone);
     ctx.drawImage(environment.ground, 0, 0);
+    if(s.lighting!==false)drawSunShadows(ctx,environment,s);
     for(const marker of environment.markers)label(marker.text,marker.x,marker.y);
     if(s.zone === "tutorial")drawTutorialGate(ctx,s);
     drawSpellGround(ctx,s);
@@ -68,7 +72,7 @@ export function createRenderer(canvas) {
             s.player.x + 8 > prop.bounds.left &&
             s.player.x - 8 < prop.bounds.right &&
             s.player.y + 4 > prop.bounds.top &&
-            s.player.y - 29 < prop.bounds.bottom
+            s.player.y - 40 < prop.bounds.bottom
           )
             ctx.globalAlpha = 0.55;
           prop.draw(ctx,felled);
@@ -244,14 +248,18 @@ export function createRenderer(canvas) {
     screen.imageSmoothingEnabled = false;
     // Fill every viewport without stretching sprites. Follow the player when cropped.
     const view = viewport(width, height, s.player);
+    const litFrame = lighting.draw(frame,s.time,s.lighting!==false);
+    canvas.dataset.lighting=s.lighting===false?"off":lighting.mode;
     screen.drawImage(
-      frame,
+      litFrame,
       -view.x * view.scale,
       -view.y * view.scale,
       frame.width * view.scale,
       frame.height * view.scale,
     );
   };
+  render.destroy=()=>lighting.destroy();
+  return render;
 }
 
 function drawTutorialGate(ctx,state) {
