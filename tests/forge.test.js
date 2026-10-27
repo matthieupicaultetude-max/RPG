@@ -1,3 +1,4 @@
+import { woodItem } from "../src/data/woodcutting.js";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
@@ -42,6 +43,7 @@ const piece = (s, element = "earth", index = 0) => {
   return item;
 };
 function supplies(s, monster) {
+  s.bag.push({...woodItem("ash","plank"),quantity:5,id:s.nextItem++});
   grantLoot(s, "normal", true, monster);
   for (let i = 0; i < 10; i++) grantLoot(s, "normal", false, monster);
   for (let i = 0; i < 5; i++) grantLoot(s, "rare", false, monster);
@@ -72,7 +74,7 @@ test("recettes : ressources du bon monstre, quantités exactes et rare chromatiq
     const recipe = recipeStatus(s, item);
     assert.deepEqual(
       recipe.map((i) => i.quantity),
-      [1, 10, 5],
+      [1, 10, 5, 5],
     );
     const result = upgradeChromatic(s, item.id);
     assert.equal(result, item);

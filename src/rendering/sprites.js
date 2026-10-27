@@ -108,7 +108,8 @@ function fence(g, x1, x2, y) {
     g.fillRect(x - 2, y - 20, 5, 2);
   }
 }
-function tree(g, x, y, size = 1) {
+function tree(g, x, y, size = 1, wood="ash") {
+  const colors={ash:["#597744","#74964c","#93af5e","#b2c97d","#d0df9b"],chestnut:["#6d7439","#8d913e","#b0ac50","#cbbd69","#e1ce89"],walnut:["#70563b","#8a7043","#a58a50","#c0a365","#dbc28b"]}[wood];
   g.save();
   g.translate(Math.round(x), Math.round(y));
   g.scale(size, size);
@@ -124,13 +125,13 @@ function tree(g, x, y, size = 1) {
       [1, 4],
       [-7, 6],
     ],
-    "#d3c7a0",
-    "#807b53",
+    wood==="ash"?"#d3c7a0":wood==="chestnut"?"#aa8354":"#8f6d4c",
+    "#726044",
   );
-  g.fillStyle = "#e8dcba";
+  g.fillStyle = wood==="ash"?"#e8dcba":wood==="chestnut"?"#c19e70":"#b18b62";
   g.fillRect(-2, -33, 3, 35);
   for (const yy of [-29, -19, -9]) {
-    g.fillStyle = "#8b8766";
+    g.fillStyle = wood==="ash"?"#8b8766":"#6d543c";
     g.fillRect(-4, yy, 3, 2);
     g.fillRect(1, yy + 4, 3, 1);
   }
@@ -142,7 +143,7 @@ function tree(g, x, y, size = 1) {
       Math.round(-43 + Math.sin(a) * 22 * r),
     ];
   });
-  poly(g, crown, "#7d8939", "#647234");
+  poly(g, crown, colors[1], colors[0]);
   g.save();
   g.clip();
   for (let i = 0; i < 95; i++) {
@@ -151,7 +152,7 @@ function tree(g, x, y, size = 1) {
     const xx = Math.round(Math.cos(angle) * r),
       yy = Math.round(-43 + Math.sin(angle) * r * 0.79);
     const light = yy < -44 ? 1 : 0;
-    g.fillStyle = ["#647234", "#7d8939", "#99a044", "#b2b254", "#c9c36a"][
+    g.fillStyle = colors[
       Math.min(4, Math.floor(seed(i, x, y) * 4) + light)
     ];
     g.fillRect(xx - 4, yy - 3, 8, 6);
@@ -414,7 +415,15 @@ function fountain(g){
  oval(g,0,-20,11,5,'#a9b59e');oval(g,0,-22,10,4,'#7bb6c0');
  g.fillStyle='#d9edcf';g.fillRect(-1,-31,2,10);g.fillRect(-5,-26,2,9);g.fillRect(4,-26,2,9);g.fillStyle='#b5dfd3';g.fillRect(-15,-9,7,1);g.fillRect(7,-5,6,1);
 }
+function sawmill(g){
+ g.fillStyle='#745338';g.fillRect(-22,-7,44,7);g.fillRect(-19,0,4,5);g.fillRect(15,0,4,5);g.fillStyle='#bf9d64';g.fillRect(-24,-10,48,4);
+ g.fillStyle='#a8b7af';g.fillRect(-9,-16,27,3);g.fillStyle='#6b5035';g.fillRect(-14,-20,7,15);g.fillStyle='#ddbf82';g.fillRect(-17,-20,13,3);
+ g.fillStyle='#9a7848';g.fillRect(-19,-27,15,9);g.fillStyle='#d1b57e';g.fillRect(-18,-28,13,3);g.fillStyle='#66513a';g.fillRect(8,-31,3,17);g.fillStyle='#c9c5a7';g.fillRect(3,-30,18,3);
+}
+function stump(g){g.fillStyle='#81603f';g.fillRect(-8,-7,16,11);oval(g,0,-6,10,5,'#c5a76b');oval(g,0,-7,6,3,'#e2c895');g.fillStyle='#a18350';g.fillRect(-3,-8,6,1);g.fillRect(0,-9,1,5);}
 const DEFINITIONS = {
+ sawmill:{bounds:[-29,-35,60,44],origin:[0,0],paint:sawmill},
+ stump:{bounds:[-14,-14,30,23],origin:[0,0],paint:stump},
  fountain:{bounds:[-29,-35,59,47],origin:[0,0],paint:fountain},
   petshop:{bounds:[-47,-73,95,80],origin:[0,0],paint:petshop},
   house: { bounds: [40, 0, 140, 124], origin: [110, 108], paint: house },
@@ -426,7 +435,7 @@ const DEFINITIONS = {
       const offset = prop.variant * 17;
       g.save();
       g.translate(-offset, 0);
-      tree(g, offset, 0, 1);
+      tree(g, offset, 0, 1, prop.wood||"ash");
       g.restore();
     },
   },
@@ -476,7 +485,7 @@ const DEFINITIONS = {
 export function createSpriteAtlas() {
   const cache = new Map();
   return (prop) => {
-    const key = `${prop.kind}:${prop.variant || 0}:${prop.text || ""}`;
+    const key = `${prop.kind}:${prop.variant || 0}:${prop.wood||""}:${prop.text || ""}`;
     if (cache.has(key)) return cache.get(key);
     const def = DEFINITIONS[prop.kind];
     if (!def) throw new Error(`Unknown sprite: ${prop.kind}`);

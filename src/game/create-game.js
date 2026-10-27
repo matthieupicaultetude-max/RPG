@@ -1,10 +1,11 @@
+import { requestCut, treeAt, cancelWoodcutting, nearSawmill } from './woodcutting.js';
 import { nearFountain } from '../data/progression.js';
 import { spellById } from '../data/spells.js';
 import { nearForge } from './forge.js';
 import { nearPetShop } from './pet-quests.js';
 import { screenToWorld } from '../rendering/viewport.js';
 import { createCharacterWheel } from '../input/character-wheel.js';
-import { createSandbox, stepSandbox, attack, teleport, activateUltimate, cycleMain, castEquipped, clickBonus } from '../dev/sandbox.js';
+import { createSandbox, stepSandbox, attack, teleport, activateUltimate, cycleMain, castEquipped, clickBonus, canStand } from '../dev/sandbox.js';
 import { createControls } from '../input/controls.js';
 import { createRenderer } from '../rendering/scene.js';
 
@@ -18,7 +19,7 @@ export function createGame(canvas, touchControls, onChange, onTimers = () => {},
   canvas.addEventListener('wheel', createCharacterWheel(direction => { if (!interfaceOpen) cycleMain(state, direction); }), { passive: false, signal: controller.signal });
   canvas.addEventListener('keydown', event => {
     if (interfaceOpen) return;
-    if (event.code === 'KeyF' && !event.repeat) {event.preventDefault();if(nearFountain(state))onInteraction('characteristics');else if(nearForge(state))onInteraction('forge');else if(nearPetShop(state))onInteraction('petshop');}
+    if (event.code === 'KeyF' && !event.repeat) {event.preventDefault();if(nearSawmill(state))onInteraction('professions');else if(nearFountain(state))onInteraction('characteristics');else if(nearForge(state))onInteraction('forge');else if(nearPetShop(state))onInteraction('petshop');}
     const slot={KeyR:1,KeyC:2,KeyT:3}[event.code];
     if(slot!==undefined&&!event.repeat){event.preventDefault();castEquipped(state,slot);}
     if (event.code === 'KeyE' && !event.repeat) { event.preventDefault(); activateUltimate(state); }
@@ -36,7 +37,7 @@ export function createGame(canvas, touchControls, onChange, onTimers = () => {},
     event.preventDefault();
     canvas.focus({ preventScroll: true });
     updateAim(event);
-    if(event.button===0){clickBonus(state,screenToWorld(event.clientX,event.clientY,canvas.getBoundingClientRect(),state.player));return;}
+    if(event.button===0){const point=screenToWorld(event.clientX,event.clientY,canvas.getBoundingClientRect(),state.player);if(!clickBonus(state,point)){const tree=treeAt(state,point);if(tree)requestCut(state,tree.id,canStand);}return;}
     if(spellById(state.team[state.main].loadout[0])?.effect==='pierce')state.spellCharge={time:0,owner:state.main};else attack(state);
   }, { signal: controller.signal });
   window.addEventListener('pointerup',event=>{if(event.button===2&&state.spellCharge){if(!interfaceOpen&&state.spellCharge.owner===state.main)castEquipped(state,0,undefined,{charge:state.spellCharge.time});state.spellCharge=null;}},{signal:controller.signal});
@@ -61,5 +62,5 @@ export function createGame(canvas, touchControls, onChange, onTimers = () => {},
     frame = requestAnimationFrame(tick);
   }
   frame = requestAnimationFrame(tick);
-  return { state, setInterfaceOpen(open) { interfaceOpen = open; state.spellCharge=null; state.aim.active = false; controls.clear(); }, refresh() { state.revision++; }, reset() { teleport(state, 'maison'); }, destroy() { cancelAnimationFrame(frame); controls.destroy(); controller.abort(); } };
+  return { state, setInterfaceOpen(open) { interfaceOpen = open;if(open)cancelWoodcutting(state); state.spellCharge=null; state.aim.active = false; controls.clear(); }, refresh() { state.revision++; }, reset() { teleport(state, 'maison'); }, destroy() { cancelAnimationFrame(frame); controls.destroy(); controller.abort(); } };
 }

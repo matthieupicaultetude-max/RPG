@@ -28,7 +28,7 @@ export function drawAdventurer(ctx,p,time,animation){
  if(theme==='air'){ctx.fillStyle='#e1e5c4';ctx.fillRect(4,-34,2,7);ctx.fillRect(6,-36,2,5);}
  if(theme==='water'){ctx.fillStyle='#4c829c';ctx.fillRect(-6,-27,2,11);ctx.fillRect(5,-27,2,11);ctx.fillStyle='#b0d9d6';ctx.fillRect(-3,-28,7,1);}
  if(p.facing==='up'){ctx.fillStyle=hair;ctx.fillRect(-4,-23,8,7);ctx.fillStyle='#a38a60';ctx.fillRect(-3,-23,6,1);}else{ctx.fillStyle='#4a4938';ctx.fillRect(-2,-19,1,2);ctx.fillRect(3,-19,1,2);ctx.fillStyle='#b48b65';ctx.fillRect(0,-15,3,1);}
- if(!animation||p.role!=='melee'){
+ if(!animation?.harvesting&&(!animation||p.role!=='melee')){
    if(p.role==='ranged'){ctx.strokeStyle='#72563a';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(9,-17);ctx.lineTo(12,-11);ctx.lineTo(11,-4);ctx.stroke();ctx.strokeStyle='#e1d7b3';ctx.beginPath();ctx.moveTo(9,-17);ctx.lineTo(9,-4);ctx.lineTo(11,-4);ctx.stroke();}
    else if(p.role==='support'){ctx.fillStyle='#725336';ctx.fillRect(9,-17,2,22);ctx.fillStyle='#526c58';ctx.fillRect(7,-21,6,6);ctx.fillStyle='#afcdb0';ctx.fillRect(8,-20,3,3);ctx.fillStyle='#e0d9a5';ctx.fillRect(9,-20,1,1);}
    else{ctx.fillStyle='#7b674b';ctx.fillRect(9,-6,2,8);ctx.fillStyle='#c5ae73';ctx.fillRect(6,-7,7,2);ctx.fillStyle='#c6cebb';ctx.fillRect(9,-20,2,13);ctx.fillStyle='#eef0d4';ctx.fillRect(9,-19,1,11);}

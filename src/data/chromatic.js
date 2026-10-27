@@ -1,3 +1,4 @@
+import { woodItem } from './woodcutting.js';
 import { STARTER_SETS, SET_SLOTS } from "./equipment.js";
 import { MONSTERS } from "./monsters.js";
 
@@ -39,6 +40,7 @@ export function chromaticRecipe(item) {
     { name: monster.normal, type: "normal", chromatic: true, quantity: 1 },
     { name: monster.normal, type: "normal", chromatic: false, quantity: 10 },
     { name: monster.rare, type: "rare", chromatic: false, quantity: 5 },
+    {...woodItem("ash","plank"),quantity:5},
   ];
 }
 export function completeChromaticSet(member) {

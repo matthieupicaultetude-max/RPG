@@ -289,6 +289,8 @@ export function renderItemIcon(item = {}) {
       path("m16 5 8 8-3 11-5 3-5-3-3-11z", p.base) +
       elementSigil(item.element, 6, 7, 0.64, p.gem) +
       path("m10 10 4-4", "none", p.light, 2);
+  if(item.kind==='wood')art=path('M5 12 23 4l7 14-18 10z',item.color||'#ac8a56')+path('M3 14c1-8 12-9 14 0 3 13-11 18-14 0z','#dcc18c','#80653e')+path('M7 16c0-6 7-6 7 0s-7 10-7 0z','none','#987345',1);
+  if(item.kind==='plank')art=path('m2 12 20-9 8 16-20 10z',item.color||'#bd995b')+path('m5 15 20-9M8 21l20-9M11 27l17-8','none','#e2c78f',1)+path('M10 10l7 16','none','#8e7044',1);
   if (!art) art = equipmentArt(item, p);
   const sparkle =
     item.chromatic && item.kind !== "core" && item.slot !== "Noyau"

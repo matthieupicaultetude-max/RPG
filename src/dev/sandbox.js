@@ -1,3 +1,4 @@
+import { createTrees, stepWoodcutting, cancelWoodcutting } from '../game/woodcutting.js';
 import { recordBonusOpportunity, stepBonusTargets, clickBonusTarget } from '../combat/bonus-targets.js';
 import { emptyAllocation, fillUnlockedSlots } from '../data/progression.js';
 import { defaultLoadout } from '../data/spells.js';
@@ -16,7 +17,7 @@ import { createState, update as movePlayer } from '../game/state.js';
 export const ROLES = { melee: 'Corps à corps', support: 'Soutien', ranged: 'Distance' };
 export const COLORS = { melee: '#c0a16d', support: '#9db780', ranged: '#8bacae' };
 export const SLOTS = ['Coiffe', 'Cape', 'Ceinture', 'Bottes', 'Anneau 1', 'Anneau 2', 'Amulette', 'Arme', 'Bouclier', 'Familier', ...Array.from({ length: 6 }, (_, i) => `Trophée ${i + 1}`)];
-export const STATIONS = { maison: { x: 110, y: 135 }, combat: { x: 480, y: 255 }, atelier: { x: 190, y: 310 }, forge: { x: 212, y: 334 }, animalerie: { x:250,y:157 }, fontaine:{x:365,y:155} };
+export const STATIONS = { maison: { x: 110, y: 135 }, combat: { x: 480, y: 255 }, atelier: { x: 190, y: 310 }, forge: { x: 212, y: 334 }, animalerie: { x:250,y:157 }, fontaine:{x:365,y:155}, scierie:{x:76,y:222}, bucheron:{x:207,y:108} };
 export const ULTIMATE_DURATION = 30;
 export const ULTIMATE_COOLDOWN = 300;
 const names = ['Aëlan', 'Liora', 'Sylas'];
@@ -32,6 +33,7 @@ export function createSandbox() {
     bag: [], nextItem: 1, gold: 0, log: ['Bienvenue dans le jardin des essais.'], revision: 0,
     monsters: [createMonster('slime',455,220), createMonster('boar',535,285),createMonster('firefly',530,165),createMonster('moth',585,240)],
     bots: Array.from({ length: 3 }, (_, i) => ({ name: ['Milo', 'Éline', 'Orin'][i], x: 290 + i * 70, y: 110, role: ['melee', 'support', 'ranged'][i], facing: 'down', moving: true, phase: i * 2, target: { x: 270 + i * 70, y: 110 } })),
+    woodcutting:{level:1,xp:0,action:null},trees:createTrees(),
     effects: [], attacks: [], spellEvents:[], spellAreas:[], spellMissiles:[], spellVisuals:[], nextSpell:1, aim: { x: 0, y: 0, active: false }, autoAttack: false,
   });
   state.team[0].x = state.player.x;
@@ -47,6 +49,7 @@ export function atHome(s) { return Math.hypot(s.player.x - STATIONS.maison.x, s.
 export function teleport(s, station) {
   const point = STATIONS[station];
   if (!point) return;
+  cancelWoodcutting(s);
   Object.assign(s.player, point, { moving: false });
   Object.assign(s.team[s.main], s.player);
   placeAllies(s, canStand);
@@ -54,6 +57,7 @@ export function teleport(s, station) {
 }
 export function chooseMain(s, i) {
   if (i === s.main || !s.team[i] || s.team[i].hp <= 0) return false;
+  cancelWoodcutting(s);
   Object.assign(s.team[s.main], s.player);
   if (!s.deployed) Object.assign(s.team[i], s.player);
   s.main = i;
@@ -221,19 +225,20 @@ export function rewardMonster(s,monster,random=Math.random) {
   grantLoot(s,random()<definition.rareChance?'rare':'normal',random()<definition.chromaticChance,monster.name);
   if(random()<CORE_CHANCE)grantCore(s,definition.element,monster.level);
 }
-export function clickBonus(s,point) {Object.assign(s.team[s.main],s.player);return clickBonusTarget(s,point,canStand,hitMonster);}
+export function clickBonus(s,point) {Object.assign(s.team[s.main],s.player);const hit=clickBonusTarget(s,point,canStand,hitMonster);if(hit)cancelWoodcutting(s);return hit;}
 export const spellContext = {canStand,hitMonster};
 export function castEquipped(s,slot,point=s.aim.active?s.aim:null,options={}) {
  const member=s.team[s.main];Object.assign(member,s.player);
- return castSpell(s,member,slot,point?{x:point.x,y:point.y+8}:null,spellContext,options);
+ const result=castSpell(s,member,slot,point?{x:point.x,y:point.y+8}:null,spellContext,options);if(result)cancelWoodcutting(s);return result;
 }
 export function attack(s,point=s.aim.active?s.aim:null) {return castEquipped(s,0,point);}
 export function stepSandbox(s, direction, dt, elapsed = dt) {
   advanceUltimate(s, Math.max(0, elapsed));
   stepBonusTargets(s,elapsed,canStand);
   const old = { x: s.player.x, y: s.player.y };
-  if (s.team[s.main].hp > 0) movePlayer(s, direction, dt);
-  else { s.time += dt; s.player.moving = false; }
+  const gathering=stepWoodcutting(s,direction,dt,elapsed,canStand);
+  if (s.team[s.main].hp > 0&&!gathering) movePlayer(s, direction, dt);
+  else { s.time += dt;if(!gathering)s.player.moving = false; }
   if (!canStand(s.player.x, old.y)) s.player.x = old.x;
   if (!canStand(s.player.x, s.player.y)) s.player.y = old.y;
   Object.assign(s.team[s.main], s.player);
@@ -241,7 +246,7 @@ export function stepSandbox(s, direction, dt, elapsed = dt) {
   stepSpells(s,dt,spellContext);
   s.effects = s.effects.filter(e => { e.life -= dt; e.x += (e.vx || 0)*dt; e.y += (e.vy ?? -12)*dt; return e.life > 0; });
   s.team.forEach(m => { m.cooldown = Math.max(0, m.cooldown - dt); });
-  if (s.autoAttack) attack(s);
+  if (s.autoAttack&&!s.woodcutting.action) attack(s);
   stepCompanions(s, dt, canStand, hitMonster,(member,target)=>castCompanionSpell(s,member,target,spellContext));
   s.monsters.forEach(monster => {
     monster.cooldown = Math.max(0, monster.cooldown - dt);
@@ -254,7 +259,7 @@ export function stepSandbox(s, direction, dt, elapsed = dt) {
     if (target && Math.hypot(target.x - monster.homeX, target.y - monster.homeY) < monster.detection) {
       if (Math.hypot(monster.x - target.x, monster.y - target.y) > 22) {if(!(monster.spellState?.root>0))walk(monster, target.x, target.y, monster.speed, dt);}
       else if (monster.cooldown === 0) {
-        const taken=receiveSpellDamage(s,target,monster.damage,monster); monster.cooldown = monster.attackDelay;
+        const taken=receiveSpellDamage(s,target,monster.damage,monster);if(taken>0&&target.id===s.main)cancelWoodcutting(s); monster.cooldown = monster.attackDelay;
         s.effects.push({ x: monster.x, y: monster.y-8, toX: target.x, toY: target.y-8, text: '', color: '#f0a28e', life: .22 });
         s.effects.push({ x: target.x, y: target.y - 25, text: `−${taken}`, color: '#ffa3a3', life: .8 }); s.revision++;
         if (s.team.every(m => m.hp <= 0)) { endUltimate(s); teleport(s, 'maison'); heal(s); note(s, 'Défaite : retour à la maison (règle de test).'); }

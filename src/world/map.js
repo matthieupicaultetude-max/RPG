@@ -94,10 +94,12 @@ function smooth(points) {
   }
   return result;
 }
+export const SAWMILL = Object.freeze({x:76,y:205});
 export const FOUNTAIN = Object.freeze({x:365,y:125});
 export const FORGE = Object.freeze({npc:{id:'borin',name:'Borin',x:212,y:314,role:'melee',facing:'down',moving:false,equipment:{}}});
 export const PET_SHOP = Object.freeze({x:250,y:138,npc:{id:'nola',name:'Nola',x:268,y:153,role:'support',facing:'down',moving:false,equipment:{}}});
 export const ROADS = [
+ {id:"sawmill",width:18,points:[[76,222],[110,222],[110,180]]},
   {id:"fountain",width:18,points:[[365,150],[365,180]]},
   {id:'petshop',width:20,points:[[250,148],[250,180]]},
   {
@@ -175,6 +177,7 @@ export const isRoad = (x, y) => roadDistance(x, y) <= 0;
 
 // Sprite origin is its ground anchor. Only the footprint blocks movement.
 export const PROPS = [
+ {id:"sawmill",kind:"sawmill",x:SAWMILL.x,y:SAWMILL.y,footprint:{type:"box",left:-20,right:20,top:-7,bottom:0}},
   {id:"fountain",kind:"fountain",x:FOUNTAIN.x,y:FOUNTAIN.y,footprint:{type:"circle",radius:13}},
   {id:'petshop',kind:'petshop',x:PET_SHOP.x,y:PET_SHOP.y,footprint:{type:'box',left:-34,right:34,top:-36,bottom:0}},
   {
@@ -210,6 +213,7 @@ export const PROPS = [
     x,
     y,
     variant: i % 3,
+    wood:["ash","ash","chestnut","walnut","walnut","ash","ash","ash","chestnut","chestnut","walnut","walnut"][i],
     footprint: { type: "circle", radius: 9 },
     rootRadius: 12,
   })),

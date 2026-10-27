@@ -31,7 +31,7 @@ function safeGoal(goal, canStand) {
 }
 
 // Small navigation grid only used when the direct route is obstructed.
-function findPath(start, goal, canStand) {
+export function findPath(start, goal, canStand) {
   const cols = 62, rows = 33;
   const cell = p => ({ x: clamp(Math.round((p.x - 14) / 10), 0, cols - 1), y: clamp(Math.round((p.y - 66) / 10), 0, rows - 1) });
   const point = c => ({ x: 14 + c.x * 10, y: 66 + c.y * 10 });

@@ -87,6 +87,8 @@ test("navigation: village, workshop and combat area connected; water and solid r
       [212, 334],
       [250, 157],
       [365, 155],
+      [76, 222],
+      [207, 108],
       [480, 255],
       [530, 165],
       [585, 240],

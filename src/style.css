@@ -482,7 +482,7 @@ canvas { cursor: crosshair; }
 }
 @media (min-width: 521px) {
   .inventory-window { height: min(820px, calc(100dvh - 40px)); }
-  .inventory-window:not(.tools-open):not(.bestiary-open):not(.petshop-open):not(.forge-open):not(.spells-open):not(.characteristics-open) #panel { display: flex; flex-direction: column; }
+  .inventory-window:not(.tools-open):not(.bestiary-open):not(.petshop-open):not(.forge-open):not(.spells-open):not(.characteristics-open):not(.professions-open) #panel { display: flex; flex-direction: column; }
   .inventory-character-bar, .item-details { flex-shrink: 0; }
   .paper-layout { flex: 1; min-height: 0; overflow-y: auto; padding: 2px; }
   .paper-slot { height: 54px; flex-shrink: 0; }
@@ -665,3 +665,7 @@ canvas { cursor: crosshair; }
 .hud-menu .has-points { border-color:#d8ba77; color:#f1d694; }
 
 @media (max-width:520px) { .hud-top { gap:5px; align-items:flex-start; }.zone-card { flex:0 0 156px; width:156px; padding:8px 10px; }.zone-card h1 { font-size:16px; white-space:nowrap; }.hud-menu { flex-wrap:wrap; justify-content:flex-end; }.hud-notification { top:112px; } }
+
+.professions-open #panel { display:block; }.wood-catalog { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }.wood-card { padding:15px; border:1px solid #8a8054; border-radius:7px; background:#182c2288; }.wood-card > div { display:flex; align-items:center; gap:10px; }.wood-card svg { width:42px; height:42px; flex-shrink:0; }.wood-card h3 { font-size:17px; color:#dfc992; margin:0; }.wood-card small { display:block; font-size:9px; color:#aab693; margin-top:6px; }.wood-card p { color:#acbb96; font-size:11px; line-height:1.7; }.wood-card button { width:100%; font-size:10px; }.sawmill-crafts { margin-top:24px; }.sawmill-crafts > label { display:block; margin:12px 0; color:#b4c29d; font-size:11px; }.sawmill-crafts input { width:70px; padding:7px; margin-left:8px; background:#182e22; color:#e2d4aa; border:1px solid #8a8054; border-radius:4px; }
+.harvest-status { position:absolute; left:50%; transform:translateX(-50%); bottom:225px; display:flex; align-items:center; gap:10px; padding:12px; border:1px solid #c0a66d; border-radius:7px; background:#1a3028ed; color:#ead5a6; font-size:11px; }.harvest-status progress { width:90px; accent-color:#d7b873; }.harvest-status button { font-size:10px; padding:6px; }
+@media (max-width:700px) { .wood-catalog { grid-template-columns:1fr; }.hud-menu [data-action="professions"] span { display:none; }.harvest-status { bottom:245px; width:290px; gap:6px; padding:8px; font-size:10px; }.harvest-status progress { width:70px; } }

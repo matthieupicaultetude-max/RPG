@@ -1,3 +1,4 @@
+import { drawWoodcutting } from './woodcutting.js';
 import { bonusTargetPosition, BONUS_TARGET_RADIUS } from '../combat/bonus-targets.js';
 import { drawBonusTargets } from './bonus-targets.js';
 import { drawSpellGround, drawSpellOverlays } from './spells.js';
@@ -54,8 +55,9 @@ export function createRenderer(canvas) {
         y: prop.y,
         draw: () => {
           ctx.save();
+          const felled=prop.kind==="tree"&&s.trees.find(tree=>tree.id===prop.id)?.respawn>0;
           if (
-            prop.kind === "tree" &&
+            ["tree","house","petshop","market","sawmill"].includes(prop.kind) && !felled &&
             s.player.y < prop.y &&
             s.player.x + 8 > prop.bounds.left &&
             s.player.x - 8 < prop.bounds.right &&
@@ -63,7 +65,7 @@ export function createRenderer(canvas) {
             s.player.y - 29 < prop.bounds.bottom
           )
             ctx.globalAlpha = 0.55;
-          prop.draw(ctx);
+          prop.draw(ctx,felled);
           ctx.restore();
         },
       })),
@@ -82,7 +84,7 @@ export function createRenderer(canvas) {
               s.time,
               p.id === s.main,
               false,
-              s.attacks.find((a) => a.owner === p.id && a.age < 0.3) || (()=>{const v=s.spellVisuals.find(v=>v.owner===p.id&&v.age<.3);return v?{age:v.age,angle:Math.atan2(v.y-p.y,v.x-p.x)}:null;})(),
+              (s.woodcutting.action?.owner===p.id&&s.woodcutting.action.phase==="cut"?{harvesting:true,age:0,angle:0}:null)||s.attacks.find((a) => a.owner === p.id && a.age < 0.3) || (()=>{const v=s.spellVisuals.find(v=>v.owner===p.id&&v.age<.3);return v?{age:v.age,angle:Math.atan2(v.y-p.y,v.x-p.x)}:null;})(),
             ),
         })),
       ...s.monsters.map((m) => ({
@@ -159,7 +161,7 @@ export function createRenderer(canvas) {
       ctx.restore();
     }
     drawSpellOverlays(ctx,s);
-    if (s.aim.active && !s.monsters.some(monster=>monster.hp>0&&monster.bonusTarget?.time>0&&Math.hypot(s.aim.x-bonusTargetPosition(monster).x,s.aim.y-bonusTargetPosition(monster).y)<=BONUS_TARGET_RADIUS)) {
+    if (s.aim.active && !s.woodcutting.action && !s.monsters.some(monster=>monster.hp>0&&monster.bonusTarget?.time>0&&Math.hypot(s.aim.x-bonusTargetPosition(monster).x,s.aim.y-bonusTargetPosition(monster).y)<=BONUS_TARGET_RADIUS)) {
       const primary=spellById(s.team[s.main].loadout[0]);
       const guide = primary?.role==='support'?{target:null}:guidedTarget(s, s.aim, canStand);
       const target = guide.target;
@@ -226,6 +228,7 @@ export function createRenderer(canvas) {
       ctx.globalAlpha = 1;
     }
     drawBonusTargets(ctx,s);
+    drawWoodcutting(ctx,s);
     const width = Math.round(canvas.clientWidth),
       height = Math.round(canvas.clientHeight);
     if (canvas.width !== width || canvas.height !== height) {

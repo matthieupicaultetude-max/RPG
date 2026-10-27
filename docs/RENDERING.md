@@ -77,3 +77,8 @@ La maison utilise une géométrie de toit commune dans `src/rendering/house-geom
 ### Cibles bonus
 
 `src/rendering/bonus-targets.js` dessine les cibles en dernier dans le repère du monde : silhouette contrastée, centre cliquable et anneau de durée. Le décalage reste attaché au monstre. Le clic passe par `screenToWorld`, sans la correction de hauteur des sorts guidés ; le rendu et la détection partagent `bonusTargetPosition` et le même rayon. La visée habituelle est masquée lorsque le pointeur survole une cible bonus.
+
+
+### Arbres récoltables
+
+Les arbres de `PROPS` gardent leurs emprises physiques et portent une essence. Leurs états de récolte/repousse sont stockés séparément dans la simulation. L’environnement met en cache couronne et souche ; le rendu choisit la souche sans modifier le terrain ou les collisions. La palette d’essence entre dans la clé du cache. Les constructions deviennent translucides lorsqu’elles masquent le joueur ; le rendu de hache et des copeaux reste distinct du rendu des armes de combat.

@@ -44,7 +44,7 @@ npm run build
 npm run preview
 ```
 
-Quatre-vingt-dix-neuf tests couvrent déplacement, composition à trois, variantes de butin, échanges d’équipement, XP, combat/récompenses/respawn, collisions de la maison, soutien IA, retour après défaite, ultime (30 s / 300 s), changements de personnage, filtrage de la molette, ciblage guidé, impacts différés, projectiles, conversion caméra/curseur, contournement de la maison, espacement au repos, recul du distance et regroupement. Les parcours navigateur vérifient également les commandes, les panneaux et le petit écran.
+Cent cinq tests couvrent déplacement, composition à trois, variantes de butin, échanges d’équipement, XP, combat/récompenses/respawn, collisions de la maison, soutien IA, retour après défaite, ultime (30 s / 300 s), changements de personnage, filtrage de la molette, ciblage guidé, impacts différés, projectiles, conversion caméra/curseur, contournement de la maison, espacement au repos, recul du distance et regroupement. Les parcours navigateur vérifient également les commandes, les panneaux et le petit écran.
 
 ## Organisation
 
@@ -150,6 +150,7 @@ Coût par pièce, avec les ressources du monstre associé à la panoplie :
 - **1 ressource normale chromatique**.
 - **10 ressources normales standards**.
 - **5 ressources rares standards**.
+- **5 Planches de frêne (niveau 1)**, fabriquées à la scierie.
 
 Les ingrédients ne sont consommés que si la recette entière est disponible. Les ressources rares chromatiques, utilisées pour nourrir les familiers, sont conservées. La Puissance renforce les dégâts de tous les éléments selon la même règle que la caractéristique élémentaire : `dégâts de base × (1 + (caractéristique + Puissance) / 100)`.
 
@@ -204,3 +205,24 @@ Quand le personnage contrôlé inflige des dégâts, il a **20 % de chance** de 
 Les dégâts sont copiés après les calculs de caractéristiques, Puissance et résistances : aucun de ces multiplicateurs n’est appliqué une seconde fois. Le bonus ne consomme pas la recharge d’un sort et contribue normalement à la jauge personnelle selon les PV réellement retirés. Il ne déclenche ni une autre cible ni les effets secondaires des sorts. Un bonus fatal donne les récompenses normales, une seule fois.
 
 Un clic raté ne fait rien. Une cible ne s’utilise qu’une fois ; il ne peut y en avoir qu’une par ennemi et trois simultanément. Le délai d’apparition minimal par ennemi est de 4 secondes. Les cibles expirent aussi pendant les menus, dont l’ouverture bloque leur activation. Obstacles, mort et réapparition nettoient les opportunités invalides.
+
+
+## Bûcheron et scierie
+
+**L**, le bouton **Métiers** ou son onglet ouvre le premier métier, partagé par la troupe et indépendant de l’XP des personnages. Les douze arbres existants sont récoltables et portent trois essences :
+
+| Essence | Niveau métier | XP par coupe | Repousse |
+| --- | --- | --- | --- |
+| Frêne | 1 | 15 | 30 s |
+| Châtaignier | 5 | 25 | 45 s |
+| Noyer | 10 | 40 | 60 s |
+
+**Clic gauche sur un arbre** : le personnage rejoint un emplacement libre près du tronc, puis le coupe avec une animation de hache, des copeaux et une barre de progression. Le panneau Métiers propose aussi **Rejoindre et couper**, utile au tactile. Une coupe achevée donne **1 bois** et de l’XP métier. L’arbre devient une souche solide puis repousse automatiquement. Aucun bois ni aucune planche chromatique n’est généré.
+
+La coupe dure **4 secondes au niveau 1**, puis `max(1, 4 / (1 + 0,06 × (niveau métier − 1)))` secondes. Le seuil du niveau suivant vaut `30 × niveau métier` XP ; l’excédent est conservé. Une seule coupe à la fois. Déplacement manuel, sort réussi, coup bonus, dégâts reçus, changement de personnage, téléportation ou ouverture d’un menu interrompent l’action sans récompense. La récolte ne recommence pas automatiquement après repousse.
+
+La **scierie du village**, à gauche du chemin de la maison, est accessible avec **F** à proximité. Chaque essence possède sa recette : **2 bois → 1 planche**, au même niveau métier que la récolte. Choisir un nombre de planches pour fabriquer en lot. Chaque planche donne **10 XP bûcheron**. La recette vérifie le niveau, le lieu et tout le stock avant de consommer. La Sagesse des personnages ne modifie pas cette XP métier.
+
+Les **36 améliorations chromatiques d’armure** à la forge exigent désormais **5 Planches de frêne**, en plus de la pièce et des ressources du monstre. Les bois bruts et les planches des essences supérieures ne remplacent pas ces planches de niveau 1. L’XP bûcheron provient des coupes et des planches, pas de l’amélioration d’armure elle-même.
+
+Les outils dev ajoutent **Bosquet**, **Scierie**, **+30 XP bûcheron** et **10 Bois de frêne (test)**. Les stocks et la progression restent locaux à la session, comme le reste du jardin.

@@ -38,6 +38,7 @@ export function createEnvironment() {
     if (!placementOnLand(prop))
       throw new Error(`Invalid land placement: ${prop.id}`);
     const sprite = spriteFor(prop);
+    const stump=prop.kind==="tree"?spriteFor({...prop,kind:"stump"}):null;
     return {
       ...prop,
       bounds: {
@@ -46,11 +47,12 @@ export function createEnvironment() {
         top: prop.y - sprite.anchorY,
         bottom: prop.y - sprite.anchorY + sprite.canvas.height,
       },
-      draw(g) {
+      draw(g,felled=false) {
+        const image=felled&&stump?stump:sprite;
         g.drawImage(
-          sprite.canvas,
-          Math.round(prop.x) - sprite.anchorX,
-          Math.round(prop.y) - sprite.anchorY,
+          image.canvas,
+          Math.round(prop.x) - image.anchorX,
+          Math.round(prop.y) - image.anchorY,
         );
       },
     };

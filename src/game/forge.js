@@ -19,7 +19,9 @@ const matches = (item, ingredient) =>
   item.kind !== "core" &&
   item.name === ingredient.name &&
   item.type === ingredient.type &&
-  item.chromatic === ingredient.chromatic;
+  item.chromatic === ingredient.chromatic &&
+  (!ingredient.kind || item.kind === ingredient.kind) &&
+  (!ingredient.wood || item.wood === ingredient.wood);
 export function recipeStatus(state, item) {
   return chromaticRecipe(item).map((ingredient) => ({
     ...ingredient,
@@ -59,6 +61,8 @@ export function upgradeChromatic(state, id) {
   }
   state.bag = state.bag.filter((item) => item.quantity > 0);
   Object.assign(item, chromaticVersion(item));
-  tell(`${item.name} amélioré en chromatique : +${CHROMATIC_POWER} Puissance !`);
+  tell(
+    `${item.name} amélioré en chromatique : +${CHROMATIC_POWER} Puissance !`,
+  );
   return item;
 }

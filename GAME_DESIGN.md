@@ -113,7 +113,7 @@ Aucun plafond au niveau 3 ni aucune remise à niveau automatique lors d’un cha
 
 ### Métiers : développement ultérieur
 
-Un **système de métiers** est prévu, mais sera développé plus tard. La liste des métiers, leur progression, la récolte, les recettes et leurs liens avec le butin ne sont pas encore définis. L’XP de métier et son articulation avec l’XP de combat devront être explicitées avant leur implémentation.
+Le premier **métier de bûcheron** est implémenté dans le jardin des essais (section 30). Les autres métiers seront développés plus tard. Les autres métiers, leur progression, leurs récoltes et recettes restent à définir. L’XP de métier et son articulation avec l’XP de combat devront être explicitées avant leur implémentation.
 
 ## 8. Inventaire et équipement
 
@@ -216,7 +216,7 @@ Les conventions suivantes s’appliquent **uniquement à cette zone** :
 
 - Trois personnages, un seul actif hors ultime, changement par **molette** ou portraits. **E** réunit la troupe pendant 30 s, toutes les 5 min. Le suivi autonome par rôle pendant l’ultime est décrit en section 5. Les rôles sont fixes dans ce banc d’essai.
 - Combat temps réel au clic droit avec visée guidée vers le curseur, animations par rôle et dégâts à l’impact ; soutien IA soignant les alliés vivants. Les compétences et le ciblage définitifs ne sont pas implémentés.
-- XP identique pour les trois membres, sac partagé sans capacité maximale et aucun métier.
+- XP de base commune aux trois membres, bonus de Sagesse individuel, sac partagé sans capacité maximale et métier de bûcheron partagé.
 - Seize emplacements individuels équipables ; coiffe/cape/bouclier visibles et bonus de test de +5 dégâts pour l’arme du personnage contrôlé. Autres statistiques à définir.
 - Un objet par victoire : 20 % de loot rare, 10 % de variante chromatique indépendante. Ces taux ne constituent pas un équilibrage validé. Les quatre variantes peuvent aussi être générées manuellement.
 - Soin/réanimation, XP et téléportation disponibles par boutons dev ; retour automatique à la maison et restauration de l’équipe après défaite complète.
@@ -420,7 +420,7 @@ Borin est le PNJ de la forge du village, accessible avec **F** à proximité. L�
 
 Chacune des neuf pièces des quatre panoplies débutantes possède une version chromatique, soit **36 versions**. La transformation conserve le niveau requis, la panoplie, l’emplacement et toutes les statistiques existantes, et ajoute **+2 Puissance** par pièce (réglage initial). Elle transforme l’objet d’origine sans duplication, sans changer ses PV ni offrir de soin gratuit s’il est équipé. Elle ne peut pas se cumuler sur une pièce déjà chromatique. Les familiers et trophées ne sont pas concernés.
 
-La recette consomme la pièce standard pour sa transformation, **1 ressource normale chromatique, 10 ressources normales standards et 5 ressources rares standards** du monstre associé à l’élément : sanglier/Ronce, luciole/Braise, phalène/Brise, slime/Rosée. Tous les coûts sont validés avant consommation ; aucun ingrédient ne disparaît en cas de manque. Les rares chromatiques restent destinés aux familiers. Aucun or, métier, hasard ou risque d’échec n’est ajouté à cette recette.
+La recette consomme la pièce standard pour sa transformation, **1 ressource normale chromatique, 10 ressources normales standards, 5 ressources rares standards et 5 Planches de frêne (niveau 1)** du monstre associé à l’élément : sanglier/Ronce, luciole/Braise, phalène/Brise, slime/Rosée. Tous les coûts sont validés avant consommation ; aucun ingrédient ne disparaît en cas de manque. Les rares chromatiques restent destinés aux familiers. Aucun or, niveau de forgeron, hasard ou risque d’échec n’est ajouté à cette recette.
 
 La Puissance est prise en compte dans les dégâts du joueur et de ses alliés : la caractéristique de l’élément du sort et la Puissance s’additionnent dans le multiplicateur de dégâts. Les autres statistiques des pièces restent identiques.
 
@@ -468,3 +468,22 @@ La cible apparaît à environ 26 pixels du centre visuel de l’ennemi, sur une 
 Un clic réussi consomme l’opportunité puis inflige exactement la dernière valeur de dégâts mémorisée, sans nouveau multiplicateur ni nouvelle résistance. Il ne dépense pas de recharge de sort, ne déclenche pas d’effet secondaire de sort et ne génère pas de nouvelle opportunité. Les dégâts effectifs contribuent à la jauge personnelle avec les plafonds et blocages habituels. Un ennemi tué par ce bonus suit la boucle normale de récompenses et de réapparition.
 
 Une seule cible existe par ennemi, avec **4 secondes** entre apparitions possibles, et **3 cibles simultanées** au maximum. Une cible expirée, derrière un obstacle ou portée par un ennemi mort disparaît. La réapparition du monstre efface les anciennes données. Le personnage principal à terre et les menus ouverts empêchent l’activation ; le temps réel continue à écouler la durée. Les cibles non cliquées n’infligent aucun dégât.
+
+
+## 30. Premier métier : bûcheron
+
+Le métier est partagé par la troupe d’un joueur, démarre au niveau 1 et possède sa propre XP. Trois essences sont disponibles sur les arbres existants : **Frêne niveau 1**, **Châtaignier niveau 5**, **Noyer niveau 10**. Le catalogue actuel s’arrête à ces trois essences ; les futures pourront prolonger les paliers de cinq niveaux. Aucun bois ou produit de scierie chromatique n’existe.
+
+Un clic gauche sur une couronne ou un tronc sélectionne l’arbre. Le personnage rejoint un emplacement de coupe libre par un chemin respectant les obstacles, puis démarre une animation de hache et une barre de progression. L’action dure `max(1, 4 / (1 + 0,06 × (niveau − 1)))` secondes : quatre secondes au départ, plancher d’une seconde. Elle utilise le temps de simulation actif et ne récolte pas hors ligne. La durée est déterminée au début de l’action.
+
+Une coupe achevée donne un bois et **15 / 25 / 40 XP métier**, selon l’essence. Le seuil d’un niveau métier est **30 × niveau actuel**, avec conservation de l’XP restante et possibilité de franchir plusieurs niveaux lors d’un lot de fabrication. Les caractéristiques, la Sagesse et le niveau des personnages ne modifient pas cette XP.
+
+Une action de récolte est unique et interruptible : déplacement manuel, sort réussi, coup bonus, dégâts subis, changement de principal, téléportation, menu ou mort l’annulent sans bois ni XP. Le métier reste identique lors d’un changement de personnage. Il n’y a ni hache à acheter ni récolte automatique en boucle dans cette première étape.
+
+L’arbre coupé devient une **souche solide**, en conservant son emprise au sol. Il repousse après **30 s pour le Frêne, 45 s pour le Châtaignier, 60 s pour le Noyer**. La repousse suit le temps écoulé réel et ne déclenche pas une nouvelle coupe. Les arbres gardent une identité et un état propres à la session.
+
+La scierie est un nouvel objet interactif du village, relié aux chemins existants. **F** à proximité ou le panneau **Métiers (L)** donne accès aux recettes : **2 bois d’une essence → 1 planche de cette essence**, au même niveau requis que la récolte. La fabrication peut se faire en lot et rapporte **10 XP bûcheron par planche**. Le niveau, la proximité et tous les ingrédients sont vérifiés avant toute consommation.
+
+Toutes les améliorations chromatiques d’équipement à la forge demandent **5 Planches de frêne de niveau 1** en supplément des ingrédients existants. Une planche d’un autre niveau, du bois brut ou une ressource chromatique ne se substitue pas à cette exigence. L’amélioration d’armure ne donne pas d’XP bûcheron ; seule la fabrication des planches en donne.
+
+Les essences disposent de palettes distinctes, les ressources et planches de leurs propres icônes, et les interactions affichent le niveau requis ou le temps de repousse. Le panneau montre niveau, XP, vitesse de coupe, disponibilités et stocks. Le prototype reste local et sans sauvegarde persistante ; un serveur partagé devra porter les états d’arbres dans l’étape multijoueur.
