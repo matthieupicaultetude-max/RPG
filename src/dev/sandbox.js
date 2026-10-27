@@ -276,6 +276,7 @@ export function stepSandbox(s, direction, dt, elapsed = dt) {
     if (monster.hp <= 0) {
       delete monster.intent;monster.lift=0;
       s.monsterTornadoes=s.monsterTornadoes.filter(a=>a.owner!==index);
+      if(monster.splitSpawn)return;
       monster.respawn -= dt;
       if (monster.respawn <= 0) { resetMarshSlime(monster);monster.hp = monster.maxHp; delete monster.bonusTarget;delete monster.lastReceivedDamage;monster.bonusTargetCooldown=0; monster.x = monster.homeX; monster.y = monster.homeY;monster.cooldown=.6;s.revision++; }
       return;

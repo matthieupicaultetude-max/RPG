@@ -1,4 +1,8 @@
-import { SPONGE_FLOWERS, SLIME_SPAWNS } from "../world/slime-marsh-map.js";
+import {
+  SPONGE_FLOWERS,
+  SLIME_SPAWNS,
+  canWalkMarsh,
+} from "../world/slime-marsh-map.js";
 import { createMonster } from "../data/monsters.js";
 import { emitSound } from "../audio/events.js";
 export const MARSH_RULES = {
@@ -60,10 +64,12 @@ export function onSlimeLanding(state, monster, point, hitCount) {
   )
     return;
   const marsh = state.slimeMarsh;
+  const splits = !hitCount && monster.growth >= 2;
   stepSlimeMarsh(state);
   const flower = marsh.flowers
     .filter(
       (f) =>
+        !splits &&
         f.readyAt <= state.time &&
         Math.hypot(f.x - point.x, f.y - point.y) <= MARSH_RULES.triggerRadius,
     )
@@ -86,7 +92,7 @@ export function onSlimeLanding(state, monster, point, hitCount) {
     emitSound(state, "heal", flower);
   }
   // A landing consumes at most one growth source: nectar takes priority.
-  if (!flower) {
+  if (!flower && !splits) {
     const index = marsh.puddles.findIndex(
       (p) => Math.hypot(p.x - point.x, p.y - point.y) <= p.radius,
     );
@@ -105,7 +111,8 @@ export function onSlimeLanding(state, monster, point, hitCount) {
     });
     if (marsh.puddles.length > 32) marsh.puddles.shift();
   }
-  if (!hitCount && monster.growth >= 2) {
+  if (splits) {
+    splitSlime(state, monster, point);
     monster.vulnerableUntil = state.time + MARSH_RULES.vulnerability;
     state.effects.push({
       x: monster.x,
@@ -132,5 +139,39 @@ function growSlime(state, monster) {
     text: `Taille ${monster.growth} !`,
     color: "#b9edc8",
     life: 1,
+  });
+}
+
+function splitSlime(state, monster, point) {
+  const ratio = monster.hp / monster.maxHp;
+  monster.growth--;
+  monster.maxHp = Math.round(
+    monster.baseMaxHp * (1 + 0.3 * (monster.growth - 1)),
+  );
+  monster.hp = Math.max(1, Math.round(monster.maxHp * ratio));
+  let spawn = point;
+  search: for (const radius of [24, 16, 8]) {
+    for (let i = 0; i < 12; i++) {
+      const a = (i * Math.PI) / 6;
+      const p = {
+        x: point.x + Math.cos(a) * radius,
+        y: point.y + Math.sin(a) * radius,
+      };
+      if (canWalkMarsh(p.x, p.y)) {
+        spawn = p;
+        break search;
+      }
+    }
+  }
+  const child = createMonster("marsh-slime", spawn.x, spawn.y, monster.level);
+  child.splitSpawn = true;
+  child.cooldown = 1.2;
+  state.monsters.push(child);
+  state.effects.push({
+    x: point.x,
+    y: point.y - 25,
+    text: "Scission ! −1 taille",
+    color: "#a0dded",
+    life: 1.2,
   });
 }

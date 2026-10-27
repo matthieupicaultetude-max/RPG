@@ -232,3 +232,37 @@ test("interruption d’un bond par changement de zone : le slime retrouve un poi
   assert.equal(m.lift, 0);
   assert.equal(map.canWalkMarsh(m.x, m.y), true);
 });
+
+test("scission : un saut raté retire une taille et crée un slime de taille 1 sur terre", () => {
+  const s = setup(),
+    m = s.monsters[0],
+    count = s.monsters.length;
+  m.growth = 3;
+  m.maxHp = 198;
+  m.hp = 99;
+  const p = { x: m.x, y: m.y };
+  // Even on a flower and puddle, a missed jump must lose one size.
+  s.slimeMarsh.flowers[0].x = p.x;
+  s.slimeMarsh.flowers[0].y = p.y;
+  s.slimeMarsh.puddles.push({ ...p, radius: 24, expiresAt: 100 });
+  onSlimeLanding(s, m, p, 0);
+  assert.equal(m.growth, 2);
+  assert.equal(m.maxHp, 161);
+  assert.equal(m.hp, 81);
+  assert.equal(s.monsters.length, count + 1);
+  const child = s.monsters.at(-1);
+  assert.equal(child.growth, 1);
+  assert.equal(child.level, m.level);
+  assert.equal(child.hp, child.maxHp);
+  assert.ok(map.canWalkMarsh(child.x, child.y));
+  assert.ok(Math.hypot(child.x - p.x, child.y - p.y) > 0);
+  onSlimeLanding(s, m, p, 0);
+  assert.equal(m.growth, 1);
+  assert.equal(s.monsters.length, count + 2);
+  onSlimeLanding(s, child, { x: 570, y: 330 }, 0);
+  assert.equal(s.monsters.length, count + 2);
+  child.hp = 0;
+  child.respawn = 0;
+  stepSandbox(s, { x: 0, y: 0 }, 0.05);
+  assert.equal(child.hp, 0);
+});
