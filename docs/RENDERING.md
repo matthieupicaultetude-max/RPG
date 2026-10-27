@@ -83,13 +83,15 @@ La maison utilise une géométrie de toit commune dans `src/rendering/house-geom
 
 Les arbres de `PROPS` gardent leurs emprises physiques et portent une essence. Leurs états de récolte/repousse sont stockés séparément dans la simulation. L’environnement met en cache couronne et souche ; le rendu choisit la souche sans modifier le terrain ou les collisions. La palette d’essence entre dans la clé du cache. Les constructions deviennent translucides lorsqu’elles masquent le joueur ; le rendu de hache et des copeaux reste distinct du rendu des armes de combat.
 
-## 8. Silhouettes des classes et aperçu partagé
+## 8. Gabarit original et couleurs des classes
 
-`src/data/appearance.js` définit les palettes de classe. Le combattant a une silhouette large, une armure d’acier, un heaume à cimier, une cape rouge et une grande lame. Le soutien porte une robe ivoire et violette, une capuche haute et un bâton à cristal. Le distance garde une silhouette plus légère, une capuche verte, un carquois et un arc long.
+`src/data/appearance.js` définit les couleurs des tenues : rouge pour le combattant, violet pour le soutien, vert pour le distance. Les trois corps utilisent exactement la géométrie du sprite original : pas de heaume, de robe longue, d’épaulières élargies ou de carquois de classe ajouté. La silhouette nue, ombre de contact comprise, garde une emprise de 18 × 32 pixels dans le rendu de référence. Les petits marqueurs d’arme d’origine restent à leurs positions.
 
-`actors.js` conserve les différences de largeur, de vêtement et d’arme même quand plusieurs personnages portent les mêmes couleurs d’équipement. Les coiffes, capes, bottes, ceintures, amulettes, anneaux, armes, boucliers et familiers gardent leurs variations visuelles. Faces, dos, côtés et pas sont dessinés dans le repère local du personnage ; les coordonnées finales restent arrondies. Les barres de vie et le marqueur du principal sont placés au-dessus des nouvelles coiffes.
+Les équipements utilisent leurs ancrages d’origine. Les coiffes, capes, bottes, ceintures, armes, boucliers et familiers conservent les formes prévues ; les amulettes et anneaux ajoutent leurs touches de couleur dans le corps existant. Les barres de vie et le marqueur du principal retrouvent leur hauteur d’origine.
 
-`ui/character-art.js` utilise exactement le même dessin pour les portraits et l’aperçu d’inventaire : aucun second modèle SVG à maintenir. Les aperçus sont peints à une échelle interne entière, avec le lissage désactivé.
+`ui/character-art.js` utilise le même dessin pour les portraits et l’aperçu d’inventaire, sans second modèle. Le cadrage tient compte du corps d’origine ; les aperçus sont peints à une échelle interne entière avec le lissage désactivé.
+
+La comparaison navigateur des masques alpha avec le rendu précédant le changement de gabarit vérifie 96 configurations : trois classes, quatre directions, mouvement ou repos, équipement ou non et pose de récolte ou pose normale. La géométrie est identique ; les couleurs des trois tenues restent distinctes.
 
 ## 9. Golden hour
 
@@ -99,4 +101,4 @@ Le passage `src/rendering/golden-hour.js` est un vrai post-traitement **WebGL / 
 
 Le bouton **☀** active ou désactive cet ensemble d’effets, avec préférence locale `auroria-lighting-v1`. Les rayons restent immobiles lorsque `prefers-reduced-motion` est actif. En absence de WebGL ou pendant la perte du contexte, une passe Canvas 2D légère assure un rendu chaud ; la restauration du contexte reconstruit le programme. La fermeture du renderer libère textures, buffers, programme et écouteurs.
 
-La vérification navigateur couvre la compilation réelle du shader, l’orientation de la texture, l’égalité des blocs de pixels après agrandissement, les silhouettes distinctes même sous la même panoplie, le repli 2D, la perte/restauration de contexte, les préférences, l’inventaire et l’écran mobile.
+La vérification navigateur couvre la compilation réelle du shader, l’orientation de la texture, l’égalité des blocs de pixels après agrandissement, le respect du gabarit et des ancrages sous les panoplies, le repli 2D, la perte/restauration de contexte, les préférences, l’inventaire et l’écran mobile.

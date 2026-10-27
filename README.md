@@ -273,6 +273,6 @@ La section **Échanger les fragments** transforme **10 fragments identiques en u
 
 ### Skins de classes et lumière dorée
 
-Les classes ont des silhouettes propres : **combattant en armure d’acier et cape rouge**, **soutien en robe ivoire/violette avec bâton de cristal**, **archer à capuche verte avec carquois et arc long**. Les mêmes sprites sont utilisés dans le monde, les portraits et l’inventaire ; une panoplie conserve ses couleurs sans effacer la silhouette de classe.
+Les trois classes conservent **le même gabarit de corps que le sprite original**, sans armure ou accessoire de classe ajouté : **combattant rouge**, **soutien violet**, **distance vert**. Les petits marqueurs d’arme d’origine et les ancrages des équipements sont conservés. Les vrais équipements fournissent leurs couleurs et leurs ornements. Le monde, les portraits et l’inventaire utilisent le même dessin.
 
 Le shader **golden hour** ajoute lumière chaude, ombres projetées, rayons discrets et léger halo sur les zones lumineuses, à la résolution native du pixel art. Le bouton **☀**, en haut à droite, permet de revenir à l’éclairage neutre et mémorise ce choix. L’interface garde ses couleurs. Une version légère en Canvas 2D prend le relais lorsque WebGL est indisponible ; les préférences de réduction du mouvement sont respectées.

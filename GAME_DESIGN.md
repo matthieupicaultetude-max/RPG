@@ -521,8 +521,8 @@ Borin reprend les pièces normales élémentaires, du sac ou équipées, contre 
 
 Dix fragments du même élément et de la même tranche de dix niveaux donnent un noyau correspondant, près de Borin, sans or ni hasard. Le stock est validé avant consommation ; les fragments d’éléments ou de tranches différents ne se mélangent pas. Une remise produit un seul fragment par pièce, sans duplication. Le noyau s’ouvre partout avec les règles habituelles de tirage de panoplie.
 
-## 36. Lisibilité des classes et éclairage d’ambiance
+## 36. Couleurs des classes et éclairage d’ambiance
 
-Les trois rôles doivent se reconnaître par leur silhouette, y compris avec une panoplie identique : combattant large en armure avec heaume et grande lame, soutien en robe longue avec capuche et bâton à cristal, distance léger avec capuche, carquois et arc long. Les palettes de classe acier/rouge, ivoire/violet et vert/cuir renforcent cette distinction. Portraits et aperçu d’inventaire reprennent le même sprite que le monde ; aucune statistique de combat ne change.
+Les trois rôles se distinguent par un code couleur sur le gabarit du sprite original : rouge pour le combattant, violet pour le soutien, vert pour le distance. Aucune armure élargie ni accessoire de classe ajouté ne doit déformer ce corps commun ou gêner les vrais équipements. Les ancrages, les petits marqueurs d’arme et les dimensions d’origine sont conservés. Les équipements restent responsables de leurs formes et de leurs ornements ; les portraits et l’inventaire reprennent le sprite du monde. Aucune statistique de combat ne change.
 
 Un éclairage golden hour, actif par défaut, réchauffe les hautes lumières et ajoute ombres longues, rayons doux, léger halo et vignette. Le traitement se fait sur la scène native avant agrandissement, sans lisser les pixels ; les interfaces HTML restent hors du shader. Le bouton ☀ permet de désactiver l’effet. Le choix est mémorisé sur le navigateur, les rayons respectent la réduction du mouvement et une restitution 2D prend le relais sans WebGL.

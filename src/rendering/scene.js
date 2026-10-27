@@ -42,13 +42,13 @@ export function createRenderer(canvas) {
       ctx.ellipse(x, y + 2, 10, 4, 0, 0, Math.PI * 2);
       ctx.stroke();
       ctx.fillStyle = "#eed796";
-      ctx.fillRect(x - 2, y - 49, 5, 3);
+      ctx.fillRect(x - 2, y - 40, 5, 3);
     }
     if (p.hp !== undefined) {
       ctx.fillStyle = "#24372f";
-      ctx.fillRect(x - 10, y - 43, 20, 2);
+      ctx.fillRect(x - 10, y - 34, 20, 2);
       ctx.fillStyle = p.hp > 0 ? "#91c897" : "#cf7970";
-      ctx.fillRect(x - 10, y - 43, (20 * p.hp) / p.maxHp, 2);
+      ctx.fillRect(x - 10, y - 34, (20 * p.hp) / p.maxHp, 2);
     }
     label(bot ? `${p.name} · BOT` : p.name, x, y + 16);
   }
@@ -72,7 +72,7 @@ export function createRenderer(canvas) {
             s.player.x + 8 > prop.bounds.left &&
             s.player.x - 8 < prop.bounds.right &&
             s.player.y + 4 > prop.bounds.top &&
-            s.player.y - 40 < prop.bounds.bottom
+            s.player.y - 29 < prop.bounds.bottom
           )
             ctx.globalAlpha = 0.55;
           prop.draw(ctx,felled);

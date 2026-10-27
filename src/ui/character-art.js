@@ -16,7 +16,7 @@ export function paintCharacterArt(root, team) {
     );
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
-    ctx.translate(Math.floor(canvas.width / 2), canvas.height - 9 * scale);
+    ctx.translate(Math.floor(canvas.width / 2), Math.floor(canvas.height / 2) + 10 * scale);
     ctx.scale(scale, scale);
     drawAdventurer(
       ctx,
