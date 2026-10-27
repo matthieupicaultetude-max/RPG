@@ -1,3 +1,4 @@
+import {onSlimeLanding,slimeVulnerable} from '../game/slime-marsh.js';
 import { monsterAttack, monsterAttackDamage } from "../data/monster-attacks.js";
 import { distance, lineClear } from "./attacks.js";
 import { segmentDistanceSq } from "../world/map.js";
@@ -22,6 +23,7 @@ export function isolatedPartyMember(members, monster) {
 }
 export function clearMonsterAttacks(state) {
   for (const monster of state.monsters) {
+    if(monster.intent?.phase==='flight')Object.assign(monster,monster.intent.from);
     delete monster.intent;
     monster.lift = 0;
     monster.moving = false;
@@ -175,7 +177,7 @@ export function stepMonsterAbility(state, monster, dt, ctx) {
     monster.lift = 0;
     return false;
   }
-  if (!a) return startMonsterAttack(state, monster, ctx);
+  if (!a) {if(slimeVulnerable(state,monster)){monster.moving=false;return true;}return startMonsterAttack(state, monster, ctx);}
   if (dt <= 0) return true;
   if (
     (monster.spellState?.root > 0 && a.phase !== "flight") ||
@@ -221,12 +223,13 @@ export function stepMonsterAbility(state, monster, dt, ctx) {
     monster.moving = true;
     if (progress >= 1) {
       if (ctx.canStand(a.to.x, a.to.y)) {
+        let hitCount=0;
         for (const member of activeParty(state))
           if (
             distance(member, a.to) <= a.radius &&
             lineClear(a.to, member, ctx.canStand)
-          )
-            ctx.damage(member, a.damage, monster, a.element, a.kind);
+          ){ctx.damage(member, a.damage, monster, a.element, a.kind);hitCount++;}
+        onSlimeLanding(state,monster,a.to,hitCount);
         state.monsterImpacts ??= [];
         state.monsterImpacts.push({
           ...a.to,

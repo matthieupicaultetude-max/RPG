@@ -1,3 +1,4 @@
+import {slimeScale} from '../game/slime-marsh.js';
 import { drawSetAura, drawEquipmentGlints } from "./chromatic-aura.js";
 import { CLASS_STYLES } from "../data/appearance.js";
 export function drawAdventurer(ctx, p, time, animation) {
@@ -228,26 +229,27 @@ export function drawCreature(ctx, m, time) {
   ctx.ellipse(2, 4, 13, 4, 0, 0, Math.PI * 2);
   ctx.fill();
   ctx.translate(0,-Math.round(m.lift||0));
-  if(m.species==='slime'&&m.intent?.phase==='windup'){
+  const size=slimeScale(m);ctx.scale(size,size);
+  if(['slime','marsh-slime'].includes(m.species)&&m.intent?.phase==='windup'){
     const progress=Math.min(1,m.intent.age/m.intent.windup);ctx.scale(1+progress*.18,1-progress*.28);
   }
   if(m.species==='boar'&&m.facing==='left')ctx.scale(-1,1);
-  if (m.species === "slime" || m.name === "Slime") {
+  if (["slime","marsh-slime"].includes(m.species) || m.name === "Slime") {
     ctx.translate(0, bob);
-    ctx.fillStyle = "#54765a";
+    ctx.fillStyle = m.marshSlime?"#477f82":"#54765a";
     ctx.fillRect(-12, -7, 24, 10);
     ctx.fillRect(-9, -13, 18, 14);
     ctx.fillRect(-5, -16, 10, 9);
-    ctx.fillStyle = "#82ad82";
+    ctx.fillStyle = m.marshSlime?"#71b5ad":"#82ad82";
     ctx.fillRect(-11, -7, 22, 9);
     ctx.fillRect(-8, -12, 16, 12);
     ctx.fillRect(-4, -15, 8, 9);
-    ctx.fillStyle = "#b1cd94";
+    ctx.fillStyle = m.marshSlime?"#b2e5c0":"#b1cd94";
     ctx.fillRect(-7, -11, 12, 4);
     ctx.fillRect(-3, -14, 6, 3);
     ctx.fillStyle = "#dbdeaa";
     ctx.fillRect(-6, -10, 3, 2);
-    ctx.fillStyle = "#47705b";
+    ctx.fillStyle = m.marshSlime?"#397b76":"#47705b";
     ctx.fillRect(-9, 0, 18, 3);
     ctx.fillStyle = "#425847";
     ctx.fillRect(-5, -5, 2, 3);

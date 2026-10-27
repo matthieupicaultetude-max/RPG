@@ -1,3 +1,6 @@
+import * as marshMap from '../world/slime-marsh-map.js';
+import {drawZonePassage,drawMarshGround,drawMarshSlimeStatus} from './slime-marsh.js';
+import {slimeScale} from '../game/slime-marsh.js';
 import { drawMonsterTelegraphs, drawMonsterAttackEffects } from './monster-attacks.js';
 import { createGoldenHour } from './golden-hour.js';
 import { drawSunShadows } from './sun-shadows.js';
@@ -22,7 +25,7 @@ export function createRenderer(canvas) {
   ctx.imageSmoothingEnabled = false;
   const village = createEnvironment();
   const lighting = createGoldenHour(frame.width,frame.height);
-  let tutorial;
+  let tutorial, marsh;
   function label(text, x, y) {
     ctx.font = "8px monospace";
     ctx.textAlign = "center";
@@ -54,10 +57,12 @@ export function createRenderer(canvas) {
     label(bot ? `${p.name} · BOT` : p.name, x, y + 16);
   }
   const render = (s) => {
-    const environment = s.zone === "tutorial" ? (tutorial ||= createEnvironment(tutorialMap)) : village;
+    const environment = s.zone === "tutorial" ? (tutorial ||= createEnvironment(tutorialMap)) : s.zone==='slime-marsh'?(marsh ||= createEnvironment(marshMap)):village;
     const canStand = (x,y)=>canWalkZone(x,y,s.zone);
     ctx.drawImage(environment.ground, 0, 0);
     if(s.lighting!==false)drawSunShadows(ctx,environment,s);
+    drawZonePassage(ctx,s);
+    drawMarshGround(ctx,s);
     for(const marker of environment.markers)label(marker.text,marker.x,marker.y);
     if(s.zone === "tutorial")drawTutorialGate(ctx,s);
     drawSpellGround(ctx,s);
@@ -69,7 +74,7 @@ export function createRenderer(canvas) {
           ctx.save();
           const felled=prop.kind==="tree"&&s.trees.find(tree=>tree.id===prop.id)?.respawn>0;
           if (
-            ["tree","house","petshop","market","sawmill"].includes(prop.kind) && !felled &&
+            ["tree","house","petshop","market","sawmill","mushroom"].includes(prop.kind) && !felled &&
             s.player.y < prop.y &&
             s.player.x + 8 > prop.bounds.left &&
             s.player.x - 8 < prop.bounds.right &&
@@ -108,12 +113,13 @@ export function createRenderer(canvas) {
           }
           drawCreature(ctx, m, s.time);
           const x = Math.round(m.x),
-            y = Math.round(m.y-(m.lift||0));
+            y = Math.round(m.y-(m.lift||0)-24*(slimeScale(m)-1));
           ctx.fillStyle = "#625d3e";
           ctx.fillRect(x - 14, y - 24, 28, 3);
           ctx.fillStyle = "#cfb17c";
           ctx.fillRect(x - 14, y - 24, (28 * m.hp) / m.maxHp, 2);
-          label(m.name, x, y + 17);
+          label(m.marshSlime?`Slime · ${m.growth}/3`:m.name, x, Math.round(m.y-(m.lift||0)+17));
+          drawMarshSlimeStatus(ctx,m,s);
         },
       })),
     ];

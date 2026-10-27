@@ -57,7 +57,7 @@ export function learnUltimate(state, id) {
   return true;
 }
 export const nearFountain = (state) =>
-  state.zone !== "tutorial" && Math.hypot(state.player.x - FOUNTAIN.x, state.player.y - FOUNTAIN.y) < 48;
+  (state.zone||"garden")==="garden" && Math.hypot(state.player.x - FOUNTAIN.x, state.player.y - FOUNTAIN.y) < 48;
 export function allocateCharacteristic(state, stat, quantity) {
   const member = state.team[state.main];
   if (

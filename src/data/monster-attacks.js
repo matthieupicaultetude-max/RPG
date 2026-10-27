@@ -44,7 +44,12 @@ export const MONSTER_ATTACKS = Object.freeze({
     recovery: 3,
   },
 });
-export const monsterAttack = (monster) => MONSTER_ATTACKS[monster.species];
+export const monsterAttack = (monster) => {
+ const base=MONSTER_ATTACKS[monster.species==='marsh-slime'?'slime':monster.species];
+ if(!monster.marshSlime||!base)return base;
+ const growth=Math.max(1,Math.min(3,monster.growth||1));
+ return {...base,radius:base.radius*(1+.25*(growth-1)),windup:base.windup+.3*(growth-1),multiplier:base.multiplier*(1+.25*(growth-1))};
+};
 export const monsterAttackDamage = (monster) =>
   Math.max(
     1,

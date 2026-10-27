@@ -286,3 +286,16 @@ Les monstres préparent une attaque élémentaire au lieu de frapper instantané
 - **Luciole — Feu / Phalène — Air** : annoncent une trajectoire pendant **1,2 s**, puis envoient une tornade mobile. Chaque tornade touche une seule fois chaque personnage et respecte les obstacles.
 
 Les zones affichent leur élément, un contour contrasté, la direction et la progression de la préparation. Dégâts, effets visuels et sons suivent l’élément annoncé ; les résistances correspondantes s’appliquent avant les boucliers. L’enracinement interrompt une préparation ou une charge. La mort du lanceur et les changements de zone suppriment ses attaques en cours. Le bestiaire présente les nouvelles attaques et leurs dégâts au niveau sélectionné.
+
+## Marais de Gelée
+
+Une nouvelle zone est accessible au **passage au sud-est du village**, au bout du chemin : approchez-vous du cercle puis appuyez sur **F**. Le retour fonctionne de la même manière à l’entrée du marais. Les outils dev proposent aussi **Marais de Gelée** pour tester directement la zone. Un guide s’ouvre à la première visite et reste disponible avec le bouton **✿**.
+
+Le décor possède ses propres mares turquoise infranchissables, nénuphars, roseaux, champignons géants, sentiers et trois fleurs éponges. Cinq **Slimes des marais de niveau 3** occupent la zone ; l’un commence à la taille 2. Ils donnent les ressources et noyaux Eau habituels et disposent d’une fiche dédiée au bestiaire.
+
+- Chaque atterrissage laisse une **flaque pendant 18 s**. Atterrir dans une flaque préexistante l’absorbe et fait grandir le slime, jusqu’à **trois tailles**.
+- Chaque croissance ajoute **30 % de PV maximum**, **25 % aux dégâts** et **25 % au rayon** par rapport à la base, avec **0,3 s de préparation supplémentaire**. La proportion de PV est conservée à l’arrondi.
+- Un gros slime qui rate son saut devient **vulnérable pendant 2,5 s** : il reste déséquilibré et reçoit **+50 % de dégâts**. Les cibles bonus répètent les dégâts reçus sans appliquer une seconde fois ce bonus.
+- Attirer l’atterrissage à moins de **20 pixels d’une fleur éponge** nettoie les flaques proches et crée un **halo de 82 pixels pendant 6 s**, qui empêche le dépôt de gelée et la croissance par absorption. La fleur est de nouveau prête **10 s après son activation**. Les sauts restent à esquiver dans le halo.
+
+Inventaire, équipement, niveaux, métier et mode de combat sont conservés lors des trajets. Le village et les monstres blessés se retrouvent à chaque retour dans la même session. Les flaques et halos expirent selon le temps de simulation ; un changement de zone annule les attaques en cours. Après une défaite complète dans le marais, la troupe est soignée à son entrée. Recharger la page réinitialise toujours cette progression locale.

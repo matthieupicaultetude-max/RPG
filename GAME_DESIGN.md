@@ -541,3 +541,23 @@ Toutes les attaques des quatre espèces passent par une préparation visible au 
 Le slime vise le membre vivant et déployé le plus éloigné du centre moyen de la troupe. En cas d’égalité, il choisit le plus éloigné de lui. Sa cible doit être à portée ; le cercle reste à sa position annoncée pendant le saut. Le slime du tutoriel prévient 1,5 s et inflige seulement 2 dégâts. Les insectes varient leurs cibles parmi les personnages à portée et visibles. La portée maximale d’une attaque est 145 pour la charge, 155 pour le bond et les tornades.
 
 Charges et tornades utilisent des collisions balayées pour éviter de traverser un personnage entre deux images. Les trajectoires terrestres s’arrêtent aux obstacles ; le saut peut les survoler mais n’atterrit que sur une position praticable. Une préparation ou une charge peut être interrompue par enracinement ; un bond déjà en l’air rejoint son atterrissage annoncé. Les attaques du lanceur mort et celles de l’ancienne zone sont supprimées. Les temps avancent avec la simulation physique, sans rattrapage d’attaque à la reprise d’un onglet masqué.
+
+## 38. Marais de Gelée — absorption et fleurs éponges
+
+Le passage sud-est du village relie une carte de marais distincte au village avec F à proximité. Le marais possède des mares non praticables, des nénuphars décoratifs sur l’eau, des roseaux, de grands champignons et trois fleurs éponges sur des positions accessibles. Les chemins contournent les mares ; un passage à l’ouest permet le retour. Un guide initial explique le gimmick et peut être rouvert avec ✿. Les outils dev permettent un accès direct après le tutoriel.
+
+Cinq Slimes des marais de niveau 3 sont présents. Cette espèce Eau figure dans le bestiaire et partage les butins du Slime : Gelée, Cœur de gelée, variantes chromatiques et noyau Eau de tranche 1–10. Ses statistiques de taille 1 découlent de sa fiche (124 PV, 11 dégâts de bond au niveau 3). Un slime commence à la taille 2 pour illustrer la mécanique.
+
+| Taille | PV au niveau 3 | Dégâts du saut | Rayon | Préparation |
+| --- | --- | --- | --- | --- |
+| 1 | 124 | 11 Eau | 24 | 1,2 s |
+| 2 | 161 | 14 Eau | 30 | 1,5 s |
+| 3 | 198 | 17 Eau | 36 | 1,8 s |
+
+L’atterrissage traite les flaques déjà présentes avant d’en déposer une nouvelle pendant 18 s. Une flaque absorbée donne une taille, jusqu’au maximum de trois. La croissance conserve la proportion de vie à l’arrondi et ne modifie les valeurs que pour l’attaque suivante : le cercle et les dégâts d’une attaque annoncée restent verrouillés. À la taille maximale, l’absorption consomme toujours la flaque sans augmenter les PV. Les flaques sont limitées à 32 et ne donnent aucun objet d’inventaire.
+
+Un saut raté par un slime de taille 2 ou 3 le déséquilibre pendant 2,5 s et augmente de 50 % les dégâts reçus. Une attaque bloquée par un bouclier reste un saut ayant touché. Le bonus des cibles dorées ne multiplie pas une seconde fois une valeur déjà amplifiée. À la réapparition, le slime retrouve sa taille de départ et sa vie correspondante.
+
+Atterrir à moins de 20 pixels d’une fleur prête déclenche son absorption avant la croissance : les flaques qui intersectent son rayon de 82 pixels disparaissent. Son halo dure 6 s et empêche tout dépôt ou absorption à l’intérieur ; elle se recharge 10 s après l’activation. Les attaques annoncées restent dangereuses dans le halo. Attirer puis esquiver un saut sur la fleur permet de nettoyer le terrain et d’exposer un gros slime.
+
+Les états du village et du marais sont conservés séparément dans la session, avec les mêmes personnages et le même sac. Les flaques et halos utilisent l’horloge de simulation partagée. Les attaques sont annulées lors d’un trajet et un bond interrompu reprend un point de départ terrestre valide. Une défaite dans le marais ramène l’équipe soignée à son entrée. Les services du village restent accessibles dans leur propre zone.

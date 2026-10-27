@@ -19,7 +19,7 @@ import {
 import { FORGE } from "../world/map.js";
 
 export const nearForge = (state) =>
-  state.zone !== "tutorial" &&
+  (state.zone||"garden")==="garden" &&
   Math.hypot(state.player.x - FORGE.npc.x, state.player.y - FORGE.npc.y) < 48;
 export function forgeItems(state) {
   return [

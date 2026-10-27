@@ -685,3 +685,5 @@ canvas { cursor: crosshair; }
 canvas.paper-avatar { position:relative; inset:auto; object-fit:contain; flex-shrink:0; }
 .portrait .class-portrait { position:static; inset:auto; width:100%; height:100%; object-fit:contain; image-rendering:pixelated; }
 .hud-menu [data-action="lighting"][aria-pressed=true] { color:#f5d78e; border-color:#be9b59; }
+.marsh-guide { position:absolute; z-index:9; top:115px; right:22px; width:min(340px,calc(100% - 44px)); max-height:calc(100dvh - 260px); overflow:auto; padding:20px; background:#173931f5; border:1px solid #91c8ac; border-radius:10px; color:#e3eacd; box-shadow:0 8px 40px #0006; }.marsh-guide h2 { font-size:20px; }.marsh-guide p { font-size:12px; line-height:1.65; }.marsh-guide button { width:100%; }
+@media(max-width:700px) { .marsh-guide { right:8px; top:112px; width:calc(100% - 16px); max-height:calc(100dvh - 370px); padding:12px; }.marsh-guide h2 { font-size:17px; }.marsh-guide p { font-size:11px; line-height:1.45; } }

@@ -25,6 +25,7 @@ export function createEnvironment(map = villageMap) {
     ctx.drawImage(sprite.canvas, x - sprite.anchorX, y - sprite.anchorY);
     ctx.globalAlpha = 1;
   }
+  for(const prop of map.WATER_DECORATIONS||[]){const sprite=spriteFor(prop);ctx.drawImage(sprite.canvas,prop.x-sprite.anchorX,prop.y-sprite.anchorY);}
   const props = [...PROPS, ...DECORATIONS].map((prop) => {
     if (!placementOnLand(prop))
       throw new Error(`Invalid land placement: ${prop.id}`);

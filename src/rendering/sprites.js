@@ -421,7 +421,18 @@ function sawmill(g){
  g.fillStyle='#9a7848';g.fillRect(-19,-27,15,9);g.fillStyle='#d1b57e';g.fillRect(-18,-28,13,3);g.fillStyle='#66513a';g.fillRect(8,-31,3,17);g.fillStyle='#c9c5a7';g.fillRect(3,-30,18,3);
 }
 function stump(g){g.fillStyle='#81603f';g.fillRect(-8,-7,16,11);oval(g,0,-6,10,5,'#c5a76b');oval(g,0,-7,6,3,'#e2c895');g.fillStyle='#a18350';g.fillRect(-3,-8,6,1);g.fillRect(0,-9,1,5);}
+function marshMushroom(g,p){
+ const palettes=[['#665a91','#a18fc3','#e8d9db'],['#467e83','#83bfc0','#d8eed2'],['#925b85','#ca93b0','#f4deba']],c=palettes[p.variant%3];
+ oval(g,2,2,13,4,'#3f654755');g.fillStyle='#7c8064';g.fillRect(-4,-22,9,24);g.fillStyle='#d9cc9c';g.fillRect(-3,-22,6,22);g.fillStyle='#f4e2b5';g.fillRect(-3,-20,2,18);
+ poly(g,[[-19,-23],[-16,-32],[-7,-40],[3,-42],[13,-36],[20,-25],[15,-20],[-13,-20]],c[0]);poly(g,[[-17,-25],[-13,-33],[-4,-39],[5,-39],[14,-32],[17,-25]],c[1]);
+ g.fillStyle=c[2];g.fillRect(-9,-32,5,3);g.fillRect(5,-29,5,3);g.fillRect(0,-37,3,2);g.fillStyle='#e7cf9a';g.fillRect(-13,-22,28,2);
+}
+function marshReeds(g){for(let i=0;i<5;i++){const x=-8+i*4,h=12+(i*7)%17;g.fillStyle='#416c54';g.fillRect(x,-h,2,h+1);g.fillStyle='#94ac6b';g.fillRect(x,-h,1,h);g.fillStyle='#886352';g.fillRect(x-1,-h-7,3,8);g.fillStyle='#bdac70';g.fillRect(x,-h-7,1,6);} }
+function waterLily(g){oval(g,0,-1,11,4,'#477f68');g.fillStyle='#80b28a';g.fillRect(-7,-3,10,2);poly(g,[[0,-3],[2,-9],[5,-6],[9,-8],[8,-3]],'#d7a6c5');g.fillStyle='#f4d4df';g.fillRect(3,-7,3,4);g.fillStyle='#f4dca0';g.fillRect(3,-4,3,2);}
 const DEFINITIONS = {
+ mushroom:{bounds:[-22,-46,46,52],origin:[0,0],paint:marshMushroom},
+ reeds:{bounds:[-12,-38,27,43],origin:[0,0],paint:marshReeds},
+ waterlily:{bounds:[-14,-12,30,20],origin:[0,0],paint:waterLily},
  sawmill:{bounds:[-29,-35,60,44],origin:[0,0],paint:sawmill},
  stump:{bounds:[-14,-14,30,23],origin:[0,0],paint:stump},
  fountain:{bounds:[-29,-35,59,47],origin:[0,0],paint:fountain},

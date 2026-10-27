@@ -1,10 +1,11 @@
+import {canWalkMarsh} from './slime-marsh-map.js';
 import { clearMonsterAttacks } from '../combat/monster-attacks.js';
 import { canWalkMap } from "./map.js";
 import { canWalkTutorial, TUTORIAL_EXIT } from "./tutorial-map.js";
 import { clearRoute, placeAllies } from "../ai/companions.js";
 export const inTutorialZone = (state) => state.zone === "tutorial";
 export const canWalkZone = (x, y, zone) =>
-  zone === "tutorial" ? canWalkTutorial(x, y) : canWalkMap(x, y);
+  zone === "tutorial" ? canWalkTutorial(x, y) : zone === "slime-marsh" ? canWalkMarsh(x,y) : canWalkMap(x, y);
 export const nearTutorialExit = (state) =>
   inTutorialZone(state) &&
   Math.hypot(

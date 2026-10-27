@@ -22,6 +22,7 @@ export function drawSunShadows(ctx, environment, state) {
           "sawmill",
           "bench",
           "fountain",
+        "mushroom",
           "sign",
         ].includes(prop.kind)
       )
