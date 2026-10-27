@@ -51,7 +51,7 @@ export function travelToZone(state, destination) {
   } else state.marshGuideOpen = false;
   state.log.unshift(
     destination === "slime-marsh"
-      ? "Marais de Gelée : attirez les sauts sur les fleurs éponges !"
+      ? "Marais de Gelée : attention, les fleurs éponges font grossir les slimes !"
       : "Retour au village.",
   );
   state.log.length = Math.min(6, state.log.length);

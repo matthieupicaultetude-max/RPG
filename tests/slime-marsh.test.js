@@ -143,36 +143,34 @@ test("saut raté : fenêtre vulnérable, dégâts +50 %, sans doubler le bonus d
   assert.equal(m.hp, m.maxHp);
   assert.equal(m.vulnerableUntil, 0);
 });
-test("fleur éponge : nettoyage avant absorption, halo anti-gelée puis repos et réactivation", () => {
+test("fleur éponge : nectar de croissance, flaques conservées, recharge et plafond de taille", () => {
   const s = setup(),
     m = s.monsters[0],
     f = s.slimeMarsh.flowers[0];
-  const puddle = (x) => ({
-    id: s.slimeMarsh.nextPuddle++,
-    x,
-    y: f.y,
-    radius: 18,
-    expiresAt: 100,
-  });
-  s.slimeMarsh.puddles = [puddle(f.x), puddle(f.x + 30), puddle(f.x + 130)];
+  m.hp = m.maxHp / 2;
+  s.slimeMarsh.puddles = [
+    { id: 1, x: f.x, y: f.y, radius: 18, expiresAt: 100 },
+  ];
   onSlimeLanding(s, m, f, 1);
-  assert.equal(m.growth, 1);
-  assert.equal(s.slimeMarsh.puddles.length, 1);
-  assert.equal(f.safeUntil, 6);
+  assert.equal(m.growth, 2);
+  assert.equal(m.hp, Math.round(m.maxHp / 2));
+  assert.equal(s.slimeMarsh.puddles.length, 2);
+  assert.equal(f.bloomUntil, 1);
   assert.equal(f.readyAt, 10);
   s.time = 1;
   onSlimeLanding(s, m, { x: f.x + 40, y: f.y }, 1);
-  assert.equal(s.slimeMarsh.puddles.length, 1);
-  assert.equal(f.safeUntil, 6);
-  s.time = 7;
-  onSlimeLanding(s, m, f, 1);
-  assert.equal(s.slimeMarsh.puddles.length, 2);
+  assert.equal(m.growth, 2); // no nectar during cooldown; outside existing pools
   assert.equal(f.readyAt, 10);
-  s.time = 11;
+  s.time = 10;
   onSlimeLanding(s, m, f, 1);
-  assert.equal(s.slimeMarsh.puddles.length, 1);
-  assert.equal(f.safeUntil, 17);
-  assert.equal(f.readyAt, 21);
+  assert.equal(m.growth, 3);
+  assert.equal(f.readyAt, 20);
+  s.time = 20;
+  const hp = m.hp;
+  onSlimeLanding(s, m, f, 1);
+  assert.equal(m.growth, 3);
+  assert.equal(m.hp, hp);
+  assert.equal(f.readyAt, 30);
 });
 test("hors marais : les slimes ordinaires gardent leurs règles et aucune flaque spéciale ne se crée", () => {
   const s = createSandbox(),

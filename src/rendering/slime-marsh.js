@@ -90,15 +90,15 @@ export function drawMarshGround(g, state) {
     }
   }
   for (const f of marsh.flowers) {
-    const active = f.safeUntil > state.time;
+    const active = f.bloomUntil > state.time;
     if (active) {
       g.fillStyle = "#9ae7c9";
       g.globalAlpha = 0.1;
       g.beginPath();
-      g.arc(f.x, f.y, MARSH_RULES.flowerRadius, 0, Math.PI * 2);
+      g.arc(f.x, f.y, MARSH_RULES.triggerRadius, 0, Math.PI * 2);
       g.fill();
       g.setLineDash([3, 4]);
-      ring(g, f.x, f.y, MARSH_RULES.flowerRadius, "#d0ffde", 0.6);
+      ring(g, f.x, f.y, MARSH_RULES.triggerRadius, "#d0ffde", 0.6);
       g.setLineDash([]);
     }
     g.globalAlpha = 1;
@@ -141,7 +141,7 @@ export function drawMarshGround(g, state) {
     }
     if (Math.hypot(f.x - state.player.x, f.y - state.player.y) < 85) {
       const label = active
-        ? "HALO PURIFIANT"
+        ? "NECTAR DE CROISSANCE"
         : ready
           ? "FLEUR EPONGE"
           : `REPOS ${Math.ceil(f.readyAt - state.time)}s`;

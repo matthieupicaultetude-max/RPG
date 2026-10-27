@@ -115,4 +115,4 @@ Le slime se comprime avant son départ ; sa hauteur visuelle suit une parabole s
 
 `src/game/zone-travel.js` sauvegarde les entités propres à chaque zone, puis déplace la troupe par les passages. `src/game/slime-marsh.js` gère les flaques, la croissance, la vulnérabilité et les temps des fleurs. Les paramètres de l’attaque sont calculés à la préparation et copiés dans l’intention, pour conserver la correspondance entre prévisualisation et impact.
 
-`src/rendering/slime-marsh.js` dessine les passages, les flaques, les fleurs ouvertes ou en repos, les halos purifiants et les indications de vulnérabilité. Les flaques et halos sont découpés sur le terrain en excluant les mares. Le slime grandit visuellement avec sa taille ; les sprites des personnages conservent leur gabarit d’origine.
+`src/rendering/slime-marsh.js` dessine les passages, les flaques, les fleurs ouvertes ou en repos, les éclats de nectar et les indications de vulnérabilité. Les flaques et éclats sont découpés sur le terrain en excluant les mares. Le slime grandit visuellement avec sa taille ; les sprites des personnages conservent leur gabarit d’origine.
