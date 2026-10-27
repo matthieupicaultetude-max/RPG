@@ -221,10 +221,14 @@ function hitMonster(s, monster, damage, member, options={}) {
   }
 }
 export function rewardMonster(s,monster,random=Math.random) {
+  if(monster.tutorial) {
+    if(!s.tutorial || s.tutorial.defeated)return;
+    s.tutorial.defeated=true;
+  }
   s.gold += monster.gold;
   grantXp(s, monster.xp);
   const definition=monsterDefinition(monster.species);
-  grantLoot(s,random()<definition.rareChance?'rare':'normal',random()<definition.chromaticChance,monster.name);
+  grantLoot(s,random()<definition.rareChance?'rare':'normal',random()<definition.chromaticChance,monster.species);
   if(random()<CORE_CHANCE)grantCore(s,definition.element,monster.level);
 }
 export function clickBonus(s,point) {Object.assign(s.team[s.main],s.player);const hit=clickBonusTarget(s,point,canStand,hitMonster);if(hit)cancelWoodcutting(s);return hit;}

@@ -498,9 +498,9 @@ Le clic gauche donne priorité à la cible de récolte active avant la sélectio
 
 ## 32. Musique, ambiance et retours sonores
 
-Le jardin possède une musique rétro originale, douce et entraînante, à **104 BPM**, en boucle de **16 mesures** avec une seconde phrase plus aérée. Une basse triangulaire, des arpèges, une mélodie carrée adoucie et des percussions légères composent le thème. Un souffle de vent filtré et modulé lentement apporte une ambiance extérieure continue.
+Le jardin possède une musique rétro originale, douce et entraînante, à **104 BPM**, en boucle de **16 mesures** avec une seconde phrase plus aérée. Une basse triangulaire, des arpèges, une mélodie carrée adoucie et des percussions légères composent le thème.
 
-Le son s’active après une interaction utilisateur. Le bouton **🔊** donne accès aux volumes général, musique, effets et vent, ainsi qu’à la coupure générale. Les préférences audio sont mémorisées séparément du jeu. Le changement de volume et les pauses comportent des fondus courts. Un onglet masqué suspend la restitution sonore ; le retour reprend la même ambiance sans empiler plusieurs musiques.
+Le son s’active après une interaction utilisateur. Le bouton **🔊** donne accès aux volumes général, musique et effets, ainsi qu’à la coupure générale. Les préférences audio sont mémorisées séparément du jeu. Le changement de volume et les pauses comportent des fondus courts. Un onglet masqué suspend la restitution sonore ; le retour reprend la même ambiance sans empiler plusieurs musiques.
 
 Les dégâts réellement appliqués déclenchent un impact adapté à la source : lame, arc ou magie. Les sorts magiques distinguent leurs éléments. L’origine sonore est conservée par les projectiles, zones et événements différés ; une compétence lancée ensuite ne change pas le bruit d’un ancien tir. Les soins effectifs, dégâts reçus, ultimes et cibles bonus ajoutent des retours courts et distincts. Les déplacements, coups de hache, récoltes et fabrications apportent des bruitages plus discrets.
 

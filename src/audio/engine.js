@@ -30,7 +30,6 @@ export function createAudioEngine({
     master,
     music,
     effects,
-    wind,
     buffer,
     interval,
     suspendTimer,
@@ -48,7 +47,6 @@ export function createAudioEngine({
       [master, preferences.muted || hidden ? 0 : preferences.master],
       [music, preferences.music],
       [effects, preferences.effects],
-      [wind, preferences.wind],
     ])
       node.gain.setTargetAtTime(value, now, 0.04);
   }
@@ -57,7 +55,6 @@ export function createAudioEngine({
     master = context.createGain();
     music = context.createGain();
     effects = context.createGain();
-    wind = context.createGain();
     const limiter = context.createDynamicsCompressor(),
       filter = context.createBiquadFilter();
     limiter.threshold.value = -14;
@@ -70,34 +67,12 @@ export function createAudioEngine({
     music.connect(filter);
     filter.connect(master);
     effects.connect(master);
-    wind.connect(master);
     master.connect(limiter);
     limiter.connect(context.destination);
     buffer = makeNoise(context);
     master.gain.value = 0;
     music.gain.value = preferences.music;
     effects.gain.value = preferences.effects;
-    wind.gain.value = preferences.wind;
-    const source = context.createBufferSource(),
-      windFilter = context.createBiquadFilter(),
-      gust = context.createGain(),
-      lfo = context.createOscillator(),
-      depth = context.createGain();
-    source.buffer = buffer;
-    source.loop = true;
-    windFilter.type = "bandpass";
-    windFilter.frequency.value = 480;
-    windFilter.Q.value = 0.4;
-    gust.gain.value = 0.045;
-    lfo.frequency.value = 0.065;
-    depth.gain.value = 0.018;
-    lfo.connect(depth);
-    depth.connect(gust.gain);
-    source.connect(windFilter);
-    windFilter.connect(gust);
-    gust.connect(wind);
-    source.start();
-    lfo.start();
     volumes();
     nextTime = context.currentTime + 0.1;
     interval = setInterval(() => {

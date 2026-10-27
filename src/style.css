@@ -674,3 +674,9 @@ canvas { cursor: crosshair; }
 @media (max-width:700px) { .audio-settings { right:12px; top:108px; padding:14px; }.hud-menu [data-action="audio"] { padding:8px; } }
 
 @media (min-width:701px) { .hud-notification { top:86px; } }
+
+.tutorial { position:absolute; z-index:9; right:22px; top:115px; width:min(340px,calc(100% - 44px)); max-height:calc(100dvh - 270px); overflow:auto; padding:20px; color:#eee0b8; background:#192c25f5; border:1px solid #b6a16c; border-radius:10px; box-shadow:0 8px 40px #0006; }
+.tutorial h2 { font-size:20px; margin:8px 0 12px; }.tutorial p { font-size:12px; line-height:1.65; }.tutorial small { font-size:10px; color:#c9b472; }.tutorial > div { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }.tutorial button { padding:9px; font-size:11px; }.tutorial progress { width:100%; accent-color:#d6bd7a; }
+.game-screen:has(#inventory:not([hidden])) .tutorial { display:none; }
+@media(max-width:700px) { .tutorial { top:112px; right:10px; width:min(270px,calc(100% - 180px)); max-height:calc(100dvh - 290px); padding:12px; }.tutorial h2 { font-size:15px; }.tutorial p { font-size:11px; } }
+@media(max-width:480px) { .tutorial { top:110px; right:8px; width:calc(100% - 16px); max-height:calc(100dvh - 410px); }.tutorial h2 { font-size:14px; margin:5px 0; }.tutorial p { margin:5px 0; line-height:1.4; } }

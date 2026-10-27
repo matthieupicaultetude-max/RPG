@@ -1,3 +1,4 @@
+import { createTutorialUI } from './ui/tutorial.js';
 import { createAudioUI } from './ui/audio.js';
 import { renderProfessions } from './ui/professions.js';
 import { requestCut, craftPlanks, woodQuantity, nearSawmill, cancelWoodcutting, grantWoodcuttingXp, addWoodItem } from './game/woodcutting.js';
@@ -97,6 +98,7 @@ function refresh(s) {
 }
 function refreshUltimate(s) {
   sound.update(s);
+  tutorial?.update();
   app.querySelector('#sawmill-interaction').hidden=inventoryOpen||!nearSawmill(s);
   const harvest=app.querySelector('#harvest-status'),action=s.woodcutting.action;harvest.hidden=!action;
   if(action){const tree=s.trees.find(t=>t.id===action.tree);harvest.querySelector('span').textContent=`${action.phase==='walk'?'En route':'Coupe'} · ${woodById(tree.wood).name}`;harvest.querySelector('progress').value=action.phase==='cut'?action.progress/action.duration:0;}
@@ -136,12 +138,14 @@ function setInventory(open, tab = currentTab) {
     app.querySelector('[data-action="close-inventory"]').focus();
   } else app.querySelector('canvas').focus({ preventScroll: true });
 }
+let tutorial;
 const game = createGame(app.querySelector('canvas'),app.querySelector('.touch-controls'),refresh,refreshUltimate,tab=>setInventory(true,tab));
+tutorial = createTutorialUI(app, game, setInventory);
 refresh(game.state);
 app.addEventListener('click',event=>{
   const button=event.target.closest('button'); if(!button)return;
   const s=game.state;
-  if(button.dataset.action==='audio'||button.closest('#audio-settings'))return;
+  if(button.dataset.action==='audio'||button.closest('#audio-settings')||button.closest('.tutorial'))return;
   if (button.dataset.action === 'inventory') { setInventory(!(inventoryOpen && currentTab==='equipment'), 'equipment'); return; }
   if (button.dataset.action === 'bestiary') { setInventory(!(inventoryOpen && currentTab==='bestiary'), 'bestiary'); return; }
   if (button.dataset.action === 'professions') {setInventory(true,'professions');return;}
@@ -244,4 +248,4 @@ window.addEventListener('keydown', event => {
 }, uiOptions);
 // Read-only inspection for browser checks; mutations go through the visible tools.
 window.auroria={snapshot:()=>JSON.parse(JSON.stringify(game.state))};
-if(import.meta.hot)import.meta.hot.dispose(()=>{uiController.abort();sound.destroy();game.destroy();delete window.auroria;});
+if(import.meta.hot)import.meta.hot.dispose(()=>{uiController.abort();sound.destroy();tutorial.destroy();game.destroy();delete window.auroria;});

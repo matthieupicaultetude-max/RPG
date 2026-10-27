@@ -14,7 +14,6 @@ export function createAudioUI(app) {
     ["master", "Général"],
     ["music", "Musique"],
     ["effects", "Bruitages"],
-    ["wind", "Vent"],
   ]
     .map(
       ([key, label]) =>

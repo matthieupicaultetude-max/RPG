@@ -40,12 +40,11 @@ export const AUDIO_DEFAULTS = Object.freeze({
   master: 0.65,
   music: 0.28,
   effects: 0.7,
-  wind: 0.3,
   muted: false,
 });
 export function audioPreferences(value = {}) {
   const result = { ...AUDIO_DEFAULTS };
-  for (const key of ["master", "music", "effects", "wind"])
+  for (const key of ["master", "music", "effects"])
     if (typeof value?.[key] === "number" && Number.isFinite(value[key]))
       result[key] = Math.max(0, Math.min(1, value[key]));
   if (typeof value?.muted === "boolean") result.muted = value.muted;
