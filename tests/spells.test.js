@@ -340,3 +340,23 @@ test("Éclat de carrière : les éclats touchent derrière la cible, sans touche
   assert.equal(s.monsters[1].hp, 989);
   assert.equal(s.monsters[2].hp, 1000);
 });
+
+test('déséquiper libère un emplacement sans remettre les recharges à zéro ni le remplir au niveau suivant', async () => {
+  const { unequipSpell } = await import('../src/data/spells.js');
+  const { grantXp } = await import('../src/dev/sandbox.js');
+  const s = createSandbox(), m = s.team[0];
+  m.spellCooldowns['melee-earth-0'] = 3;
+  assert.equal(unequipSpell(s,0,0),true);
+  assert.equal(unequipSpell(s,0,0),false);
+  assert.equal(unequipSpell(s,0,4),false);
+  grantXp(s,50);
+  assert.equal(m.loadout[0],null);
+  assert.equal(m.spellCooldowns['melee-earth-0'],3);
+  assert.equal(equipSpell(s,0,0,'melee-earth-0'),true);
+  assert.deepEqual(m.emptySpellSlots,[]);
+  m.learnedUltimates=['melee-earth-3'];
+  equipSpell(s,0,3,'melee-earth-3');
+  assert.equal(unequipSpell(s,0,3),true);
+  assert.equal(m.loadout[3],null);
+  assert.deepEqual(m.learnedUltimates,['melee-earth-3']);
+});

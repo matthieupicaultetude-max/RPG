@@ -110,7 +110,7 @@ export function grantXp(s, amount) {
       m.xp -= m.level * 50;
       m.level++;
       m.characteristicPoints+=5;
-      fillUnlockedSlots(m);
+      fillUnlockedSlots(m,m.level-1);
       m.maxHp += 10;
       m.hp = m.maxHp;
     }

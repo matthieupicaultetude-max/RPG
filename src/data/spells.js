@@ -468,6 +468,16 @@ export function equipSpell(state, memberIndex, slot, id) {
     return false;
   if (member.loadout.includes(id) && member.loadout[slot] !== id) return false;
   member.loadout[slot] = id;
+  member.emptySpellSlots = (member.emptySpellSlots || []).filter(index => index !== slot);
+  state.revision++;
+  return true;
+}
+
+export function unequipSpell(state, memberIndex, slot) {
+  const member = state.team[memberIndex];
+  if (!member || !Number.isInteger(slot) || slot < 0 || slot > 3 || !member.loadout[slot]) return false;
+  member.loadout[slot] = null;
+  member.emptySpellSlots = [...new Set([...(member.emptySpellSlots || []), slot])];
   state.revision++;
   return true;
 }

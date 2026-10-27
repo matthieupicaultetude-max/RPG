@@ -26,7 +26,7 @@ export function renderSpellbook(state, slot = 0, filter = "all") {
     })
     .join(
       "",
-    )}</div><div class="spellbook-filter"><h3>${slot === 3 ? "Choisir l’ultime personnel" : "Choisir le sort de l’emplacement " + (slot + 1)}</h3><label>Élément <select id="spell-element">${["all", ...Object.keys(ELEMENTS)].map((element) => `<option value="${element}" ${element === filter ? "selected" : ""}>${element === "all" ? "Tous" : ELEMENTS[element].name}</option>`).join("")}</select></label></div><div class="spell-catalog">${SPELLS.filter(
+    )}</div><div class="spellbook-filter"><button data-unequip-spell="${slot}" ${member.loadout[slot] ? "" : "disabled"}>Déséquiper le sort sélectionné</button><h3>${slot === 3 ? "Choisir l’ultime personnel" : "Choisir le sort de l’emplacement " + (slot + 1)}</h3><label>Élément <select id="spell-element">${["all", ...Object.keys(ELEMENTS)].map((element) => `<option value="${element}" ${element === filter ? "selected" : ""}>${element === "all" ? "Tous" : ELEMENTS[element].name}</option>`).join("")}</select></label></div><div class="spell-catalog">${SPELLS.filter(
     (spell) =>
       spell.role === member.role &&
       spell.ultimate === (slot === 3) &&

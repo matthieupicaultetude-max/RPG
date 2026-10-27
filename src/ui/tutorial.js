@@ -35,7 +35,7 @@ export function createTutorialUI(app, game, openPanel) {
     ],
     spells: [
       "Votre premier sort Feu",
-      "Ouvrez le grimoire (K). Au niveau 2, votre premier sort Feu est débloqué. Sélectionnez le second emplacement, puis équipez le sort Feu depuis sa fiche : R pour le lancer. Vous pouvez mélanger Terre et Feu ! Fermez ensuite le grimoire avec Échap pour terminer le guide. Un sort par niveau ; un ultime au choix tous les 5 niveaux.",
+      "Ouvrez le grimoire (K). Au niveau 2, votre premier sort Feu est débloqué. Sélectionnez un des trois emplacements normaux, puis équipez le sort Feu depuis sa fiche. Clic droit, R ou C pour le lancer selon l’emplacement choisi. Vous pouvez mélanger Terre et Feu ! Fermez ensuite le grimoire avec Échap pour terminer le guide. Un sort par niveau ; un ultime au choix tous les 5 niveaux.",
     ],
   };
   const stages = Object.keys(text);

@@ -1,4 +1,3 @@
-import { fillUnlockedSlots } from "../data/progression.js";
 import { createMonster } from "../data/monsters.js";
 
 // A separate encounter keeps the lesson safe without changing ordinary monsters.
@@ -55,7 +54,7 @@ export function stepTutorial(state) {
   if (
     t.step === "spells" &&
     t.manualSpell &&
-    state.team[t.member].loadout[1] === `${state.team[t.member].role}-fire-0`
+    state.team[t.member].loadout.slice(0, 3).includes(`${state.team[t.member].role}-fire-0`)
   )
     t.spellRead = true;
   if (t.step === "combat" && t.defeated) {
@@ -76,7 +75,6 @@ export function stepTutorial(state) {
 export function finishTutorial(state, skipped = false) {
   const t = state.tutorial;
   if (!t || ["done", "skipped"].includes(t.step)) return;
-  if (t.manualSpell) fillUnlockedSlots(state.team[t.member]);
   state.monsters = t.savedMonsters;
   delete t.savedMonsters;
   state.spellEvents = [];

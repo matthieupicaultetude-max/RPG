@@ -32,11 +32,11 @@ export const ultimateChoices = (member) =>
     0,
     Math.floor(member.level / 5) - (member.learnedUltimates?.length || 0),
   );
-export function fillUnlockedSlots(member) {
-  for (let level = 1; level <= Math.min(12, member.level); level++) {
+export function fillUnlockedSlots(member, previousLevel = 0) {
+  for (let level = previousLevel + 1; level <= Math.min(12, member.level); level++) {
     const id = `${member.role}-${ELEMENT_ORDER[(level - 1) % 4]}-${Math.floor((level - 1) / 4)}`;
     if (member.loadout.includes(id)) continue;
-    const index = member.loadout.slice(0, 3).indexOf(null);
+    const index = member.loadout.slice(0, 3).findIndex((id, slot) => id === null && !member.emptySpellSlots?.includes(slot));
     if (index < 0) break;
     member.loadout[index] = id;
   }
@@ -52,7 +52,7 @@ export function learnUltimate(state, id) {
   )
     return false;
   member.learnedUltimates.push(id);
-  if (!member.loadout[3]) member.loadout[3] = id;
+  if (!member.loadout[3] && !member.emptySpellSlots?.includes(3)) member.loadout[3] = id;
   state.revision++;
   return true;
 }

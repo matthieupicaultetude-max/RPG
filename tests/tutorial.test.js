@@ -69,3 +69,14 @@ test("passer le tutoriel restaure les monstres sans récompense gratuite", () =>
   assert.ok(s.team.every((m) => m.level === 1 && m.xp === 0));
   assert.equal(s.gold, 0);
 });
+
+for (const slot of [0,1,2]) test(`tutoriel : le sort Feu valide l’étape dans l’emplacement ${slot+1}`, async()=>{
+  const { equipSpell } = await import('../src/data/spells.js');
+  const s=createSandbox();beginTutorial(s);
+  s.team[0].level=2;
+  Object.assign(s.tutorial,{step:'spells',manualSpell:true,member:0});
+  assert.equal(equipSpell(s,0,slot,'melee-fire-0'),true);
+  stepTutorial(s);assert.equal(s.tutorial.spellRead,true);
+  const loadout=[...s.team[0].loadout];
+  finishTutorial(s);assert.deepEqual(s.team[0].loadout,loadout);
+});

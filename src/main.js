@@ -6,7 +6,7 @@ import { woodById } from './data/woodcutting.js';
 import { renderCharacteristics } from './ui/characteristics.js';
 import { nearFountain, allocateCharacteristic, resetCharacteristics, learnUltimate } from './data/progression.js';
 import { renderSpellbook, updateSpellBar } from './ui/spells.js';
-import { equipSpell } from './data/spells.js';
+import { equipSpell, unequipSpell } from './data/spells.js';
 import { renderForge } from './ui/forge.js';
 import { nearForge, upgradeChromatic } from './game/forge.js';
 import { renderPetShop } from "./ui/petshop.js";
@@ -59,7 +59,7 @@ function refresh(s) {
   const previousQuantity = panel.querySelector('#core-quantity')?.value;
   const previousSlot = panel.querySelector('#equipment-slot')?.value;
   const focus = panel.contains(document.activeElement) ? document.activeElement : null;
-  const focusAttribute = focus && ['data-craft-planks','data-job-harvest','data-allocate-stat','data-reset-characteristics','data-learn-ultimate','data-spell-slot','data-equip-spell','data-forge-select','data-forge-upgrade','data-action','data-adopt','data-claim-pet','data-feed-pet','data-core','data-open-cores','data-open-core','data-monster','data-inspect-slot','data-inspect-bag','data-slot','data-equip'].find(name=>focus.hasAttribute(name));
+  const focusAttribute = focus && ['data-craft-planks','data-job-harvest','data-allocate-stat','data-reset-characteristics','data-learn-ultimate','data-spell-slot','data-equip-spell','data-unequip-spell','data-forge-select','data-forge-upgrade','data-action','data-adopt','data-claim-pet','data-feed-pet','data-core','data-open-cores','data-open-core','data-monster','data-inspect-slot','data-inspect-bag','data-slot','data-equip'].find(name=>focus.hasAttribute(name));
   const focusKey = focus?.id ? `#${CSS.escape(focus.id)}` : focusAttribute ? `[${focusAttribute}="${CSS.escape(focus.getAttribute(focusAttribute))}"]` : null;
   const scrollTop = panel.scrollTop;
   const bagScrollTop = panel.querySelector('.inventory-items')?.scrollTop || 0;
@@ -188,6 +188,7 @@ app.addEventListener('click',event=>{
   if(button.hasAttribute('data-reset-characteristics'))resetCharacteristics(s);
   if(button.dataset.learnUltimate)learnUltimate(s,button.dataset.learnUltimate);
   if(button.dataset.spellSlot!==undefined)spellSlot=Number(button.dataset.spellSlot);
+  if(button.dataset.unequipSpell!==undefined)unequipSpell(s,s.main,Number(button.dataset.unequipSpell));
   if(button.dataset.equipSpell)equipSpell(s,s.main,spellSlot,button.dataset.equipSpell);
   if(button.dataset.forgeSelect)forgeItem=Number(button.dataset.forgeSelect);
   if(button.dataset.forgeUpgrade)upgradeChromatic(s,Number(button.dataset.forgeUpgrade));
