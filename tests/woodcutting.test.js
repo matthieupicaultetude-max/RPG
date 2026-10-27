@@ -131,6 +131,7 @@ test("armure : cinq planches de niveau 1 exigées, ni bois brut ni planches de n
 test("un dégât reçu pendant la récolte annule la coupe sans récompense", async () => {
   const { createMonster } = await import("../src/data/monsters.js");
   const s = setup();
+  s.deployed=false;
   s.monsters = [createMonster("slime", s.player.x + 5, s.player.y)];
   requestCut(s, s.trees[0].id, canStand);
   simulate(s, 0.2);

@@ -11,7 +11,7 @@ import {
 import { PROPS, SAWMILL } from "../world/map.js";
 import { findPath } from "../ai/companions.js";
 import { distance, lineClear } from "../combat/attacks.js";
-import { SCENE } from "./config.js";
+import { playerSpeed } from "./config.js";
 const tell = (s, message) => {
   s.log.unshift(message);
   s.log.length = Math.min(6, s.log.length);
@@ -144,7 +144,7 @@ export function stepWoodcutting(s, direction, dt, elapsed, canStand) {
     const goal = action.path[0];
     if (goal) {
       const angle = Math.atan2(goal.y - s.player.y, goal.x - s.player.x),
-        length = Math.min(SCENE.speed * dt, distance(s.player, goal));
+        length = Math.min(playerSpeed(s) * dt, distance(s.player, goal));
       for (let n = 0; n < length; n += 2) {
         const step = Math.min(2, length - n),
           x = s.player.x + Math.cos(angle) * step,

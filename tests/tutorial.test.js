@@ -95,7 +95,9 @@ test("zone tutoriel : apparition sur terre, bâtiments solides et passages acces
   beginTutorial(s);
   assert.equal(s.zone, "tutorial");
   assert.deepEqual({ x: s.player.x, y: s.player.y }, map.TUTORIAL_SPAWN);
-  assert.ok(s.team.every((m) => m.x === s.player.x && m.y === s.player.y));
+  assert.equal(s.team[s.main].x,s.player.x);
+  assert.equal(s.deployed,true);
+  assert.ok(s.team.every(m=>map.canWalkTutorial(m.x,m.y)));
   assert.equal(s.npcs[0].id, "iris");
   assert.equal(s.bots.length, 0);
   assert.equal(s.trees.length, 2);

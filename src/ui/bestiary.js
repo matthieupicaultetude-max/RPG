@@ -12,7 +12,7 @@ export function bestiaryValues(id,level) {
 }
 export function coreDropMarkup(id,level) {
   const m=monsterDefinition(id), e=ELEMENTS[m.element],core=createCore(m.element,level),set=setForCore(core);
-  return `<h3>Noyau de ${e.name} · ${e.stat}</h3><p>Tranche ${core.band.min}–${core.band.max} · ${set?`${set.name} : ${set.pieces.length} pièces, équipables niveau 1`:'Équipements de cette tranche à venir'}</p><div class="monster-loot">${itemIcon('Noyau',false,e.color,core)}<div><strong>Noyau de ${e.name}</strong><small>Bonus indépendant des ressources · Standard uniquement</small></div><b>${number(CORE_CHANCE*100)} %</b></div><p>Ouverture au village uniquement. Une pièce standard aléatoire de l’élément et de la tranche du noyau ; doublons possibles. Les équipements chromatiques seront fabriqués par artisanat.</p>`;
+  return `<h3>Noyau de ${e.name} · ${e.stat}</h3><p>Tranche ${core.band.min}–${core.band.max} · ${set?`${set.name} : ${set.pieces.length} pièces, équipables niveau 1`:'Équipements de cette tranche à venir'}</p><div class="monster-loot">${itemIcon('Noyau',false,e.color,core)}<div><strong>Noyau de ${e.name}</strong><small>Bonus indépendant des ressources · Standard uniquement</small></div><b>${number(CORE_CHANCE*100)} %</b></div><p>Ouverture possible partout depuis le sac. Une pièce standard aléatoire de l’élément et de la tranche du noyau ; doublons possibles. Les équipements chromatiques seront fabriqués par artisanat.</p>`;
 }
 export function renderBestiary(id,level) {
   const monster=monsterDefinition(id), stats=monsterStats(id,level), values=bestiaryValues(id,level);

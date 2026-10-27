@@ -5,7 +5,6 @@ import {
   TUTORIAL_MONSTER,
   NPCS,
   TUTORIAL_TREES,
-  TUTORIAL_WORKSHOP,
   TUTORIAL_SAWMILL,
 } from "../world/tutorial-map.js";
 import { movePartyToZone } from "../world/zones.js";
@@ -144,7 +143,6 @@ export function advanceTutorial(state) {
   if (t?.step === "spells" && t.spellRead) t.step = "bestiary";
   else if (t?.step === "bestiary" && t.bestiaryRead) {
     t.step = "loot";
-    movePartyToZone(state, "tutorial", TUTORIAL_WORKSHOP);
   } else if (t?.step === "professions" && t.professionsRead) t.step = "gather";
   else return false;
   state.revision++;

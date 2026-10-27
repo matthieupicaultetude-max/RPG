@@ -124,7 +124,7 @@ Trois sorts normaux et un ultime peuvent être équipés, avec mélange libre de
 - Ultime personnel : jauge 0–100, initialement vide. Chaque impact effectif rapporte au plus 5 points, les soins effectifs au plus 6 ; l’absorption de dégâts contribue aussi. Aucun gain pendant les huit secondes suivant un ultime. Un soin sans PV manquants ne charge pas la jauge. Les outils dev permettent de la remplir.
 - Seuls les personnages présents sur le terrain peuvent agir ou recevoir un soin. Rappeler un personnage interrompt ses zones, événements et projectiles ; ses recharges et sa jauge sont conservées.
 - Les déplacements et projectiles respectent les obstacles. Les zones différées sont annoncées au sol. Les entraves empêchent les monstres de marcher, sans les empêcher de frapper au contact.
-- Le déploiement E (30 s / 300 s) reste indépendant des ultimes personnels.
+- E bascule librement entre combat (troupe déployée) et exploration (principal seul, vitesse +50 %), indépendamment des ultimes personnels.
 - Toutes ces données restent locales à la session de développement ; équilibrage, sauvegarde et autorité serveur seront traités séparément.
 
 Les niveaux requis sont vérifiés à l’équipement et au lancement. Les choix d’ultime non dépensés se cumulent, sans doublon. La fontaine restitue uniquement les caractéristiques investies : les sorts appris restent acquis.

@@ -1,6 +1,6 @@
 import { canWalkMap } from "./map.js";
 import { canWalkTutorial, TUTORIAL_EXIT } from "./tutorial-map.js";
-import { clearRoute } from "../ai/companions.js";
+import { clearRoute, placeAllies } from "../ai/companions.js";
 export const inTutorialZone = (state) => state.zone === "tutorial";
 export const canWalkZone = (x, y, zone) =>
   zone === "tutorial" ? canWalkTutorial(x, y) : canWalkMap(x, y);
@@ -15,8 +15,6 @@ export function movePartyToZone(state, zone, point) {
   state.woodcutting.action = null;
   state.spellCharge = null;
   state.aim.active = false;
-  state.deployed = false;
-  state.ultimate.remaining = 0;
   for (const key of [
     "attacks",
     "spellEvents",
@@ -31,5 +29,6 @@ export function movePartyToZone(state, zone, point) {
     Object.assign(member, state.player);
     clearRoute(member);
   }
+  if(state.deployed)placeAllies(state,(x,y)=>canWalkZone(x,y,state.zone));
   state.revision++;
 }

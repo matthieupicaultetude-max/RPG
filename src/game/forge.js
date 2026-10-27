@@ -1,3 +1,14 @@
+import {
+  fragmentForEquipment,
+  matchingFragment,
+  fragmentCount,
+  CORE_FRAGMENT_COST,
+} from "../data/core-fragments.js";
+import {
+  ELEMENTS,
+  createCore,
+  syncEquipmentHealth,
+} from "../data/equipment.js";
 import { emitSound } from "../audio/events.js";
 import {
   canUpgrade,
@@ -8,7 +19,8 @@ import {
 import { FORGE } from "../world/map.js";
 
 export const nearForge = (state) =>
-  state.zone !== "tutorial" && Math.hypot(state.player.x - FORGE.npc.x, state.player.y - FORGE.npc.y) < 48;
+  state.zone !== "tutorial" &&
+  Math.hypot(state.player.x - FORGE.npc.x, state.player.y - FORGE.npc.y) < 48;
 export function forgeItems(state) {
   return [
     ...state.bag,
@@ -62,9 +74,89 @@ export function upgradeChromatic(state, id) {
   }
   state.bag = state.bag.filter((item) => item.quantity > 0);
   Object.assign(item, chromaticVersion(item));
-  emitSound(state,"forge",state.player,{owner:state.main});
+  emitSound(state, "forge", state.player, { owner: state.main });
   tell(
     `${item.name} amélioré en chromatique : +${CHROMATIC_POWER} Puissance !`,
   );
   return item;
+}
+
+export function recyclableItems(state) {
+  return [
+    ...state.bag,
+    ...state.team.flatMap((member) => Object.values(member.equipment)),
+  ].filter((item) => fragmentForEquipment(item));
+}
+function recordExchange(state, text) {
+  state.log.unshift(text);
+  state.log.length = Math.min(6, state.log.length);
+  state.revision++;
+  emitSound(state, "forge", state.player, { owner: state.main });
+}
+export function recycleEquipment(state, id) {
+  if (!nearForge(state)) return null;
+  const item = recyclableItems(state).find((item) => item.id === id);
+  if (!item) return null;
+  const fragment = fragmentForEquipment(item);
+  const index = state.bag.findIndex((gear) => gear.id === id);
+  if (index >= 0) {
+    if (state.bag[index].quantity > 1) state.bag[index].quantity--;
+    else state.bag.splice(index, 1);
+  } else {
+    const owner = state.team.find(
+      (member) => member.equipment[item.slot]?.id === id,
+    );
+    if (!owner) return null;
+    delete owner.equipment[item.slot];
+    syncEquipmentHealth(owner);
+  }
+  const existing = state.bag.find((resource) =>
+    matchingFragment(resource, fragment.element, fragment.band.min),
+  );
+  if (existing) existing.quantity++;
+  else state.bag.push({ ...fragment, id: state.nextItem++ });
+  recordExchange(
+    state,
+    `${item.name} recyclé : +1 ${fragment.name} (niveaux ${fragment.band.min}–${fragment.band.max}).`,
+  );
+  return existing || state.bag.at(-1);
+}
+export function exchangeCoreFragments(state, element, min = 1) {
+  if (
+    !nearForge(state) ||
+    !ELEMENTS[element] ||
+    !Number.isSafeInteger(min) ||
+    min < 1 ||
+    min % 10 !== 1 ||
+    fragmentCount(state, element, min) < CORE_FRAGMENT_COST
+  )
+    return null;
+  let remaining = CORE_FRAGMENT_COST;
+  for (const item of state.bag.filter((item) =>
+    matchingFragment(item, element, min),
+  )) {
+    const used = Math.min(remaining, item.quantity);
+    item.quantity -= used;
+    remaining -= used;
+    if (!remaining) break;
+  }
+  state.bag = state.bag.filter((item) => item.quantity > 0);
+  const existing = state.bag.find(
+    (item) =>
+      item.kind === "core" &&
+      !item.chromatic &&
+      item.element === element &&
+      item.band.min === min,
+  );
+  const core = existing || {
+    ...createCore(element, min),
+    id: state.nextItem++,
+  };
+  if (existing) existing.quantity++;
+  else state.bag.push(core);
+  recordExchange(
+    state,
+    `10 fragments échangés contre un ${core.name} (niveaux ${core.band.min}–${core.band.max}).`,
+  );
+  return core;
 }

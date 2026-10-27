@@ -1,4 +1,3 @@
-import { TUTORIAL_WORKSHOP } from '../world/tutorial-map.js';
 import { canWalkZone } from '../world/zones.js';
 import { emitSound, impactKind } from '../audio/events.js';
 import { createTrees, stepWoodcutting, cancelWoodcutting } from '../game/woodcutting.js';
@@ -20,8 +19,6 @@ export const ROLES = { melee: 'Corps à corps', support: 'Soutien', ranged: 'Dis
 export const COLORS = { melee: '#c0a16d', support: '#9db780', ranged: '#8bacae' };
 export const SLOTS = ['Coiffe', 'Cape', 'Ceinture', 'Bottes', 'Anneau 1', 'Anneau 2', 'Amulette', 'Arme', 'Bouclier', 'Familier', ...Array.from({ length: 6 }, (_, i) => `Trophée ${i + 1}`)];
 export const STATIONS = { maison: { x: 110, y: 135 }, combat: { x: 480, y: 255 }, atelier: { x: 190, y: 310 }, forge: { x: 212, y: 334 }, animalerie: { x:250,y:157 }, fontaine:{x:365,y:155}, scierie:{x:76,y:222}, bucheron:{x:207,y:108} };
-export const ULTIMATE_DURATION = 30;
-export const ULTIMATE_COOLDOWN = 300;
 const names = ['Aëlan', 'Liora', 'Sylas'];
 export function makeMember(role, i) {
   return { id: i, name: names[i], role, level: 1, xp: 0, hp: 100, maxHp: 100, equipment: {}, x: 280 - i * 20, y: 210 + i * 13, facing: 'down', moving: false, cooldown: 0, loadout:defaultLoadout(role), spellCooldowns:{}, buffs:{}, ultimateCharge:0, ultimateLock:0, characteristicPoints:0, allocatedStats:emptyAllocation(), learnedUltimates:[] };
@@ -30,8 +27,7 @@ export function createSandbox() {
   const state = createState();
   Object.assign(state, {
     zone: 'garden',
-    team: ['melee', 'support', 'ranged'].map(makeMember), main: 0, deployed: false,
-    ultimate: { remaining: 0, cooldown: 0 },
+    team: ['melee', 'support', 'ranged'].map(makeMember), main: 0, deployed: true,
     collections: {}, petQuests: {}, npcs:[{...PET_SHOP.npc},{...FORGE.npc}],
     bag: [], nextItem: 1, gold: 0, log: ['Bienvenue dans le jardin des essais.'], revision: 0,
     monsters: [createMonster('slime',455,220), createMonster('boar',535,285),createMonster('firefly',530,165),createMonster('moth',585,240)],
@@ -41,6 +37,7 @@ export function createSandbox() {
   });
   state.team[0].x = state.player.x;
   state.team[0].y = state.player.y;
+  placeAllies(state, (x,y)=>canWalkZone(x,y,state.zone));
   return state;
 }
 export function note(s, message) {
@@ -48,7 +45,6 @@ export function note(s, message) {
   s.log.length = Math.min(s.log.length, 6);
   s.revision++;
 }
-export function atHome(s) { return s.zone === "tutorial" ? Math.hypot(s.player.x-TUTORIAL_WORKSHOP.x,s.player.y-TUTORIAL_WORKSHOP.y)<48 : (Math.hypot(s.player.x - STATIONS.maison.x, s.player.y - STATIONS.maison.y) < 65 || nearPetShop(s) || nearForge(s)); }
 export function teleport(s, station) {
   if(s.zone === "tutorial") {note(s,"Terminez ou passez le tutoriel pour rejoindre le village.");return;}
   const point = STATIONS[station];
@@ -79,32 +75,16 @@ export function cycleMain(s, direction) {
   }
   return false;
 }
-export function activateUltimate(s) {
-  if (s.ultimate.remaining > 0 || s.ultimate.cooldown > 0 || s.team[s.main].hp <= 0) return false;
-  s.ultimate.remaining = ULTIMATE_DURATION;
-  s.ultimate.cooldown = ULTIMATE_COOLDOWN;
-  s.deployed = true;
-  placeAllies(s, (x,y)=>canWalkZone(x,y,s.zone));
-  note(s, 'Ultime : la troupe est réunie pendant 30 secondes !');
+export function setCombatMode(s, combat) {
+  if(typeof combat !== 'boolean')return false;
+  Object.assign(s.team[s.main],s.player);
+  s.deployed = combat;
+  s.team.forEach(clearRoute);
+  if(combat)placeAllies(s,(x,y)=>canWalkZone(x,y,s.zone));
+  note(s,combat?'Mode combat : les trois personnages sont déployés.':'Mode exploration : compagnons rappelés · vitesse +50 %.');
   return true;
 }
-export function endUltimate(s) {
-  s.ultimate.remaining = 0;
-  s.deployed = false;
-  s.team.forEach(clearRoute);
-}
-export function advanceUltimate(s, elapsed) {
-  const countdown = value => value - elapsed < 1e-8 ? 0 : value - elapsed;
-  const wasActive = s.ultimate.remaining > 0;
-  const wasCooling = s.ultimate.cooldown > 0;
-  s.ultimate.remaining = countdown(s.ultimate.remaining);
-  s.ultimate.cooldown = countdown(s.ultimate.cooldown);
-  if (wasActive && s.ultimate.remaining === 0) {
-    endUltimate(s);
-    note(s, 'Ultime terminé : les compagnons se retirent.');
-  }
-  if (wasCooling && s.ultimate.cooldown === 0) note(s, 'Ultime prêt !');
-}
+export function toggleCombatMode(s) { return setCombatMode(s,!s.deployed); }
 export function grantXp(s, amount) {
   const previousLevels=s.team.map(member=>member.level);
   s.team.forEach(m => {
@@ -144,7 +124,6 @@ export function grantCore(s,element,level=1) {
 export function openCore(s,id,random=Math.random) {
   const index=s.bag.findIndex(item=>item.id===id&&item.kind==='core');
   if(index<0)return null;
-  if(!atHome(s)){note(s,'Revenez au village pour ouvrir ce noyau.');return null;}
   const item=rollCoreEquipment(s.bag[index],random);
   if(!item){note(s,'Aucune panoplie disponible pour cette tranche de niveaux.');return null;}
   if(--s.bag[index].quantity===0)s.bag.splice(index,1);
@@ -248,7 +227,6 @@ export function castEquipped(s,slot,point=s.aim.active?s.aim:null,options={}) {
 export function attack(s,point=s.aim.active?s.aim:null) {return castEquipped(s,0,point);}
 export function stepSandbox(s, direction, dt, elapsed = dt) {
   const spellContext=contextFor(s), canStand=spellContext.canStand;
-  advanceUltimate(s, Math.max(0, elapsed));
   stepBonusTargets(s,elapsed,canStand);
   const old = { x: s.player.x, y: s.player.y };
   const gathering=stepWoodcutting(s,direction,dt,elapsed,canStand);
@@ -277,7 +255,7 @@ export function stepSandbox(s, direction, dt, elapsed = dt) {
         const taken=receiveSpellDamage(s,target,monster.damage,monster);if(taken>0&&target.id===s.main){cancelWoodcutting(s);emitSound(s,"hurt",target,{damage:taken});} monster.cooldown = monster.attackDelay;
         s.effects.push({ x: monster.x, y: monster.y-8, toX: target.x, toY: target.y-8, text: '', color: '#f0a28e', life: .22 });
         s.effects.push({ x: target.x, y: target.y - 25, text: `−${taken}`, color: '#ffa3a3', life: .8 }); s.revision++;
-        if (s.team.every(m => m.hp <= 0)) { endUltimate(s); if(s.zone==='tutorial'){Object.assign(s.player,{x:230,y:250});s.team.forEach(m=>Object.assign(m,s.player));}else teleport(s, 'maison'); heal(s); note(s, s.zone==='tutorial'?'Iris vous remet sur pied. Réessayez !':'Défaite : retour à la maison (règle de test).'); }
+        if (s.team.every(m => m.hp <= 0)) { setCombatMode(s,true); if(s.zone==='tutorial'){Object.assign(s.player,{x:230,y:250});s.team.forEach(m=>Object.assign(m,s.player));}else teleport(s, 'maison'); heal(s); note(s, s.zone==='tutorial'?'Iris vous remet sur pied. Réessayez !':'Défaite : retour à la maison (règle de test).'); }
       }
     } else if(!(monster.spellState?.root>0))walk(monster, monster.homeX + Math.sin(s.time * .5 + monster.homeX) * 20, monster.homeY + Math.cos(s.time * .4) * 15, monster.patrolSpeed, dt, canStand);
   });

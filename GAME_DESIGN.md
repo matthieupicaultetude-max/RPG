@@ -59,19 +59,16 @@ Le joueur peut **refaire sa composition chaque fois qu’il revient à sa maison
 
 ### Contrôle de l’équipe
 
-Le joueur dirige uniquement son **personnage principal**. Hors ultime, seul ce personnage est présent sur le terrain. La **molette de la souris** parcourt les personnages vivants dans les deux sens, avec retour au début de la liste. Les portraits servent aussi de boutons, notamment au tactile. Les touches 1, 2 et 3 ne changent plus de personnage. Hors ultime, le nouveau personnage apparaît à la position actuelle, avec ses propres PV, équipement et délai d’attaque. Un personnage à terre ne peut pas être sélectionné.
+Le joueur dirige uniquement son **personnage principal**. En exploration, seul ce personnage est présent sur le terrain ; en combat, les trois sont déployés. La **molette de la souris** parcourt les personnages vivants dans les deux sens, avec retour au début de la liste. Les portraits servent aussi de boutons, notamment au tactile. Les touches 1, 2 et 3 ne changent plus de personnage. En exploration, le nouveau personnage apparaît à la position actuelle, avec ses propres PV, équipement et délai d’attaque. Un personnage à terre ne peut pas être sélectionné.
 
-### Ultime : réunion de la troupe
+### Modes combat et exploration
 
-- **E** active l’ultime, prêt au début de la session.
-- Pendant **30 secondes**, les trois personnages sont présents : le principal contrôlé et les deux autres pilotés par l’IA.
-- L’ultime se recharge pendant **5 minutes à partir de son activation** : il reste donc 4 min 30 s de recharge à la fin des 30 secondes de déploiement.
-- Une nouvelle pression sur E ne rappelle pas les alliés, ne prolonge pas l’effet et ne relance pas la recharge.
-- À l’expiration, les deux compagnons se retirent automatiquement ; le personnage actuellement contrôlé reste présent.
-- Le changement de principal reste disponible pendant l’ultime : le contrôle passe au personnage sélectionné à sa position sur le terrain. Les deux autres restent sous IA pour la durée restante.
-- Le délai est commun à l’équipe. Changement de personnage, soin, téléportation et défaite ne le remettent pas à zéro. Une défaite complète interrompt le déploiement actif.
-- Une pression maintenue ne répète pas l’activation. Un bouton équivalent et les compteurs de durée/recharge sont disponibles dans l’interface.
-- Les temps d’ultime suivent le temps écoulé, y compris après une absence de l’onglet. La simulation des déplacements ne rattrape pas l’absence.
+- Le **combat est actif par défaut** : le principal est contrôlé par le joueur et les deux alliés sont pilotés par l’IA. La vitesse du principal est normale.
+- **E** bascule à tout moment en exploration : les alliés sont rappelés et la vitesse du principal augmente de **50 %**, sans autre bonus.
+- Une nouvelle pression sur E redéploie les alliés près du principal. Aucune durée limite ni recharge ne s’applique.
+- La molette et les portraits permettent de changer de personnage dans les deux modes. En combat, le contrôle passe à la position de l’allié sélectionné ; en exploration, le nouveau principal conserve la position actuelle.
+- PV, équipement, charges d’ultimes personnels et recharges de sorts sont conservés à chaque bascule. Le mode reste choisi lors d’un changement de zone ; après une défaite complète, l’équipe revient en combat.
+- Le bouton de la barre affiche le mode de destination et un état indique le nombre de personnages et le bonus de vitesse. Les ultimes personnels de chaque classe restent sur T.
 
 La troupe s’articule autour du personnage principal, sans former une file rigide ni recopier ses pas :
 
@@ -82,7 +79,7 @@ La troupe s’articule autour du personnage principal, sans former une file rigi
 - Le soutien reste en retrait, suit la troupe et aide les alliés.
 - Quand le personnage principal s’éloigne, les compagnons abandonnent les combats trop éloignés et se regroupent autour de lui.
 
-Le changement de personnage principal est disponible à la molette et par les portraits, pendant et hors ultime. Les distances, vitesses et règles de priorité précises sont encore des réglages de test.
+Le changement de personnage principal est disponible à la molette et par les portraits, en combat et en exploration. Les distances, vitesses et règles de priorité précises sont encore des réglages de test.
 
 L’IA des compagnons et les bots simulant d’autres joueurs sont deux systèmes distincts, même s’ils peuvent partager des briques de déplacement ou de combat.
 
@@ -214,7 +211,7 @@ Le jardin des essais sert à éprouver les interfaces et les personnages avant d
 
 Les conventions suivantes s’appliquent **uniquement à cette zone** :
 
-- Trois personnages, un seul actif hors ultime, changement par **molette** ou portraits. **E** réunit la troupe pendant 30 s, toutes les 5 min. Le suivi autonome par rôle pendant l’ultime est décrit en section 5. Les rôles sont fixes dans ce banc d’essai.
+- Trois personnages déployés par défaut en combat ; un seul en exploration, avec vitesse +50 %. Changement par **molette** ou portraits. **E** bascule librement entre les modes. Le suivi autonome par rôle est décrit en section 5. Les rôles sont fixes dans ce banc d’essai.
 - Combat temps réel au clic droit avec visée guidée vers le curseur, animations par rôle et dégâts à l’impact ; soutien IA soignant les alliés vivants. Les compétences et le ciblage définitifs ne sont pas implémentés.
 - XP de base commune aux trois membres, bonus de Sagesse individuel, sac partagé sans capacité maximale et métier de bûcheron partagé.
 - Seize emplacements individuels équipables ; coiffe/cape/bouclier visibles et bonus de test de +5 dégâts pour l’arme du personnage contrôlé. Autres statistiques à définir.
@@ -351,11 +348,11 @@ Le noyau mémorise une tranche de dix niveaux : **1–10**, **11–20**, etc., c
 
 Les noyaux sont **exclusivement standards**, avec **25 %** de chance par victoire. Aucun noyau chromatique ne peut tomber. Les piles sont séparées par élément et tranche. Cette règle ne retire pas les variantes chromatiques des ressources normales et rares.
 
-### Ouverture au village
+### Ouverture des noyaux partout
 
-Dans la zone d’essai, le village est matérialisé près de la maison. Le joueur doit être dans cette zone pour ouvrir un noyau depuis sa fiche d’inventaire. Aucune monnaie n’est nécessaire.
+Les noyaux peuvent être ouverts depuis leur fiche d’inventaire partout, en combat comme en exploration et dans le tutoriel. Aucune proximité de maison ni monnaie n’est nécessaire.
 
-Une ouverture consomme **un seul noyau** et donne **une pièce aléatoire** de la panoplie de son élément et de sa tranche. Chaque pièce a une probabilité de **1/9** ; les doublons sont possibles. Un noyau donne uniquement une pièce standard. Les armures chromatiques sont obtenues par amélioration à la forge, selon la section 26. Le résultat est ajouté au sac et peut être équipé ; la sélection reste sur la pile de noyaux utilisée. Un noyau d’une tranche non disponible ne peut pas être consommé. Les outils dev permettent de générer les quatre noyaux débutants et de revenir à la maison pour tester la boucle.
+Une ouverture consomme **un seul noyau** et donne **une pièce aléatoire** de la panoplie de son élément et de sa tranche. Chaque pièce a une probabilité de **1/9** ; les doublons sont possibles. Un noyau donne uniquement une pièce standard. Les armures chromatiques sont obtenues par amélioration à la forge, selon la section 26. Le résultat est ajouté au sac et peut être équipé ; la sélection reste sur la pile de noyaux utilisée. Un noyau d’une tranche non disponible ne peut pas être consommé. Les outils dev permettent de générer les quatre noyaux débutants pour tester la boucle partout.
 
 ## 21. Direction graphique : village pastoral
 
@@ -409,7 +406,7 @@ Les ressources **normales chromatiques** sont réservées au craft des armures c
 
 ## 25. Utilisation en quantité et équipement rapide
 
-La fiche des noyaux permet de choisir une quantité entière positive et d’ouvrir un lot au village. Chaque noyau produit un tirage indépendant avec les règles de collection habituelles. La quantité réellement consommée est limitée à la pile disponible ; les tranches indisponibles et les ouvertures hors village ne consomment rien. L’ouverture à l’unité reste accessible.
+La fiche des noyaux permet de choisir une quantité entière positive et d’ouvrir un lot partout. Chaque noyau produit un tirage indépendant avec les règles de collection habituelles. La quantité réellement consommée est limitée à la pile disponible ; les tranches indisponibles ne consomment rien. L’ouverture à l’unité reste accessible.
 
 Après ouverture, la sélection reste sur la pile utilisée et le défilement du sac est conservé. Aucune récompense n’est sélectionnée automatiquement ; quand la pile est épuisée, sa fiche devient vide. **Maj + clic** sur un équipement du sac l’équipe sur le personnage actif, en respectant le niveau requis et en replaçant l’ancien équipement dans le sac.
 
@@ -433,7 +430,7 @@ Les trois rôles deviennent trois classes jouables : **Combattant, Soutien et Di
 
 Le grimoire **K** permet d’équiper **trois sorts normaux distincts et un ultime personnel de la classe**, en mélangeant librement les éléments. Aucun élément de spécialisation exclusif n’est imposé. Chaque personnage conserve sa propre barre. Les changements sont libres dans le jardin des essais, mais ne réinitialisent ni recharges, ni jauge. Les autres classes ne sont pas équipables sur ce personnage.
 
-**Commandes : clic droit / R / C / T.** A est conservé pour le déplacement WASD ; il n’est donc pas utilisé comme raccourci de sort. Les boutons de la barre offrent les mêmes actions au tactile. Le Trait perforant peut être chargé par maintien du clic droit puis relâchement. **E reste le déploiement commun de troupe** (30 secondes, 300 secondes entre activations), indépendant de T.
+**Commandes : clic droit / R / C / T.** A est conservé pour le déplacement WASD ; il n’est donc pas utilisé comme raccourci de sort. Les boutons de la barre offrent les mêmes actions au tactile. Le Trait perforant peut être chargé par maintien du clic droit puis relâchement. **E bascule entre combat et exploration**, sans durée ni recharge, indépendamment des ultimes personnels sur T.
 
 Les dégâts élémentaires valent `arrondi(base du sort × [1 + (caractéristique de l’élément du sort + Puissance) / 100])`. L’arme ne convertit pas l’élément. Les soins et valeurs de bouclier élémentaires utilisent la même échelle ; aucune caractéristique ne reçoit un effet secondaire automatique. Les résistances élémentaires, si une cible en possède, sont appliquées ensuite. Les combos précisent leurs coefficients additionnels.
 
@@ -510,10 +507,16 @@ Le personnage principal est prioritaire dans les impacts simultanés. Une attén
 
 Toute nouvelle session locale commence sur l’**Île des premiers pas**, à un point d’apparition praticable devant le pavillon d’accueil d’Iris. Cette carte est indépendante du Jardin des essais : terrain, empreintes solides, chemins, décor et guide sont propres à l’île. Les activités du village ne sont pas accessibles à des coordonnées équivalentes sur l’île.
 
-La place centrale accueille la découverte des trois personnages et du déplacement. La cour d’entraînement, reliée par un chemin, reçoit le slime uniquement lors du combat guidé. La porte orientale rejoint le village après les étapes de bestiaire, d’équipement et de métiers : bouton de fin de tutoriel ou F près de la porte. Passer le guide rejoint également le village. Les transitions suppriment projectiles et zones d’effet en cours, rappellent les alliés et déplacent la troupe ensemble. Toute progression acquise reste conservée.
+La place centrale accueille la découverte des trois personnages et du déplacement. La cour d’entraînement, reliée par un chemin, reçoit le slime uniquement lors du combat guidé. La porte orientale rejoint le village après les étapes de bestiaire, d’équipement et de métiers : bouton de fin de tutoriel ou F près de la porte. Passer le guide rejoint également le village. Les transitions suppriment projectiles et zones d’effet en cours et repositionnent la troupe en conservant le mode choisi. Toute progression acquise reste conservée.
 
 ## 34. Initiation aux butins et aux métiers
 
-Après les sorts, le joueur consulte le Slime et utilise la barre de niveau du bestiaire. Le slime d’entraînement accorde une fois un noyau Eau garanti ; les monstres ordinaires conservent leur taux indépendant de 25 %. L’atelier d’Iris autorise l’ouverture sur l’île. Le guide attend l’ouverture du noyau reçu et l’équipement réel de sa pièce aléatoire. Les ressources chromatiques et la fabrication d’armures sont expliquées, sans donner une armure chromatique gratuitement.
+Après les sorts, le joueur consulte le Slime et utilise la barre de niveau du bestiaire. Le slime d’entraînement accorde une fois un noyau Eau garanti ; les monstres ordinaires conservent leur taux indépendant de 25 %. L’ouverture est possible partout, y compris sur l’île. Le guide attend l’ouverture du noyau reçu et l’équipement réel de sa pièce aléatoire. Les ressources chromatiques et la fabrication d’armures sont expliquées, sans donner une armure chromatique gratuitement.
 
 La présentation des métiers passe par le panneau L, puis par deux coupes réelles de frêne dans le bosquet et la fabrication d’une planche à la scierie de l’île. La récolte et le craft utilisent les règles habituelles et donnent leur XP métier. Seules les actions réalisées aux étapes correspondantes valident cette pratique ; aucun simple ajout d’objet en sac ne remplace une récolte ou un craft. Les niveaux métier débloquent Frêne (1), Châtaignier (5), Noyer (10). La sortie vers le village est disponible au terme de ce parcours ; le joueur peut toujours passer le guide.
+
+## 35. Fragments de noyau et recyclage
+
+Borin reprend les pièces normales élémentaires, du sac ou équipées, contre un fragment de même élément et de même tranche de niveau. Les armes, bijoux et boucliers sont acceptés ; les pièces chromatiques, trophées et familiers sont exclus. Une pièce équipée recyclée est retirée et ses bonus cessent immédiatement, sans soin. Les collections déjà découvertes restent mémorisées.
+
+Dix fragments du même élément et de la même tranche de dix niveaux donnent un noyau correspondant, près de Borin, sans or ni hasard. Le stock est validé avant consommation ; les fragments d’éléments ou de tranches différents ne se mélangent pas. Une remise produit un seul fragment par pièce, sans duplication. Le noyau s’ouvre partout avec les règles habituelles de tirage de panoplie.

@@ -35,7 +35,7 @@ test("quatre panoplies, neuf pièces chacune équipables niveau 1, sans caracté
     }
   }
 });
-test("noyaux : bornes de tranche, pile par élément/tranche sans variante chromatique et aucune consommation hors village", () => {
+test("noyaux : bornes de tranche, pile par élément/tranche sans variante chromatique et ouverture possible hors village", () => {
   assert.deepEqual(levelBand(1), { min: 1, max: 10 });
   assert.deepEqual(levelBand(10), { min: 1, max: 10 });
   assert.deepEqual(levelBand(11), { min: 11, max: 20 });
@@ -46,8 +46,8 @@ test("noyaux : bornes de tranche, pile par élément/tranche sans variante chrom
   grantCore(s, "water");
   assert.equal(s.bag.length, 3);
   assert.equal(s.bag[0].quantity, 2);
-  assert.equal(openCore(s, s.bag[0].id), null);
-  assert.equal(s.bag[0].quantity, 2);
+  assert.equal(openCore(s, s.bag[0].id).element, "earth");
+  assert.equal(s.bag[0].quantity, 1);
 });
 test("ouverture : une seule consommation, bonne panoplie, choix de toutes les pièces et doublons possibles", () => {
   const s = createSandbox();
@@ -145,11 +145,10 @@ test("ouverture en lot : 20 tirages indépendants, quantité restante et collect
   assert.equal(openCores(s,id,20).length,3);
   assert.equal(s.bag.some(item=>item.id===id),false);
 });
-test("lots : quantité invalide, lieu interdit et tranche indisponible ne consomment rien", () => {
+test("lots : quantité invalide et tranche indisponible ne consomment rien", () => {
   const s=createSandbox();
   grantCore(s,'fire');
   const id=s.bag[0].id;
-  assert.deepEqual(openCores(s,id,20),[]);
   teleport(s,'maison');
   for (const quantity of [0,-1,1.5,NaN,Infinity,'2']) assert.deepEqual(openCores(s,id,quantity),[]);
   assert.equal(s.bag[0].quantity,1);

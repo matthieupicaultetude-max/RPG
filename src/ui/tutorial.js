@@ -27,7 +27,7 @@ export function createTutorialUI(app, game, openPanel) {
     ],
     ready: [
       "Prêt pour le combat ?",
-      "Visez à la souris et attaquez au clic droit. R et C lancent les autres sorts équipés. Cliquez gauche sur une cible dorée pour répéter les derniers dégâts ! E réunit la troupe 30 s, puis recharge 5 min. T est l’ultime personnel, à débloquer dès le niveau 5. Sur mobile, touchez les sorts en bas.",
+      "Visez à la souris et attaquez au clic droit. R et C lancent les autres sorts équipés. Cliquez gauche sur une cible dorée pour répéter les derniers dégâts ! Le combat est le mode initial : vos trois personnages sont déployés. E bascule librement en exploration (un personnage, vitesse +50 %) ou en combat (troupe déployée, vitesse normale). T est l’ultime personnel, à débloquer dès le niveau 5. Sur mobile, touchez les sorts en bas.",
     ],
     combat: [
       "Battez le slime d’entraînement",
@@ -47,11 +47,11 @@ export function createTutorialUI(app, game, openPanel) {
     ],
     loot: [
       "Du monstre à la panoplie",
-      "Le slime vous a donné un noyau Eau garanti pour cette initiation. Habituellement, le noyau est un butin bonus à 25 %, lié à l’élément et à la tranche de niveau du monstre. À l’atelier d’Iris, ouvrez I, sélectionnez ce noyau et cliquez « Ouvrir le noyau » : une pièce aléatoire de la panoplie Rosée vous attend.",
+      "Le slime vous a donné un noyau Eau garanti pour cette initiation. Habituellement, le noyau est un butin bonus à 25 %, lié à l’élément et à la tranche de niveau du monstre. Où que vous soyez, ouvrez I, sélectionnez ce noyau et cliquez « Ouvrir le noyau » : une pièce aléatoire de la panoplie Rosée vous attend.",
     ],
     armor: [
       "Votre première pièce d’équipement",
-      "Dans I, sélectionnez la pièce obtenue et cliquez « Équiper », ou faites Maj + clic sur sa case. Les panoplies apportent les caractéristiques de leur élément. Les noyaux donnent des pièces standards, parfois en doublon ; les versions chromatiques se fabriquent à la forge avec une pièce et des ressources.",
+      "Dans I, sélectionnez la pièce obtenue et cliquez « Équiper », ou faites Maj + clic sur sa case. Les panoplies apportent les caractéristiques de leur élément. Les noyaux donnent des pièces standards, parfois en doublon. Borin reprend une pièce normale contre un fragment ; 10 fragments identiques donnent un noyau. Les pièces chromatiques se fabriquent à la forge avec une pièce et des ressources.",
     ],
     professions: [
       "Les métiers de votre troupe",

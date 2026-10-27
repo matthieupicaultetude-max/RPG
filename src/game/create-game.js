@@ -8,7 +8,7 @@ import { nearForge } from './forge.js';
 import { nearPetShop } from './pet-quests.js';
 import { screenToWorld } from '../rendering/viewport.js';
 import { createCharacterWheel } from '../input/character-wheel.js';
-import { createSandbox, stepSandbox, attack, teleport, activateUltimate, cycleMain, castEquipped, clickBonus } from '../dev/sandbox.js';
+import { createSandbox, stepSandbox, attack, teleport, toggleCombatMode, cycleMain, castEquipped, clickBonus } from '../dev/sandbox.js';
 import { createControls } from '../input/controls.js';
 import { createRenderer } from '../rendering/scene.js';
 
@@ -25,7 +25,7 @@ export function createGame(canvas, touchControls, onChange, onTimers = () => {},
     if (event.code === 'KeyF' && !event.repeat) {event.preventDefault();if(nearTutorialExit(state)&&canLeaveTutorial(state))finishTutorial(state);else if(nearSawmill(state))onInteraction('professions');else if(nearFountain(state))onInteraction('characteristics');else if(nearForge(state))onInteraction('forge');else if(nearPetShop(state))onInteraction('petshop');}
     const slot={KeyR:1,KeyC:2,KeyT:3}[event.code];
     if(slot!==undefined&&!event.repeat){event.preventDefault();castEquipped(state,slot);}
-    if (event.code === 'KeyE' && !event.repeat) { event.preventDefault(); activateUltimate(state); }
+    if (event.code === 'KeyE' && !event.repeat) { event.preventDefault(); toggleCombatMode(state); }
   }, { signal: controller.signal });
   let pointer = null;
   function updateAim(event) {

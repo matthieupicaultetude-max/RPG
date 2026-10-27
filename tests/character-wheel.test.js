@@ -15,6 +15,7 @@ test('molette : accumulation trackpad, un changement par geste et sens inverse',
 });
 test('cycle : boucle sur les vivants sans changer la position ni réveiller un personnage à terre', () => {
   const s = createSandbox();
+  s.deployed=false;
   s.team[1].hp = 0;
   const position = { ...s.player };
   cycleMain(s, 1);assert.equal(s.main, 2);

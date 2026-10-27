@@ -14,7 +14,7 @@ import {
 } from "../src/combat/spells.js";
 import {
   createSandbox,
-  activateUltimate,
+  setCombatMode,
   chooseMain,
   canStand,
 } from "../src/dev/sandbox.js";
@@ -27,6 +27,7 @@ const ctx = {
 };
 function setup(role = 0) {
   const s = createSandbox();
+  setCombatMode(s,false);
   s.team.forEach(member=>{member.level=20;member.learnedUltimates=["earth","fire","air","water"].map(element=>`${member.role}-${element}-3`);});
   chooseMain(s, role);
   Object.assign(s.player, { x: 420, y: 240 });
@@ -153,7 +154,7 @@ test("Eau : bouclier, Écume absorbée, puis rupture renforcée et recul", () =>
 });
 test("soins effectifs, surplus en bouclier et lien sans amplification infinie", () => {
   const s = setup(1);
-  activateUltimate(s);
+  setCombatMode(s,true);
   const m = s.team[1],
     ally = s.team[0];
   Object.assign(ally, { x: 425, y: 240, hp: 40 });
@@ -173,7 +174,7 @@ test("soins effectifs, surplus en bouclier et lien sans amplification infinie", 
 });
 test("Sceau et Braise partagée : déclenchements limités et soin du bon allié", () => {
   const s = setup(1);
-  activateUltimate(s);
+  setCombatMode(s,true);
   const ally = s.team[0];
   Object.assign(ally, { x: 430, y: 240, hp: 50 });
   use(s, "support-fire-1");
@@ -235,7 +236,7 @@ test("ultime personnel séparé du déploiement, jauge consommée et aucun gain 
   assert.equal(m.ultimateCharge, 0);
   gainCharge(m, 100);
   assert.equal(m.ultimateCharge, 0);
-  activateUltimate(s);
+  setCombatMode(s,true);
   assert.equal(s.deployed, true);
   assert.equal(m.ultimateCharge, 0);
 });
@@ -251,7 +252,7 @@ test("collision et rappel : déplacements sûrs ; un allié rappelé ne laisse p
 });
 test("IA : utilise les sorts équipés, dont un sort de soin d’un autre élément", () => {
   const s = setup();
-  activateUltimate(s);
+  setCombatMode(s,true);
   const m = s.team[1];
   Object.assign(m, { x: 425, y: 240 });
   s.team[0].hp = 40;
@@ -264,7 +265,7 @@ test("IA : utilise les sorts équipés, dont un sort de soin d’un autre élém
 test("48 sorts : lancement avec prérequis, simulation complète et nettoyage des effets temporaires", () => {
   for (const spell of SPELLS) {
     const s = setup(["melee", "support", "ranged"].indexOf(spell.role));
-    activateUltimate(s);
+    setCombatMode(s,true);
     const owner = s.team[s.main];
     owner.hp = 60;
     owner.ultimateCharge = 100;
