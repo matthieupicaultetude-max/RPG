@@ -1,3 +1,4 @@
+import { chromaticVersion } from '../data/chromatic.js';
 import {stepDepthsBoss,awakenDepthsBoss,finishDepthsBoss} from '../game/depths-boss.js';
 import {stepDepthsSlimes} from '../game/slime-depths.js';
 import {DEPTHS_SPAWN} from '../world/slime-depths-map.js';
@@ -19,7 +20,7 @@ import { castCompanionSpell } from '../ai/spell-tactics.js';
 import { nearForge } from '../game/forge.js';
 import { recordSetLoot, nearPetShop } from '../game/pet-quests.js';
 import { PET_SHOP, FORGE } from '../world/map.js';
-import { ELEMENTS, CORE_CHANCE, createCore, rollCoreEquipment, characterStats, syncEquipmentHealth } from '../data/equipment.js';
+import { STARTER_SETS, ELEMENTS, CORE_CHANCE, createCore, rollCoreEquipment, characterStats, syncEquipmentHealth } from '../data/equipment.js';
 import { createMonster, monsterDefinition } from '../data/monsters.js';
 import { stepAttacks } from '../combat/attacks.js';
 import { stepCompanions, placeAllies, clearRoute } from '../ai/companions.js';
@@ -167,6 +168,16 @@ export function giveEquipment(s, slot) {
   if (!SLOTS.includes(slot)) return;
   s.bag.push({ id: s.nextItem++, name: `${slot} d’essai`, slot, quantity: 1 });
   note(s, `${slot} d’essai ajouté au sac.`);
+}
+// Fixed item stats have no random rolls: chromatic is the strongest existing version.
+export function giveMaximizedSets(s) {
+  const items = STARTER_SETS.flatMap(set => set.pieces.map(piece => ({
+    ...chromaticVersion(piece), id: s.nextItem++, quantity: 1,
+  })));
+  s.bag.push(...items);
+  for (const item of items) recordSetLoot(s, item);
+  note(s, `${items.length} pièces chromatiques ajoutées au sac : panoplies Ronce, Braise, Brise et Rosée complètes et maximisées.`);
+  return items;
 }
 export function equip(s, id) {
   const index = s.bag.findIndex(item => item.id === id);

@@ -13,7 +13,7 @@ Une **zone de développement locale**, pour tester les interfaces et les premiè
 - Trois bots de promenade identifiés comme tels. Ils ne représentent pas des connexions humaines et ne possèdent pas encore leurs propres équipes.
 - Slime, sanglier, luciole ardente et phalène : dégâts, recul, effets, récompenses, réapparition et retour à la maison après défaite complète.
 - Sac de test partagé, équipement individuel de 16 emplacements, équipement/retrait d’objets et variantes de loot dans des piles distinctes.
-- Outils dev : téléportation, soin/réanimation, XP, génération d’équipements et des quatre variantes de loot, attaque automatique.
+- Outils dev : bouton **Obtenir les 4 panoplies maximisées** (36 pièces chromatiques Terre/Feu/Air/Eau, arme et bouclier inclus, niveau 1), téléportation, soin/réanimation, XP, génération d’équipements et des quatre variantes de loot, attaque automatique.
 - Clavier et commandes tactiles, interface responsive, journal d’événements.
 
 **Pas de serveur multijoueur ni de sauvegarde dans cette zone.** Recharger réinitialise la session. Les règles de contrôle de l’équipe, les statistiques, les probabilités de loot, la capacité du sac et les gains d’XP sont des conventions de test, pas des décisions définitives de game design. Tous les outils sont volontairement accessibles sans limite.
