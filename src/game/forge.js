@@ -8,7 +8,7 @@ import {
 import { FORGE } from "../world/map.js";
 
 export const nearForge = (state) =>
-  Math.hypot(state.player.x - FORGE.npc.x, state.player.y - FORGE.npc.y) < 48;
+  state.zone !== "tutorial" && Math.hypot(state.player.x - FORGE.npc.x, state.player.y - FORGE.npc.y) < 48;
 export function forgeItems(state) {
   return [
     ...state.bag,

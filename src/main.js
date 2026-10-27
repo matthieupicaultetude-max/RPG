@@ -1,3 +1,5 @@
+import { nearTutorialExit } from './world/zones.js';
+import { finishTutorial } from './game/tutorial.js';
 import { createTutorialUI } from './ui/tutorial.js';
 import { createAudioUI } from './ui/audio.js';
 import { renderProfessions } from './ui/professions.js';
@@ -27,7 +29,7 @@ app.innerHTML = `
   <div class="hud-team"><p class="hud-hint">VOTRE TROUPE <span>↕ Molette pour changer</span></p><div id="team" class="team-grid"></div></div>
   <div class="hud-notification" id="notification" role="status"></div>
   <div class="hud-bottom"><div class="controls-hint"><kbd>ZQSD</kbd> Bouger <span>·</span> <kbd>Clic droit</kbd> Attaquer <span>·</span> <kbd>Clic gauche</kbd> Cible bonus <span>·</span> <kbd>↕</kbd> Changer</div><div class="action-bar"><div id="spellbar" class="spellbar"></div><div class="ultimate-box"><button data-action="deploy" id="deploy">Ultime prêt · E</button><div class="ultimate-track"><span id="ultimate-progress"></span></div><span id="ultimate-status">Ultime prêt · Troupe réunie 30 s</span></div></div></div>
-  <div id="harvest-status" class="harvest-status" hidden><span></span><progress max="1" value="0"></progress><button data-action="cancel-harvest">Annuler</button></div><button id="sawmill-interaction" data-action="sawmill" class="world-interaction" hidden>Scierie · F</button><button id="fountain-interaction" data-action="fountain" class="world-interaction" hidden>Fontaine du renouveau · F</button><button id="forge-interaction" data-action="forge" class="world-interaction" hidden>Parler à Borin · F</button><button id="petshop-interaction" data-action="petshop" class="world-interaction" hidden>Parler à Nola · F</button><nav class="touch-controls" aria-label="Déplacement tactile"><button data-direction="up" aria-label="Haut">↑</button><div><button data-direction="left" aria-label="Gauche">←</button><button data-direction="down" aria-label="Bas">↓</button><button data-direction="right" aria-label="Droite">→</button></div></nav>
+  <button id="tutorial-exit" data-action="tutorial-exit" class="world-interaction" hidden>Rejoindre le village · F</button><div id="harvest-status" class="harvest-status" hidden><span></span><progress max="1" value="0"></progress><button data-action="cancel-harvest">Annuler</button></div><button id="sawmill-interaction" data-action="sawmill" class="world-interaction" hidden>Scierie · F</button><button id="fountain-interaction" data-action="fountain" class="world-interaction" hidden>Fontaine du renouveau · F</button><button id="forge-interaction" data-action="forge" class="world-interaction" hidden>Parler à Borin · F</button><button id="petshop-interaction" data-action="petshop" class="world-interaction" hidden>Parler à Nola · F</button><nav class="touch-controls" aria-label="Déplacement tactile"><button data-direction="up" aria-label="Haut">↑</button><div><button data-direction="left" aria-label="Gauche">←</button><button data-direction="down" aria-label="Bas">↓</button><button data-direction="right" aria-label="Droite">→</button></div></nav>
   <div id="inventory-backdrop" class="inventory-backdrop" hidden></div>
   <section id="inventory" class="inventory-window" role="dialog" aria-modal="true" aria-labelledby="inventory-title" hidden>
     <h2 id="inventory-title" class="sr-only">Inventaire</h2>
@@ -99,6 +101,11 @@ function refresh(s) {
 function refreshUltimate(s) {
   sound.update(s);
   tutorial?.update();
+  const isTutorial=s.zone === "tutorial";
+  app.querySelector(".zone-card h1").textContent=isTutorial?"Île des premiers pas":"Jardin des essais";
+  app.querySelector(".zone-card .eyebrow").textContent=isTutorial?"AURORIA · TUTORIEL":"AURORIA · ZONE DEV";
+  app.querySelector(".session-label").textContent=isTutorial?"Initiation · Iris vous accompagne":"Session locale · 3 bots";
+  app.querySelector("#tutorial-exit").hidden=inventoryOpen||!nearTutorialExit(s)||!s.tutorial?.spellRead;
   app.querySelector('#sawmill-interaction').hidden=inventoryOpen||!nearSawmill(s);
   const harvest=app.querySelector('#harvest-status'),action=s.woodcutting.action;harvest.hidden=!action;
   if(action){const tree=s.trees.find(t=>t.id===action.tree);harvest.querySelector('span').textContent=`${action.phase==='walk'?'En route':'Coupe'} · ${woodById(tree.wood).name}`;harvest.querySelector('progress').value=action.phase==='cut'?action.progress/action.duration:0;}
@@ -146,6 +153,7 @@ app.addEventListener('click',event=>{
   const button=event.target.closest('button'); if(!button)return;
   const s=game.state;
   if(button.dataset.action==='audio'||button.closest('#audio-settings')||button.closest('.tutorial'))return;
+  if(button.dataset.action === 'tutorial-exit'){if(nearTutorialExit(s)&&s.tutorial?.spellRead){finishTutorial(s);game.refresh();refresh(s);}return;}
   if (button.dataset.action === 'inventory') { setInventory(!(inventoryOpen && currentTab==='equipment'), 'equipment'); return; }
   if (button.dataset.action === 'bestiary') { setInventory(!(inventoryOpen && currentTab==='bestiary'), 'bestiary'); return; }
   if (button.dataset.action === 'professions') {setInventory(true,'professions');return;}

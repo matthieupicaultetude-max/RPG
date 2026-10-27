@@ -505,3 +505,9 @@ Le son s’active après une interaction utilisateur. Le bouton **🔊** donne a
 Les dégâts réellement appliqués déclenchent un impact adapté à la source : lame, arc ou magie. Les sorts magiques distinguent leurs éléments. L’origine sonore est conservée par les projectiles, zones et événements différés ; une compétence lancée ensuite ne change pas le bruit d’un ancien tir. Les soins effectifs, dégâts reçus, ultimes et cibles bonus ajoutent des retours courts et distincts. Les déplacements, coups de hache, récoltes et fabrications apportent des bruitages plus discrets.
 
 Le personnage principal est prioritaire dans les impacts simultanés. Une atténuation selon la distance, un placement stéréo modéré, une limitation des répétitions et une compression douce maintiennent la lisibilité. Les sons ne participent pas aux calculs de combat et utilisent un générateur distinct du hasard du butin. Le moteur reste facultatif : une indisponibilité du son ne bloque aucune règle du jeu.
+
+## 33. Zone d’initiation
+
+Toute nouvelle session locale commence sur l’**Île des premiers pas**, à un point d’apparition praticable devant le pavillon d’accueil d’Iris. Cette carte est indépendante du Jardin des essais : terrain, empreintes solides, chemins, décor et guide sont propres à l’île. Les activités du village ne sont pas accessibles à des coordonnées équivalentes sur l’île.
+
+La place centrale accueille la découverte des trois personnages et du déplacement. La cour d’entraînement, reliée par un chemin, reçoit le slime uniquement lors du combat guidé. La porte orientale rejoint le village après l’étape des sorts : bouton de fin de tutoriel ou F près de la porte. Passer le guide rejoint également le village. Les transitions suppriment projectiles et zones d’effet en cours, rappellent les alliés et déplacent la troupe ensemble. Toute progression acquise reste conservée.

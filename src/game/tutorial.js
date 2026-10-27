@@ -1,3 +1,10 @@
+import {
+  TUTORIAL_SPAWN,
+  TUTORIAL_COMBAT,
+  TUTORIAL_MONSTER,
+  NPCS,
+} from "../world/tutorial-map.js";
+import { movePartyToZone } from "../world/zones.js";
 import { createMonster } from "../data/monsters.js";
 
 // A separate encounter keeps the lesson safe without changing ordinary monsters.
@@ -9,10 +16,20 @@ export function beginTutorial(state) {
     distance: 0,
     previous: { ...state.player },
     savedMonsters: state.monsters,
+    savedWorld: { bots: state.bots, npcs: state.npcs, trees: state.trees },
     defeated: false,
   };
   state.monsters = [];
+  state.bots = [];
+  state.npcs = NPCS.map((npc) => ({ ...npc }));
+  state.trees = [];
+  movePartyToZone(state, "tutorial", TUTORIAL_SPAWN);
+  state.tutorial.previous = { ...state.player };
   state.autoAttack = false;
+  state.log.unshift(
+    "Bienvenue sur l’île des premiers pas. Iris vous accompagne.",
+  );
+  state.log.length = Math.min(6, state.log.length);
   state.revision++;
   return true;
 }
@@ -20,7 +37,12 @@ export function startTutorialFight(state) {
   const t = state.tutorial;
   if (t?.step !== "ready") return false;
   t.member = state.main;
-  const monster = createMonster("slime", 455, 220);
+  movePartyToZone(state, "tutorial", TUTORIAL_COMBAT);
+  const monster = createMonster(
+    "slime",
+    TUTORIAL_MONSTER.x,
+    TUTORIAL_MONSTER.y,
+  );
   Object.assign(monster, {
     name: "Slime d’entraînement",
     tutorial: true,
@@ -54,7 +76,9 @@ export function stepTutorial(state) {
   if (
     t.step === "spells" &&
     t.manualSpell &&
-    state.team[t.member].loadout.slice(0, 3).includes(`${state.team[t.member].role}-fire-0`)
+    state.team[t.member].loadout
+      .slice(0, 3)
+      .includes(`${state.team[t.member].role}-fire-0`)
   )
     t.spellRead = true;
   if (t.step === "combat" && t.defeated) {
@@ -77,6 +101,9 @@ export function finishTutorial(state, skipped = false) {
   if (!t || ["done", "skipped"].includes(t.step)) return;
   state.monsters = t.savedMonsters;
   delete t.savedMonsters;
+  Object.assign(state, t.savedWorld);
+  delete t.savedWorld;
+  movePartyToZone(state, "garden", { x: 110, y: 155 });
   state.spellEvents = [];
   state.spellMissiles = [];
   state.spellAreas = [];

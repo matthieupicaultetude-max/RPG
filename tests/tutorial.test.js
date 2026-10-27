@@ -70,13 +70,86 @@ test("passer le tutoriel restaure les monstres sans récompense gratuite", () =>
   assert.equal(s.gold, 0);
 });
 
-for (const slot of [0,1,2]) test(`tutoriel : le sort Feu valide l’étape dans l’emplacement ${slot+1}`, async()=>{
-  const { equipSpell } = await import('../src/data/spells.js');
-  const s=createSandbox();beginTutorial(s);
-  s.team[0].level=2;
-  Object.assign(s.tutorial,{step:'spells',manualSpell:true,member:0});
-  assert.equal(equipSpell(s,0,slot,'melee-fire-0'),true);
-  stepTutorial(s);assert.equal(s.tutorial.spellRead,true);
-  const loadout=[...s.team[0].loadout];
-  finishTutorial(s);assert.deepEqual(s.team[0].loadout,loadout);
+for (const slot of [0, 1, 2])
+  test(`tutoriel : le sort Feu valide l’étape dans l’emplacement ${slot + 1}`, async () => {
+    const { equipSpell } = await import("../src/data/spells.js");
+    const s = createSandbox();
+    beginTutorial(s);
+    s.team[0].level = 2;
+    Object.assign(s.tutorial, { step: "spells", manualSpell: true, member: 0 });
+    assert.equal(equipSpell(s, 0, slot, "melee-fire-0"), true);
+    stepTutorial(s);
+    assert.equal(s.tutorial.spellRead, true);
+    const loadout = [...s.team[0].loadout];
+    finishTutorial(s);
+    assert.deepEqual(s.team[0].loadout, loadout);
+  });
+
+test("zone tutoriel : apparition sur terre, bâtiments solides et passages accessibles", async () => {
+  const map = await import("../src/world/tutorial-map.js");
+  const { canWalkZone } = await import("../src/world/zones.js");
+  const { findPath } = await import("../src/ai/companions.js");
+  const { stepSandbox } = await import("../src/dev/sandbox.js");
+  assert.deepEqual(map.validateMap(), []);
+  const s = createSandbox();
+  beginTutorial(s);
+  assert.equal(s.zone, "tutorial");
+  assert.deepEqual({ x: s.player.x, y: s.player.y }, map.TUTORIAL_SPAWN);
+  assert.ok(s.team.every((m) => m.x === s.player.x && m.y === s.player.y));
+  assert.equal(s.npcs[0].id, "iris");
+  assert.equal(s.bots.length, 0);
+  assert.equal(s.trees.length, 0);
+  const walkable = (x, y) => canWalkZone(x, y, s.zone);
+  assert.equal(walkable(135, 180), false);
+  assert.equal(walkable(5, 100), false);
+  for (const point of [
+    map.TUTORIAL_SPAWN,
+    map.TUTORIAL_COMBAT,
+    map.TUTORIAL_MONSTER,
+    map.TUTORIAL_EXIT,
+  ])
+    assert.equal(walkable(point.x, point.y), true);
+  for (const [from, to] of [
+    [map.TUTORIAL_SPAWN, map.TUTORIAL_COMBAT],
+    [map.TUTORIAL_COMBAT, map.TUTORIAL_EXIT],
+  ])
+    assert.ok(findPath(from, to, walkable)?.length);
+  Object.assign(s.player, { x: 135, y: 208 });
+  Object.assign(s.team[s.main], s.player);
+  for (let i = 0; i < 20; i++) stepSandbox(s, { x: 0, y: -1 }, 0.05);
+  assert.ok(s.player.y >= 200);
+  assert.equal(walkable(s.player.x, s.player.y), true);
+});
+test("sortie du tutoriel : village restauré et progression conservée", async () => {
+  const { canWalkZone, nearTutorialExit } = await import(
+    "../src/world/zones.js"
+  );
+  const { TUTORIAL_EXIT } = await import("../src/world/tutorial-map.js");
+  const { nearFountain } = await import("../src/data/progression.js");
+  const { nearForge } = await import("../src/game/forge.js");
+  const { nearPetShop } = await import("../src/game/pet-quests.js");
+  const { nearSawmill } = await import("../src/game/woodcutting.js");
+  const s = createSandbox(),
+    saved = {
+      monsters: s.monsters,
+      bots: s.bots,
+      npcs: s.npcs,
+      trees: s.trees,
+    };
+  beginTutorial(s);
+  for (const check of [nearFountain, nearForge, nearPetShop, nearSawmill])
+    assert.equal(check(s), false);
+  Object.assign(s.player, TUTORIAL_EXIT);
+  assert.equal(nearTutorialExit(s), true);
+  s.team[0].level = 2;
+  s.team[0].allocatedStats.Force = 5;
+  s.bag.push({ id: 999, name: "Souvenir", quantity: 1 });
+  finishTutorial(s);
+  assert.equal(s.zone, "garden");
+  for (const key of Object.keys(saved)) assert.equal(s[key], saved[key]);
+  assert.equal(s.team[0].level, 2);
+  assert.equal(s.team[0].allocatedStats.Force, 5);
+  assert.equal(s.bag[0].name, "Souvenir");
+  assert.equal(canWalkZone(s.player.x, s.player.y, s.zone), true);
+  assert.equal(nearTutorialExit(s), false);
 });

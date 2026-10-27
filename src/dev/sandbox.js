@@ -1,3 +1,4 @@
+import { canWalkZone } from '../world/zones.js';
 import { emitSound, impactKind } from '../audio/events.js';
 import { createTrees, stepWoodcutting, cancelWoodcutting } from '../game/woodcutting.js';
 import { recordBonusOpportunity, stepBonusTargets, clickBonusTarget } from '../combat/bonus-targets.js';
@@ -8,7 +9,6 @@ import { castCompanionSpell } from '../ai/spell-tactics.js';
 import { nearForge } from '../game/forge.js';
 import { recordSetLoot, nearPetShop } from '../game/pet-quests.js';
 import { PET_SHOP, FORGE } from '../world/map.js';
-import { canWalkMap } from '../world/map.js';
 import { ELEMENTS, CORE_CHANCE, createCore, rollCoreEquipment, characterStats, syncEquipmentHealth } from '../data/equipment.js';
 import { createMonster, monsterDefinition } from '../data/monsters.js';
 import { stepAttacks } from '../combat/attacks.js';
@@ -28,6 +28,7 @@ export function makeMember(role, i) {
 export function createSandbox() {
   const state = createState();
   Object.assign(state, {
+    zone: 'garden',
     team: ['melee', 'support', 'ranged'].map(makeMember), main: 0, deployed: false,
     ultimate: { remaining: 0, cooldown: 0 },
     collections: {}, petQuests: {}, npcs:[{...PET_SHOP.npc},{...FORGE.npc}],
@@ -46,14 +47,15 @@ export function note(s, message) {
   s.log.length = Math.min(s.log.length, 6);
   s.revision++;
 }
-export function atHome(s) { return Math.hypot(s.player.x - STATIONS.maison.x, s.player.y - STATIONS.maison.y) < 65 || nearPetShop(s) || nearForge(s); }
+export function atHome(s) { return s.zone !== 'tutorial' && (Math.hypot(s.player.x - STATIONS.maison.x, s.player.y - STATIONS.maison.y) < 65 || nearPetShop(s) || nearForge(s)); }
 export function teleport(s, station) {
+  if(s.zone === "tutorial") {note(s,"Terminez ou passez le tutoriel pour rejoindre le village.");return;}
   const point = STATIONS[station];
   if (!point) return;
   cancelWoodcutting(s);
   Object.assign(s.player, point, { moving: false });
   Object.assign(s.team[s.main], s.player);
-  placeAllies(s, canStand);
+  placeAllies(s, (x,y)=>canWalkZone(x,y,s.zone));
   note(s, `Téléportation de test : ${station}.`);
 }
 export function chooseMain(s, i) {
@@ -81,7 +83,7 @@ export function activateUltimate(s) {
   s.ultimate.remaining = ULTIMATE_DURATION;
   s.ultimate.cooldown = ULTIMATE_COOLDOWN;
   s.deployed = true;
-  placeAllies(s, canStand);
+  placeAllies(s, (x,y)=>canWalkZone(x,y,s.zone));
   note(s, 'Ultime : la troupe est réunie pendant 30 secondes !');
   return true;
 }
@@ -188,9 +190,9 @@ export function unequip(s, slot) {
   note(s, `${slot} retiré.`);
 }
 export function canStand(x, y) {
-  return canWalkMap(x,y);
+  return canWalkZone(x,y);
 }
-function walk(entity, x, y, speed, dt) {
+function walk(entity, x, y, speed, dt, canStand) {
   const dx = x - entity.x, dy = y - entity.y, d = Math.hypot(dx, dy);
   entity.moving = d > 5;
   if (!entity.moving) return;
@@ -200,6 +202,7 @@ function walk(entity, x, y, speed, dt) {
   if (canStand(entity.x, entity.y + dy / d * step)) entity.y += dy / d * step;
 }
 function hitMonster(s, monster, damage, member, options={}) {
+  const canStand=(x,y)=>canWalkZone(x,y,s.zone);
   if(monster.hp<=0||!Number.isFinite(damage)||damage<=0)return;
   monster.hp = Math.max(0, monster.hp - damage);
   emitSound(s,options.bonus?"bonus":options.sound||impactKind(member),monster,{owner:member.id,element:options.element,damage});
@@ -231,14 +234,16 @@ export function rewardMonster(s,monster,random=Math.random) {
   grantLoot(s,random()<definition.rareChance?'rare':'normal',random()<definition.chromaticChance,monster.species);
   if(random()<CORE_CHANCE)grantCore(s,definition.element,monster.level);
 }
-export function clickBonus(s,point) {Object.assign(s.team[s.main],s.player);const hit=clickBonusTarget(s,point,canStand,hitMonster);if(hit)cancelWoodcutting(s);return hit;}
+export function clickBonus(s,point) {const canStand=(x,y)=>canWalkZone(x,y,s.zone);Object.assign(s.team[s.main],s.player);const hit=clickBonusTarget(s,point,canStand,hitMonster);if(hit)cancelWoodcutting(s);return hit;}
 export const spellContext = {canStand,hitMonster};
+const contextFor=s=>({canStand:(x,y)=>canWalkZone(x,y,s.zone),hitMonster});
 export function castEquipped(s,slot,point=s.aim.active?s.aim:null,options={}) {
  const member=s.team[s.main];Object.assign(member,s.player);
- const result=castSpell(s,member,slot,point?{x:point.x,y:point.y+8}:null,spellContext,options);if(result)cancelWoodcutting(s);return result;
+ const result=castSpell(s,member,slot,point?{x:point.x,y:point.y+8}:null,contextFor(s),options);if(result)cancelWoodcutting(s);return result;
 }
 export function attack(s,point=s.aim.active?s.aim:null) {return castEquipped(s,0,point);}
 export function stepSandbox(s, direction, dt, elapsed = dt) {
+  const spellContext=contextFor(s), canStand=spellContext.canStand;
   advanceUltimate(s, Math.max(0, elapsed));
   stepBonusTargets(s,elapsed,canStand);
   const old = { x: s.player.x, y: s.player.y };
@@ -263,14 +268,14 @@ export function stepSandbox(s, direction, dt, elapsed = dt) {
     }
     const target = s.team.filter((m, i) => m.hp > 0 && (i === s.main || s.deployed)).sort((a, b) => Math.hypot(a.x - monster.x, a.y - monster.y) - Math.hypot(b.x - monster.x, b.y - monster.y))[0];
     if (target && Math.hypot(target.x - monster.homeX, target.y - monster.homeY) < monster.detection) {
-      if (Math.hypot(monster.x - target.x, monster.y - target.y) > 22) {if(!(monster.spellState?.root>0))walk(monster, target.x, target.y, monster.speed, dt);}
+      if (Math.hypot(monster.x - target.x, monster.y - target.y) > 22) {if(!(monster.spellState?.root>0))walk(monster, target.x, target.y, monster.speed, dt, canStand);}
       else if (monster.cooldown === 0) {
         const taken=receiveSpellDamage(s,target,monster.damage,monster);if(taken>0&&target.id===s.main){cancelWoodcutting(s);emitSound(s,"hurt",target,{damage:taken});} monster.cooldown = monster.attackDelay;
         s.effects.push({ x: monster.x, y: monster.y-8, toX: target.x, toY: target.y-8, text: '', color: '#f0a28e', life: .22 });
         s.effects.push({ x: target.x, y: target.y - 25, text: `−${taken}`, color: '#ffa3a3', life: .8 }); s.revision++;
-        if (s.team.every(m => m.hp <= 0)) { endUltimate(s); teleport(s, 'maison'); heal(s); note(s, 'Défaite : retour à la maison (règle de test).'); }
+        if (s.team.every(m => m.hp <= 0)) { endUltimate(s); if(s.zone==='tutorial'){Object.assign(s.player,{x:230,y:250});s.team.forEach(m=>Object.assign(m,s.player));}else teleport(s, 'maison'); heal(s); note(s, s.zone==='tutorial'?'Iris vous remet sur pied. Réessayez !':'Défaite : retour à la maison (règle de test).'); }
       }
-    } else if(!(monster.spellState?.root>0))walk(monster, monster.homeX + Math.sin(s.time * .5 + monster.homeX) * 20, monster.homeY + Math.cos(s.time * .4) * 15, monster.patrolSpeed, dt);
+    } else if(!(monster.spellState?.root>0))walk(monster, monster.homeX + Math.sin(s.time * .5 + monster.homeX) * 20, monster.homeY + Math.cos(s.time * .4) * 15, monster.patrolSpeed, dt, canStand);
   });
   if(s.player.moving&&s.time>=(s.nextFootstep||0)){s.nextFootstep=s.time+.32;emitSound(s,"step",s.player,{owner:s.main});}
   s.bots.forEach(bot => {
@@ -278,6 +283,6 @@ export function stepSandbox(s, direction, dt, elapsed = dt) {
       bot.phase += 1.8;
       bot.target = { x: 300 + Math.sin(bot.phase) * 80, y: 125 + Math.cos(bot.phase * .7) * 45 };
     }
-    walk(bot, bot.target.x, bot.target.y, 24, dt);
+    walk(bot, bot.target.x, bot.target.y, 24, dt, canStand);
   });
 }

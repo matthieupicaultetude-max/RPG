@@ -680,3 +680,4 @@ canvas { cursor: crosshair; }
 .game-screen:has(#inventory:not([hidden])) .tutorial { display:none; }
 @media(max-width:700px) { .tutorial { top:112px; right:10px; width:min(270px,calc(100% - 180px)); max-height:calc(100dvh - 290px); padding:12px; }.tutorial h2 { font-size:15px; }.tutorial p { font-size:11px; } }
 @media(max-width:480px) { .tutorial { top:110px; right:8px; width:calc(100% - 16px); max-height:calc(100dvh - 410px); }.tutorial h2 { font-size:14px; margin:5px 0; }.tutorial p { margin:5px 0; line-height:1.4; } }
+@media (max-width:520px) { .zone-card h1 { white-space:normal; font-size:15px; } }

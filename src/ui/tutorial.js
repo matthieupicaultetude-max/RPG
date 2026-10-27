@@ -4,7 +4,7 @@ import {
   stepTutorial,
   finishTutorial,
 } from "../game/tutorial.js";
-import { chooseMain, teleport, note } from "../dev/sandbox.js";
+import { chooseMain, note } from "../dev/sandbox.js";
 export function createTutorialUI(app, game, openPanel) {
   const panel = document.createElement("aside");
   panel.className = "tutorial";
@@ -35,7 +35,7 @@ export function createTutorialUI(app, game, openPanel) {
     ],
     spells: [
       "Votre premier sort Feu",
-      "Ouvrez le grimoire (K). Au niveau 2, votre premier sort Feu est débloqué. Sélectionnez un des trois emplacements normaux, puis équipez le sort Feu depuis sa fiche. Clic droit, R ou C pour le lancer selon l’emplacement choisi. Vous pouvez mélanger Terre et Feu ! Fermez ensuite le grimoire avec Échap pour terminer le guide. Un sort par niveau ; un ultime au choix tous les 5 niveaux.",
+      "Ouvrez le grimoire (K). Au niveau 2, votre premier sort Feu est débloqué. Sélectionnez un des trois emplacements normaux, puis équipez le sort Feu depuis sa fiche. Clic droit, R ou C pour le lancer selon l’emplacement choisi. Vous pouvez mélanger Terre et Feu ! Fermez ensuite le grimoire avec Échap pour rejoindre la porte du village ou terminer le guide. Un sort par niveau ; un ultime au choix tous les 5 niveaux.",
     ],
   };
   const stages = Object.keys(text);
@@ -58,7 +58,7 @@ export function createTutorialUI(app, game, openPanel) {
       stats: ["stats", "Répartir mes points"],
       spells: ["spells", "Voir mon nouveau sort"],
     }[t.step];
-    panel.innerHTML = `<small>PREMIERS PAS · ${stages.indexOf(t.step) + 1} / 6</small><h2>${title}</h2><p>${body}</p>${t.step === "classes" ? `<p>${t.visited.length} / 3 personnages essayés</p><div class="tutorial-classes">${s.team.map((m, i) => `<button data-tutorial-main="${i}" aria-pressed="${s.main === i}">${["⚔ Corps à corps", "✧ Soutien", "➶ Distance"][i]}</button>`).join("")}</div>` : ""}${t.step === "move" ? `<progress max="55" value="${t.distance}" aria-label="Déplacement effectué"></progress>` : ""}<div>${action ? `<button data-tutorial="${action[0]}" ${t.step === "classes" && t.visited.length < 3 ? "disabled" : ""}>${action[1]}</button>` : ""}${t.step === "spells" ? `<button data-tutorial="finish" ${t.spellRead ? "" : "disabled"}>${t.spellRead ? "Terminer · À vous l’aventure !" : "Équiper le sort Feu pour terminer"}</button>` : ""}<button data-tutorial="skip">Passer le tutoriel</button></div>`;
+    panel.innerHTML = `<small>PREMIERS PAS · ${stages.indexOf(t.step) + 1} / 6</small><h2>${title}</h2><p>${body}</p>${t.step === "classes" ? `<p>${t.visited.length} / 3 personnages essayés</p><div class="tutorial-classes">${s.team.map((m, i) => `<button data-tutorial-main="${i}" aria-pressed="${s.main === i}">${["⚔ Corps à corps", "✧ Soutien", "➶ Distance"][i]}</button>`).join("")}</div>` : ""}${t.step === "move" ? `<progress max="55" value="${t.distance}" aria-label="Déplacement effectué"></progress>` : ""}<div>${action ? `<button data-tutorial="${action[0]}" ${t.step === "classes" && t.visited.length < 3 ? "disabled" : ""}>${action[1]}</button>` : ""}${t.step === "spells" ? `<button data-tutorial="finish" ${t.spellRead ? "" : "disabled"}>${t.spellRead ? "Terminer · Rejoindre le village" : "Équiper le sort Feu pour terminer"}</button>` : ""}<button data-tutorial="skip">Passer le tutoriel</button></div>`;
   }
   function click(event) {
     const member = event.target.closest("[data-tutorial-main]")?.dataset
@@ -79,7 +79,6 @@ export function createTutorialUI(app, game, openPanel) {
     }
     if (action === "fight" && t.step === "ready") {
       openPanel(false);
-      teleport(s, "combat");
       startTutorialFight(s);
     }
     if (action === "stats" || action === "spells") {
@@ -110,7 +109,7 @@ export function createTutorialUI(app, game, openPanel) {
       const button = panel.querySelector('[data-tutorial="finish"]');
       if (button) {
         button.disabled = false;
-        button.textContent = "Terminer · À vous l’aventure !";
+        button.textContent = "Terminer · Rejoindre le village";
       }
     }
   }

@@ -1,19 +1,10 @@
-import {
-  MAP_SIZE,
-  PROPS,
-  DECORATIONS,
-  FENCES,
-  placementOnLand,
-  validateMap,
-  isLand,
-  isRoad,
-  landDistance,
-} from "../world/map.js";
+import * as villageMap from "../world/map.js";
 import { paintTerrain } from "./terrain.js";
 import { createSpriteAtlas, drawFence } from "./sprites.js";
 import { hash } from "./textures.js";
 
-export function createEnvironment() {
+export function createEnvironment(map = villageMap) {
+  const {MAP_SIZE, PROPS, DECORATIONS, FENCES, placementOnLand, validateMap, isLand, isRoad, landDistance} = map;
   const errors = validateMap();
   if (errors.length) throw new Error(`Invalid map: ${errors.join("; ")}`);
   const ground = document.createElement("canvas");
@@ -21,7 +12,7 @@ export function createEnvironment() {
   ground.height = MAP_SIZE.height;
   const ctx = ground.getContext("2d");
   ctx.imageSmoothingEnabled = false;
-  paintTerrain(ctx, MAP_SIZE.width, MAP_SIZE.height);
+  paintTerrain(ctx, MAP_SIZE.width, MAP_SIZE.height, map);
   const spriteFor = createSpriteAtlas();
   // Ground decoration follows semantic material data, never sampled RGB values.
   for (let i = 0; i < 80; i++) {
@@ -64,5 +55,5 @@ export function createEnvironment() {
         drawFence(g, fence);
       },
     });
-  return { ground, props };
+  return { ground, props, markers:map.MARKERS || [] };
 }

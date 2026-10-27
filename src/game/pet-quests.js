@@ -15,7 +15,7 @@ const tell = (s, text) => {
   s.revision++;
 };
 export const nearPetShop = (s) =>
-  Math.hypot(s.player.x - PET_SHOP.npc.x, s.player.y - PET_SHOP.npc.y) < 52;
+  s.zone !== "tutorial" && Math.hypot(s.player.x - PET_SHOP.npc.x, s.player.y - PET_SHOP.npc.y) < 52;
 export function recordSetLoot(s, item) {
   if (!item.setId || !SET_SLOTS.includes(item.slot)) return;
   const slots = (s.collections[item.setId] ||= []);

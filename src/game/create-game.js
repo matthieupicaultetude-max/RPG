@@ -1,3 +1,5 @@
+import { nearTutorialExit } from '../world/zones.js';
+import { finishTutorial } from './tutorial.js';
 import { clickHarvestTarget } from './harvest-targets.js';
 import { requestCut, treeAt, cancelWoodcutting, nearSawmill } from './woodcutting.js';
 import { nearFountain } from '../data/progression.js';
@@ -20,7 +22,7 @@ export function createGame(canvas, touchControls, onChange, onTimers = () => {},
   canvas.addEventListener('wheel', createCharacterWheel(direction => { if (!interfaceOpen) cycleMain(state, direction); }), { passive: false, signal: controller.signal });
   canvas.addEventListener('keydown', event => {
     if (interfaceOpen) return;
-    if (event.code === 'KeyF' && !event.repeat) {event.preventDefault();if(nearSawmill(state))onInteraction('professions');else if(nearFountain(state))onInteraction('characteristics');else if(nearForge(state))onInteraction('forge');else if(nearPetShop(state))onInteraction('petshop');}
+    if (event.code === 'KeyF' && !event.repeat) {event.preventDefault();if(nearTutorialExit(state)&&state.tutorial?.spellRead)finishTutorial(state);else if(nearSawmill(state))onInteraction('professions');else if(nearFountain(state))onInteraction('characteristics');else if(nearForge(state))onInteraction('forge');else if(nearPetShop(state))onInteraction('petshop');}
     const slot={KeyR:1,KeyC:2,KeyT:3}[event.code];
     if(slot!==undefined&&!event.repeat){event.preventDefault();castEquipped(state,slot);}
     if (event.code === 'KeyE' && !event.repeat) { event.preventDefault(); activateUltimate(state); }

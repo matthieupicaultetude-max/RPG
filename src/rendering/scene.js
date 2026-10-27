@@ -1,3 +1,5 @@
+import * as tutorialMap from '../world/tutorial-map.js';
+import { canWalkZone } from '../world/zones.js';
 import { drawWoodcutting } from './woodcutting.js';
 import { bonusTargetPosition, BONUS_TARGET_RADIUS } from '../combat/bonus-targets.js';
 import { drawBonusTargets } from './bonus-targets.js';
@@ -6,8 +8,7 @@ import { spellById } from '../data/spells.js';
 import { createEnvironment } from "./environment.js";
 import { drawAdventurer, drawCreature } from "./actors.js";
 import { viewport } from "./viewport.js";
-import { guidedTarget, ATTACK_RANGE } from "../combat/attacks.js";
-import { canStand } from "../dev/sandbox.js";
+import { guidedTarget } from "../combat/attacks.js";
 
 export function createRenderer(canvas) {
   const frame = document.createElement("canvas");
@@ -16,7 +17,8 @@ export function createRenderer(canvas) {
   const ctx = frame.getContext("2d");
   const screen = canvas.getContext("2d");
   ctx.imageSmoothingEnabled = false;
-  const environment = createEnvironment();
+  const village = createEnvironment();
+  let tutorial;
   function label(text, x, y) {
     ctx.font = "8px monospace";
     ctx.textAlign = "center";
@@ -48,7 +50,11 @@ export function createRenderer(canvas) {
     label(bot ? `${p.name} · BOT` : p.name, x, y + 16);
   }
   return (s) => {
+    const environment = s.zone === "tutorial" ? (tutorial ||= createEnvironment(tutorialMap)) : village;
+    const canStand = (x,y)=>canWalkZone(x,y,s.zone);
     ctx.drawImage(environment.ground, 0, 0);
+    for(const marker of environment.markers)label(marker.text,marker.x,marker.y);
+    if(s.zone === "tutorial")drawTutorialGate(ctx,s);
     drawSpellGround(ctx,s);
     const layers = [
       ...environment.props.map((prop) => ({
@@ -91,7 +97,7 @@ export function createRenderer(canvas) {
         y: m.y,
         draw: () => {
           if (m.hp <= 0) {
-            label(`Retour ${Math.ceil(m.respawn)}s`, m.homeX, m.homeY);
+            if(!m.tutorial)label(`Retour ${Math.ceil(m.respawn)}s`, m.homeX, m.homeY);
             return;
           }
           drawCreature(ctx, m, s.time);
@@ -246,4 +252,19 @@ export function createRenderer(canvas) {
       frame.height * view.scale,
     );
   };
+}
+
+function drawTutorialGate(ctx,state) {
+ const {x,y}=tutorialMap.TUTORIAL_EXIT;
+ ctx.fillStyle='#55614466';ctx.beginPath();ctx.ellipse(x,y+3,20,7,0,0,Math.PI*2);ctx.fill();
+ for(const side of [-1,1]){
+  ctx.fillStyle='#706e53';ctx.fillRect(x+side*18-4,y-43,8,45);
+  ctx.fillStyle='#beb88d';ctx.fillRect(x+side*18-3,y-42,6,43);
+  ctx.fillStyle='#e0d5ac';ctx.fillRect(x+side*18-5,y-44,10,4);
+  for(let row=0;row<4;row++){ctx.fillStyle='#8f9271';ctx.fillRect(x+side*18-3,y-10-row*9,6,1);}
+ }
+ ctx.fillStyle='#b9b88e';ctx.fillRect(x-22,y-49,44,6);ctx.fillStyle='#ded3a7';ctx.fillRect(x-24,y-51,48,3);
+ ctx.fillStyle=state.tutorial?.spellRead?'#8dcbb282':'#779b9255';ctx.fillRect(x-13,y-42,26,40);
+ ctx.strokeStyle='#bfe5bf';ctx.lineWidth=1;ctx.strokeRect(x-13,y-42,26,40);
+ for(let i=0;i<5;i++){const yy=y-5-((state.time*12+i*8)%35);ctx.fillStyle='#e5ecc0';ctx.fillRect(x-9+(i*7)%20,Math.round(yy),1,2);}
 }
