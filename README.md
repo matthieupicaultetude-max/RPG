@@ -44,7 +44,7 @@ npm run build
 npm run preview
 ```
 
-Cent neuf tests couvrent déplacement, composition à trois, variantes de butin, échanges d’équipement, XP, combat/récompenses/respawn, collisions de la maison, soutien IA, retour après défaite, ultime (30 s / 300 s), changements de personnage, filtrage de la molette, ciblage guidé, impacts différés, projectiles, conversion caméra/curseur, contournement de la maison, espacement au repos, recul du distance et regroupement. Les parcours navigateur vérifient également les commandes, les panneaux et le petit écran.
+Cent dix-sept tests couvrent déplacement, composition à trois, variantes de butin, échanges d’équipement, XP, combat/récompenses/respawn, collisions de la maison, soutien IA, retour après défaite, ultime (30 s / 300 s), changements de personnage, filtrage de la molette, ciblage guidé, impacts différés, projectiles, conversion caméra/curseur, contournement de la maison, espacement au repos, recul du distance et regroupement. Les parcours navigateur vérifient également les commandes, les panneaux et le petit écran.
 
 ## Organisation
 
@@ -231,3 +231,16 @@ Les outils dev ajoutent **Bosquet**, **Scierie**, **+30 XP bûcheron** et **10 B
 ### Cibles pendant la coupe
 
 Une cible dorée apparaît une fois pendant chaque coupe, après un quart de la progression. Elle reste au plus **1 seconde**, comme les cibles de combat, et disparaît si la coupe se termine ou est interrompue. Un **clic gauche précis** ajoute **25 % de la durée totale** à la progression, une seule fois. Un clic manqué ou une cible expirée ne pénalisent pas la coupe ; elle continue normalement. Le bois et l’XP restent les mêmes et ne sont accordés qu’à la fin effective de la récolte. Le bonus peut raccourcir la durée de base sous son plancher habituel d’une seconde.
+
+
+## Ambiance sonore
+
+Le son démarre à la **première interaction** avec le jeu, selon les règles du navigateur. Le bouton **🔊** ouvre les réglages : **Général, Musique, Bruitages, Vent**, plus une coupure complète. Ces préférences sont mémorisées sur le navigateur, indépendamment de la progression locale du jeu.
+
+Une composition rétro originale à **104 BPM**, sur une boucle de seize mesures, associe mélodie douce, arpèges, basse et percussion légère. Un vent filtré avec des variations lentes reste en arrière-plan. Les réglages initiaux privilégient une musique discrète et des actions lisibles.
+
+Les impacts réussis distinguent **lame**, **arc** et **magie**, avec des nuances selon l’élément. Le son d’un projectile reste lié à son sort d’origine, même si une autre compétence est lancée avant l’impact. Les coups ratés ne produisent pas de bruit d’impact. Des retours courts accompagnent aussi les soins, dégâts reçus, ultimes, cibles réussies, pas, coups de hache, récoltes, planches et améliorations à la forge.
+
+Les effets proches du personnage contrôlé sont prioritaires et légèrement spatialisés ; les alliés et actions éloignées sont plus discrets. Les répétitions simultanées sont limitées pour éviter la cacophonie. Les volumes changent avec un fondu court ; le son se suspend lorsque l’onglet est masqué et reprend à son retour. En cas d’absence de prise en charge audio, le jeu continue normalement.
+
+Les sons sont synthétisés dans le navigateur : aucun téléchargement audio ni service externe n’est nécessaire. Les vérifications couvrent les familles d’impacts, les effets retardés, les préférences, la pause/reprise, les curseurs de volume et le rendu audio sans saturation.

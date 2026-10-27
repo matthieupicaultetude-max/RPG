@@ -1,3 +1,4 @@
+import { createAudioUI } from './ui/audio.js';
 import { renderProfessions } from './ui/professions.js';
 import { requestCut, craftPlanks, woodQuantity, nearSawmill, cancelWoodcutting, grantWoodcuttingXp, addWoodItem } from './game/woodcutting.js';
 import { woodById } from './data/woodcutting.js';
@@ -21,7 +22,7 @@ const app = document.querySelector('#app');
 app.innerHTML = `
 <main class="game-screen">
   <canvas width="640" height="400" tabindex="0" aria-label="Jardin des essais. Flèches ou ZQSD pour bouger, molette pour changer de personnage, clic gauche sur les cibles bonus, clic droit, R et C pour les sorts, T pour l’ultime personnel, E pour déployer la troupe, K pour le grimoire, P pour les caractéristiques, I pour l’inventaire."></canvas>
-  <div class="hud-top"><div class="zone-card"><span class="eyebrow">AURORIA · ZONE DEV</span><h1>Jardin des essais</h1><span class="session-label"><i></i> Session locale · 3 bots</span></div><div class="hud-menu"><button data-action="inventory" aria-controls="inventory" aria-expanded="false">▣ Inventaire <kbd>I</kbd></button><button data-action="bestiary" aria-label="Bestiaire B">☷ <span>Bestiaire</span> <kbd>B</kbd></button><button data-action="characteristics">◈ <span>Carac.</span> <kbd>P</kbd></button><button data-action="spells">✦ <span>Grimoire</span> <kbd>K</kbd></button><button data-action="professions">🪓 <span>Métiers</span> <kbd>L</kbd></button><button data-action="tools">⚙ Outils dev</button><button data-action="fullscreen" aria-label="Basculer le plein écran">⛶</button></div></div>
+  <div class="hud-top"><div class="zone-card"><span class="eyebrow">AURORIA · ZONE DEV</span><h1>Jardin des essais</h1><span class="session-label"><i></i> Session locale · 3 bots</span></div><div class="hud-menu"><button data-action="inventory" aria-controls="inventory" aria-expanded="false">▣ Inventaire <kbd>I</kbd></button><button data-action="bestiary" aria-label="Bestiaire B">☷ <span>Bestiaire</span> <kbd>B</kbd></button><button data-action="characteristics">◈ <span>Carac.</span> <kbd>P</kbd></button><button data-action="spells">✦ <span>Grimoire</span> <kbd>K</kbd></button><button data-action="professions">🪓 <span>Métiers</span> <kbd>L</kbd></button><button data-action="tools">⚙ Outils dev</button><button data-action="audio" aria-label="Réglages audio">🔊</button><button data-action="fullscreen" aria-label="Basculer le plein écran">⛶</button></div></div>
   <div class="hud-team"><p class="hud-hint">VOTRE TROUPE <span>↕ Molette pour changer</span></p><div id="team" class="team-grid"></div></div>
   <div class="hud-notification" id="notification" role="status"></div>
   <div class="hud-bottom"><div class="controls-hint"><kbd>ZQSD</kbd> Bouger <span>·</span> <kbd>Clic droit</kbd> Attaquer <span>·</span> <kbd>Clic gauche</kbd> Cible bonus <span>·</span> <kbd>↕</kbd> Changer</div><div class="action-bar"><div id="spellbar" class="spellbar"></div><div class="ultimate-box"><button data-action="deploy" id="deploy">Ultime prêt · E</button><div class="ultimate-track"><span id="ultimate-progress"></span></div><span id="ultimate-status">Ultime prêt · Troupe réunie 30 s</span></div></div></div>
@@ -33,6 +34,7 @@ app.innerHTML = `
     <div class="inventory-footer"><nav class="tabs" aria-label="Panneaux de l’inventaire"><button data-tab="equipment" aria-pressed="true">Équipement & sac <span id="bag-count">0</span></button><button data-tab="bestiary" aria-pressed="false">Bestiaire</button><button data-tab="petshop" aria-pressed="false">Animalerie</button><button data-tab="forge" aria-pressed="false">Forge</button><button data-tab="characteristics" aria-pressed="false">Caractéristiques</button><button data-tab="spells" aria-pressed="false">Grimoire</button><button data-tab="professions" aria-pressed="false">Métiers</button><button data-tab="tools" aria-pressed="false">Outils dev</button></nav><button data-action="close-inventory" aria-label="Fermer l’inventaire">✕ <kbd>Échap</kbd></button></div>
   </section>
 </main>`;
+const sound=createAudioUI(app);
 let inventoryOpen = false;
 let currentTab = 'equipment';
 let selectedItem = null;
@@ -94,6 +96,7 @@ function refresh(s) {
   if (focusKey) (panel.querySelector(focusKey) || panel.querySelector('.item-details button') || app.querySelector('[data-action="close-inventory"]')).focus({ preventScroll: true });
 }
 function refreshUltimate(s) {
+  sound.update(s);
   app.querySelector('#sawmill-interaction').hidden=inventoryOpen||!nearSawmill(s);
   const harvest=app.querySelector('#harvest-status'),action=s.woodcutting.action;harvest.hidden=!action;
   if(action){const tree=s.trees.find(t=>t.id===action.tree);harvest.querySelector('span').textContent=`${action.phase==='walk'?'En route':'Coupe'} · ${woodById(tree.wood).name}`;harvest.querySelector('progress').value=action.phase==='cut'?action.progress/action.duration:0;}
@@ -118,6 +121,7 @@ function refreshUltimate(s) {
   app.querySelector('#ultimate-progress').style.width = `${active ? s.ultimate.remaining / 30 * 100 : (1 - s.ultimate.cooldown / 300) * 100}%`;
 }
 function setInventory(open, tab = currentTab) {
+  if(open)sound.close();
   if(currentTab!==tab)panel.scrollTop=0;
   inventoryOpen = open;
   currentTab = tab;
@@ -137,6 +141,7 @@ refresh(game.state);
 app.addEventListener('click',event=>{
   const button=event.target.closest('button'); if(!button)return;
   const s=game.state;
+  if(button.dataset.action==='audio'||button.closest('#audio-settings'))return;
   if (button.dataset.action === 'inventory') { setInventory(!(inventoryOpen && currentTab==='equipment'), 'equipment'); return; }
   if (button.dataset.action === 'bestiary') { setInventory(!(inventoryOpen && currentTab==='bestiary'), 'bestiary'); return; }
   if (button.dataset.action === 'professions') {setInventory(true,'professions');return;}
@@ -239,4 +244,4 @@ window.addEventListener('keydown', event => {
 }, uiOptions);
 // Read-only inspection for browser checks; mutations go through the visible tools.
 window.auroria={snapshot:()=>JSON.parse(JSON.stringify(game.state))};
-if(import.meta.hot)import.meta.hot.dispose(()=>{uiController.abort();game.destroy();delete window.auroria;});
+if(import.meta.hot)import.meta.hot.dispose(()=>{uiController.abort();sound.destroy();game.destroy();delete window.auroria;});

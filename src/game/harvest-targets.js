@@ -1,3 +1,4 @@
+import { emitSound } from "../audio/events.js";
 import {
   BONUS_TARGET_DURATION,
   BONUS_TARGET_RADIUS,
@@ -18,6 +19,7 @@ export function clickHarvestTarget(s, point) {
   const action = s.woodcutting.action,
     target = action.target;
   delete action.target;
+  emitSound(s,"bonus",target,{owner:s.main});
   action.progress = Math.min(
     action.duration,
     action.progress + action.duration * 0.25,

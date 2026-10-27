@@ -1,3 +1,4 @@
+import { emitSound } from "../audio/events.js";
 import { stepHarvestTarget } from './harvest-targets.js';
 import {
   WOODS,
@@ -191,6 +192,7 @@ export function stepWoodcutting(s, direction, dt, elapsed, canStand) {
   action.particle += dt;
   if (action.particle > 0.35) {
     action.particle = 0;
+    emitSound(s,"chop",tree,{owner:s.main});
     for (let i = 0; i < 3; i++)
       s.effects.push({
         x: tree.x,
@@ -205,6 +207,7 @@ export function stepWoodcutting(s, direction, dt, elapsed, canStand) {
   if (action.progress >= action.duration) {
     const wood = woodById(tree.wood);
     tree.respawn = wood.respawn;
+    emitSound(s,"gather",tree,{owner:s.main});
     s.woodcutting.action = null;
     addWoodItem(s, wood.id, "wood", 1);
     grantWoodcuttingXp(s, wood.xp);
@@ -233,6 +236,7 @@ export function craftPlanks(s, id, quantity) {
   }
   s.bag = s.bag.filter((i) => i.quantity > 0);
   addWoodItem(s, id, "plank", quantity);
+  emitSound(s,"craft",s.player,{owner:s.main});
   grantWoodcuttingXp(s, quantity * 10);
   tell(
     s,

@@ -494,3 +494,14 @@ Les essences disposent de palettes distinctes, les ressources et planches de leu
 Les cibles de combat et de bûcheron utilisent désormais une **durée commune de 1 seconde**. Une cible de récolte est proposée une seule fois par coupe, après 25 % de la progression, à une position autour de la couronne de l’arbre. Elle possède le même rayon de clic de six pixels du monde et un anneau indiquant le temps restant.
 
 Le clic gauche donne priorité à la cible de récolte active avant la sélection ordinaire d’un arbre. Une réussite ajoute **25 % de la durée totale de coupe** à la progression et consomme immédiatement la cible. Il n’accorde directement ni bois ni XP. La récolte finale conserve ses récompenses normales. L’expiration ou un clic raté n’ajoutent aucune pénalité, et une deuxième cible n’est pas proposée pendant la même coupe. Fin ou interruption de la coupe suppriment l’opportunité. Aux niveaux où la coupe est très courte, la fin de l’action peut faire disparaître la cible avant sa seconde complète.
+
+
+## 32. Musique, ambiance et retours sonores
+
+Le jardin possède une musique rétro originale, douce et entraînante, à **104 BPM**, en boucle de **16 mesures** avec une seconde phrase plus aérée. Une basse triangulaire, des arpèges, une mélodie carrée adoucie et des percussions légères composent le thème. Un souffle de vent filtré et modulé lentement apporte une ambiance extérieure continue.
+
+Le son s’active après une interaction utilisateur. Le bouton **🔊** donne accès aux volumes général, musique, effets et vent, ainsi qu’à la coupure générale. Les préférences audio sont mémorisées séparément du jeu. Le changement de volume et les pauses comportent des fondus courts. Un onglet masqué suspend la restitution sonore ; le retour reprend la même ambiance sans empiler plusieurs musiques.
+
+Les dégâts réellement appliqués déclenchent un impact adapté à la source : lame, arc ou magie. Les sorts magiques distinguent leurs éléments. L’origine sonore est conservée par les projectiles, zones et événements différés ; une compétence lancée ensuite ne change pas le bruit d’un ancien tir. Les soins effectifs, dégâts reçus, ultimes et cibles bonus ajoutent des retours courts et distincts. Les déplacements, coups de hache, récoltes et fabrications apportent des bruitages plus discrets.
+
+Le personnage principal est prioritaire dans les impacts simultanés. Une atténuation selon la distance, un placement stéréo modéré, une limitation des répétitions et une compression douce maintiennent la lisibilité. Les sons ne participent pas aux calculs de combat et utilisent un générateur distinct du hasard du butin. Le moteur reste facultatif : une indisponibilité du son ne bloque aucune règle du jeu.

@@ -1,3 +1,4 @@
+import { emitSound, impactKind } from '../audio/events.js';
 import { createTrees, stepWoodcutting, cancelWoodcutting } from '../game/woodcutting.js';
 import { recordBonusOpportunity, stepBonusTargets, clickBonusTarget } from '../combat/bonus-targets.js';
 import { emptyAllocation, fillUnlockedSlots } from '../data/progression.js';
@@ -201,6 +202,7 @@ function walk(entity, x, y, speed, dt) {
 function hitMonster(s, monster, damage, member, options={}) {
   if(monster.hp<=0||!Number.isFinite(damage)||damage<=0)return;
   monster.hp = Math.max(0, monster.hp - damage);
+  emitSound(s,options.bonus?"bonus":options.sound||impactKind(member),monster,{owner:member.id,element:options.element,damage});
   s.effects.push({ x: monster.x, y: monster.y - 15, text: `−${damage}`, color: '#ffe7a2', life: .8 });
   for (let i = 0; i < 6; i++) {
     const angle = i * Math.PI / 3;
@@ -259,13 +261,14 @@ export function stepSandbox(s, direction, dt, elapsed = dt) {
     if (target && Math.hypot(target.x - monster.homeX, target.y - monster.homeY) < monster.detection) {
       if (Math.hypot(monster.x - target.x, monster.y - target.y) > 22) {if(!(monster.spellState?.root>0))walk(monster, target.x, target.y, monster.speed, dt);}
       else if (monster.cooldown === 0) {
-        const taken=receiveSpellDamage(s,target,monster.damage,monster);if(taken>0&&target.id===s.main)cancelWoodcutting(s); monster.cooldown = monster.attackDelay;
+        const taken=receiveSpellDamage(s,target,monster.damage,monster);if(taken>0&&target.id===s.main){cancelWoodcutting(s);emitSound(s,"hurt",target,{damage:taken});} monster.cooldown = monster.attackDelay;
         s.effects.push({ x: monster.x, y: monster.y-8, toX: target.x, toY: target.y-8, text: '', color: '#f0a28e', life: .22 });
         s.effects.push({ x: target.x, y: target.y - 25, text: `−${taken}`, color: '#ffa3a3', life: .8 }); s.revision++;
         if (s.team.every(m => m.hp <= 0)) { endUltimate(s); teleport(s, 'maison'); heal(s); note(s, 'Défaite : retour à la maison (règle de test).'); }
       }
     } else if(!(monster.spellState?.root>0))walk(monster, monster.homeX + Math.sin(s.time * .5 + monster.homeX) * 20, monster.homeY + Math.cos(s.time * .4) * 15, monster.patrolSpeed, dt);
   });
+  if(s.player.moving&&s.time>=(s.nextFootstep||0)){s.nextFootstep=s.time+.32;emitSound(s,"step",s.player,{owner:s.main});}
   s.bots.forEach(bot => {
     if (Math.hypot(bot.x - bot.target.x, bot.y - bot.target.y) < 8) {
       bot.phase += 1.8;

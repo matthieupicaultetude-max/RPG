@@ -1,4 +1,5 @@
-import { isSpellUnlocked } from '../data/progression.js';
+import { emitSound, impactKind } from "../audio/events.js";
+import { isSpellUnlocked } from "../data/progression.js";
 import { spellById, spellAmount } from "../data/spells.js";
 import { distance, lineClear } from "./attacks.js";
 const live = (s) =>
@@ -32,6 +33,7 @@ function heal(s, member, amount, owner, share = true) {
   member.hp += effective;
   if (effective > 0) {
     text(s, member, `+${effective}`);
+    emitSound(s, "heal", member, { owner: owner.id });
     gainCharge(owner, Math.min(6, effective / 4));
   }
   if (share && member.buffs?.link?.time > 0) {
@@ -49,13 +51,22 @@ function hit(s, m, amount, owner, element, ctx, procs = true) {
     m,
     Math.max(1, Math.round(amount * (1 - resist / 100))),
     owner,
+    { sound: impactKind(owner, ctx.soundSpell), element },
   );
   gainCharge(owner, Math.min(5, Math.max(0, before - m.hp) / 5));
   const seal = status(m).seal;
   if (procs && seal?.time > 0 && seal.charges > 0 && active(s, seal.owner)) {
     seal.charges--;
     const caster = s.team[seal.owner];
-    hit(s, m, seal.amount, caster, "fire", ctx, false);
+    hit(
+      s,
+      m,
+      seal.amount,
+      caster,
+      "fire",
+      { ...ctx, soundSpell: spellById("support-fire-1") },
+      false,
+    );
     const linked = live(s).find(
       (ally) =>
         ally.buffs?.share?.enemy === s.monsters.indexOf(m) &&
@@ -189,7 +200,13 @@ const nearLine = (p, a, b, width) => {
 };
 export function castSpell(s, owner, slot, point, ctx, options = {}) {
   const spell = spellById(owner.loadout?.[slot]);
-  if (!spell || spell.role !== owner.role || !isSpellUnlocked(owner,spell) || !active(s, owner.id)) return false;
+  if (
+    !spell ||
+    spell.role !== owner.role ||
+    !isSpellUnlocked(owner, spell) ||
+    !active(s, owner.id)
+  )
+    return false;
   owner.buffs ??= {};
   owner.spellCooldowns ??= {};
   if (slot === 3 && owner.buffs.dance?.time > 0) {
@@ -306,6 +323,12 @@ export function castSpell(s, owner, slot, point, ctx, options = {}) {
     (!ctx.canStand(aim.x, aim.y) || !lineClear(owner, aim, ctx.canStand))
   )
     return false;
+  ctx = { ...ctx, soundSpell: spell };
+  emitSound(s, slot === 3 ? "ultimate" : "cast", owner, {
+    owner: owner.id,
+    style: impactKind(owner, spell),
+    element: spell.element,
+  });
   owner.cooldown = 0.35;
   owner.spellCooldowns[spell.id] = spell.cooldown;
   if (slot === 3) {
@@ -695,6 +718,7 @@ export function castSpell(s, owner, slot, point, ctx, options = {}) {
   return true;
 }
 function impact(s, spell, m, projectile, owner, ctx) {
+  ctx = { ...ctx, soundSpell: spell };
   hit(s, m, projectile.amount, owner, spell.element, ctx);
   if (spell.effect === "firebolt")
     ember(m, owner, spellAmount(owner, spell, 3));
@@ -748,6 +772,7 @@ function explodeBomb(s, a, ctx) {
   const owner = s.team[a.owner],
     spell = spellById(a.spell);
   if (!active(s, a.owner)) return;
+  ctx = { ...ctx, soundSpell: spell };
   visual(s, owner, spell, a, a.radius, 0.5);
   for (const m of enemies(s, a, a.radius, owner, ctx))
     hit(s, m, a.amount, owner, "fire", ctx);
@@ -794,7 +819,8 @@ export function receiveSpellDamage(s, target, amount, attacker) {
   }
   return damage;
 }
-export function stepSpells(s, dt, ctx) {
+export function stepSpells(s, dt, context) {
+  const ctx = context;
   for (const owner of s.team) {
     owner.buffs ??= {};
     owner.spellCooldowns ??= {};
@@ -837,7 +863,10 @@ export function stepSpells(s, dt, ctx) {
       ember.tick -= dt;
       if (ember.tick <= 0 && active(s, ember.owner)) {
         ember.tick += 1;
-        hit(s, m, ember.amount, s.team[ember.owner], "fire", ctx);
+        hit(s, m, ember.amount, s.team[ember.owner], "fire", {
+          ...ctx,
+          soundSpell: spellById("ranged-fire-0"),
+        });
       }
     }
     state.embers = state.embers.filter((e) => e.time > 0);
@@ -857,6 +886,7 @@ export function stepSpells(s, dt, ctx) {
     }
     const owner = s.team[e.owner],
       spell = spellById(e.spell);
+    const ctx = { ...context, soundSpell: spell };
     visual(s, owner, spell, e, e.radius || 22);
     if (e.kind === "launch") {
       missile(s, owner, spell, e, { amount: e.amount, piercing: true });
@@ -943,6 +973,7 @@ export function stepSpells(s, dt, ctx) {
     if (!active(s, p.owner)) return false;
     const owner = s.team[p.owner],
       spell = spellById(p.spell);
+    const ctx = { ...context, soundSpell: spell };
     p.age += dt;
     if (p.bounce !== undefined) {
       const destination = s.monsters[p.bounce];
@@ -1004,6 +1035,7 @@ export function stepSpells(s, dt, ctx) {
     }
     const owner = s.team[a.owner],
       spell = spellById(a.spell);
+    const ctx = { ...context, soundSpell: spell };
     a.time -= dt;
     a.tick -= dt;
     if (a.follow) {

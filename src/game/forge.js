@@ -1,3 +1,4 @@
+import { emitSound } from "../audio/events.js";
 import {
   canUpgrade,
   CHROMATIC_POWER,
@@ -61,6 +62,7 @@ export function upgradeChromatic(state, id) {
   }
   state.bag = state.bag.filter((item) => item.quantity > 0);
   Object.assign(item, chromaticVersion(item));
+  emitSound(state,"forge",state.player,{owner:state.main});
   tell(
     `${item.name} amélioré en chromatique : +${CHROMATIC_POWER} Puissance !`,
   );
