@@ -134,7 +134,7 @@ test("un dégât reçu pendant la récolte annule la coupe sans récompense", as
   s.deployed=false;
   s.monsters = [createMonster("slime", s.player.x + 5, s.player.y)];
   requestCut(s, s.trees[0].id, canStand);
-  simulate(s, 0.2);
+  simulate(s, 2);
   assert.ok(s.team[0].hp < 100);
   assert.equal(s.woodcutting.action, null);
   assert.equal(woodQuantity(s, "ash"), 0);

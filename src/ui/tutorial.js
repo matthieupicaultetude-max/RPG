@@ -31,7 +31,7 @@ export function createTutorialUI(app, game, openPanel) {
     ],
     combat: [
       "Battez le slime d’entraînement",
-      "Le slime devant vous inflige peu de dégâts. Approchez-vous, visez-le et utilisez le clic droit. Il vous donnera assez d’XP pour monter de niveau !",
+      "Le slime devant vous inflige peu de dégâts. Il se comprime et un cercle bleu annonce son saut : sortez-en avant l’atterrissage ! Approchez-vous, visez-le et utilisez le clic droit. Il vous donnera assez d’XP pour monter de niveau !",
     ],
     stats: [
       "Un niveau gagné : 5 points !",

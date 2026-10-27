@@ -1,0 +1,55 @@
+export const MONSTER_ATTACKS = Object.freeze({
+  boar: {
+    kind: "charge",
+    name: "Charge tellurique",
+    element: "earth",
+    windup: 1.1,
+    radius: 12,
+    range: 145,
+    speed: 260,
+    multiplier: 1.5,
+    recovery: 2.4,
+  },
+  slime: {
+    kind: "leap",
+    name: "Bond de marée",
+    element: "water",
+    windup: 1.2,
+    radius: 24,
+    range: 155,
+    flight: 0.65,
+    multiplier: 1.25,
+    recovery: 2.8,
+  },
+  firefly: {
+    kind: "tornado",
+    name: "Tornade de braise",
+    element: "fire",
+    windup: 1.2,
+    radius: 14,
+    range: 155,
+    speed: 95,
+    multiplier: 1,
+    recovery: 3,
+  },
+  moth: {
+    kind: "tornado",
+    name: "Tornade de zéphyr",
+    element: "air",
+    windup: 1.2,
+    radius: 14,
+    range: 155,
+    speed: 105,
+    multiplier: 1,
+    recovery: 3,
+  },
+});
+export const monsterAttack = (monster) => MONSTER_ATTACKS[monster.species];
+export const monsterAttackDamage = (monster) =>
+  Math.max(
+    1,
+    Math.round(
+      monster.damage *
+        (monster.tutorial ? 1 : monsterAttack(monster)?.multiplier || 1),
+    ),
+  );

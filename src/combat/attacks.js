@@ -11,7 +11,7 @@ export function lineClear(a, b, canStand) {
 export function guidedTarget(state, point, canStand) {
   const member = state.team[state.main];
   const candidates = state.monsters.filter(m => m.hp > 0).map(m => {
-    const cursorGap = Math.hypot(m.x-point.x,m.y-8-point.y);
+    const cursorGap = Math.hypot(m.x-point.x,m.y-8-(m.lift||0)-point.y);
     const aimAngle = Math.atan2(point.y-state.player.y+8,point.x-state.player.x);
     const enemyAngle = Math.atan2(m.y-state.player.y,m.x-state.player.x);
     const difference = Math.abs(Math.atan2(Math.sin(enemyAngle-aimAngle),Math.cos(enemyAngle-aimAngle)));

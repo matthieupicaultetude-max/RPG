@@ -1,3 +1,4 @@
+import { clearMonsterAttacks } from '../combat/monster-attacks.js';
 import { canWalkMap } from "./map.js";
 import { canWalkTutorial, TUTORIAL_EXIT } from "./tutorial-map.js";
 import { clearRoute, placeAllies } from "../ai/companions.js";
@@ -12,6 +13,7 @@ export const nearTutorialExit = (state) =>
   ) < 30;
 export function movePartyToZone(state, zone, point) {
   state.zone = zone;
+  clearMonsterAttacks(state);
   state.woodcutting.action = null;
   state.spellCharge = null;
   state.aim.active = false;

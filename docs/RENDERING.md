@@ -102,3 +102,9 @@ Le passage `src/rendering/golden-hour.js` est un vrai post-traitement **WebGL / 
 Le bouton **☀** active ou désactive cet ensemble d’effets, avec préférence locale `auroria-lighting-v1`. Les rayons restent immobiles lorsque `prefers-reduced-motion` est actif. En absence de WebGL ou pendant la perte du contexte, une passe Canvas 2D légère assure un rendu chaud ; la restauration du contexte reconstruit le programme. La fermeture du renderer libère textures, buffers, programme et écouteurs.
 
 La vérification navigateur couvre la compilation réelle du shader, l’orientation de la texture, l’égalité des blocs de pixels après agrandissement, le respect du gabarit et des ancrages sous les panoplies, le repli 2D, la perte/restauration de contexte, les préférences, l’inventaire et l’écran mobile.
+
+## 10. Prévisualisations ennemies
+
+`src/data/monster-attacks.js` fournit les éléments, dimensions, temps et multiplicateurs. `src/combat/monster-attacks.js` verrouille la destination dans une intention sérialisable du monstre, puis simule charge, bond ou projectile. Le rendu `src/rendering/monster-attacks.js` lit ces mêmes coordonnées et rayons : cercle Eau d’atterrissage, couloir Terre, couloirs puis tornades Feu/Air. Les formes ont un fond et un contour contrastés pour rester lisibles sous l’éclairage doré, ainsi qu’une indication de progression et d’élément. Les prévisualisations sont dessinées au sol, avant les objets et personnages.
+
+Le slime se comprime avant son départ ; sa hauteur visuelle suit une parabole sinusoïdale pendant le trajet, avec son ombre au sol. Ses indications de vie et de visée tiennent compte de cette hauteur. Le sanglier oriente son museau et laisse une courte traînée de poussière pendant la charge. Les tornades utilisent des anneaux et particules de leur élément ; leurs anneaux au sol reprennent le rayon de collision. Les effets gardent le repère et le zoom entiers du pixel art.

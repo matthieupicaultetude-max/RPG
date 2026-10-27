@@ -1,3 +1,4 @@
+import { characterStats, ELEMENTS } from "../data/equipment.js";
 import { emitSound, impactKind } from "../audio/events.js";
 import { isSpellUnlocked } from "../data/progression.js";
 import { spellById, spellAmount } from "../data/spells.js";
@@ -781,8 +782,9 @@ function explodeBomb(s, a, ctx) {
   ))
     explodeBomb(s, other, ctx);
 }
-export function receiveSpellDamage(s, target, amount, attacker) {
-  let damage = amount;
+export function receiveSpellDamage(s, target, amount, attacker, element=attacker?.element) {
+  const resistance=ELEMENTS[element] ? (characterStats(target)[`Résistance ${ELEMENTS[element].name}`]||0)+(target.resistances?.[element]||0) : 0;
+  let damage = Math.max(0,Math.round(amount*(1-Math.max(-50,Math.min(80,resistance))/100)));
   for (const area of s.spellAreas.filter(
     (a) =>
       ["pillar", "updraft"].includes(a.kind) &&

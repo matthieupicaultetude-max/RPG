@@ -526,3 +526,18 @@ Dix fragments du même élément et de la même tranche de dix niveaux donnent u
 Les trois rôles se distinguent par un code couleur sur le gabarit du sprite original : rouge pour le combattant, violet pour le soutien, vert pour le distance. Aucune armure élargie ni accessoire de classe ajouté ne doit déformer ce corps commun ou gêner les vrais équipements. Les ancrages, les petits marqueurs d’arme et les dimensions d’origine sont conservés. Les équipements restent responsables de leurs formes et de leurs ornements ; les portraits et l’inventaire reprennent le sprite du monde. Aucune statistique de combat ne change.
 
 Un éclairage golden hour, actif par défaut, réchauffe les hautes lumières et ajoute ombres longues, rayons doux, léger halo et vignette. Le traitement se fait sur la scène native avant agrandissement, sans lisser les pixels ; les interfaces HTML restent hors du shader. Le bouton ☀ permet de désactiver l’effet. Le choix est mémorisé sur le navigateur, les rayons respectent la réduction du mouvement et une restitution 2D prend le relais sans WebGL.
+
+## 37. Monstres : préparation, zone annoncée et attaque élémentaire
+
+Toutes les attaques des quatre espèces passent par une préparation visible au sol. Leur élément est Terre (sanglier), Eau (slime), Feu (luciole), Air (phalène). Les zones indiquent la forme dangereuse, l’élément et la progression ; leur destination ne suit pas le joueur après son verrouillage. Un même assaut ne touche chaque personnage qu’une fois. Les résistances élémentaires s’appliquent avant les protections, avec les plafonds provisoires de simulation de −50 à 80 %.
+
+| Espèce | Préparation | Attaque | Dégâts de base au niveau 1 | Repos après attaque |
+| --- | --- | --- | --- | --- |
+| Sanglier | 1,1 s | Charge rectiligne, couloir de rayon 12, vitesse 260 | 12 Terre | 2,4 s |
+| Slime | 1,2 s | Bond de 0,65 s, zone d’atterrissage de rayon 24 | 10 Eau | 2,8 s |
+| Luciole | 1,2 s | Tornade mobile de rayon 14, vitesse 95 | 6 Feu | 3 s |
+| Phalène | 1,2 s | Tornade mobile de rayon 14, vitesse 105 | 6 Air | 3 s |
+
+Le slime vise le membre vivant et déployé le plus éloigné du centre moyen de la troupe. En cas d’égalité, il choisit le plus éloigné de lui. Sa cible doit être à portée ; le cercle reste à sa position annoncée pendant le saut. Le slime du tutoriel prévient 1,5 s et inflige seulement 2 dégâts. Les insectes varient leurs cibles parmi les personnages à portée et visibles. La portée maximale d’une attaque est 145 pour la charge, 155 pour le bond et les tornades.
+
+Charges et tornades utilisent des collisions balayées pour éviter de traverser un personnage entre deux images. Les trajectoires terrestres s’arrêtent aux obstacles ; le saut peut les survoler mais n’atterrit que sur une position praticable. Une préparation ou une charge peut être interrompue par enracinement ; un bond déjà en l’air rejoint son atterrissage annoncé. Les attaques du lanceur mort et celles de l’ancienne zone sont supprimées. Les temps avancent avec la simulation physique, sans rattrapage d’attaque à la reprise d’un onglet masqué.

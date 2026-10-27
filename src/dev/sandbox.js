@@ -1,3 +1,5 @@
+import { monsterAttack } from '../data/monster-attacks.js';
+import { activeParty, stepMonsterAbility, stepMonsterHazards, clearMonsterAttacks } from '../combat/monster-attacks.js';
 import { CLASS_STYLES } from '../data/appearance.js';
 import { canWalkZone } from '../world/zones.js';
 import { emitSound, impactKind } from '../audio/events.js';
@@ -34,6 +36,7 @@ export function createSandbox() {
     monsters: [createMonster('slime',455,220), createMonster('boar',535,285),createMonster('firefly',530,165),createMonster('moth',585,240)],
     bots: Array.from({ length: 3 }, (_, i) => ({ name: ['Milo', 'Éline', 'Orin'][i], x: 290 + i * 70, y: 110, role: ['melee', 'support', 'ranged'][i], facing: 'down', moving: true, phase: i * 2, target: { x: 270 + i * 70, y: 110 } })),
     woodcutting:{level:1,xp:0,action:null},trees:createTrees(),
+    monsterTornadoes: [], monsterImpacts: [],
     effects: [], attacks: [], spellEvents:[], spellAreas:[], spellMissiles:[], spellVisuals:[], nextSpell:1, aim: { x: 0, y: 0, active: false }, autoAttack: false,
   });
   state.team[0].x = state.player.x;
@@ -51,6 +54,7 @@ export function teleport(s, station) {
   const point = STATIONS[station];
   if (!point) return;
   cancelWoodcutting(s);
+  clearMonsterAttacks(s);
   Object.assign(s.player, point, { moving: false });
   Object.assign(s.team[s.main], s.player);
   placeAllies(s, (x,y)=>canWalkZone(x,y,s.zone));
@@ -242,24 +246,49 @@ export function stepSandbox(s, direction, dt, elapsed = dt) {
   s.team.forEach(m => { m.cooldown = Math.max(0, m.cooldown - dt); });
   if (s.autoAttack&&!s.woodcutting.action) attack(s);
   stepCompanions(s, dt, canStand, hitMonster,(member,target)=>castCompanionSpell(s,member,target,spellContext));
-  s.monsters.forEach(monster => {
+  let defeated=false;
+  const enemyContext={canStand,damage:(target,amount,monster,element,kind)=>{
+    const taken=receiveSpellDamage(s,target,amount,monster,element);
+    if(taken>0){
+      if(target.id===s.main)cancelWoodcutting(s);
+      emitSound(s,kind==='tornado'?'magic':'hurt',target,{element,damage:taken});
+      const origin=monster.intent?.from||monster,dx=target.x-origin.x,dy=target.y-origin.y,d=Math.hypot(dx,dy)||1;
+      const strength=kind==='charge'?7:kind==='leap'?4:2;
+      const point={x:target.x+dx/d*strength,y:target.y+dy/d*strength};
+      if(canStand(point.x,point.y)){Object.assign(target,point);if(target.id===s.main)Object.assign(s.player,point);}
+    }
+    target.lastDamageElement=element;
+    const color={earth:'#dbb27a',water:'#a0dded',fire:'#ffc17f',air:'#c5efd9'}[element];
+    s.effects.push({x:target.x,y:target.y-25,text:taken?`−${taken}`:'Bloqué',color,life:.8});
+    for(let i=0;taken>0&&i<5;i++)s.effects.push({x:target.x,y:target.y-8,vx:Math.cos(i*1.26)*26,vy:Math.sin(i*1.26)*22-10,particle:true,color,life:.35});
+    s.revision++;
+    if(s.team.every(m=>m.hp<=0))defeated=true;
+  }};
+  s.monsters.forEach((monster,index) => {
     monster.cooldown = Math.max(0, monster.cooldown - dt);
     if (monster.hp <= 0) {
+      delete monster.intent;monster.lift=0;
+      s.monsterTornadoes=s.monsterTornadoes.filter(a=>a.owner!==index);
       monster.respawn -= dt;
-      if (monster.respawn <= 0) { monster.hp = monster.maxHp; delete monster.bonusTarget;delete monster.lastReceivedDamage;monster.bonusTargetCooldown=0; monster.x = monster.homeX; monster.y = monster.homeY; s.revision++; }
+      if (monster.respawn <= 0) { monster.hp = monster.maxHp; delete monster.bonusTarget;delete monster.lastReceivedDamage;monster.bonusTargetCooldown=0; monster.x = monster.homeX; monster.y = monster.homeY;monster.cooldown=.6;s.revision++; }
       return;
     }
-    const target = s.team.filter((m, i) => m.hp > 0 && (i === s.main || s.deployed)).sort((a, b) => Math.hypot(a.x - monster.x, a.y - monster.y) - Math.hypot(b.x - monster.x, b.y - monster.y))[0];
-    if (target && Math.hypot(target.x - monster.homeX, target.y - monster.homeY) < monster.detection) {
-      if (Math.hypot(monster.x - target.x, monster.y - target.y) > 22) {if(!(monster.spellState?.root>0))walk(monster, target.x, target.y, monster.speed, dt, canStand);}
-      else if (monster.cooldown === 0) {
-        const taken=receiveSpellDamage(s,target,monster.damage,monster);if(taken>0&&target.id===s.main){cancelWoodcutting(s);emitSound(s,"hurt",target,{damage:taken});} monster.cooldown = monster.attackDelay;
-        s.effects.push({ x: monster.x, y: monster.y-8, toX: target.x, toY: target.y-8, text: '', color: '#f0a28e', life: .22 });
-        s.effects.push({ x: target.x, y: target.y - 25, text: `−${taken}`, color: '#ffa3a3', life: .8 }); s.revision++;
-        if (s.team.every(m => m.hp <= 0)) { setCombatMode(s,true); if(s.zone==='tutorial'){Object.assign(s.player,{x:230,y:250});s.team.forEach(m=>Object.assign(m,s.player));}else teleport(s, 'maison'); heal(s); note(s, s.zone==='tutorial'?'Iris vous remet sur pied. Réessayez !':'Défaite : retour à la maison (règle de test).'); }
-      }
-    } else if(!(monster.spellState?.root>0))walk(monster, monster.homeX + Math.sin(s.time * .5 + monster.homeX) * 20, monster.homeY + Math.cos(s.time * .4) * 15, monster.patrolSpeed, dt, canStand);
+    if(stepMonsterAbility(s,monster,dt,enemyContext))return;
+    const target=activeParty(s).sort((a,b)=>Math.hypot(a.x-monster.x,a.y-monster.y)-Math.hypot(b.x-monster.x,b.y-monster.y))[0];
+    if(monster.spellState?.root>0){monster.moving=false;return;}
+    if(target&&Math.hypot(target.x-monster.homeX,target.y-monster.homeY)<monster.detection){
+      const flying=monsterAttack(monster)?.kind==='tornado',gap=Math.hypot(monster.x-target.x,monster.y-target.y);
+      if(flying&&gap<60)walk(monster,monster.x+(monster.x-target.x),monster.y+(monster.y-target.y),monster.speed*.65,dt,canStand);
+      else if(gap>(flying?90:35))walk(monster,target.x,target.y,monster.speed,dt,canStand);
+      else monster.moving=false;
+    }else walk(monster,monster.homeX+Math.sin(s.time*.5+monster.homeX)*20,monster.homeY+Math.cos(s.time*.4)*15,monster.patrolSpeed,dt,canStand);
   });
+  stepMonsterHazards(s,dt,enemyContext);
+  if(defeated&&s.team.every(m=>m.hp<=0)){
+    clearMonsterAttacks(s);setCombatMode(s,true);
+    if(s.zone==='tutorial'){Object.assign(s.player,{x:230,y:250});s.team.forEach(m=>Object.assign(m,s.player));placeAllies(s,canStand);}else teleport(s,'maison');
+    heal(s);note(s,s.zone==='tutorial'?'Iris vous remet sur pied. Réessayez !':'Défaite : retour à la maison (règle de test).');
+  }
   if(s.player.moving&&s.time>=(s.nextFootstep||0)){s.nextFootstep=s.time+.32;emitSound(s,"step",s.player,{owner:s.main});}
   s.bots.forEach(bot => {
     if (Math.hypot(bot.x - bot.target.x, bot.y - bot.target.y) < 8) {

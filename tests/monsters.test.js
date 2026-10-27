@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { monsterAttackDamage } from '../src/data/monster-attacks.js';
 import { MONSTERS, monsterStats, monsterLoot, createMonster } from '../src/data/monsters.js';
 import { createSandbox, stepSandbox } from '../src/dev/sandbox.js';
 
@@ -15,7 +16,9 @@ test('statistiques progressives de 1 à 100, bornes et entrées invalides',()=>{
 test('quatre issues de butin distinctes, probabilités totales de 100 %',()=>{
  for(const monster of MONSTERS){const drops=monsterLoot(monster.id);assert.equal(drops.length,4);assert.ok(Math.abs(drops.reduce((sum,d)=>sum+d.chance,0)-1)<1e-10);assert.equal(new Set(drops.map(d=>`${d.name}:${d.chromatic}`)).size,4);assert.ok(Math.abs(drops.filter(d=>d.chromatic).reduce((sum,d)=>sum+d.chance,0)-.1)<1e-10);}
 });
-test('un monstre créé à un autre niveau utilise ses dégâts calculés dans la simulation',()=>{
- const s=createSandbox();s.monsters=[createMonster('slime',s.player.x,s.player.y,10)];const before=s.team[0].hp;
- stepSandbox(s,{x:0,y:0},.01);assert.equal(s.team[0].hp,before-monsterStats('slime',10).damage);
+test('attaque de niveau supérieur : avertissement avant les dégâts élémentaires calculés',()=>{
+ const s=createSandbox();s.deployed=false;s.monsters=[createMonster('slime',s.player.x,s.player.y,10)];const before=s.team[0].hp;
+ stepSandbox(s,{x:0,y:0},.01);assert.equal(s.team[0].hp,before);assert.equal(s.monsters[0].intent.phase,'windup');
+ for(let i=0;i<40;i++)stepSandbox(s,{x:0,y:0},.05);
+ assert.equal(s.team[0].hp,before-monsterAttackDamage(s.monsters[0]));assert.equal(s.team[0].lastDamageElement,'water');
 });

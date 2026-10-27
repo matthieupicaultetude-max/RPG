@@ -227,6 +227,11 @@ export function drawCreature(ctx, m, time) {
   ctx.beginPath();
   ctx.ellipse(2, 4, 13, 4, 0, 0, Math.PI * 2);
   ctx.fill();
+  ctx.translate(0,-Math.round(m.lift||0));
+  if(m.species==='slime'&&m.intent?.phase==='windup'){
+    const progress=Math.min(1,m.intent.age/m.intent.windup);ctx.scale(1+progress*.18,1-progress*.28);
+  }
+  if(m.species==='boar'&&m.facing==='left')ctx.scale(-1,1);
   if (m.species === "slime" || m.name === "Slime") {
     ctx.translate(0, bob);
     ctx.fillStyle = "#54765a";
@@ -269,11 +274,12 @@ export function drawCreature(ctx, m, time) {
     ctx.fillStyle = "#ba9f6c";
     ctx.fillRect(-9, -19, 3, 5);
     ctx.fillRect(6, -19, 3, 5);
+    const profile=["left","right"].includes(m.facing),snout=profile?6:-5;
     ctx.fillStyle = "#c4a37b";
-    ctx.fillRect(-5, -6, 11, 7);
+    ctx.fillRect(snout, -6, 11, 7);
     ctx.fillStyle = "#765e43";
-    ctx.fillRect(-2, -4, 2, 2);
-    ctx.fillRect(3, -4, 2, 2);
+    ctx.fillRect(snout+3, -4, 2, 2);
+    ctx.fillRect(snout+8, -4, 2, 2);
     ctx.fillStyle = "#3f4939";
     ctx.fillRect(-8, -9, 2, 2);
     ctx.fillRect(7, -9, 2, 2);

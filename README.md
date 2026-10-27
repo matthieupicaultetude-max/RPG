@@ -276,3 +276,13 @@ La section **Échanger les fragments** transforme **10 fragments identiques en u
 Les trois classes conservent **le même gabarit de corps que le sprite original**, sans armure ou accessoire de classe ajouté : **combattant rouge**, **soutien violet**, **distance vert**. Les petits marqueurs d’arme d’origine et les ancrages des équipements sont conservés. Les vrais équipements fournissent leurs couleurs et leurs ornements. Le monde, les portraits et l’inventaire utilisent le même dessin.
 
 Le shader **golden hour** ajoute lumière chaude, ombres projetées, rayons discrets et léger halo sur les zones lumineuses, à la résolution native du pixel art. Le bouton **☀**, en haut à droite, permet de revenir à l’éclairage neutre et mémorise ce choix. L’interface garde ses couleurs. Une version légère en Canvas 2D prend le relais lorsque WebGL est indisponible ; les préférences de réduction du mouvement sont respectées.
+
+### Attaques des monstres annoncées au sol
+
+Les monstres préparent une attaque élémentaire au lieu de frapper instantanément au contact :
+
+- **Sanglier — Terre** : fixe une cible, annonce un couloir pendant **1,1 s**, puis charge en ligne droite. La cible et la destination sont figées ; les obstacles arrêtent la charge.
+- **Slime — Eau** : se comprime pendant **1,2 s**, puis saute sur le personnage vivant et déployé le plus éloigné du centre de la troupe. Le cercle d’atterrissage reste figé pendant le bond : sortez-en pour esquiver. Le slime d’entraînement prévient pendant **1,5 s** et conserve ses dégâts réduits.
+- **Luciole — Feu / Phalène — Air** : annoncent une trajectoire pendant **1,2 s**, puis envoient une tornade mobile. Chaque tornade touche une seule fois chaque personnage et respecte les obstacles.
+
+Les zones affichent leur élément, un contour contrasté, la direction et la progression de la préparation. Dégâts, effets visuels et sons suivent l’élément annoncé ; les résistances correspondantes s’appliquent avant les boucliers. L’enracinement interrompt une préparation ou une charge. La mort du lanceur et les changements de zone suppriment ses attaques en cours. Le bestiaire présente les nouvelles attaques et leurs dégâts au niveau sélectionné.

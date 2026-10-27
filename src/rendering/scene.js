@@ -1,3 +1,4 @@
+import { drawMonsterTelegraphs, drawMonsterAttackEffects } from './monster-attacks.js';
 import { createGoldenHour } from './golden-hour.js';
 import { drawSunShadows } from './sun-shadows.js';
 import * as tutorialMap from '../world/tutorial-map.js';
@@ -60,6 +61,7 @@ export function createRenderer(canvas) {
     for(const marker of environment.markers)label(marker.text,marker.x,marker.y);
     if(s.zone === "tutorial")drawTutorialGate(ctx,s);
     drawSpellGround(ctx,s);
+    drawMonsterTelegraphs(ctx,s,environment.land);
     const layers = [
       ...environment.props.map((prop) => ({
         y: prop.y,
@@ -106,7 +108,7 @@ export function createRenderer(canvas) {
           }
           drawCreature(ctx, m, s.time);
           const x = Math.round(m.x),
-            y = Math.round(m.y);
+            y = Math.round(m.y-(m.lift||0));
           ctx.fillStyle = "#625d3e";
           ctx.fillRect(x - 14, y - 24, 28, 3);
           ctx.fillStyle = "#cfb17c";
@@ -170,6 +172,7 @@ export function createRenderer(canvas) {
       }
       ctx.restore();
     }
+    drawMonsterAttackEffects(ctx,s);
     drawSpellOverlays(ctx,s);
     if (s.aim.active && !s.woodcutting.action && !s.monsters.some(monster=>monster.hp>0&&monster.bonusTarget?.time>0&&Math.hypot(s.aim.x-bonusTargetPosition(monster).x,s.aim.y-bonusTargetPosition(monster).y)<=BONUS_TARGET_RADIUS)) {
       const primary=spellById(s.team[s.main].loadout[0]);

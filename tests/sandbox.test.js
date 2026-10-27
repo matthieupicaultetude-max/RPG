@@ -45,6 +45,7 @@ test('défaite complète : retour maison sans supprimer le sac ni la progression
  // Simulate the final enemy hit while the last member is still alive.
  s.team[0].hp=1;Object.assign(s.player,{x:s.monsters[0].x,y:s.monsters[0].y});
  stepSandbox(s,{x:0,y:0},.05);
+ for(let i=0;i<60&&!s.team.every(m=>m.hp===m.maxHp);i++)stepSandbox(s,{x:0,y:0},.05);
  assert.ok(s.team.every(m=>m.hp===m.maxHp));assert.equal(s.player.x,110);assert.equal(s.bag.length,1);assert.equal(s.team[0].level,2);
 });
 test('bouclier indépendant de l’arme, transfert et conservation par personnage',()=>{
