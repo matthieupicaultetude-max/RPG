@@ -1,3 +1,4 @@
+import { stepHarvestTarget } from './harvest-targets.js';
 import {
   WOODS,
   woodById,
@@ -186,6 +187,7 @@ export function stepWoodcutting(s, direction, dt, elapsed, canStand) {
         ? "up"
         : "down";
   action.progress += dt;
+  stepHarvestTarget(s,action,tree,elapsed,canStand);
   action.particle += dt;
   if (action.particle > 0.35) {
     action.particle = 0;

@@ -9,7 +9,7 @@ import { woodItem } from "../data/woodcutting.js";
 export function renderProfessions(s, quantity = 1) {
   const count = Math.max(1, Math.floor(Number(quantity) || 1));
   const job = s.woodcutting;
-  return `<div class="petshop-heading"><p class="eyebrow">MÉTIERS DE LA TROUPE</p><h2>Bûcheron · Niveau ${job.level}</h2><p>${job.xp} / ${woodcuttingLevelXp(job.level)} XP · Coupe : ${cuttingDuration(job.level).toFixed(1)} s · Récoltes et fabrication de planches donnent de l’XP.</p><div class="xp-track"><span style="width:${(job.xp / woodcuttingLevelXp(job.level)) * 100}%"></span></div><p>Cliquez sur un arbre : le personnage rejoint son tronc et coupe pendant quelques secondes. Déplacement manuel, sort, dégât, changement de personnage ou menu interrompent la récolte.</p></div><div class="wood-catalog">${WOODS.map(
+  return `<div class="petshop-heading"><p class="eyebrow">MÉTIERS DE LA TROUPE</p><h2>Bûcheron · Niveau ${job.level}</h2><p>${job.xp} / ${woodcuttingLevelXp(job.level)} XP · Coupe : ${cuttingDuration(job.level).toFixed(1)} s · Récoltes et fabrication de planches donnent de l’XP.</p><div class="xp-track"><span style="width:${(job.xp / woodcuttingLevelXp(job.level)) * 100}%"></span></div><p>Cliquez sur un arbre : le personnage rejoint son tronc et coupe pendant quelques secondes. Déplacement manuel, sort, dégât, changement de personnage ou menu interrompent la récolte.</p><p>Cible dorée : clic gauche en 1 seconde pour avancer la coupe de 25 %. La manquer ne pénalise pas la récolte.</p></div><div class="wood-catalog">${WOODS.map(
     (wood) => {
       const unlocked = job.level >= wood.level,
         ready = s.trees.filter(

@@ -1,7 +1,7 @@
 import { gainCharge } from "./spells.js";
 import { distance, lineClear } from "./attacks.js";
 export const BONUS_TARGET_CHANCE = 0.2;
-export const BONUS_TARGET_DURATION = 2.5;
+export const BONUS_TARGET_DURATION = 1;
 export const BONUS_TARGET_RADIUS = 6;
 export const BONUS_TARGET_COOLDOWN = 4;
 export const bonusTargetPosition = (monster) => ({

@@ -90,13 +90,13 @@ test("la cible suit le monstre et un nouveau coup ne renouvelle pas sa durée", 
     x: before.x + 10,
     y: before.y + 4,
   });
-  stepBonusTargets(s, 1, ground);
+  stepBonusTargets(s, 0.4, ground);
   recordBonusOpportunity(s, m, 20, s.team[0], ground, () => 0);
-  assert.equal(m.bonusTarget.time, BONUS_TARGET_DURATION - 1);
+  assert.equal(m.bonusTarget.time, BONUS_TARGET_DURATION - 0.4);
   stepBonusTargets(s, 2, ground);
   assert.equal(m.bonusTarget, undefined);
   assert.equal(spawn(s), false);
-  stepBonusTargets(s, 1, ground);
+  stepBonusTargets(s, 1.6, ground);
   assert.equal(spawn(s), true);
 });
 test("obstacles, mort et longue absence suppriment les opportunités inutilisables", () => {
@@ -173,7 +173,7 @@ test("combat réel : copie après résistances, sans nouvelle amplification, san
   stepSpells(s, 0.13, spellContext);
   assert.equal(m.lastReceivedDamage, 24);
   assert.equal(m.hp, 976);
-  m.bonusTarget = { dx: 26, dy: 0, time: 2 };
+  m.bonusTarget = { dx: 26, dy: 0, time: BONUS_TARGET_DURATION };
   const charge = s.team[0].ultimateCharge,
     cooldown = s.team[0].spellCooldowns["melee-earth-0"];
   assert.equal(clickBonus(s, bonusTargetPosition(m)), true);
@@ -193,7 +193,7 @@ test("un bonus fatal donne les récompenses une seule fois et le respawn efface 
   Object.assign(s.team[0], s.player);
   m.hp = 10;
   m.lastReceivedDamage = 17;
-  m.bonusTarget = { dx: 26, dy: 0, time: 2 };
+  m.bonusTarget = { dx: 26, dy: 0, time: BONUS_TARGET_DURATION };
   const point = bonusTargetPosition(m);
   assert.equal(clickBonus(s, point), true);
   assert.equal(m.hp, 0);

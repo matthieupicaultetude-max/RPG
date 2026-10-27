@@ -463,7 +463,7 @@ Le catalogue n’ajoute pas de sorts normaux fictifs après le niveau 12. Les pr
 
 Chaque impact positif du personnage principal sur un ennemi survivant peut créer une **cible bonus** avec une probabilité de **20 %**. Les dégâts reçus par l’ennemi sont mémorisés après les calculs de caractéristiques, Puissance et résistances, y compris les impacts des alliés. Un coup plus récent met à jour la valeur à copier, sans renouveler la durée d’une cible déjà présente.
 
-La cible apparaît à environ 26 pixels du centre visuel de l’ennemi, sur une position valide et visible en ligne directe. Elle suit l’ennemi, dure **2,5 secondes** et affiche un indicateur circulaire de durée. Son centre possède un rayon cliquable de **6 pixels du monde**. Le clic gauche utilise la même conversion caméra/écran que le rendu ; le clic droit conserve son rôle de sort principal. Les boutons de l’interface ne sont pas des cibles bonus.
+La cible apparaît à environ 26 pixels du centre visuel de l’ennemi, sur une position valide et visible en ligne directe. Elle suit l’ennemi, dure **1 seconde** et affiche un indicateur circulaire de durée. Son centre possède un rayon cliquable de **6 pixels du monde**. Le clic gauche utilise la même conversion caméra/écran que le rendu ; le clic droit conserve son rôle de sort principal. Les boutons de l’interface ne sont pas des cibles bonus.
 
 Un clic réussi consomme l’opportunité puis inflige exactement la dernière valeur de dégâts mémorisée, sans nouveau multiplicateur ni nouvelle résistance. Il ne dépense pas de recharge de sort, ne déclenche pas d’effet secondaire de sort et ne génère pas de nouvelle opportunité. Les dégâts effectifs contribuent à la jauge personnelle avec les plafonds et blocages habituels. Un ennemi tué par ce bonus suit la boucle normale de récompenses et de réapparition.
 
@@ -474,11 +474,11 @@ Une seule cible existe par ennemi, avec **4 secondes** entre apparitions possibl
 
 Le métier est partagé par la troupe d’un joueur, démarre au niveau 1 et possède sa propre XP. Trois essences sont disponibles sur les arbres existants : **Frêne niveau 1**, **Châtaignier niveau 5**, **Noyer niveau 10**. Le catalogue actuel s’arrête à ces trois essences ; les futures pourront prolonger les paliers de cinq niveaux. Aucun bois ou produit de scierie chromatique n’existe.
 
-Un clic gauche sur une couronne ou un tronc sélectionne l’arbre. Le personnage rejoint un emplacement de coupe libre par un chemin respectant les obstacles, puis démarre une animation de hache et une barre de progression. L’action dure `max(1, 4 / (1 + 0,06 × (niveau − 1)))` secondes : quatre secondes au départ, plancher d’une seconde. Elle utilise le temps de simulation actif et ne récolte pas hors ligne. La durée est déterminée au début de l’action.
+Un clic gauche sur une couronne ou un tronc sélectionne l’arbre. Le personnage rejoint un emplacement de coupe libre par un chemin respectant les obstacles, puis démarre une animation de hache et une barre de progression. L’action dure `max(1, 4 / (1 + 0,06 × (niveau − 1)))` secondes : quatre secondes au départ, plancher d’une seconde hors bonus du mini-jeu. Elle utilise le temps de simulation actif et ne récolte pas hors ligne. La durée est déterminée au début de l’action.
 
 Une coupe achevée donne un bois et **15 / 25 / 40 XP métier**, selon l’essence. Le seuil d’un niveau métier est **30 × niveau actuel**, avec conservation de l’XP restante et possibilité de franchir plusieurs niveaux lors d’un lot de fabrication. Les caractéristiques, la Sagesse et le niveau des personnages ne modifient pas cette XP.
 
-Une action de récolte est unique et interruptible : déplacement manuel, sort réussi, coup bonus, dégâts subis, changement de principal, téléportation, menu ou mort l’annulent sans bois ni XP. Le métier reste identique lors d’un changement de personnage. Il n’y a ni hache à acheter ni récolte automatique en boucle dans cette première étape.
+Une action de récolte est unique et interruptible : déplacement manuel, sort réussi, cible bonus de combat réussie, dégâts subis, changement de principal, téléportation, menu ou mort l’annulent sans bois ni XP. Le métier reste identique lors d’un changement de personnage. Il n’y a ni hache à acheter ni récolte automatique en boucle dans cette première étape.
 
 L’arbre coupé devient une **souche solide**, en conservant son emprise au sol. Il repousse après **30 s pour le Frêne, 45 s pour le Châtaignier, 60 s pour le Noyer**. La repousse suit le temps écoulé réel et ne déclenche pas une nouvelle coupe. Les arbres gardent une identité et un état propres à la session.
 
@@ -487,3 +487,10 @@ La scierie est un nouvel objet interactif du village, relié aux chemins existan
 Toutes les améliorations chromatiques d’équipement à la forge demandent **5 Planches de frêne de niveau 1** en supplément des ingrédients existants. Une planche d’un autre niveau, du bois brut ou une ressource chromatique ne se substitue pas à cette exigence. L’amélioration d’armure ne donne pas d’XP bûcheron ; seule la fabrication des planches en donne.
 
 Les essences disposent de palettes distinctes, les ressources et planches de leurs propres icônes, et les interactions affichent le niveau requis ou le temps de repousse. Le panneau montre niveau, XP, vitesse de coupe, disponibilités et stocks. Le prototype reste local et sans sauvegarde persistante ; un serveur partagé devra porter les états d’arbres dans l’étape multijoueur.
+
+
+## 31. Cible bonus de récolte et durée commune
+
+Les cibles de combat et de bûcheron utilisent désormais une **durée commune de 1 seconde**. Une cible de récolte est proposée une seule fois par coupe, après 25 % de la progression, à une position autour de la couronne de l’arbre. Elle possède le même rayon de clic de six pixels du monde et un anneau indiquant le temps restant.
+
+Le clic gauche donne priorité à la cible de récolte active avant la sélection ordinaire d’un arbre. Une réussite ajoute **25 % de la durée totale de coupe** à la progression et consomme immédiatement la cible. Il n’accorde directement ni bois ni XP. La récolte finale conserve ses récompenses normales. L’expiration ou un clic raté n’ajoutent aucune pénalité, et une deuxième cible n’est pas proposée pendant la même coupe. Fin ou interruption de la coupe suppriment l’opportunité. Aux niveaux où la coupe est très courte, la fin de l’action peut faire disparaître la cible avant sa seconde complète.

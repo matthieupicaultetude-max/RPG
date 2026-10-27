@@ -44,7 +44,7 @@ npm run build
 npm run preview
 ```
 
-Cent cinq tests couvrent déplacement, composition à trois, variantes de butin, échanges d’équipement, XP, combat/récompenses/respawn, collisions de la maison, soutien IA, retour après défaite, ultime (30 s / 300 s), changements de personnage, filtrage de la molette, ciblage guidé, impacts différés, projectiles, conversion caméra/curseur, contournement de la maison, espacement au repos, recul du distance et regroupement. Les parcours navigateur vérifient également les commandes, les panneaux et le petit écran.
+Cent neuf tests couvrent déplacement, composition à trois, variantes de butin, échanges d’équipement, XP, combat/récompenses/respawn, collisions de la maison, soutien IA, retour après défaite, ultime (30 s / 300 s), changements de personnage, filtrage de la molette, ciblage guidé, impacts différés, projectiles, conversion caméra/curseur, contournement de la maison, espacement au repos, recul du distance et regroupement. Les parcours navigateur vérifient également les commandes, les panneaux et le petit écran.
 
 ## Organisation
 
@@ -200,7 +200,7 @@ Aux **niveaux 5, 10, 15, 20, puis tous les 5 niveaux**, chaque personnage reçoi
 
 ## Cibles bonus au clic gauche
 
-Quand le personnage contrôlé inflige des dégâts, il a **20 % de chance** de faire apparaître une petite cible dorée autour de l’ennemi survivant. Elle suit ses déplacements et reste visible **2,5 secondes**, avec un cercle indiquant le temps restant. **Clic gauche** sur son centre, ou toucher sur mobile, inflige les dégâts de la **dernière attaque reçue au moment du clic**. Un impact plus récent, y compris d’un allié, met donc cette valeur à jour.
+Quand le personnage contrôlé inflige des dégâts, il a **20 % de chance** de faire apparaître une petite cible dorée autour de l’ennemi survivant. Elle suit ses déplacements et reste visible **1 seconde**, avec un cercle indiquant le temps restant. **Clic gauche** sur son centre, ou toucher sur mobile, inflige les dégâts de la **dernière attaque reçue au moment du clic**. Un impact plus récent, y compris d’un allié, met donc cette valeur à jour.
 
 Les dégâts sont copiés après les calculs de caractéristiques, Puissance et résistances : aucun de ces multiplicateurs n’est appliqué une seconde fois. Le bonus ne consomme pas la recharge d’un sort et contribue normalement à la jauge personnelle selon les PV réellement retirés. Il ne déclenche ni une autre cible ni les effets secondaires des sorts. Un bonus fatal donne les récompenses normales, une seule fois.
 
@@ -219,10 +219,15 @@ Un clic raté ne fait rien. Une cible ne s’utilise qu’une fois ; il ne peut 
 
 **Clic gauche sur un arbre** : le personnage rejoint un emplacement libre près du tronc, puis le coupe avec une animation de hache, des copeaux et une barre de progression. Le panneau Métiers propose aussi **Rejoindre et couper**, utile au tactile. Une coupe achevée donne **1 bois** et de l’XP métier. L’arbre devient une souche solide puis repousse automatiquement. Aucun bois ni aucune planche chromatique n’est généré.
 
-La coupe dure **4 secondes au niveau 1**, puis `max(1, 4 / (1 + 0,06 × (niveau métier − 1)))` secondes. Le seuil du niveau suivant vaut `30 × niveau métier` XP ; l’excédent est conservé. Une seule coupe à la fois. Déplacement manuel, sort réussi, coup bonus, dégâts reçus, changement de personnage, téléportation ou ouverture d’un menu interrompent l’action sans récompense. La récolte ne recommence pas automatiquement après repousse.
+La durée de base de la coupe est de **4 secondes au niveau 1**, puis `max(1, 4 / (1 + 0,06 × (niveau métier − 1)))` secondes. Le seuil du niveau suivant vaut `30 × niveau métier` XP ; l’excédent est conservé. Une seule coupe à la fois. Déplacement manuel, sort réussi, cible bonus de combat réussie, dégâts reçus, changement de personnage, téléportation ou ouverture d’un menu interrompent l’action sans récompense. La récolte ne recommence pas automatiquement après repousse.
 
 La **scierie du village**, à gauche du chemin de la maison, est accessible avec **F** à proximité. Chaque essence possède sa recette : **2 bois → 1 planche**, au même niveau métier que la récolte. Choisir un nombre de planches pour fabriquer en lot. Chaque planche donne **10 XP bûcheron**. La recette vérifie le niveau, le lieu et tout le stock avant de consommer. La Sagesse des personnages ne modifie pas cette XP métier.
 
 Les **36 améliorations chromatiques d’armure** à la forge exigent désormais **5 Planches de frêne**, en plus de la pièce et des ressources du monstre. Les bois bruts et les planches des essences supérieures ne remplacent pas ces planches de niveau 1. L’XP bûcheron provient des coupes et des planches, pas de l’amélioration d’armure elle-même.
 
 Les outils dev ajoutent **Bosquet**, **Scierie**, **+30 XP bûcheron** et **10 Bois de frêne (test)**. Les stocks et la progression restent locaux à la session, comme le reste du jardin.
+
+
+### Cibles pendant la coupe
+
+Une cible dorée apparaît une fois pendant chaque coupe, après un quart de la progression. Elle reste au plus **1 seconde**, comme les cibles de combat, et disparaît si la coupe se termine ou est interrompue. Un **clic gauche précis** ajoute **25 % de la durée totale** à la progression, une seule fois. Un clic manqué ou une cible expirée ne pénalisent pas la coupe ; elle continue normalement. Le bois et l’XP restent les mêmes et ne sont accordés qu’à la fin effective de la récolte. Le bonus peut raccourcir la durée de base sous son plancher habituel d’une seconde.

@@ -1,3 +1,4 @@
+import { clickHarvestTarget } from './harvest-targets.js';
 import { requestCut, treeAt, cancelWoodcutting, nearSawmill } from './woodcutting.js';
 import { nearFountain } from '../data/progression.js';
 import { spellById } from '../data/spells.js';
@@ -37,7 +38,7 @@ export function createGame(canvas, touchControls, onChange, onTimers = () => {},
     event.preventDefault();
     canvas.focus({ preventScroll: true });
     updateAim(event);
-    if(event.button===0){const point=screenToWorld(event.clientX,event.clientY,canvas.getBoundingClientRect(),state.player);if(!clickBonus(state,point)){const tree=treeAt(state,point);if(tree)requestCut(state,tree.id,canStand);}return;}
+    if(event.button===0){const point=screenToWorld(event.clientX,event.clientY,canvas.getBoundingClientRect(),state.player);if(!clickHarvestTarget(state,point)&&!clickBonus(state,point)){const tree=treeAt(state,point);if(tree)requestCut(state,tree.id,canStand);}return;}
     if(spellById(state.team[state.main].loadout[0])?.effect==='pierce')state.spellCharge={time:0,owner:state.main};else attack(state);
   }, { signal: controller.signal });
   window.addEventListener('pointerup',event=>{if(event.button===2&&state.spellCharge){if(!interfaceOpen&&state.spellCharge.owner===state.main)castEquipped(state,0,undefined,{charge:state.spellCharge.time});state.spellCharge=null;}},{signal:controller.signal});
