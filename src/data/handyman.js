@@ -46,7 +46,17 @@ export const VOLCANO_KEY_RECIPE = Object.freeze({
     ].map(Object.freeze),
   ),
 });
+export const STORM_DUNGEON = 'slime-storm';
+export const STORM_KEY_RECIPE = Object.freeze({
+ id:'storm-key', name:'Clé de l’Œil des Tempêtes', level:1, xp:25,
+ ingredients:Object.freeze([
+  {...woodItem('chestnut','plank'),quantity:5},
+  {name:monsterDefinition('wind-slime').rare,type:'rare',chromatic:false,quantity:1},
+  {name:monsterDefinition('slime').rare,type:'rare',chromatic:false,quantity:1},
+ ].map(Object.freeze)),
+});
 export const KEY_RECIPES = Object.freeze({
+  [STORM_DUNGEON]: STORM_KEY_RECIPE,
   [CREVASSE_DUNGEON]: KEY_RECIPE,
   [VOLCANO_DUNGEON]: VOLCANO_KEY_RECIPE,
 });

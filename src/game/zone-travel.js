@@ -1,3 +1,5 @@
+import {createStormWorld,resetStormBoss} from './storm.js';
+import {STORM_ENTRY,STORM_SPAWN,WIND_STORM_GATE} from '../world/storm-map.js';
 import { createWindWorld } from "./wind-slimes.js";
 import {
   WIND_ENTRY,
@@ -35,6 +37,7 @@ import { emitSound } from "../audio/events.js";
 export const GARDEN_MOUNTAIN_GATE = { x: 565, y: 100 };
 export const GARDEN_MARSH_GATE = { x: 390, y: 355 };
 const ZONES = [
+  "slime-storm",
   "slime-wind",
   "slime-volcano",
   "slime-fire",
@@ -80,10 +83,16 @@ export function nearZoneGate(state) {
                 label: "Remonter aux marais",
               },
             ]
+          : state.zone === "slime-storm"
+          ? [{...STORM_ENTRY,destination:'slime-wind',label:'Sortir vers les Hauts des Alizés'}]
           : state.zone === "slime-wind"
             ? [
                 {
-                  ...WIND_ENTRY,
+                  ...WIND_STORM_GATE, destination:'slime-storm',
+                label:`Entrer dans l’Œil des Tempêtes · 1 clé (${dungeonKeyCount(state,'slime-storm')} en sac)`,
+              },
+              {
+                ...WIND_ENTRY,
                   destination: "slime-mountains",
                   label: "Revenir aux Cimes de Schiste",
                 },
@@ -152,6 +161,7 @@ export function travelToZone(
     state.dungeonRun.endedAt = state.time;
   }
   // Cancel on the departing world before replacing its monster array.
+  resetStormBoss(state);
   resetDepthsBoss(state);
   resetVolcanoBoss(state);
   clearMonsterAttacks(state);
@@ -164,13 +174,13 @@ export function travelToZone(
     trees: state.trees,
   };
   let world =
-    freshDungeon && ["slime-depths", "slime-volcano"].includes(destination)
+    freshDungeon && ["slime-depths", "slime-volcano", "slime-storm"].includes(destination)
       ? null
       : state.zoneWorlds[destination];
   if (destination === "slime-depths" && world?.monsters.every((m) => m.hp <= 0))
     world = null;
   world ||=
-    destination === "slime-wind"
+    destination === "slime-storm" ? createStormWorld() : destination === "slime-wind"
       ? createWindWorld()
       : destination === "slime-volcano"
         ? createVolcanoWorld()
@@ -187,8 +197,8 @@ export function travelToZone(
   delete state.zoneDive;
   Object.assign(state, world);
   const point =
-    destination === "slime-wind"
-      ? WIND_SPAWN
+    destination === "slime-storm" ? STORM_SPAWN : destination === "slime-wind"
+      ? origin === "slime-storm" ? {x:WIND_STORM_GATE.x-22,y:WIND_STORM_GATE.y} : WIND_SPAWN
       : destination === "slime-volcano"
         ? VOLCANO_SPAWN
         : destination === "slime-fire"
@@ -220,6 +230,8 @@ export function travelToZone(
   state.fireGuideOpen = false;
   state.volcanoGuideOpen = false;
   state.windGuideOpen = false;
+  state.stormGuideOpen = false;
+  if(destination === "slime-storm") { state.stormFlowers = []; state.stormGuideOpen = !state.visitedStorm; state.visitedStorm = true; }
   if (destination === "slime-marsh") {
     stepSlimeMarsh(state);
     state.marshGuideOpen = !state.slimeMarsh.visited;
@@ -247,7 +259,7 @@ export function travelToZone(
     state.visitedMountains = true;
   }
   state.log.unshift(
-    destination === "slime-wind"
+    destination === "slime-storm" ? "Œil des Tempêtes : bassins, aspirations et ricochets Air / Eau. Guidez le dernier bond sur une dalle sèche !" : destination === "slime-wind"
       ? "Hauts des Alizés : sortez de l’aspiration, puis esquivez les deux ricochets !"
       : destination === "slime-volcano"
         ? "Donjon du Volcan : carapaces explosives, magma persistant et éruptions de slimes !"
@@ -268,6 +280,17 @@ export function travelToZone(
 export function useZoneGate(state) {
   const gate = nearZoneGate(state);
   if (!gate) return false;
+  if(gate.destination === 'slime-storm') {
+    if(state.team[state.main].hp<=0)return false;
+    if(!consumeDungeonKey(state,'slime-storm')) {
+      state.log.unshift('Clé de l’Œil des Tempêtes requise : Tessa demande 5 planches de châtaignier, 1 Cœur d’air et 1 Cœur d’eau.');
+      state.log.length=Math.min(6,state.log.length);state.revision++;return false;
+    }
+    if(!travelToZone(state,'slime-storm',{freshDungeon:true}))return false;
+    state.nextDungeonRun=(state.nextDungeonRun||0)+1;
+    state.dungeonRun={id:state.nextDungeonRun,dungeonId:'slime-storm',active:true,startedAt:state.time,completed:false};
+    state.revision++;return true;
+  }
   if (gate.destination === "slime-volcano") {
     if (state.team[state.main].hp <= 0) return false;
     if (!consumeDungeonKey(state, "slime-volcano")) {

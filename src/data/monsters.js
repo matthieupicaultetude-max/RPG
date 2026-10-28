@@ -273,6 +273,18 @@ export const MONSTERS = Object.freeze(
       chromaticChance: 0.1,
     },
     {
+      id: "foam-slime", category: "slime", element: "water", elements: ["air", "water"], stormSlime: true,
+      name: "Slime d’écume", family: "Gelée · Air / Eau", habitat: "Donjon de l’Œil des Tempêtes",
+      description: "L’eau et les fleurs éponges le font grossir jusqu’à trois tailles. Il bondit sur le héros isolé, se gonfle en aspirant la troupe, explose en Air puis ricoche deux fois. Esquivez les cercles : un gros impact raté sur une dalle sèche détache un petit slime et l’expose. Une seule aspiration à la fois. Les piliers bloquent le souffle.",
+      hp: 115, damage: 10, attackDelay: 1.2, speed: 32, patrolSpeed: 13, detection: 180, respawn: 18, xp: 30, gold: 12, rareChance: .2, chromaticChance: .1,
+    },
+    {
+      id: "nimbulimon", category: "slime", element: "water", elements: ["air", "water"], stormSlime: true, stormBoss: true, boss: true,
+      name: "Nimbulimon, le Cœur de l’Orage", family: "Boss · Air / Eau", habitat: "Donjon de l’Œil des Tempêtes",
+      description: "Réveillez-le avec F. Il absorbe l’eau, bondit sur le héros isolé, aspire puis explose en Air avant deux ricochets. Guidez son dernier impact Eau sur une dalle sèche et esquivez-le : il perd une taille, détache un petit slime et expose son cœur 6 secondes (+50 % de dégâts), contre 2 secondes d’essoufflement ordinaire. Un bassin restaure sa masse. Sous 40 % de vie, les courants changent plus souvent. Aucun butin pour le moment.",
+      hp: 470, damage: 13, attackDelay: 1.2, speed: 0, patrolSpeed: 0, detection: 240, respawn: 18, xp: 175, gold: 110, rareChance: 0, chromaticChance: 0,
+    },
+    {
       id: "wind-slime",
       category: "slime",
       element: "air",
@@ -341,6 +353,8 @@ export function createMonster(id, x, y, level = 1) {
     species: definition.id,
     name: definition.name,
     ...stats,
+    ...(definition.stormSlime ? {stormSlime:true, growth:1, baseMaxHp:stats.maxHp} : {}),
+    ...(definition.stormBoss ? {stormBoss:true} : {}),
     ...(definition.windSlime ? { windSlime: true } : {}),
     ...(definition.elements ? { elements: [...definition.elements] } : {}),
     ...(definition.magmaSlime

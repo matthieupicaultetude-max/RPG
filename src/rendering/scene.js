@@ -1,3 +1,5 @@
+import * as stormMap from '../world/storm-map.js';
+import {drawStormGround,drawStormAtmosphere} from './storm.js';
 import * as windMap from '../world/slime-wind-map.js';
 import {drawWindGround,drawWindmillRotor,drawWindAtmosphere} from './slime-wind.js';
 import * as volcanoMap from '../world/volcano-map.js';
@@ -39,7 +41,7 @@ export function createRenderer(canvas) {
   const village = createEnvironment();
   const lighting = createGoldenHour(frame.width,frame.height);
   const rain=createMarshRain();
-  let tutorial, marsh, depths, mountains, fire, volcano, wind;
+  let tutorial, marsh, depths, mountains, fire, volcano, wind, storm;
   function label(text, x, y) {
     ctx.font = "8px monospace";
     ctx.textAlign = "center";
@@ -71,10 +73,10 @@ export function createRenderer(canvas) {
     label(bot ? `${p.name} · BOT` : p.name, x, y + 16);
   }
   const render = (s) => {
-    const environment = s.zone === "slime-wind" ? (wind ||= createEnvironment(windMap)) : s.zone === "slime-volcano" ? (volcano ||= createEnvironment(volcanoMap)) : s.zone === "slime-fire" ? (fire ||= createEnvironment(fireMap)) : s.zone === "slime-mountains" ? (mountains ||= createEnvironment(mountainMap)) : s.zone === "slime-depths" ? (depths ||= createEnvironment(depthsMap)) : s.zone === "tutorial" ? (tutorial ||= createEnvironment(tutorialMap)) : s.zone==='slime-marsh'?(marsh ||= createEnvironment(marshMap)):village;
+    const environment = s.zone === "slime-storm" ? (storm ||= createEnvironment(stormMap)) : s.zone === "slime-wind" ? (wind ||= createEnvironment(windMap)) : s.zone === "slime-volcano" ? (volcano ||= createEnvironment(volcanoMap)) : s.zone === "slime-fire" ? (fire ||= createEnvironment(fireMap)) : s.zone === "slime-mountains" ? (mountains ||= createEnvironment(mountainMap)) : s.zone === "slime-depths" ? (depths ||= createEnvironment(depthsMap)) : s.zone === "tutorial" ? (tutorial ||= createEnvironment(tutorialMap)) : s.zone==='slime-marsh'?(marsh ||= createEnvironment(marshMap)):village;
     const canStand = (x,y)=>canWalkZone(x,y,s.zone);
     ctx.drawImage(environment.ground, 0, 0);
-    if(s.lighting!==false && !["slime-depths","slime-marsh"].includes(s.zone))drawSunShadows(ctx,environment,s);
+    if(s.lighting!==false && !["slime-storm","slime-depths","slime-marsh"].includes(s.zone))drawSunShadows(ctx,environment,s);
     drawZonePassage(ctx,s);
     drawMarshGround(ctx,s);
     drawSeaSinkhole(ctx,s);
@@ -83,6 +85,7 @@ export function createRenderer(canvas) {
     drawFireGround(ctx,s);
     drawVolcanoGround(ctx,s);
     drawWindGround(ctx,s);
+    drawStormGround(ctx,s);
     rain.ground(ctx,s);
     for(const marker of environment.markers)label(marker.text,marker.x,marker.y);
     if(s.zone === "tutorial")drawTutorialGate(ctx,s);
@@ -144,7 +147,7 @@ export function createRenderer(canvas) {
           ctx.fillRect(x - 14, y - 24, 28, 3);
           ctx.fillStyle = "#cfb17c";
           ctx.fillRect(x - 14, y - 24, (28 * m.hp) / m.maxHp, 2);
-          label(m.volcanoSummon?"Invocation · Terre / Feu":m.volcanoBoss?"Pyroclaste":m.boss?"Gorgelimon":m.depthsSlime?`${m.dualElement?"Mixte":m.element==="earth"?"Limon":"Abyssal"} · ${m.growth}/3`:m.marshSlime?`Slime · ${m.growth}/3`:m.name, x, Math.round(m.y-(m.lift||0)+17));
+          label(m.volcanoSummon?"Invocation · Terre / Feu":m.volcanoBoss?"Pyroclaste":m.stormBoss?"Nimbulimon":m.boss?"Gorgelimon":m.depthsSlime?`${m.dualElement?"Mixte":m.element==="earth"?"Limon":"Abyssal"} · ${m.growth}/3`:m.marshSlime?`Slime · ${m.growth}/3`:m.name, x, Math.round(m.y-(m.lift||0)+17));
           drawMarshSlimeStatus(ctx,m,s);
           drawMountainStatus(ctx,m,s);
           if(m.magmaSlime&&!m.shellBroken&&Math.hypot(m.x-s.player.x,m.y-s.player.y)<100)label(`Carapace ${Math.round((m.shellDamage||0)/Math.ceil(m.maxHp*.25)*100)} %`,m.x,m.y-57);
@@ -281,6 +284,7 @@ export function createRenderer(canvas) {
     drawDepthsAtmosphere(ctx,s);
     drawFireAtmosphere(ctx,s);
     drawWindAtmosphere(ctx,s);
+    drawStormAtmosphere(ctx,s);
     const width = Math.round(canvas.clientWidth),
       height = Math.round(canvas.clientHeight);
     if (canvas.width !== width || canvas.height !== height) {
@@ -290,10 +294,10 @@ export function createRenderer(canvas) {
     screen.imageSmoothingEnabled = false;
     // Fill every viewport without stretching sprites. Follow the player when cropped.
     const view = viewport(width, height, s.player);
-    const litFrame = lighting.draw(frame,s.time,s.lighting!==false&&!["slime-depths","slime-marsh"].includes(s.zone));
+    const litFrame = lighting.draw(frame,s.time,s.lighting!==false&&!["slime-storm","slime-depths","slime-marsh"].includes(s.zone));
     canvas.dataset.zone=s.zone;
     canvas.dataset.weather=s.zone==="slime-marsh"?"heavy-rain":"clear";
-    canvas.dataset.lighting=s.zone==="slime-depths"?"cave":s.zone==="slime-marsh"?"overcast":s.lighting===false?"off":lighting.mode;
+    canvas.dataset.lighting=s.zone==="slime-storm"?"storm":s.zone==="slime-depths"?"cave":s.zone==="slime-marsh"?"overcast":s.lighting===false?"off":lighting.mode;
     screen.drawImage(
       litFrame,
       -view.x * view.scale,

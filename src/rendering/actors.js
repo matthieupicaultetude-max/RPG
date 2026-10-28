@@ -1,3 +1,4 @@
+import {drawStormSlime} from './storm.js';
 import {drawWindSlime} from './slime-wind.js';
 import {drawMagmaSlime,drawVolcanoBoss} from './volcano.js';
 import {drawFireSlime} from './slime-fire.js';
@@ -226,6 +227,7 @@ export function drawAdventurer(ctx, p, time, animation) {
 }
 export function drawCreature(ctx, m, time) {
   if (m.hp <= 0) return;
+  if(m.stormSlime){drawStormSlime(ctx,m,time);return;}
   if(m.windSlime){drawWindSlime(ctx,m,time);return;}
   if(m.volcanoBoss){drawVolcanoBoss(ctx,m,time);return;}
   if(m.magmaSlime){drawMagmaSlime(ctx,m,time);return;}

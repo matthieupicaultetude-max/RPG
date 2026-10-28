@@ -123,7 +123,7 @@ export function drawMonsterTelegraphs(ctx, state, land) {
   ctx.closePath();
   ctx.clip();
   for (const monster of state.monsters)
-    if (monster.hp > 0 && monster.intent && !["boss-quake","volcano-eruption","wind-cycle"].includes(monster.intent.kind))
+    if (monster.hp > 0 && monster.intent && !["storm-cycle","boss-quake","volcano-eruption","wind-cycle"].includes(monster.intent.kind))
       groundWarning(ctx, monster.intent, state);
   for (const a of state.monsterTornadoes || []) {
     ctx.strokeStyle = COLOURS[a.element];

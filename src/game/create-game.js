@@ -1,3 +1,4 @@
+import {nearStormBoss,awakenStormBoss} from './storm.js';
 import { createBrowserSave } from './browser-save.js';
 import {nearVolcanoBoss,awakenVolcanoBoss} from './volcano.js';
 import {nearHandyman} from './handyman.js';
@@ -32,7 +33,7 @@ export function createGame(canvas, touchControls, onChange, onTimers = () => {},
   canvas.addEventListener('wheel', createCharacterWheel(direction => { if (!interfaceOpen && !state.zoneDive) cycleMain(state, direction); }), { passive: false, signal: controller.signal });
   canvas.addEventListener('keydown', event => {
     if (interfaceOpen || state.zoneDive) return;
-    if (event.code === 'KeyF' && !event.repeat) {event.preventDefault();if(nearZoneGate(state))useZoneGate(state);else if(nearVolcanoBoss(state))awakenVolcanoBoss(state);else if(nearDepthsBoss(state))awakenDepthsBoss(state);else if(nearTutorialExit(state)&&canLeaveTutorial(state))finishTutorial(state);else if(nearHandyman(state))onInteraction('handyman');else if(nearSawmill(state))onInteraction('professions');else if(nearFountain(state))onInteraction('characteristics');else if(nearForge(state))onInteraction('forge');else if(nearPetShop(state))onInteraction('petshop');}
+    if (event.code === 'KeyF' && !event.repeat) {event.preventDefault();if(nearZoneGate(state))useZoneGate(state);else if(nearStormBoss(state))awakenStormBoss(state);else if(nearVolcanoBoss(state))awakenVolcanoBoss(state);else if(nearDepthsBoss(state))awakenDepthsBoss(state);else if(nearTutorialExit(state)&&canLeaveTutorial(state))finishTutorial(state);else if(nearHandyman(state))onInteraction('handyman');else if(nearSawmill(state))onInteraction('professions');else if(nearFountain(state))onInteraction('characteristics');else if(nearForge(state))onInteraction('forge');else if(nearPetShop(state))onInteraction('petshop');}
     const slot={KeyR:1,KeyC:2,KeyT:3}[event.code];
     if(slot!==undefined&&!event.repeat){event.preventDefault();castEquipped(state,slot);}
     if (event.code === 'KeyE' && !event.repeat) { event.preventDefault(); toggleCombatMode(state); }

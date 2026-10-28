@@ -31,7 +31,7 @@ test("Slime est une catégorie unique avec tous les normaux avant tous les boss,
       nav.indexOf('data-category="slime"'),
       nav.indexOf("</details>"),
     );
-  assert.equal(MONSTERS.filter((m) => m.category === "slime").length, 10);
+  assert.equal(MONSTERS.filter((m) => m.category === "slime").length, 12);
   assert.ok(
     slime.indexOf('data-monster-group="normal"') <
       slime.indexOf('data-monster-group="boss"'),
