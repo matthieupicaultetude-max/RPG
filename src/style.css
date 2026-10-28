@@ -717,3 +717,17 @@ canvas.paper-avatar { position:relative; inset:auto; object-fit:contain; flex-sh
 
 .profession-tabs { display:flex; gap:8px; margin-bottom:18px; }.profession-tabs button { flex:1; min-height:42px; font-size:12px; }.handyman-craft { max-width:680px; border:1px solid #7d8e69; border-radius:9px; padding:18px; background:#172b2488; }.handyman-recipe-heading { display:flex; align-items:center; gap:14px; }.handyman-recipe-heading > svg { width:64px; height:64px; flex-shrink:0; }.handyman-recipe-heading h3 { margin:0; font-size:21px; color:#e4d3a4; }.handyman-craft p { font-size:12px; color:#b8c5a5; line-height:1.7; }.handyman-craft > label { display:flex; align-items:center; gap:12px; margin:15px 0; font-size:12px; }.handyman-craft input { width:85px; padding:8px; border:1px solid #7d8e69; border-radius:4px; background:#12251e; color:#eee2b8; }.key-ingredients { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin:15px 0; }.key-ingredient { display:flex; align-items:center; gap:8px; padding:10px; border:1px solid #526d52; border-radius:6px; background:#12241f; }.key-ingredient > svg { width:36px; height:36px; flex-shrink:0; }.key-ingredient strong { display:block; font-size:11px; }.key-ingredient small { display:block; font-size:9px; line-height:1.6; margin-top:5px; color:#a6bf9b; }.key-ingredient.missing { border-color:#9c725b; }.key-ingredient.missing small { color:#d1a28b; }.handyman-craft > button { min-height:42px; width:100%; }
 @media(max-width:700px) { .profession-tabs button { padding:8px 4px; font-size:10px; }.handyman-craft { padding:12px; }.key-ingredients { grid-template-columns:1fr; }.handyman-recipe-heading h3 { font-size:18px; }.handyman-recipe-heading > svg { width:48px; height:48px; } }
+
+/* Bestiary families retain their hierarchy on every screen size. */
+.monster-list { display: block; min-width: 0; }
+.bestiary-category { margin-bottom: 12px; border: 1px solid #5e77534d; border-radius: 10px; overflow: hidden; }
+.bestiary-category > summary { cursor: pointer; padding: 12px 9px; color: #e4e1ba; background: #304a3c; font-weight: 700; font-size: 14px; }
+.bestiary-category > summary > span { float: right; color: #afc5a2; font-size: 11px; }
+.bestiary-category-content { padding: 8px 6px; }
+.bestiary-monster-group + .bestiary-monster-group { margin-top: 16px; padding-top: 10px; border-top: 1px solid #78946b4d; }
+.bestiary-monster-group > h3 { margin: 0 0 8px; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: #b5c99e; }
+.bestiary-group-buttons { display: grid; gap: 7px; }
+.monster-list .bestiary-group-buttons button { width: 100%; min-width: 0; }
+.monster-list .bestiary-group-buttons button > span { min-width: 0; }
+.no-boss-loot { padding: 16px; background: #31433777; border-radius: 10px; }
+@media(max-width:700px) { .bestiary-group-buttons { grid-template-columns: repeat(2,minmax(0,1fr)); } .monster-list .bestiary-group-buttons button { padding: 8px 4px; gap: 5px; } }

@@ -693,3 +693,18 @@ Pendant **1,8 s**, le slime se gonfle progressivement et aspire les membres viva
 **Contre-jeu et cycle de vie.** L’immobilisation pendant le gonflement ou la pause interrompt le cycle ; elle n’arrête pas le momentum d’un vol commencé. Les préparations sont annulées si toute la troupe meurt, à la mort du slime ou lors des transitions. Un vol annulé par une transition revient à son dernier point de départ valide. Réapparition après 18 s, défaite de la troupe suivie d’un soin à l’entrée des Alizés. Aucun coût de clé, carapace, croissance, fusion ou nouveau donjon dans cette étape.
 
 **Récompenses et présentation.** Gelée aérienne normale et Perle d’alizé rare, chacune avec variation chromatique selon le système existant ; noyau Air standard en bonus indépendant. Les ressources n’altèrent pas les recettes de forge ou de familiers déjà établies. Guide réouvrable, bestiaire avec aperçu par niveau, nouveaux dessins de butins, titre de zone et déplacement rapide dev. Le personnage joueur conserve son gabarit original ; seuls les slimes se dilatent pendant le gonflement. La progression reste locale à la session.
+
+
+## 49. Famille Slime et normalisation des butins (règles actuelles)
+
+Cette section remplace les anciennes listes de ressources propres à chaque slime et les récompenses matérielles de boss décrites dans les sections de zones précédentes.
+
+Le bestiaire regroupe tous les slimes dans la catégorie principale **Slime**, avec les sous-groupes ordonnés **Monstres normaux**, puis **Boss**. Les catégories Bêtes et Insectes restent distinctes. Les panneaux dépliables, la sélection du monstre et l’aperçu par niveau fonctionnent sur ordinateur et téléphone.
+
+Les huit ressources partagées sont **Gelée d’eau / Cœur d’eau**, **Gelée de terre / Cœur de terre**, **Gelée de feu / Cœur de feu**, **Gelée d’air / Cœur d’air**. Chaque ressource possède une version standard et une version chromatique ; rareté et chromatique restent deux tirages indépendants (20 % rare, 10 % chromatique). Les mêmes objets s’empilent entre espèces et zones. Les icônes partagent des formes de gelée et de cœur, avec couleur et symbole de l’élément.
+
+Chaque victoire normale donne un objet ; un noyau standard peut s’ajouter selon le tirage habituel de 25 %. Les slimes monoélément donnent leur élément. Pour les slimes Terre/Feu et les fusions Eau/Terre, l’élément de récompense est choisi à parts égales parmi les éléments effectifs du monstre ; ressource et éventuel noyau correspondent à ce même choix. Le bestiaire du magma présente les huit issues de ressource avec leurs probabilités pondérées. Aucun noyau chromatique.
+
+**Les boss ne donnent actuellement aucune ressource, aucun équipement et aucun noyau.** La suppression couvre la victoire et les outils dev ; les définitions et fiches de Gorgelimon et Pyroclaste n’exposent plus d’ancien butin ni de noyaux garantis. Leur XP, leur or et la validation du donjon restent inchangés et ne sont accordés qu’une fois. Les règles déjà établies pour les invocations restent inchangées.
+
+Les recettes dépendantes suivent les ressources communes : Clé de la Crevasse = planches de châtaignier ×5, Cœur d’eau ×1, Cœur de terre ×1 ; Clé du Volcan = planches de châtaignier ×5, Cœur de feu ×1, Cœur de terre ×1. Les cœurs standards du bon élément sont acceptés quelle que soit leur zone de provenance. Le familier Eau consomme désormais le Cœur d’eau chromatique, et la forge Eau utilise la gelée et le cœur d’eau correspondants. Les butins et ingrédients spécifiques aux sangliers et insectes restent inchangés. Les états restent locaux à la session.

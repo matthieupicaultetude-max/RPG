@@ -272,7 +272,7 @@ export function useZoneGate(state) {
     if (state.team[state.main].hp <= 0) return false;
     if (!consumeDungeonKey(state, "slime-volcano")) {
       state.log.unshift(
-        "Clé du Volcan requise : Tessa demande 5 planches de châtaignier, 1 Cœur de braise et 1 Cœur d’ambre.",
+        "Clé du Volcan requise : Tessa demande 5 planches de châtaignier, 1 Cœur de feu et 1 Cœur de terre.",
       );
       state.log.length = Math.min(6, state.log.length);
       state.revision++;
@@ -296,7 +296,7 @@ export function useZoneGate(state) {
   if (state.team[state.main].hp <= 0) return false;
   if (!consumeDungeonKey(state)) {
     state.log.unshift(
-      "Clé de la Crevasse requise : fabriquez-la auprès de Tessa au village (5 planches de châtaignier, 1 Cœur de gelée, 1 Cœur d’ambre).",
+      "Clé de la Crevasse requise : fabriquez-la auprès de Tessa au village (5 planches de châtaignier, 1 Cœur d’eau, 1 Cœur de terre).",
     );
     state.log.length = Math.min(state.log.length, 6);
     state.revision++;

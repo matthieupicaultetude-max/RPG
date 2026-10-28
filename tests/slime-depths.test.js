@@ -269,8 +269,8 @@ test("butin : noyaux du bon élément et ressources propres aux profondeurs", ()
     earth = s.monsters.find((m) => m.element === "earth");
   rewardMonster(s, water, random);
   rewardMonster(s, earth, random);
-  assert.ok(s.bag.some((i) => i.name === "Perle des profondeurs"));
-  assert.ok(s.bag.some((i) => i.name === "Géode suintante"));
+  assert.ok(s.bag.some((i) => i.name === "Cœur d’eau"));
+  assert.ok(s.bag.some((i) => i.name === "Cœur de terre"));
   assert.ok(s.bag.some((i) => i.kind === "core" && i.element === "water"));
   assert.ok(s.bag.some((i) => i.kind === "core" && i.element === "earth"));
 });

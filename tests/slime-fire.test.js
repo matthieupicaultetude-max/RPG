@@ -298,6 +298,6 @@ test("bestiaire, loot et noyau Feu disposent des nouveaux visuels et statistique
   }
   const s = setup();
   rewardMonster(s, s.monsters[0], () => 0);
-  assert.ok(s.bag.some((i) => i.name === "Cœur de braise"));
+  assert.ok(s.bag.some((i) => i.name === "Cœur de feu"));
   assert.ok(s.bag.some((i) => i.element === "fire" && i.kind === "core"));
 });

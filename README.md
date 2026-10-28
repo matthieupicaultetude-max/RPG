@@ -126,7 +126,7 @@ Chaque panoplie dispose d’une quête et d’un certificat remis à l’accepta
 | Ronce | Roncinet | Défense ancienne du sanglier |
 | Braise | Flammèche | Étincelle vive de la luciole |
 | Brise | Zéphyr | Aile de zéphyr de la phalène |
-| Rosée | Gélutin | Cœur de gelée du slime |
+| Rosée | Gélutin | Cœur d’eau du slime |
 
 Sélectionner le familier dans le sac ou son emplacement équipé, puis **Nourrir**. Une ressource donne 10 XP ; passer au niveau suivant demande `niveau × 10` XP. Le plafond de test est 20, avec un bonus de `niveau + 1` dans la caractéristique de son élément. Les ressources normales chromatiques ne sont pas consommées : elles servent à l’amélioration chromatique des armures chez Borin. Toute progression reste locale à la session actuelle.
 
@@ -312,7 +312,7 @@ La crevasse est une carte distincte : sol rocheux humide sans pavage, mares infr
 - Un saut raté d’un gros slime produit **taille 3 → 2 + 1** ou **taille 2 → 1 + 1**, avec une brève vulnérabilité du parent.
 - Deux slimes proches, au sol et sans attaque en cours, peuvent fusionner : **1 + 1 → 2**, **1 + 2 → 3**. Un lien et des anneaux dorés l’annoncent pendant **1 s**. Les repousser, les immobiliser ou tuer un partenaire annule la fusion. Ils attendent **5 s** après une scission ou fusion avant de refusionner.
 - Les fusions mixtes alternent **bond Eau / roulade Terre**. La masse totale de la horde est conservée lors des transformations : pas de multiplication sans fin des ennemis vivants. La fusion ne donne ni XP ni loot.
-- Ressources propres aux créatures : **Gelée abyssale / Perle des profondeurs** et **Limon humide / Géode suintante**, avec variantes chromatiques ; noyaux Eau ou Terre selon le monstre. Fiches disponibles dans le bestiaire avec aperçu par niveau.
+- Ressources élémentaires partagées : **Gelée d’eau / Cœur d’eau** et **Gelée de terre / Cœur de terre**, avec variantes chromatiques ; noyaux Eau ou Terre selon le monstre. Fiches disponibles dans le bestiaire avec aperçu par niveau.
 
 Les ennemis vaincus restent morts pendant l’expédition. Chaque nouvelle entrée payante recrée le donjon complet, avec ses sept slimes et Gorgelimon. Le retour vers les marais est gratuit. Une défaite ramène la troupe soignée sur la berge d’entrée, avec son or et ses objets.
 
@@ -326,7 +326,7 @@ Au sud-est de la crevasse sommeille **Gorgelimon**, un boss **niveau 8 Eau / Ter
 - À **70 % puis 35 % de PV**, la carapace se scinde en **deux aspects de taille 2, Eau et Terre**. Le cœur central est protégé. Détruisez tous les aspects et leurs descendants en **12 s** : le boss expose son cœur pendant **5 s**, avec **+50 % de dégâts reçus**. Sinon il absorbe les survivants et récupère **4 % de ses PV maximum par unité de taille survivante**, jusqu’à 16 %.
 - Les aspects peuvent se scinder et fusionner entre eux ; ils ne fusionnent pas avec les slimes ordinaires. La dernière phase accélère les attaques.
 
-La barre de vie indique les seuils, la phase et le temps avant réabsorption. Sa fiche de bestiaire décrit ses attaques et son butin : **Éclat de carapace abyssale**, **Cœur de Gorgelimon**, leurs variantes chromatiques, plus **un noyau Eau et un noyau Terre garantis** à la victoire. Les réabsorptions ne donnent aucune récompense. Une fuite, une défaite ou un départ de la zone remet le boss vivant au repos avec tous ses PV et supprime ses aspects. Un boss vaincu reste mort pendant l’expédition ; il revient avec la population suivante une fois la grotte entièrement nettoyée.
+La barre de vie indique les seuils, la phase et le temps avant réabsorption. Sa fiche de bestiaire décrit ses attaques. Le boss ne donne pour le moment aucun objet ni noyau ; son XP et son or restent attribués une seule fois. Les réabsorptions ne donnent aucune récompense. Une fuite, une défaite ou un départ de la zone remet le boss vivant au repos avec tous ses PV et supprime ses aspects. Un boss vaincu reste mort pendant l’expédition ; il revient à la prochaine entrée payante dans une nouvelle expédition.
 
 ### Météo des marais
 
@@ -353,7 +353,7 @@ Leur mécanique est la **carapace rocheuse** :
 - Le slime annonce un couloir Terre pendant **1,3 s**, puis roule en ligne droite. Placez un rocher ou une paroi sur sa trajectoire et esquivez latéralement.
 - La première collision qui brise la carapace étourdit le slime et expose son cœur pendant **3 s**, avec **+50 % de dégâts reçus**. La protection reste ensuite perdue jusqu’au respawn. Un arrêt au bord d’un précipice ne brise pas la carapace.
 
-La fiche du bestiaire comprend les statistiques par niveau, la mécanique et les ressources **Éclat de schiste / Cœur d’ambre**, avec leurs variantes chromatiques, ainsi que le noyau Terre habituel. Les personnages et le sac sont conservés entre les zones. Une défaite soigne la troupe au col ; les slimes réapparaissent après 18 s avec leur carapace restaurée.
+La fiche du bestiaire comprend les statistiques par niveau, la mécanique et les ressources **Gelée de terre / Cœur de terre**, avec leurs variantes chromatiques, ainsi que le noyau Terre habituel. Les personnages et le sac sont conservés entre les zones. Une défaite soigne la troupe au col ; les slimes réapparaissent après 18 s avec leur carapace restaurée.
 
 
 ### Carapaces des slimes de la caverne
@@ -372,8 +372,8 @@ La teinte Terre de la caverne, des formes mixtes, de leurs illustrations et du l
 La **Clé de la Crevasse**, accessible au niveau 1 bricoleur, demande :
 
 - **5 Planches de châtaignier** : bois débloqué au niveau 5 bûcheron, 2 bois par planche à la scierie.
-- **1 Cœur de gelée** : ressource rare des slimes Eau de surface.
-- **1 Cœur d’ambre** : ressource rare des slimes des montagnes.
+- **1 Cœur d’eau** : ressource rare commune des slimes Eau (jardin, marais ou profondeurs).
+- **1 Cœur de terre** : ressource rare commune des slimes Terre (montagnes ou profondeurs).
 
 Les variantes chromatiques ne remplacent pas ces ingrédients. Le frêne et le bois brut ne remplacent pas les planches de châtaignier. Posséder les planches suffit : le bricoleur n’exige pas lui-même le niveau 5 bûcheron.
 
@@ -393,13 +393,13 @@ Six **Slimes de braise de niveau 5** y sautillent et bondissent :
 
 Les résistances Feu s’appliquent aux bonds, traînées et explosions. Les obstacles bloquent les dégâts. Les dangers disparaissent en changeant de zone ou après une défaite ; la troupe est alors soignée au passage d’entrée. Les slimes réapparaissent après **18 secondes**.
 
-Butins : **Gelée incandescente**, **Cœur de braise** rare, chacun avec variation chromatique, et possibilité de noyau Feu standard. Le bestiaire inclut les mécanismes, les visuels et les statistiques réglables par niveau. Les recettes d’armures et la nourriture des familiers existants conservent leurs ingrédients.
+Butins : **Gelée de feu**, **Cœur de feu** rare, chacun avec variation chromatique, et possibilité de noyau Feu standard. Le bestiaire inclut les mécanismes, les visuels et les statistiques réglables par niveau. Les recettes d’armures et la nourriture des familiers existants conservent leurs ingrédients.
 
 ## Donjon du Volcan · Pyroclaste
 
 Les slimes Feu des Champs de Braise **surgissent des trois bassins de lave** à leur apparition et à chaque repousse, puis atterrissent sur un point praticable. Pendant ce saut d’arrivée de 1,2 s, ils n’attaquent pas et ne peuvent pas être ciblés. Les personnages restent bloqués par la lave.
 
-Le **cratère central des Champs de Braise + F** ouvre le Donjon du Volcan. Chez Tessa, choisissez **Clé du Volcan** dans l’onglet Bricoleur : **5 Planches de châtaignier + 1 Cœur de braise + 1 Cœur d’ambre**, non chromatiques. Fabrication niveau 1, 25 XP par clé, en lot. Cette clé et celle de la Crevasse restent distinctes. Une clé ouvre un donjon neuf pour toute la troupe ; sortie gratuite et nouvelle tentative après défaite sans seconde clé.
+Le **cratère central des Champs de Braise + F** ouvre le Donjon du Volcan. Chez Tessa, choisissez **Clé du Volcan** dans l’onglet Bricoleur : **5 Planches de châtaignier + 1 Cœur de feu + 1 Cœur de terre**, non chromatiques. Fabrication niveau 1, 25 XP par clé, en lot. Cette clé et celle de la Crevasse restent distinctes. Une clé ouvre un donjon neuf pour toute la troupe ; sortie gratuite et nouvelle tentative après défaite sans seconde clé.
 
 Les **cinq Slimes de magma de niveau 6**, Terre / Feu, portent une carapace réduisant les dégâts de 40 %. Elle accumule les dégâts réellement reçus : au seuil de **25 % des PV maximaux**, elle se brise et annonce son explosion pendant **1,1 s**. Le souffle Terre projette six éclaboussures de magma Feu, avec leurs cercles d’arrivée. Ils bondissent et ne roulent pas.
 
@@ -407,7 +407,7 @@ Le magma **reste au sol**, même après avoir touché plusieurs personnages : br
 
 Au nord-est, **Pyroclaste, le Slime-Volcan**, boss niveau 9, se réveille avec **F** ou une attaque du héros principal à proximité. Son cratère projette des slimes vers des emplacements annoncés et verrouillés, puis les créatures atterrissent et combattent. Les vagues alternent slimes Feu et slimes de magma ; leurs impacts sont respectivement Feu et Terre, et laissent du magma. Sous **40 % de PV**, trois projections remplacent les deux habituelles et leur rythme accélère. Maximum six invocations vivantes, sans XP, or ou butin.
 
-Les slimes de magma donnent **Scorie de magma / Géode de fournaise**, avec variantes chromatiques et possibilité d’un noyau Terre ou Feu. Pyroclaste donne **Obsidienne de Pyroclaste / Cœur du volcan**, plus **un noyau Terre et un noyau Feu garantis** à la victoire. Les monstres du donjon ne réapparaissent pas durant l’expédition. Le bestiaire et le guide détaillent les règles. Les outils dev proposent l’accès gratuit au volcan, l’approche du boss et les ingrédients de la clé.
+Les slimes de magma donnent une gelée ou un cœur de Terre ou de Feu, avec variantes chromatiques et possibilité d’un noyau de l’élément tiré. Pyroclaste ne donne pour le moment aucun objet ni noyau ; son XP et son or sont conservés. Les monstres du donjon ne réapparaissent pas durant l’expédition. Le bestiaire et le guide détaillent les règles. Les outils dev proposent l’accès gratuit au volcan, l’approche du boss et les ingrédients de la clé.
 
 ## Hauts des Alizés · Slimes Vent
 
@@ -422,4 +422,22 @@ Les six **Slimes des alizés de niveau 5**, d’élément Air, enchaînent :
 
 Immobiliser le slime pendant le gonflement ou la pause interrompt le cycle ; un saut déjà lancé va jusqu’à son atterrissage. L’aspiration respecte obstacles et précipices : aucun personnage n’est aspiré dans le vide. Les résistances Air et protections habituelles s’appliquent à l’explosion et aux impacts.
 
-Butins : **Gelée aérienne / Perle d’alizé**, avec variantes chromatiques, et possibilité d’un noyau Air standard. Le bestiaire présente les règles, les icônes et les statistiques réglables. Réapparition après 18 s ; une défaite soigne la troupe au point d’entrée. Les ingrédients des recettes existantes restent inchangés.
+Butins : **Gelée d’air / Cœur d’air**, avec variantes chromatiques, et possibilité d’un noyau Air standard. Le bestiaire présente les règles, les icônes et les statistiques réglables. Réapparition après 18 s ; une défaite soigne la troupe au point d’entrée. Les ingrédients des recettes existantes restent inchangés.
+
+
+## Bestiaire par famille et ressources des slimes
+
+La catégorie principale **Slime** rassemble les huit monstres normaux, puis les deux **Boss**. Les bêtes et insectes gardent leurs catégories séparées. Les catégories sont dépliables, avec la même organisation sur téléphone ; les mécanismes et la barre de niveau restent dans chaque fiche.
+
+| Élément | Ressource normale | Ressource rare |
+| --- | --- | --- |
+| Eau | Gelée d’eau | Cœur d’eau |
+| Terre | Gelée de terre | Cœur de terre |
+| Feu | Gelée de feu | Cœur de feu |
+| Air | Gelée d’air | Cœur d’air |
+
+Les ressources normale et rare possèdent chacune une variante chromatique. Les slimes du même élément, même dans des zones différentes, donnent les mêmes ressources empilables. La probabilité de test reste 20 % rare et 10 % chromatique, avec un objet par victoire ; le noyau standard reste un bonus indépendant de 25 %.
+
+Pour un slime à deux éléments, un élément est choisi à parts égales pour la victoire : gelée/cœur et éventuel noyau correspondent à cet élément. Cela couvre le magma Terre/Feu et les fusions Eau/Terre des profondeurs. Aucun noyau chromatique.
+
+**Gorgelimon et Pyroclaste n’ont aucun butin pour le moment** : ni ressource ni noyau, y compris dans le générateur de loot dev. Leur XP, leur or et la validation de victoire restent inchangés. Les ingrédients des clés et la nourriture du familier Eau utilisent les nouveaux cœurs ; un cœur du bon élément peut provenir de n’importe quelle zone. Les butins des sangliers et insectes restent inchangés.

@@ -210,15 +210,13 @@ test("fuite et changement de zone : réinitialisation du boss et nettoyage des a
   assert.equal(b.bossPhase, "dormant");
   assert.equal(b.x, DEPTHS_BOSS_HOME.x);
 });
-test("mort du boss : deux noyaux garantis, récompense unique, suppression des invocations et absence de respawn individuel", () => {
+test("mort du boss : aucun butin, XP et or uniques, suppression des invocations et absence de respawn individuel", () => {
   const { s, b } = setup();
   awakenDepthsBoss(s);
   spellContext.hitMonster(s, b, b.hp + 1, s.team[0]);
   assert.equal(b.hp, 0);
   assert.equal(b.bossPhase, "dead");
-  const cores = s.bag.filter((i) => i.kind === "core");
-  assert.equal(cores.find((i) => i.element === "water").quantity, 1);
-  assert.equal(cores.find((i) => i.element === "earth").quantity, 1);
+  assert.equal(s.bag.length,0);
   const gold = s.gold,
     xp = s.team[0].xp;
   rewardMonster(s, b, () => 0);
@@ -233,7 +231,7 @@ test("bestiaire du boss : statistiques, illustration et récompenses cohérentes
   assert.equal(values.respawnDelay, "Nouvelle expédition");
   assert.ok(Number(values.maxHp) > 700);
   assert.ok(markup.includes("70 %"));
-  assert.ok(coreDropMarkup("gorgelimon", 8).includes("garantis"));
+  assert.ok(coreDropMarkup("gorgelimon", 8).includes("Aucun butin"));
   assert.equal(/undefined|NaN/.test(markup), false);
 });
 

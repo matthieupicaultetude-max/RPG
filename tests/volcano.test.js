@@ -153,8 +153,8 @@ test("clé du Volcan : recette distincte, fabrication en lot, pas de mélange av
     KEY_RECIPES["slime-volcano"].ingredients.map((i) => [i.name, i.quantity]),
     [
       ["Planche de châtaignier", 5],
-      ["Cœur de braise", 1],
-      ["Cœur d’ambre", 1],
+      ["Cœur de feu", 1],
+      ["Cœur de terre", 1],
     ],
   );
   giveSupplies(s, 2);
@@ -368,7 +368,7 @@ test("boss : rage, plafond d’invocations, pas d’XP/loot et population borné
   stepMagmaHazards(s, 0.9, ctx);
   assert.ok(s.monsters.length <= 4);
 });
-test("victoire : double noyau garanti une seule fois, fin de run et invocations supprimées", () => {
+test("victoire : aucun butin, fin de run et invocations supprimées", () => {
   const s = setup(),
     b = volcanoBoss(s);
   s.monsters = [b];
@@ -384,13 +384,7 @@ test("victoire : double noyau garanti une seule fois, fin de run et invocations 
   assert.equal(b.bossPhase, "dead");
   assert.equal(s.dungeonRun.completed, true);
   assert.ok(s.monsters.every((m) => !m.volcanoSummon));
-  assert.deepEqual(
-    s.bag
-      .filter((i) => i.kind === "core")
-      .map((i) => i.element)
-      .sort(),
-    ["earth", "fire"],
-  );
+  assert.equal(s.bag.length,0);
   const n = s.bag.length;
   spellContext.hitMonster(s, b, 99999, s.team[0]);
   assert.equal(s.bag.length, n);

@@ -307,7 +307,7 @@ test("bestiaire, statistiques par niveau, ressources chromatiques et noyau Air",
   const html = renderBestiary("wind-slime", 5);
   assert.ok(html.includes("Hauts des Alizés"));
   assert.ok(html.includes("deux atterrissages"));
-  assert.ok(html.includes("Perle d’alizé"));
+  assert.ok(html.includes("Cœur d’air"));
   assert.equal(/NaN|undefined/.test(html), false);
   assert.notEqual(
     bestiaryValues("wind-slime", 1).maxHp,
@@ -317,7 +317,7 @@ test("bestiaire, statistiques par niveau, ressources chromatiques et noyau Air",
     assert.match(renderItemIcon(item), /<svg/);
   const s = setup();
   rewardMonster(s, s.monsters[0], () => 0);
-  assert.ok(s.bag.some((i) => i.name === "Perle d’alizé"));
+  assert.ok(s.bag.some((i) => i.name === "Cœur d’air"));
   assert.ok(s.bag.some((i) => i.kind === "core" && i.element === "air"));
 });
 

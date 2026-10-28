@@ -224,7 +224,7 @@ test("bestiaire et butin : fiche Terre, carapace expliquée, ressources de schis
   assert.equal(/undefined|NaN/.test(markup), false);
   assert.equal(stats.maxHp, "133");
   rewardMonster(s, m, () => 0);
-  assert.ok(s.bag.some((i) => i.name === "Cœur d’ambre"));
+  assert.ok(s.bag.some((i) => i.name === "Cœur de terre"));
   assert.ok(
     s.bag.some(
       (i) => i.kind === "core" && i.element === "earth" && i.band.min === 1,

@@ -64,8 +64,8 @@ test("recette : 5 planches du bois niveau 5, un rare Eau de surface et un rare d
   assert.equal(wood.wood, WOODS.find((w) => w.level === 5).id);
   assert.equal(wood.kind, "plank");
   assert.equal(wood.quantity, 5);
-  assert.equal(water.name, "Cœur de gelée");
-  assert.equal(earth.name, "Cœur d’ambre");
+  assert.equal(water.name, "Cœur d’eau");
+  assert.equal(earth.name, "Cœur de terre");
   assert.equal(water.quantity, 1);
   assert.equal(earth.quantity, 1);
   assert.ok(KEY_RECIPE.ingredients.every((i) => i.chromatic === false));
@@ -119,8 +119,8 @@ test("fabrication : lots, empilement, coûts exacts et XP séparée des autres p
   assert.equal(s.bag.find((i) => i.kind === "dungeon-key").id, id);
   assert.equal(s.handyman.xp, 45);
 });
-test("ingrédients : pas de frêne, bois brut, rare chromatique ou rare de l’intérieur du donjon en remplacement", () => {
-  for (const wrong of ["ash", "logs", "chromatic", "abyss"]) {
+test("ingrédients : pas de frêne, bois brut, rare chromatique ou rare du mauvais élément en remplacement", () => {
+  for (const wrong of ["ash", "logs", "chromatic", "fire"]) {
     const s = setup();
     supplies(s);
     if (wrong === "ash") {
@@ -132,10 +132,10 @@ test("ingrédients : pas de frêne, bois brut, rare chromatique ou rare de l’i
       addWoodItem(s, "chestnut", "wood", 10);
     }
     if (wrong === "chromatic")
-      s.bag.find((i) => i.name === "Cœur de gelée").chromatic = true;
-    if (wrong === "abyss") {
-      s.bag = s.bag.filter((i) => i.name !== "Cœur de gelée");
-      grantLoot(s, "rare", false, "depths-water-slime");
+      s.bag.find((i) => i.name === "Cœur d’eau").chromatic = true;
+    if (wrong === "fire") {
+      s.bag = s.bag.filter((i) => i.name !== "Cœur d’eau");
+      grantLoot(s, "rare", false, "fire-slime");
     }
     const before = structuredClone(s.bag),
       job = { ...s.handyman };

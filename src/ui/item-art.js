@@ -1,3 +1,4 @@
+import {SLIME_RESOURCES,slimeResourceByName} from '../data/slime-loot.js';
 import {AMBER_SLIME} from '../data/rock-shell.js';
 import { CHROMATIC_COLORS } from '../data/chromatic.js';
 // Original, name-driven inventory art. Geometry is shared by bag, slots and bestiary.
@@ -192,6 +193,11 @@ function equipmentArt(item, p) {
 }
 function resourceArt(item) {
   const c = item.chromatic;
+  const resource=slimeResourceByName(item.name);
+  if(resource){const r=SLIME_RESOURCES[resource.element],base=c?'#b58bd2':r.base,light=c?'#f2c9f7':r.light,dark=c?'#7657a4':r.dark;
+    if(resource.type==='normal')return path('M3 24c0-6 5-8 7-14 2-7 13-7 15 2l4 12-6 6H9z',base,dark,1)+path('M9 16c1-5 9-7 13-2','none',light,3)+elementSigil(resource.element,9,17,.42,light);
+    return path('M16 29C-3 17 1 2 10 5l6 6 6-6c11-3 13 13-6 24z',base,dark,1)+path('m16 9 7 9-7 8-7-8z',light)+elementSigil(resource.element,11,13,.32,dark)+path('M6 10v5','none','#fff0d3',2);
+  }
   switch (item.name) {
     case "Gelée aérienne":
       return path('M3 24 8 14l3-9 10 1 3 10 5 9-9 6-14-2z',c?'#b58cd9':'#83cfc9')+path('M9 19c3-9 14-4 10 2-3 5-10 2-7-2','none',c?'#f1cefa':'#daf5d7',2)+path('m8 11 2-3','none','#f0ffe6',2);

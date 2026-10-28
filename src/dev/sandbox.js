@@ -1,3 +1,4 @@
+import {slimeResource,monsterElements} from '../data/slime-loot.js';
 import {stepWindSuction} from '../game/wind-slimes.js';
 import {WIND_SPAWN} from '../world/slime-wind-map.js';
 import {magmaDamage,recordMagmaDamage,stepMagmaHazards,stepVolcanoBoss,awakenVolcanoBoss,finishVolcanoBoss} from '../game/volcano.js';
@@ -130,13 +131,16 @@ export function heal(s) {
   s.team.forEach(m => { m.hp = m.maxHp; });
   note(s, 'Équipe soignée et réanimée.');
 }
-export function grantLoot(s, type = 'normal', chromatic = false, monster = 'Slime') {
-  const definition = monsterDefinition(monster);
-  const name = type === 'rare' ? definition.rare : definition.normal;
-  const existing = s.bag.find(item => item.name === name && item.chromatic === chromatic);
-  if (existing) existing.quantity++;
-  else s.bag.push({ id: s.nextItem++, name, type, chromatic, quantity: 1 });
-  note(s, `Butin : ${name}${chromatic ? ' chromatique' : ''}.`);
+export function grantLoot(s, type = 'normal', chromatic = false, monster = 'Slime',element) {
+  const definition=monsterDefinition(typeof monster==='object'?monster.species:monster);
+  if(!definition||definition.boss||!['normal','rare'].includes(type))return false;
+  const elements=monsterElements(typeof monster==='object'?monster:definition),chosen=element||definition.element;
+  if(!elements.includes(chosen))return false;
+  const resource=definition.category==='slime'?slimeResource(chosen,type,chromatic):{name:type==='rare'?definition.rare:definition.normal,type,chromatic};
+  const existing=s.bag.find(item=>item.name===resource.name&&item.type===type&&item.chromatic===chromatic);
+  if(existing)existing.quantity++;
+  else s.bag.push({id:s.nextItem++,...resource,quantity:1});
+  note(s,`Butin : ${resource.name}${chromatic?' chromatique':''}.`);return true;
 }
 export function grantCore(s,element,level=1) {
   const core=createCore(element,level);
@@ -260,10 +264,12 @@ export function rewardMonster(s,monster,random=Math.random) {
   s.gold += monster.gold;
   grantXp(s, monster.xp);
   const definition=monsterDefinition(monster.species);
-  grantLoot(s,random()<definition.rareChance?'rare':'normal',random()<definition.chromaticChance,monster.species);
-  if(monster.boss){grantCore(s,monster.volcanoBoss?'fire':'water',monster.level);grantCore(s,'earth',monster.level);}
-  else if(monster.tutorial)s.tutorial.coreId=grantCore(s,definition.element,monster.level);
-  else if(random()<CORE_CHANCE)grantCore(s,definition.elements?definition.elements[Math.min(definition.elements.length-1,Math.floor(random()*definition.elements.length))]:definition.element,monster.level);
+  if(definition.boss)return;
+  const elements=definition.category==='slime'?monsterElements(monster):[definition.element];
+  const element=elements.length>1?elements[Math.min(elements.length-1,Math.floor(random()*elements.length))]:elements[0];
+  grantLoot(s,random()<definition.rareChance?'rare':'normal',random()<definition.chromaticChance,monster,element);
+  if(monster.tutorial)s.tutorial.coreId=grantCore(s,element,monster.level);
+  else if(random()<CORE_CHANCE)grantCore(s,element,monster.level);
 }
 export function clickBonus(s,point) {const canStand=(x,y)=>canWalkZone(x,y,s.zone);Object.assign(s.team[s.main],s.player);const hit=clickBonusTarget(s,point,canStand,hitMonster);if(hit)cancelWoodcutting(s);return hit;}
 export const spellContext = {canStand,hitMonster};
