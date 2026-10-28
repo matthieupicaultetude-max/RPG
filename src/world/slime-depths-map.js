@@ -109,6 +109,8 @@ export const FENCES = [],
   MARKERS = [];
 export const placementOnLand = (prop) =>
   footprintPoints(prop).every(([x, y]) => landDistance(x, y) >= 2);
+// Outer cave edges and stalagmites are rock; pool shores are not.
+export const isDepthsRockImpact=(x,y)=>polygonDistance(x,y,LAND)<4||PROPS.some(p=>inFootprint(x,y,p));
 export const canWalkDepths = (x, y) =>
   landDistance(x, y) >= 4 && !PROPS.some((p) => inFootprint(x, y, p));
 export const DEPTHS_SLIMES = [

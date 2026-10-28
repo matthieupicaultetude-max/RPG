@@ -1,3 +1,4 @@
+import { AMBER_SLIME, mergedShellBroken } from "../data/rock-shell.js";
 import { createDepthsBoss } from "./depths-boss.js";
 import { createMonster } from "../data/monsters.js";
 import { DEPTHS_SLIMES, canWalkDepths } from "../world/slime-depths-map.js";
@@ -42,7 +43,7 @@ function effect(s, m, text) {
       vx: Math.cos(a) * 25,
       vy: Math.sin(a) * 20 - 8,
       particle: true,
-      color: m.element === "earth" ? "#c5ac7e" : "#80d9ec",
+      color: m.element === "earth" ? AMBER_SLIME.base : "#80d9ec",
       life: 0.45,
     });
   }
@@ -69,6 +70,7 @@ export function onDepthsLanding(s, m, point, hits) {
   const child = createMonster(m.species, spawn.x, spawn.y, m.level);
   child.fusionReadyAt = m.fusionReadyAt;
   child.dualElement = m.dualElement;
+  child.shellBroken = m.shellBroken === true;
   child.bossOwner = m.bossOwner;
   if (m.bossOwner !== undefined) {
     child.baseMaxHp = m.baseMaxHp;
@@ -127,8 +129,10 @@ export function stepDepthsSlimes(s) {
     if (i > j || s.time - a.fusionStartedAt < DEPTHS_RULES.fusionWindup)
       continue;
     const ratio = (a.hp + b.hp) / (a.maxHp + b.maxHp);
+    const shellBroken = mergedShellBroken(a, b);
     a.growth += b.growth;
     a.dualElement = a.dualElement || b.dualElement || a.element !== b.element;
+    a.shellBroken = shellBroken;
     resize(a, ratio);
     a.fusionReadyAt = s.time + DEPTHS_RULES.separationTime;
     a.cooldown = 0.55;

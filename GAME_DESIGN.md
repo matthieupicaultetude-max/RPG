@@ -570,7 +570,7 @@ Une cascade au sud-est des marais se jette dans un gouffre marin. F près de la 
 
 La carte représente une grotte humide : parois sombres, roches naturelles, stalagmites, bassins non praticables, cascades et végétation luminescente. Les matériaux sont périodiques, le terrain et ses collisions partagent les mêmes distances signées. L’éclairage est froid et souterrain, sans soleil doré.
 
-La population initiale compte sept slimes de niveau 5, pour dix unités de taille. Deux espèces sont distinguées par leur couleur et leur élément : abyssal (Eau, bleu) et limon (Terre, brun). Le rayon d’engagement est de 240 px, la portée de bond de 210 px, la préparation de 0,85 / 0,97 / 1,09 s selon la taille, et le repos de 1,1 s. Tous les bonds restent annoncés avant les dégâts.
+La population initiale compte sept slimes de niveau 5, pour dix unités de taille. Deux espèces sont distinguées par leur couleur et leur élément : abyssal (Eau, bleu) et limon (Terre, ambré). Le rayon d’engagement est de 240 px, la portée de bond de 210 px, la préparation de 0,85 / 0,97 / 1,09 s selon la taille, et le repos de 1,1 s. Bonds Eau et roulades Terre restent annoncés avant les dégâts.
 
 Un saut raté retire une taille à un slime de taille 2 ou 3 et crée un slime de taille 1 du même niveau, sur une position praticable voisine. Le parent conserve son pourcentage de PV et devient vulnérable 1,5 s (+50 % de dégâts reçus). Les tailles 1 ne se divisent pas.
 
@@ -631,3 +631,12 @@ Zone montagneuse reliée au nord-est du village par F, également accessible dep
 La zone se concentre sur cette interaction avec le terrain. Les éboulements, filons de réparation et ondes de résonance proposés restent réservés à d’autres monstres. Il n’y a pas de scission ou de fusion pour le slime de schiste.
 
 **Progression et persistance.** Ressources normale et rare : Éclat de schiste et Cœur d’ambre, chacune avec variation chromatique selon les probabilités usuelles. Le noyau bonus est Terre et suit la tranche de niveau du monstre. Pas de nouvelle recette débutante dans cette zone. Les blessures et carapaces restent conservées lors des allers-retours pendant la session ; chaque réapparition après 18 s restaure les PV et la carapace au point d’origine. Une défaite ramène la troupe soignée au col sans perte d’or ni d’objets.
+
+
+## 44. Carapace des formes Terre et Eau/Terre de la crevasse
+
+Le slime de limon et toute fusion mixte contenant de la Terre portent la carapace rocheuse : réduction globale de 40 %, rupture en percutant une stalagmite ou une paroi pendant une roulade, puis exposition de 3 secondes (+50 % de dégâts et pause des attaques). Les limites rocheuses extérieures de la grotte sont des parois ; les bords des mares arrêtent la charge sans briser la carapace. Les slimes Eau purs gardent leurs bonds sans protection.
+
+Les formes mixtes alternent le bond Eau et une roulade Terre ; le limon pur utilise la roulade. Les annonces et les spécifications du mouvement restent figées pour l’attaque en cours. Scissions et fusions restent actives : un bond Eau raté d’une grosse forme produit un petit, avec le même état de carapace que le parent. En fusion, la carapace est intacte si au moins une composante Terre entrante l’était encore ; elle reste brisée si toutes les composantes Terre étaient déjà brisées. L’Eau seule n’apporte aucune réparation. Les aspects de Gorgelimon suivent ces mêmes règles élémentaires.
+
+La palette Terre est partagée avec le slime de schiste : base #c59a4d, ombre #8f672e et lumière #efd497. Les formes mixtes gardent une moitié bleue lisible ; la carapace est dessinée avec les mêmes plaques rocheuses que dans les montagnes. Le bestiaire et le guide décrivent cette variante de combat. Les propriétés du boss Gorgelimon restent propres à son affrontement.

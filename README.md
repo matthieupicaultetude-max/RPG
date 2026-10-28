@@ -308,10 +308,10 @@ Au **sud-est des Marais de Gelée**, un trou sombre dans la mer reçoit une casc
 
 La crevasse est une carte distincte : sol rocheux humide sans pavage, mares infranchissables, trois cascades animées, stalagmites, champignons lumineux et éclairage souterrain bleuté. La lumière dorée extérieure s’efface dans cette zone. La **remontée lumineuse à l’ouest + F** ramène à la cascade des marais.
 
-- Sept slimes de **niveau 5**, Eau (abyssaux bleus) et Terre (limon brun), engagent de plus loin et bondissent plus vite que ceux des marais. Les cercles élémentaires annoncent chaque impact.
+- Sept slimes de **niveau 5**, Eau (abyssaux bleus) et Terre (limon ambré), engagent de plus loin. Les formes Eau bondissent et les formes Terre chargent ; cercles et couloirs annoncent les impacts.
 - Un saut raté d’un gros slime produit **taille 3 → 2 + 1** ou **taille 2 → 1 + 1**, avec une brève vulnérabilité du parent.
 - Deux slimes proches, au sol et sans attaque en cours, peuvent fusionner : **1 + 1 → 2**, **1 + 2 → 3**. Un lien et des anneaux dorés l’annoncent pendant **1 s**. Les repousser, les immobiliser ou tuer un partenaire annule la fusion. Ils attendent **5 s** après une scission ou fusion avant de refusionner.
-- Les fusions mixtes alternent les bonds **Eau / Terre**. La masse totale de la horde est conservée lors des transformations : pas de multiplication sans fin des ennemis vivants. La fusion ne donne ni XP ni loot.
+- Les fusions mixtes alternent **bond Eau / roulade Terre**. La masse totale de la horde est conservée lors des transformations : pas de multiplication sans fin des ennemis vivants. La fusion ne donne ni XP ni loot.
 - Ressources propres aux créatures : **Gelée abyssale / Perle des profondeurs** et **Limon humide / Géode suintante**, avec variantes chromatiques ; noyaux Eau ou Terre selon le monstre. Fiches disponibles dans le bestiaire avec aperçu par niveau.
 
 Les ennemis vaincus restent morts pendant l’expédition. Une crevasse entièrement nettoyée se repeuple à la prochaine entrée ; sinon ses blessures et transformations restent conservées pendant la session. Une défaite ramène la troupe soignée sur la berge d’entrée, avec son or et ses objets.
@@ -354,3 +354,12 @@ Leur mécanique est la **carapace rocheuse** :
 - La première collision qui brise la carapace étourdit le slime et expose son cœur pendant **3 s**, avec **+50 % de dégâts reçus**. La protection reste ensuite perdue jusqu’au respawn. Un arrêt au bord d’un précipice ne brise pas la carapace.
 
 La fiche du bestiaire comprend les statistiques par niveau, la mécanique et les ressources **Éclat de schiste / Cœur d’ambre**, avec leurs variantes chromatiques, ainsi que le noyau Terre habituel. Les personnages et le sac sont conservés entre les zones. Une défaite soigne la troupe au col ; les slimes réapparaissent après 18 s avec leur carapace restaurée.
+
+
+### Carapaces des slimes de la caverne
+
+Les **slimes de limon et les fusions mixtes Eau/Terre** utilisent la même carapace que les slimes des montagnes : dégâts reçus réduits de **40 %**, protection brisée après une roulade contre une **stalagmite ou une paroi**, puis cœur exposé pendant **3 s** (+50 % de dégâts). Les rives des mares ne comptent pas comme des parois rocheuses.
+
+Les formes mixtes gardent leur alternance **bond Eau / roulade Terre**, ainsi que leurs scissions et fusions. La scission conserve l’état de la carapace chez le parent et le petit. Une fusion conserve une protection cassée si toute sa composante Terre était déjà brisée ; une composante Terre encore intacte apporte sa carapace. Ajouter de l’Eau seule ne répare donc pas la protection.
+
+La teinte Terre de la caverne, des formes mixtes, de leurs illustrations et du limon utilise désormais la **même palette ambrée que le slime de schiste**. Le guide de zone et le bestiaire expliquent les roulades et les carapaces.

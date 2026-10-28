@@ -1,4 +1,5 @@
-import {traceMountainCharge,breakMountainShell} from '../game/mountain-slimes.js';
+import {hasRockShell} from '../data/rock-shell.js';
+import {traceShellCharge,breakRockShell} from '../game/mountain-slimes.js';
 import {onBossLanding} from '../game/depths-boss.js';
 import { onDepthsLanding } from '../game/slime-depths.js';
 import {onSlimeLanding,slimeVulnerable} from '../game/slime-marsh.js';
@@ -97,9 +98,9 @@ export function startMonsterAttack(state, monster, ctx) {
   let to = { x: target.x, y: target.y },mountainPath;
   if (spec.kind === "leap") {
     if (!ctx.canStand(to.x, to.y)) return false;
-  } else if(monster.mountainSlime){
+  } else if(hasRockShell(monster)){
     const angle=Math.atan2(to.y-from.y,to.x-from.x),goal={x:from.x+Math.cos(angle)*spec.range,y:from.y+Math.sin(angle)*spec.range};
-    mountainPath={...traceMountainCharge(from,goal,ctx.canStand),chargeGoal:goal};to=mountainPath.to;
+    mountainPath={...traceShellCharge(from,goal,ctx.canStand,state.zone),chargeGoal:goal};to=mountainPath.to;
     if(distance(from,to)<2&&!mountainPath.wallCollision)return false;
   } else {
     const angle = Math.atan2(to.y - from.y, to.x - from.x),
@@ -201,7 +202,7 @@ export function stepMonsterAbility(state, monster, dt, ctx) {
   if (a.phase === "windup") {
     // Recoil can move the caster; the destination always stays locked to the announced ground point.
     a.from = { x: monster.x, y: monster.y };
-    if(monster.mountainSlime)Object.assign(a,traceMountainCharge(a.from,a.chargeGoal,ctx.canStand));
+    if(hasRockShell(monster)&&a.kind==="charge")Object.assign(a,traceShellCharge(a.from,a.chargeGoal,ctx.canStand,state.zone));
     else if (a.kind !== "leap") a.to = clippedEnd(a.from, a.to, ctx.canStand);
     face(monster, a.to);
     if (a.age < a.windup) return true;
@@ -262,7 +263,7 @@ export function stepMonsterAbility(state, monster, dt, ctx) {
       },
       previous = { x: monster.x, y: monster.y };
     if (!lineClear(previous, next, ctx.canStand)) {
-      if(monster.mountainSlime){const crash=traceMountainCharge(previous,next,ctx.canStand);Object.assign(monster,crash.to);if(crash.wallCollision)breakMountainShell(state,monster,crash.impactPoint);}
+      if(hasRockShell(monster)){const crash=traceShellCharge(previous,next,ctx.canStand,state.zone);Object.assign(monster,crash.to);if(crash.wallCollision)breakRockShell(state,monster,crash.impactPoint);}
       finish(monster, spec);
       return true;
     }
@@ -270,7 +271,7 @@ export function stepMonsterAbility(state, monster, dt, ctx) {
     monster.y = next.y;
     monster.moving = true;
     strikePath(state, a, previous, next, monster, ctx);
-    if (progress >= 1){if(monster.mountainSlime&&a.wallCollision)breakMountainShell(state,monster,a.impactPoint);finish(monster, spec);}
+    if (progress >= 1){if(hasRockShell(monster)&&a.wallCollision)breakRockShell(state,monster,a.impactPoint);finish(monster, spec);}
   }
   return true;
 }

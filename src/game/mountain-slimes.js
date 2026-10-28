@@ -1,3 +1,5 @@
+import { hasRockShell } from "../data/rock-shell.js";
+import { isDepthsRockImpact } from "../world/slime-depths-map.js";
 import { createMonster } from "../data/monsters.js";
 import {
   MOUNTAIN_SLIMES,
@@ -21,11 +23,16 @@ export function resetMountainSlime(m) {
   m.vulnerableUntil = 0;
 }
 export function shellDamage(m, damage, bonus = false) {
-  return m.mountainSlime && !m.shellBroken && !bonus
+  return hasRockShell(m) && !m.shellBroken && !bonus
     ? Math.max(1, Math.round(damage * MOUNTAIN_RULES.damageMultiplier))
     : damage;
 }
-export function traceMountainCharge(from, goal, canStand) {
+export function traceShellCharge(
+  from,
+  goal,
+  canStand,
+  zone = "slime-mountains",
+) {
   const dx = goal.x - from.x,
     dy = goal.y - from.y,
     length = Math.hypot(dx, dy);
@@ -34,13 +41,20 @@ export function traceMountainCharge(from, goal, canStand) {
     const t = Math.min(1, d / (length || 1)),
       p = { x: from.x + dx * t, y: from.y + dy * t };
     if (!canStand(p.x, p.y))
-      return { to, wallCollision: isMountainImpact(p.x, p.y), impactPoint: p };
+      return {
+        to,
+        wallCollision:
+          zone === "slime-depths"
+            ? isDepthsRockImpact(p.x, p.y)
+            : isMountainImpact(p.x, p.y),
+        impactPoint: p,
+      };
     to = p;
   }
   return { to, wallCollision: false };
 }
-export function breakMountainShell(s, m, point = m) {
-  if (!m.mountainSlime || m.shellBroken || m.hp <= 0) return false;
+export function breakRockShell(s, m, point = m) {
+  if (!hasRockShell(m) || m.shellBroken || m.hp <= 0) return false;
   m.shellBroken = true;
   m.vulnerableUntil = s.time + MOUNTAIN_RULES.exposedDuration;
   m.moving = false;
@@ -67,3 +81,5 @@ export function breakMountainShell(s, m, point = m) {
   s.revision++;
   return true;
 }
+
+export const breakMountainShell = breakRockShell;

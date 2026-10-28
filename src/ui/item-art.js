@@ -1,3 +1,4 @@
+import {AMBER_SLIME} from '../data/rock-shell.js';
 import { CHROMATIC_COLORS } from '../data/chromatic.js';
 // Original, name-driven inventory art. Geometry is shared by bag, slots and bestiary.
 const PALETTES = {
@@ -205,7 +206,7 @@ function resourceArt(item) {
     case "Gelée abyssale":
       return path('M3 24 7 13l6-6h8l4 7 4 10-5 5H8z',c?'#b89bd9':'#4d9dbc')+path('m8 20 4-7h7l3 6','none',c?'#e5c6f2':'#a1e5ec',2);
     case "Limon humide":
-      return path('M3 25 6 17l6-5 8 1 6 6 4 7-7 4H9z',c?'#9c88c4':'#a38b60')+path('m10 20 3-3 5 1m3 5 3 2','none',c?'#d7b7e8':'#e0c994',2);
+      return path('M3 25 6 17l6-5 8 1 6 6 4 7-7 4H9z',c?'#9c88c4':AMBER_SLIME.base)+path('m10 20 3-3 5 1m3 5 3 2','none',c?'#d7b7e8':AMBER_SLIME.light,2);
     case "Perle des profondeurs":
     case "Géode suintante": {
       const earth=item.name==='Géode suintante';

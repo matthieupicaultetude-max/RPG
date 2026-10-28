@@ -1,3 +1,5 @@
+import { AMBER_SLIME, hasRockShell } from "../data/rock-shell.js";
+import { drawRockShell } from "./rock-shell.js";
 import { BRIDGES, MOUNTAIN_ENTRY } from "../world/slime-mountains-map.js";
 import { GARDEN_MOUNTAIN_GATE } from "../game/zone-travel.js";
 function poly(g, p, c) {
@@ -121,7 +123,7 @@ export function drawMountainSlime(g, m, time) {
       [15, -5],
       [12, 2],
     ],
-    "#8f672e",
+    AMBER_SLIME.dark,
   );
   poly(
     g,
@@ -134,82 +136,12 @@ export function drawMountainSlime(g, m, time) {
       [11, -9],
       [12, -2],
     ],
-    "#c59a4d",
+    AMBER_SLIME.base,
   );
-  g.fillStyle = "#efd497";
+  g.fillStyle = AMBER_SLIME.light;
   g.fillRect(-6, -13, 10, 3);
   g.fillRect(-3, -16, 6, 2);
-  if (!m.shellBroken) {
-    poly(
-      g,
-      [
-        [-16, -2],
-        [-16, -14],
-        [-10, -24],
-        [-1, -25],
-        [3, -16],
-        [-3, -7],
-      ],
-      "#697a7d",
-    );
-    poly(
-      g,
-      [
-        [-14, -15],
-        [-8, -23],
-        [-2, -23],
-        [-1, -17],
-        [-7, -10],
-      ],
-      "#b2bbb0",
-    );
-    poly(
-      g,
-      [
-        [2, -16],
-        [6, -26],
-        [13, -23],
-        [18, -10],
-        [14, 1],
-        [7, -3],
-      ],
-      "#7b8d8c",
-    );
-    poly(
-      g,
-      [
-        [6, -24],
-        [11, -22],
-        [14, -13],
-        [7, -15],
-      ],
-      "#bcc2ac",
-    );
-    g.fillStyle = "#d8bb7c";
-    g.fillRect(-9, -18, 2, 7);
-    g.fillRect(11, -14, 1, 7);
-    const cracks = Math.floor((1 - m.hp / m.maxHp) * 3);
-    if (cracks > 0) {
-      g.strokeStyle = "#354a50";
-      g.lineWidth = 1;
-      g.beginPath();
-      g.moveTo(-5, -24);
-      g.lineTo(-8, -17);
-      g.lineTo(-4, -12);
-      g.stroke();
-    }
-    if (cracks > 1) {
-      g.beginPath();
-      g.moveTo(9, -23);
-      g.lineTo(12, -17);
-      g.lineTo(9, -11);
-      g.stroke();
-    }
-  } else {
-    g.fillStyle = (m.vulnerableUntil || 0) > time ? "#ffe6a0" : "#e6bb68";
-    g.fillRect(-4, -10, 8, 8);
-    g.fillRect(-2, -13, 4, 13);
-  }
+  drawRockShell(g, m, time);
   g.fillStyle = "#463c2e";
   g.fillRect(-7, -6, 2, 3);
   g.fillRect(6, -6, 2, 3);
@@ -221,7 +153,7 @@ export function drawMountainSlime(g, m, time) {
 }
 export function drawMountainStatus(g, m, s) {
   if (
-    !m.mountainSlime ||
+    !hasRockShell(m) ||
     m.hp <= 0 ||
     m.shellBroken ||
     Math.hypot(m.x - s.player.x, m.y - s.player.y) > 100

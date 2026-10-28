@@ -142,3 +142,10 @@ La pluie est dessinée uniquement dans `slime-marsh`. Les rayons et ombres de so
 `world/slime-mountains-map.js` décrit trois plateaux et deux ponts comme une union de polygones. Le terrain et les collisions utilisent les mêmes régions. Les crevasses sont dessinées à partir de la distance aux plateformes, avec des strates rocheuses ; les textures des sols et sentiers restent périodiques. Les planches des ponts traversent les crevasses, leurs garde-corps sont des détails visuels. Les rochers et parois ont des empreintes solides séparées des bords du vide, afin de distinguer une collision qui brise une carapace d’un simple arrêt.
 
 `rendering/slime-mountains.js` dessine les sommets lointains, ponts, passages, slimes ambrés et plaques de schiste. La préparation comprime la gelée ; la charge fait rouler la silhouette. Les fissures accompagnent les blessures, et la rupture expose un cœur clair avec fragments rocheux, bruitage et indication de vulnérabilité. Les sprites des personnages gardent leur taille originale. Les rochers et parois rejoignent le tri par profondeur, l’atténuation lors de l’occlusion et les ombres projetées de l’extérieur.
+
+
+## 16. Carapaces partagées et gelée ambrée
+
+`data/rock-shell.js` centralise la palette ambrée et l’identification des formes contenant de la Terre. `rendering/rock-shell.js` partage le dessin des plaques, fissures et cœur exposé entre les slimes de schiste et ceux de la crevasse. Les formes mixtes conservent leur corps bicolore bleu/ambré et leur taille issue des fusions. Les barrettes de vie et indications de carapace tiennent compte du relief des plaques. Les illustrations du bestiaire et la ressource Limon humide reprennent cette même palette.
+
+Le calcul de roulade distingue les rochers et parois de la grotte des berges des mares. Les avertissements suivent la trajectoire réellement praticable ; une collision rocheuse déclenche les particules de schiste, le bruit de rupture et la fenêtre de vulnérabilité existants.

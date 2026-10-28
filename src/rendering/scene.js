@@ -1,3 +1,4 @@
+import {hasRockShell} from '../data/rock-shell.js';
 import * as mountainMap from '../world/slime-mountains-map.js';
 import {drawMountainGround,drawMountainStatus} from './slime-mountains.js';
 import {createMarshRain} from './marsh-rain.js';
@@ -127,7 +128,7 @@ export function createRenderer(canvas) {
           }
           drawCreature(ctx, m, s.time);
           const x = Math.round(m.x),
-            y = Math.round(m.y-(m.lift||0)-24*(slimeScale(m)-1)-(m.boss?38:m.mountainSlime?10:0));
+            y = Math.round(m.y-(m.lift||0)-24*(slimeScale(m)-1)-(m.boss?38:hasRockShell(m)?10:0));
           ctx.fillStyle = "#625d3e";
           ctx.fillRect(x - 14, y - 24, 28, 3);
           ctx.fillStyle = "#cfb17c";

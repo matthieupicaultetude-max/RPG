@@ -1,3 +1,5 @@
+import {AMBER_SLIME,hasRockShell} from '../data/rock-shell.js';
+import {drawRockShell} from './rock-shell.js';
 import {drawMountainSlime} from './slime-mountains.js';
 import {drawBossActor} from './depths-boss.js';
 import {slimeScale} from '../game/slime-marsh.js';
@@ -234,28 +236,31 @@ export function drawCreature(ctx, m, time) {
   ctx.fill();
   ctx.translate(0,-Math.round(m.lift||0));
   const size=slimeScale(m);ctx.scale(size,size);
+  if(m.depthsSlime&&hasRockShell(m)&&m.intent?.phase==="charge")ctx.rotate(m.intent.age*14*(m.facing==="left"?-1:1));
   if(['slime','marsh-slime','depths-water-slime','depths-earth-slime'].includes(m.species)&&m.intent?.phase==='windup'){
     const progress=Math.min(1,m.intent.age/m.intent.windup);ctx.scale(1+progress*.18,1-progress*.28);
   }
   if(m.species==='boar'&&m.facing==='left')ctx.scale(-1,1);
   if (["slime","marsh-slime","depths-water-slime","depths-earth-slime"].includes(m.species) || m.name === "Slime") {
     ctx.translate(0, bob);
-    ctx.fillStyle = m.depthsSlime?(m.element==="earth"?"#675644":"#254d72"):m.marshSlime?"#477f82":"#54765a";
+    ctx.fillStyle = m.depthsSlime?(m.element==="earth"?AMBER_SLIME.dark:"#254d72"):m.marshSlime?"#477f82":"#54765a";
     ctx.fillRect(-12, -7, 24, 10);
     ctx.fillRect(-9, -13, 18, 14);
     ctx.fillRect(-5, -16, 10, 9);
-    ctx.fillStyle = m.depthsSlime?(m.element==="earth"?"#a38b60":"#4d9dbc"):m.marshSlime?"#71b5ad":"#82ad82";
+    ctx.fillStyle = m.depthsSlime?(m.element==="earth"?AMBER_SLIME.base:"#4d9dbc"):m.marshSlime?"#71b5ad":"#82ad82";
     ctx.fillRect(-11, -7, 22, 9);
     ctx.fillRect(-8, -12, 16, 12);
     ctx.fillRect(-4, -15, 8, 9);
-    ctx.fillStyle = m.depthsSlime?(m.element==="earth"?"#e0c994":"#a1e5ec"):m.marshSlime?"#b2e5c0":"#b1cd94";
+    ctx.fillStyle = m.depthsSlime?(m.element==="earth"?AMBER_SLIME.light:"#a1e5ec"):m.marshSlime?"#b2e5c0":"#b1cd94";
     ctx.fillRect(-7, -11, 12, 4);
     ctx.fillRect(-3, -14, 6, 3);
-    if(m.dualElement){ctx.fillStyle="#b69a65";ctx.fillRect(3,-11,6,8);ctx.fillStyle="#85d5e6";ctx.fillRect(-8,-7,5,5);}
+    if(m.dualElement){ctx.fillStyle=AMBER_SLIME.base;ctx.fillRect(0,-11,9,12);ctx.fillStyle=AMBER_SLIME.light;ctx.fillRect(1,-11,5,3);ctx.fillStyle="#4d9dbc";ctx.fillRect(-10,-8,10,9);ctx.fillStyle="#a1e5ec";ctx.fillRect(-8,-8,6,2);}
     ctx.fillStyle = "#dbdeaa";
     ctx.fillRect(-6, -10, 3, 2);
-    ctx.fillStyle = m.depthsSlime?(m.element==="earth"?"#66523b":"#2f7594"):m.marshSlime?"#397b76":"#47705b";
+    ctx.fillStyle = m.depthsSlime?(m.element==="earth"?AMBER_SLIME.edge:"#2f7594"):m.marshSlime?"#397b76":"#47705b";
     ctx.fillRect(-9, 0, 18, 3);
+    if(m.depthsSlime&&hasRockShell(m))drawRockShell(ctx,m,time);
+    if(m.dualElement){ctx.fillStyle="#2f7594";ctx.fillRect(-9,0,9,3);ctx.fillStyle=AMBER_SLIME.edge;ctx.fillRect(0,0,9,3);}
     ctx.fillStyle = "#425847";
     ctx.fillRect(-5, -5, 2, 3);
     ctx.fillRect(4, -5, 2, 3);
