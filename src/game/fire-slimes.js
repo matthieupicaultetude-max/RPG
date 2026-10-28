@@ -1,5 +1,5 @@
 import { createMonster } from "../data/monsters.js";
-import { FIRE_SLIMES } from "../world/slime-fire-map.js";
+import { FIRE_SLIMES, LAVA_POOLS } from "../world/slime-fire-map.js";
 import { lineClear } from "../combat/attacks.js";
 import { emitSound } from "../audio/events.js";
 export const FIRE_RULES = Object.freeze({
@@ -13,7 +13,7 @@ export const FIRE_RULES = Object.freeze({
 });
 export function createFireWorld() {
   return {
-    monsters: FIRE_SLIMES.map((p) => createMonster("fire-slime", p.x, p.y, 5)),
+    monsters: FIRE_SLIMES.map((p) => bornFireSlime(p)),
     bots: [],
     npcs: [],
     trees: [],
@@ -25,10 +25,47 @@ export function clearFireHazards(s) {
   s.nextFireDamage = {};
   for (const m of s.monsters || []) if (m.fireSlime) delete m.fireTrailPoint;
 }
-export function resetFireSlime(m) {
+function lavaOrigin(m) {
+  return LAVA_POOLS.map((pool) => ({
+    x: pool.reduce((n, p) => n + p[0], 0) / pool.length,
+    y: pool.reduce((n, p) => n + p[1], 0) / pool.length,
+  })).sort(
+    (a, b) =>
+      Math.hypot(a.x - m.homeX, a.y - m.homeY) -
+      Math.hypot(b.x - m.homeX, b.y - m.homeY),
+  )[0];
+}
+function bornFireSlime(p) {
+  const m = createMonster("fire-slime", p.x, p.y, 5);
+  beginFireEmergence(m);
+  return m;
+}
+export function beginFireEmergence(m) {
+  m.emergence = {
+    from: lavaOrigin(m),
+    to: { x: m.homeX, y: m.homeY },
+    age: 0,
+    duration: 1.2,
+  };
+  m.moving = false;
+  delete m.fireTrailPoint;
+}
+export function stepFireEmergence(m, dt) {
+  if (!m.emergence) return false;
+  m.emergence.age += dt;
+  m.moving = false;
+  if (m.emergence.age >= m.emergence.duration) {
+    delete m.emergence;
+    m.cooldown = 0.7;
+    m.fireTrailPoint = { x: m.x, y: m.y };
+  }
+  return true;
+}
+export function resetFireSlime(m, zone) {
   if (m.fireSlime) {
     delete m.fireDeathQueued;
     delete m.fireTrailPoint;
+    if (zone === "slime-fire") beginFireEmergence(m);
   }
 }
 // Freeze origin and damage at death: respawning or removing the caster cannot cancel the blast.

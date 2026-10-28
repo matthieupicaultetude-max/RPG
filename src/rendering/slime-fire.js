@@ -22,25 +22,28 @@ function label(g, text, p) {
   g.fillText(text, p.x, p.y + 23);
 }
 export function drawFireGround(g, s) {
-  if (!["slime-fire", "slime-mountains"].includes(s.zone)) return;
+  if (!["slime-fire", "slime-mountains", "slime-volcano"].includes(s.zone))
+    return;
   g.save();
-  const p = s.zone === "slime-fire" ? FIRE_ENTRY : MOUNTAIN_FIRE_GATE;
-  circle(g, p.x, p.y, 17, "#65362c66", "#f3ae69");
-  g.fillStyle = "#ffb15a";
-  g.fillRect(p.x - 5, p.y - 5, 10, 9);
-  g.fillStyle = "#fff1ad";
-  g.fillRect(p.x - 2, p.y - 9, 4, 10);
-  label(
-    g,
-    s.zone === "slime-fire" ? "MONTAGNES · F" : "CHAMPS DE BRAISE · F",
-    p,
-  );
-  if (s.zone !== "slime-fire") {
+  if (s.zone !== "slime-volcano") {
+    const p = s.zone === "slime-fire" ? FIRE_ENTRY : MOUNTAIN_FIRE_GATE;
+    circle(g, p.x, p.y, 17, "#65362c66", "#f3ae69");
+    g.fillStyle = "#ffb15a";
+    g.fillRect(p.x - 5, p.y - 5, 10, 9);
+    g.fillStyle = "#fff1ad";
+    g.fillRect(p.x - 2, p.y - 9, 4, 10);
+    label(
+      g,
+      s.zone === "slime-fire" ? "MONTAGNES · F" : "CHAMPS DE BRAISE · F",
+      p,
+    );
+  }
+  if (s.zone === "slime-mountains") {
     g.restore();
     return;
   }
   // Lava is decoration outside the walk mask, never a hidden damaging floor.
-  for (const pool of LAVA_POOLS) {
+  for (const pool of s.zone === "slime-fire" ? LAVA_POOLS : []) {
     const x = pool.reduce((n, p) => n + p[0], 0) / pool.length,
       y = pool.reduce((n, p) => n + p[1], 0) / pool.length;
     for (let i = 0; i < 3; i++) {
@@ -95,8 +98,14 @@ export function drawFireGround(g, s) {
   g.restore();
 }
 export function drawFireSlime(g, m, time) {
-  const x = Math.round(m.x),
-    y = Math.round(m.y);
+  const birth = m.emergence,
+    t = birth ? Math.min(1, birth.age / birth.duration) : 1;
+  const x = Math.round(
+      birth ? birth.from.x + (birth.to.x - birth.from.x) * t : m.x,
+    ),
+    y = Math.round(
+      birth ? birth.from.y + (birth.to.y - birth.from.y) * t : m.y,
+    );
   g.save();
   g.translate(x, y);
   g.fillStyle = "#251e2255";
@@ -107,7 +116,10 @@ export function drawFireSlime(g, m, time) {
     m.moving && !m.intent
       ? Math.abs(Math.sin(time * 9 + m.homeX)) * 4
       : Math.sin(time * 4 + m.homeX);
-  g.translate(0, -Math.round((m.lift || 0) + idleHop));
+  g.translate(
+    0,
+    -Math.round((birth ? Math.sin(t * Math.PI) * 34 : m.lift || 0) + idleHop),
+  );
   if (m.intent?.phase === "windup") {
     const t = Math.min(1, m.intent.age / m.intent.windup);
     g.scale(1 + t * 0.18, 1 - t * 0.25);
@@ -145,7 +157,7 @@ export function drawFireSlime(g, m, time) {
   g.restore();
 }
 export function drawFireAtmosphere(g, s) {
-  if (s.zone !== "slime-fire") return;
+  if (!["slime-fire", "slime-volcano"].includes(s.zone)) return;
   g.save();
   g.fillStyle = "#a4381810";
   g.fillRect(0, 0, 640, 400);

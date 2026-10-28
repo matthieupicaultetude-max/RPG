@@ -160,3 +160,11 @@ L’atelier du village possède un sprite dédié (toit d’ardoise, charpente, 
 Le terrain basaltique emploie des textures périodiques de 64 pixels, échantillonnées dans les coordonnées du monde. Le masque de sol soustrait les trois bassins de lave au contour extérieur et pilote aussi les collisions et le placement des flammes. Les routes utilisent leur union de distances. Les rochers conservent le tri en profondeur des autres environnements.
 
 Les slimes ont une palette orange et un cœur lumineux, une compression avant bond, une ombre au sol et des sautillements décoratifs ; la hauteur du bond réel vient de la simulation. Les traînées et cercles d’explosion sont dessinés au sol à partir des mêmes positions, rayons et durées que les dégâts. L’explosion disparaît après un unique déclenchement, remplacée par l’impact Feu et des particules. Des bulles de lave et des braises atmosphériques animent le décor sans ajouter de collisions ou de dégâts cachés.
+
+### Volcan et surgissements
+
+Le Donjon du Volcan possède son propre masque basaltique, ses bassins de lave non praticables et son réseau de chemins. Les textures réutilisent l’échantillonnage périodique des Champs de Braise, tandis que le contour, les accessoires et la navigation sont propres à la carte.
+
+Le surgissement d’un slime Feu interpole sa position visuelle depuis un bassin intérieur jusqu’à son point de sol valide avec une hauteur sinusoïdale ; collisions et IA restent sur le point d’arrivée et sont suspendues pendant cette phase. Le personnage joueur conserve son gabarit d’origine.
+
+Les slimes de magma portent un dessin de basalte sombre fissuré sur un corps ambré incandescent. Les fissures et le compteur de dégâts rendent la rupture lisible. Les explosions de carapace utilisent les mêmes cercles, positions et durées que les dégâts. Les projectiles de magma et les slimes expulsés du cratère dessinent des arcs vers les points annoncés ; les flaques persistantes restent visibles après un contact. Pyroclaste possède un sprite dédié de volcan vivant, cratère lumineux, coulée et particules, sans emprunter le sprite de Gorgelimon. La barre de boss et les informations accessibles changent selon le donjon ; les repères de scission de Gorgelimon sont masqués pour Pyroclaste.

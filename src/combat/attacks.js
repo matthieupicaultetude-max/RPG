@@ -10,7 +10,7 @@ export function lineClear(a, b, canStand) {
 }
 export function guidedTarget(state, point, canStand) {
   const member = state.team[state.main];
-  const candidates = state.monsters.filter(m => m.hp > 0).map(m => {
+  const candidates = state.monsters.filter(m => m.hp > 0&&!m.emergence).map(m => {
     const cursorGap = Math.hypot(m.x-point.x,m.y-8-(m.lift||0)-point.y);
     const aimAngle = Math.atan2(point.y-state.player.y+8,point.x-state.player.x);
     const enemyAngle = Math.atan2(m.y-state.player.y,m.x-state.player.x);
@@ -48,7 +48,7 @@ export function stepAttacks(state, dt, canStand, hitMonster) {
     const travel=(a.role==='ranged'?280:190)*dt;
     const next={ x:a.x+Math.cos(a.angle)*travel,y:a.y+Math.sin(a.angle)*travel };
     if (!lineClear(a,next,canStand)) return false;
-    const impact = state.monsters.filter(m => m.hp>0).find(m => {
+    const impact = state.monsters.filter(m => m.hp>0&&!m.emergence).find(m => {
       const dx=next.x-a.x,dy=next.y-a.y;
       const t=Math.max(0,Math.min(1,((m.x-a.x)*dx+(m.y-a.y)*dy)/(dx*dx+dy*dy || 1)));
       return Math.hypot(m.x-a.x-t*dx,m.y-a.y-t*dy)<9;

@@ -1,3 +1,4 @@
+import {drawMagmaSlime,drawVolcanoBoss} from './volcano.js';
 import {drawFireSlime} from './slime-fire.js';
 import {AMBER_SLIME,hasRockShell} from '../data/rock-shell.js';
 import {drawRockShell} from './rock-shell.js';
@@ -224,6 +225,8 @@ export function drawAdventurer(ctx, p, time, animation) {
 }
 export function drawCreature(ctx, m, time) {
   if (m.hp <= 0) return;
+  if(m.volcanoBoss){drawVolcanoBoss(ctx,m,time);return;}
+  if(m.magmaSlime){drawMagmaSlime(ctx,m,time);return;}
   if(m.boss){drawBossActor(ctx,m,time);return;}
   if(m.fireSlime){drawFireSlime(ctx,m,time);return;}
   if(m.mountainSlime){drawMountainSlime(ctx,m,time);return;}

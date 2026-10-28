@@ -207,7 +207,7 @@ test("coup fatal récompensé une seule fois, explosion maintenue, respawn réar
   spellContext.hitMonster(s, m, 9999, s.team[0]);
   assert.equal(s.gold, gold + m.gold);
   assert.equal(s.fireExplosions.length, 1);
-  for (let i = 0; i < 380; i++) stepSandbox(s, { x: 0, y: 0 }, 0.05);
+  for (let i = 0; i < 405; i++) stepSandbox(s, { x: 0, y: 0 }, 0.05);
   assert.ok(m.hp > 0);
   assert.equal(m.fireDeathQueued, undefined);
   assert.equal(s.fireExplosions.length, 0);

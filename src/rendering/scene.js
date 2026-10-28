@@ -1,3 +1,5 @@
+import * as volcanoMap from '../world/volcano-map.js';
+import {drawVolcanoGround,drawVolcanoProjectiles} from './volcano.js';
 import * as fireMap from '../world/slime-fire-map.js';
 import {drawFireGround,drawFireAtmosphere} from './slime-fire.js';
 import {hasRockShell} from '../data/rock-shell.js';
@@ -35,7 +37,7 @@ export function createRenderer(canvas) {
   const village = createEnvironment();
   const lighting = createGoldenHour(frame.width,frame.height);
   const rain=createMarshRain();
-  let tutorial, marsh, depths, mountains, fire;
+  let tutorial, marsh, depths, mountains, fire, volcano;
   function label(text, x, y) {
     ctx.font = "8px monospace";
     ctx.textAlign = "center";
@@ -67,7 +69,7 @@ export function createRenderer(canvas) {
     label(bot ? `${p.name} · BOT` : p.name, x, y + 16);
   }
   const render = (s) => {
-    const environment = s.zone === "slime-fire" ? (fire ||= createEnvironment(fireMap)) : s.zone === "slime-mountains" ? (mountains ||= createEnvironment(mountainMap)) : s.zone === "slime-depths" ? (depths ||= createEnvironment(depthsMap)) : s.zone === "tutorial" ? (tutorial ||= createEnvironment(tutorialMap)) : s.zone==='slime-marsh'?(marsh ||= createEnvironment(marshMap)):village;
+    const environment = s.zone === "slime-volcano" ? (volcano ||= createEnvironment(volcanoMap)) : s.zone === "slime-fire" ? (fire ||= createEnvironment(fireMap)) : s.zone === "slime-mountains" ? (mountains ||= createEnvironment(mountainMap)) : s.zone === "slime-depths" ? (depths ||= createEnvironment(depthsMap)) : s.zone === "tutorial" ? (tutorial ||= createEnvironment(tutorialMap)) : s.zone==='slime-marsh'?(marsh ||= createEnvironment(marshMap)):village;
     const canStand = (x,y)=>canWalkZone(x,y,s.zone);
     ctx.drawImage(environment.ground, 0, 0);
     if(s.lighting!==false && !["slime-depths","slime-marsh"].includes(s.zone))drawSunShadows(ctx,environment,s);
@@ -77,6 +79,7 @@ export function createRenderer(canvas) {
     drawDepthsGround(ctx,s);
     drawMountainGround(ctx,s);
     drawFireGround(ctx,s);
+    drawVolcanoGround(ctx,s);
     rain.ground(ctx,s);
     for(const marker of environment.markers)label(marker.text,marker.x,marker.y);
     if(s.zone === "tutorial")drawTutorialGate(ctx,s);
@@ -126,19 +129,21 @@ export function createRenderer(canvas) {
         y: m.y,
         draw: () => {
           if (m.hp <= 0) {
-            if(!m.tutorial&&!m.splitSpawn&&!m.depthsSlime&&!m.boss)label(`Retour ${Math.ceil(m.respawn)}s`, m.homeX, m.homeY);
+            if(!m.tutorial&&!m.splitSpawn&&!m.depthsSlime&&!m.magmaSlime&&!m.volcanoSummon&&!m.boss)label(`Retour ${Math.ceil(m.respawn)}s`, m.homeX, m.homeY);
             return;
           }
           drawCreature(ctx, m, s.time);
+          if(m.emergence)return;
           const x = Math.round(m.x),
-            y = Math.round(m.y-(m.lift||0)-24*(slimeScale(m)-1)-(m.boss?38:hasRockShell(m)?10:0));
+            y = Math.round(m.y-(m.lift||0)-24*(slimeScale(m)-1)-(m.volcanoBoss?50:m.boss?38:(hasRockShell(m)||m.magmaSlime)?10:0));
           ctx.fillStyle = "#625d3e";
           ctx.fillRect(x - 14, y - 24, 28, 3);
           ctx.fillStyle = "#cfb17c";
           ctx.fillRect(x - 14, y - 24, (28 * m.hp) / m.maxHp, 2);
-          label(m.boss?"Gorgelimon":m.depthsSlime?`${m.dualElement?"Mixte":m.element==="earth"?"Limon":"Abyssal"} · ${m.growth}/3`:m.marshSlime?`Slime · ${m.growth}/3`:m.name, x, Math.round(m.y-(m.lift||0)+17));
+          label(m.volcanoBoss?"Pyroclaste":m.boss?"Gorgelimon":m.depthsSlime?`${m.dualElement?"Mixte":m.element==="earth"?"Limon":"Abyssal"} · ${m.growth}/3`:m.marshSlime?`Slime · ${m.growth}/3`:m.name, x, Math.round(m.y-(m.lift||0)+17));
           drawMarshSlimeStatus(ctx,m,s);
           drawMountainStatus(ctx,m,s);
+          if(m.magmaSlime&&!m.shellBroken&&Math.hypot(m.x-s.player.x,m.y-s.player.y)<100)label(`Carapace ${Math.round((m.shellDamage||0)/Math.ceil(m.maxHp*.25)*100)} %`,m.x,m.y-57);
         },
       })),
     ];
@@ -199,6 +204,7 @@ export function createRenderer(canvas) {
     }
     rain.foreground(ctx,s);
     drawMonsterAttackEffects(ctx,s);
+    drawVolcanoProjectiles(ctx,s);
     drawSpellOverlays(ctx,s);
     if (s.aim.active && !s.woodcutting.action && !s.monsters.some(monster=>monster.hp>0&&monster.bonusTarget?.time>0&&Math.hypot(s.aim.x-bonusTargetPosition(monster).x,s.aim.y-bonusTargetPosition(monster).y)<=BONUS_TARGET_RADIUS)) {
       const primary=spellById(s.team[s.main].loadout[0]);

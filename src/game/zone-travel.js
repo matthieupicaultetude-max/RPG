@@ -1,3 +1,9 @@
+import { createVolcanoWorld, resetVolcanoBoss } from "./volcano.js";
+import {
+  VOLCANO_ENTRY,
+  VOLCANO_SPAWN,
+  FIRE_VOLCANO_GATE,
+} from "../world/volcano-map.js";
 import { createFireWorld } from "./fire-slimes.js";
 import { FIRE_ENTRY, FIRE_SPAWN } from "../world/slime-fire-map.js";
 export const MOUNTAIN_FIRE_GATE = { x: 590, y: 330 };
@@ -23,6 +29,7 @@ import { emitSound } from "../audio/events.js";
 export const GARDEN_MOUNTAIN_GATE = { x: 565, y: 100 };
 export const GARDEN_MARSH_GATE = { x: 390, y: 355 };
 const ZONES = [
+  "slime-volcano",
   "slime-fire",
   "garden",
   "slime-marsh",
@@ -66,28 +73,41 @@ export function nearZoneGate(state) {
                 label: "Remonter aux marais",
               },
             ]
-          : state.zone === "slime-fire"
+          : state.zone === "slime-volcano"
             ? [
                 {
-                  ...FIRE_ENTRY,
-                  destination: "slime-mountains",
-                  label: "Revenir aux Cimes de Schiste",
+                  ...VOLCANO_ENTRY,
+                  destination: "slime-fire",
+                  label: "Sortir du volcan",
                 },
               ]
-            : state.zone === "slime-mountains"
+            : state.zone === "slime-fire"
               ? [
                   {
-                    ...MOUNTAIN_ENTRY,
-                    destination: "garden",
-                    label: "Redescendre au village",
+                    ...FIRE_ENTRY,
+                    destination: "slime-mountains",
+                    label: "Revenir aux Cimes de Schiste",
                   },
                   {
-                    ...MOUNTAIN_FIRE_GATE,
-                    destination: "slime-fire",
-                    label: "Entrer dans les Champs de Braise",
+                    ...FIRE_VOLCANO_GATE,
+                    destination: "slime-volcano",
+                    label: `Entrer dans le Volcan · 1 clé (${dungeonKeyCount(state, "slime-volcano")} en sac)`,
                   },
                 ]
-              : [];
+              : state.zone === "slime-mountains"
+                ? [
+                    {
+                      ...MOUNTAIN_ENTRY,
+                      destination: "garden",
+                      label: "Redescendre au village",
+                    },
+                    {
+                      ...MOUNTAIN_FIRE_GATE,
+                      destination: "slime-fire",
+                      label: "Entrer dans les Champs de Braise",
+                    },
+                  ]
+                : [];
   return (
     gates.find(
       (g) => Math.hypot(state.player.x - g.x, state.player.y - g.y) < 32,
@@ -107,12 +127,13 @@ export function travelToZone(
   )
     return false;
   const origin = state.zone;
-  if (origin === "slime-depths" && state.dungeonRun?.active) {
+  if (origin === state.dungeonRun?.dungeonId && state.dungeonRun?.active) {
     state.dungeonRun.active = false;
     state.dungeonRun.endedAt = state.time;
   }
   // Cancel on the departing world before replacing its monster array.
   resetDepthsBoss(state);
+  resetVolcanoBoss(state);
   clearMonsterAttacks(state);
   clearDepthsFusions(state);
   state.zoneWorlds ??= {};
@@ -123,48 +144,55 @@ export function travelToZone(
     trees: state.trees,
   };
   let world =
-    freshDungeon && destination === "slime-depths"
+    freshDungeon && ["slime-depths", "slime-volcano"].includes(destination)
       ? null
       : state.zoneWorlds[destination];
   if (destination === "slime-depths" && world?.monsters.every((m) => m.hp <= 0))
     world = null;
   world ||=
-    destination === "slime-fire"
-      ? createFireWorld()
-      : destination === "slime-mountains"
-        ? createMountainWorld()
-        : destination === "slime-depths"
-          ? createDepthsWorld(state.time)
-          : destination === "slime-marsh"
-            ? createMarshWorld(state)
-            : null;
+    destination === "slime-volcano"
+      ? createVolcanoWorld()
+      : destination === "slime-fire"
+        ? createFireWorld()
+        : destination === "slime-mountains"
+          ? createMountainWorld()
+          : destination === "slime-depths"
+            ? createDepthsWorld(state.time)
+            : destination === "slime-marsh"
+              ? createMarshWorld(state)
+              : null;
   if (!world) return false;
   delete state.zoneDive;
   Object.assign(state, world);
   const point =
-    destination === "slime-fire"
-      ? FIRE_SPAWN
-      : destination === "slime-mountains"
-        ? origin === "slime-fire"
-          ? { x: MOUNTAIN_FIRE_GATE.x - 15, y: MOUNTAIN_FIRE_GATE.y }
-          : MOUNTAIN_SPAWN
-        : destination === "slime-depths"
-          ? DEPTHS_SPAWN
-          : destination === "slime-marsh"
-            ? origin === "slime-depths"
-              ? { x: MARSH_DEPTHS_GATE.x, y: MARSH_DEPTHS_GATE.y - 15 }
-              : { x: MARSH_ENTRY.x + 30, y: MARSH_ENTRY.y }
-            : origin === "slime-mountains"
-              ? {
-                  x: GARDEN_MOUNTAIN_GATE.x - 15,
-                  y: GARDEN_MOUNTAIN_GATE.y + 15,
-                }
-              : { x: GARDEN_MARSH_GATE.x, y: GARDEN_MARSH_GATE.y - 25 };
+    destination === "slime-volcano"
+      ? VOLCANO_SPAWN
+      : destination === "slime-fire"
+        ? origin === "slime-volcano"
+          ? { x: FIRE_VOLCANO_GATE.x - 20, y: FIRE_VOLCANO_GATE.y + 10 }
+          : FIRE_SPAWN
+        : destination === "slime-mountains"
+          ? origin === "slime-fire"
+            ? { x: MOUNTAIN_FIRE_GATE.x - 15, y: MOUNTAIN_FIRE_GATE.y }
+            : MOUNTAIN_SPAWN
+          : destination === "slime-depths"
+            ? DEPTHS_SPAWN
+            : destination === "slime-marsh"
+              ? origin === "slime-depths"
+                ? { x: MARSH_DEPTHS_GATE.x, y: MARSH_DEPTHS_GATE.y - 15 }
+                : { x: MARSH_ENTRY.x + 30, y: MARSH_ENTRY.y }
+              : origin === "slime-mountains"
+                ? {
+                    x: GARDEN_MOUNTAIN_GATE.x - 15,
+                    y: GARDEN_MOUNTAIN_GATE.y + 15,
+                  }
+                : { x: GARDEN_MARSH_GATE.x, y: GARDEN_MARSH_GATE.y - 25 };
   movePartyToZone(state, destination, point);
   state.marshGuideOpen = false;
   state.depthsGuideOpen = false;
   state.mountainGuideOpen = false;
   state.fireGuideOpen = false;
+  state.volcanoGuideOpen = false;
   if (destination === "slime-marsh") {
     stepSlimeMarsh(state);
     state.marshGuideOpen = !state.slimeMarsh.visited;
@@ -175,6 +203,10 @@ export function travelToZone(
     state.visitedDepths = true;
     emitSound(state, "magic", point, { element: "water" });
   }
+  if (destination === "slime-volcano") {
+    state.volcanoGuideOpen = !state.visitedVolcano;
+    state.visitedVolcano = true;
+  }
   if (destination === "slime-fire") {
     state.fireGuideOpen = !state.visitedFire;
     state.visitedFire = true;
@@ -184,15 +216,17 @@ export function travelToZone(
     state.visitedMountains = true;
   }
   state.log.unshift(
-    destination === "slime-fire"
-      ? "Champs de Braise : évitez les traînées et éloignez-vous des slimes vaincus avant leur explosion !"
-      : destination === "slime-mountains"
-        ? "Cimes de Schiste : attirez les charges contre les rochers pour briser les carapaces !"
-        : destination === "slime-depths"
-          ? "Crevasse des profondeurs : bonds rapides, scissions et fusions Eau / Terre."
-          : destination === "slime-marsh"
-            ? "Marais de Gelée : attention, les fleurs éponges font grossir les slimes !"
-            : "Retour au village.",
+    destination === "slime-volcano"
+      ? "Donjon du Volcan : carapaces explosives, magma persistant et éruptions de slimes !"
+      : destination === "slime-fire"
+        ? "Champs de Braise : évitez les traînées et éloignez-vous des slimes vaincus avant leur explosion !"
+        : destination === "slime-mountains"
+          ? "Cimes de Schiste : attirez les charges contre les rochers pour briser les carapaces !"
+          : destination === "slime-depths"
+            ? "Crevasse des profondeurs : bonds rapides, scissions et fusions Eau / Terre."
+            : destination === "slime-marsh"
+              ? "Marais de Gelée : attention, les fleurs éponges font grossir les slimes !"
+              : "Retour au village.",
   );
   state.log.length = Math.min(6, state.log.length);
   state.revision++;
@@ -201,6 +235,29 @@ export function travelToZone(
 export function useZoneGate(state) {
   const gate = nearZoneGate(state);
   if (!gate) return false;
+  if (gate.destination === "slime-volcano") {
+    if (state.team[state.main].hp <= 0) return false;
+    if (!consumeDungeonKey(state, "slime-volcano")) {
+      state.log.unshift(
+        "Clé du Volcan requise : Tessa demande 5 planches de châtaignier, 1 Cœur de braise et 1 Cœur d’ambre.",
+      );
+      state.log.length = Math.min(6, state.log.length);
+      state.revision++;
+      return false;
+    }
+    if (!travelToZone(state, "slime-volcano", { freshDungeon: true }))
+      return false;
+    state.nextDungeonRun = (state.nextDungeonRun || 0) + 1;
+    state.dungeonRun = {
+      id: state.nextDungeonRun,
+      dungeonId: "slime-volcano",
+      active: true,
+      startedAt: state.time,
+      completed: false,
+    };
+    state.revision++;
+    return true;
+  }
   if (gate.destination !== "slime-depths")
     return travelToZone(state, gate.destination);
   if (state.team[state.main].hp <= 0) return false;

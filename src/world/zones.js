@@ -1,3 +1,5 @@
+import {canWalkVolcano} from './volcano-map.js';
+import {resetVolcanoBoss} from '../game/volcano.js';
 import {canWalkFire} from './slime-fire-map.js';
 import {canWalkMountains} from './slime-mountains-map.js';
 import {resetDepthsBoss} from '../game/depths-boss.js';
@@ -10,7 +12,7 @@ import { canWalkTutorial, TUTORIAL_EXIT } from "./tutorial-map.js";
 import { clearRoute, placeAllies } from "../ai/companions.js";
 export const inTutorialZone = (state) => state.zone === "tutorial";
 export const canWalkZone = (x, y, zone) =>
-  zone === "slime-fire" ? canWalkFire(x,y) : zone === "slime-mountains" ? canWalkMountains(x,y) : zone === "slime-depths" ? canWalkDepths(x,y) : zone === "tutorial" ? canWalkTutorial(x, y) : zone === "slime-marsh" ? canWalkMarsh(x,y) : canWalkMap(x, y);
+  zone === "slime-volcano" ? canWalkVolcano(x,y) : zone === "slime-fire" ? canWalkFire(x,y) : zone === "slime-mountains" ? canWalkMountains(x,y) : zone === "slime-depths" ? canWalkDepths(x,y) : zone === "tutorial" ? canWalkTutorial(x, y) : zone === "slime-marsh" ? canWalkMarsh(x,y) : canWalkMap(x, y);
 export const nearTutorialExit = (state) =>
   inTutorialZone(state) &&
   Math.hypot(
@@ -19,6 +21,7 @@ export const nearTutorialExit = (state) =>
   ) < 30;
 export function movePartyToZone(state, zone, point) {
   resetDepthsBoss(state);
+  resetVolcanoBoss(state);
   clearDepthsFusions(state);
   state.zone = zone;
   clearMonsterAttacks(state);

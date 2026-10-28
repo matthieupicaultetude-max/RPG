@@ -22,23 +22,56 @@ export const KEY_RECIPE = Object.freeze({
     }),
   ]),
 });
+export const VOLCANO_DUNGEON = "slime-volcano";
+export const VOLCANO_KEY_RECIPE = Object.freeze({
+  id: "volcano-key",
+  name: "Clé du Volcan",
+  level: 1,
+  xp: 25,
+  ingredients: Object.freeze(
+    [
+      { ...woodItem("chestnut", "plank"), quantity: 5 },
+      {
+        name: monsterDefinition("fire-slime").rare,
+        type: "rare",
+        chromatic: false,
+        quantity: 1,
+      },
+      {
+        name: monsterDefinition("mountain-slime").rare,
+        type: "rare",
+        chromatic: false,
+        quantity: 1,
+      },
+    ].map(Object.freeze),
+  ),
+});
+export const KEY_RECIPES = Object.freeze({
+  [CREVASSE_DUNGEON]: KEY_RECIPE,
+  [VOLCANO_DUNGEON]: VOLCANO_KEY_RECIPE,
+});
 export const handymanLevelXp = (level) => 30 * level;
-export function createDungeonKey() {
+export function createDungeonKey(dungeonId = CREVASSE_DUNGEON) {
+  const recipe = KEY_RECIPES[dungeonId];
+  if (!recipe) return null;
   return {
     kind: "dungeon-key",
-    dungeonId: CREVASSE_DUNGEON,
-    name: KEY_RECIPE.name,
+    dungeonId,
+    name: recipe.name,
     type: "material",
     chromatic: false,
     quantity: 1,
-    color: "#7db9b6",
+    color: dungeonId === VOLCANO_DUNGEON ? "#ed9752" : "#7db9b6",
   };
 }
-export const isDungeonKey = (item) =>
+export const isDungeonKey = (item, dungeonId = CREVASSE_DUNGEON) =>
   item.kind === "dungeon-key" &&
-  item.dungeonId === CREVASSE_DUNGEON &&
+  !!KEY_RECIPES[dungeonId] &&
+  item.dungeonId === dungeonId &&
   !item.chromatic &&
   Number.isSafeInteger(item.quantity) &&
   item.quantity > 0;
-export const dungeonKeyCount = (s) =>
-  s.bag.filter(isDungeonKey).reduce((n, item) => n + item.quantity, 0);
+export const dungeonKeyCount = (s, dungeonId = CREVASSE_DUNGEON) =>
+  s.bag
+    .filter((item) => isDungeonKey(item, dungeonId))
+    .reduce((n, item) => n + item.quantity, 0);

@@ -107,7 +107,7 @@ function push(s, m, from, amount, ctx) {
 function enemies(s, point, radius, owner, ctx) {
   return s.monsters.filter(
     (m) =>
-      m.hp > 0 &&
+      m.hp > 0 && !m.emergence &&
       distance(m, point) <= radius &&
       lineClear(owner, m, ctx.canStand),
   );
@@ -227,7 +227,7 @@ export function castSpell(s, owner, slot, point, ctx, options = {}) {
     return false;
   const possible = s.monsters.filter(
     (m) =>
-      m.hp > 0 &&
+      m.hp > 0 && !m.emergence &&
       distance(owner, m) <= spell.range &&
       lineClear(owner, m, ctx.canStand),
   );
@@ -305,7 +305,7 @@ export function castSpell(s, owner, slot, point, ctx, options = {}) {
     (m) =>
       status(m).seal?.owner === owner.id &&
       m.spellState.seal.time > 0 &&
-      m.hp > 0 &&
+      m.hp > 0 && !m.emergence &&
       distance(owner, m) <= 125,
   );
   if (spell.effect === "share" && !marked) return false;
@@ -392,7 +392,7 @@ export function castSpell(s, owner, slot, point, ctx, options = {}) {
       move(s, owner, aim, 70, ctx);
       for (const m of s.monsters.filter(
         (m) =>
-          m.hp > 0 &&
+          m.hp > 0 && !m.emergence &&
           nearLine(m, start, owner, 15) &&
           lineClear(start, m, ctx.canStand),
       )) {
@@ -407,7 +407,7 @@ export function castSpell(s, owner, slot, point, ctx, options = {}) {
       if (
         s.monsters.some(
           (m) =>
-            m.hp > 0 &&
+            m.hp > 0 && !m.emergence &&
             distance(m, start) < 55 &&
             distance(m, owner) < 55 &&
             Math.abs(
@@ -596,7 +596,7 @@ export function castSpell(s, owner, slot, point, ctx, options = {}) {
         heal(s, a, amount, owner);
       for (const m of s.monsters.filter(
         (m) =>
-          m.hp > 0 &&
+          m.hp > 0 && !m.emergence &&
           nearLine(m, owner, aim, 48) &&
           lineClear(owner, m, ctx.canStand),
       ))
@@ -919,7 +919,7 @@ export function stepSpells(s, dt, context) {
       const start = { x: e.startX, y: e.startY };
       for (const m of s.monsters.filter(
         (m) =>
-          m.hp > 0 &&
+          m.hp > 0 && !m.emergence &&
           (nearLine(m, start, e, 15) || distance(m, e) < 30) &&
           lineClear(start, m, ctx.canStand),
       ))
@@ -1011,7 +1011,7 @@ export function stepSpells(s, dt, context) {
         explodeBomb(s, a, ctx);
     for (const m of s.monsters.filter(
       (m) =>
-        m.hp > 0 &&
+        m.hp > 0 && !m.emergence &&
         !p.hits.includes(s.monsters.indexOf(m)) &&
         nearLine(m, p, next, 10),
     )) {
@@ -1079,7 +1079,7 @@ export function stepSpells(s, dt, context) {
     if (a.kind === "current")
       for (const m of s.monsters.filter(
         (m) =>
-          m.hp > 0 &&
+          m.hp > 0 && !m.emergence &&
           nearLine(m, a, { x: a.toX, y: a.toY }, 12) &&
           lineClear(owner, m, ctx.canStand),
       )) {

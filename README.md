@@ -394,3 +394,17 @@ Six **Slimes de braise de niveau 5** y sautillent et bondissent :
 Les résistances Feu s’appliquent aux bonds, traînées et explosions. Les obstacles bloquent les dégâts. Les dangers disparaissent en changeant de zone ou après une défaite ; la troupe est alors soignée au passage d’entrée. Les slimes réapparaissent après **18 secondes**.
 
 Butins : **Gelée incandescente**, **Cœur de braise** rare, chacun avec variation chromatique, et possibilité de noyau Feu standard. Le bestiaire inclut les mécanismes, les visuels et les statistiques réglables par niveau. Les recettes d’armures et la nourriture des familiers existants conservent leurs ingrédients.
+
+## Donjon du Volcan · Pyroclaste
+
+Les slimes Feu des Champs de Braise **surgissent des trois bassins de lave** à leur apparition et à chaque repousse, puis atterrissent sur un point praticable. Pendant ce saut d’arrivée de 1,2 s, ils n’attaquent pas et ne peuvent pas être ciblés. Les personnages restent bloqués par la lave.
+
+Le **cratère central des Champs de Braise + F** ouvre le Donjon du Volcan. Chez Tessa, choisissez **Clé du Volcan** dans l’onglet Bricoleur : **5 Planches de châtaignier + 1 Cœur de braise + 1 Cœur d’ambre**, non chromatiques. Fabrication niveau 1, 25 XP par clé, en lot. Cette clé et celle de la Crevasse restent distinctes. Une clé ouvre un donjon neuf pour toute la troupe ; sortie gratuite et nouvelle tentative après défaite sans seconde clé.
+
+Les **cinq Slimes de magma de niveau 6**, Terre / Feu, portent une carapace réduisant les dégâts de 40 %. Elle accumule les dégâts réellement reçus : au seuil de **25 % des PV maximaux**, elle se brise et annonce son explosion pendant **1,1 s**. Le souffle Terre projette six éclaboussures de magma Feu, avec leurs cercles d’arrivée. Ils bondissent et ne roulent pas.
+
+Le magma **reste au sol**, même après avoir touché plusieurs personnages : brûlure Feu toutes les 0,6 s au maximum par personnage, résistances et boucliers applicables, aucun recul automatique de brûlure. Les flaques ne suivent pas les personnages. Elles sont nettoyées à la sortie, après une défaite ou lors d’une réinitialisation du combat du boss. Les projections voisines fusionnent ; les dangers permanents sont plafonnés à 100 flaques pour borner la mémoire.
+
+Au nord-est, **Pyroclaste, le Slime-Volcan**, boss niveau 9, se réveille avec **F** ou une attaque du héros principal à proximité. Son cratère projette des slimes vers des emplacements annoncés et verrouillés, puis les créatures atterrissent et combattent. Les vagues alternent slimes Feu et slimes de magma ; leurs impacts sont respectivement Feu et Terre, et laissent du magma. Sous **40 % de PV**, trois projections remplacent les deux habituelles et leur rythme accélère. Maximum six invocations vivantes, sans XP, or ou butin.
+
+Les slimes de magma donnent **Scorie de magma / Géode de fournaise**, avec variantes chromatiques et possibilité d’un noyau Terre ou Feu. Pyroclaste donne **Obsidienne de Pyroclaste / Cœur du volcan**, plus **un noyau Terre et un noyau Feu garantis** à la victoire. Les monstres du donjon ne réapparaissent pas durant l’expédition. Le bestiaire et le guide détaillent les règles. Les outils dev proposent l’accès gratuit au volcan, l’approche du boss et les ingrédients de la clé.

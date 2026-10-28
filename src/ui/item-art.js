@@ -193,6 +193,14 @@ function equipmentArt(item, p) {
 function resourceArt(item) {
   const c = item.chromatic;
   switch (item.name) {
+    case "Scorie de magma":
+      return path('m3 24 5-17 13-3 8 15-8 11-13-2z',c?'#9470bc':'#51414a')+path('m9 9 4 8-3 7 8 2 5-5-4-9','none',c?'#f0b6f5':'#ffb963',3)+path('m19 7 4 10','none','#fff0b4',1);
+    case "Géode de fournaise":
+      return path('m16 1 12 10-2 16-12 4L3 19 5 8z',c?'#8963ad':'#644b45')+path('m16 6 7 8-3 12-7-1-5-9z',c?'#dba2ef':'#f5a64b')+path('m16 10 3 7-4 6-3-7z',c?'#f4d0fa':'#ffe595');
+    case "Obsidienne de Pyroclaste":
+      return path('m5 29 3-19 11-9 9 16-5 13z',c?'#8061ad':'#3e3547')+path('m8 10 8 6 3-15m-3 15 7 14','none',c?'#c7a3e8':'#9e7b86',2)+path('m11 20 4-3 5 7-4 4z',c?'#f2c3f9':'#f3a65c');
+    case "Cœur du volcan":
+      return path('m2 27 6-12 4-12h9l6 15 4 9-15 4z',c?'#8b56ad':'#6d3e40')+path('m12 4 9 0 3 7-11 3-5-4z',c?'#e6b5fa':'#ff9d44')+path('m16 12 5 7-3 9-6-7z',c?'#f9dcff':'#ffe0a1');
     case "Gelée incandescente":
       return path('M3 25 7 15l5-4 4-8 3 9 7 6 3 8-7 4H9z',c?'#ad75cf':'#d96435')+path('m10 24 3-8 4 4 2-6 5 12-8 3z',c?'#efb5fa':'#ffcf6c')+path('m8 19 3-5','none','#fff1b2',2);
     case "Cœur de braise":
@@ -308,6 +316,7 @@ export function renderItemIcon(item = {}) {
   const p = item.chromatic && item.setId ? {...original,base:CHROMATIC_COLORS[item.element],light:'#f1e1ff',gem:'#fff5ce'} : original;
   let art = item.kind==='pet' ? petArt(item,p) : resourceArt(item);
   if(item.kind==='dungeon-key')art=path('m6 3 10-1 6 8-5 7-7-1-6-7z','#72b8bb','#315e76',1)+path('m8 5 6-1 5 6-4 4-5-1-4-5z','#b2e8de')+path('m16 15 3-2 11 12-3 5-3-4-3 2-3-4 3-2z','#d2b779','#725e40',1)+path('m8 7 3-1 3 3-2 3-3-1z','#3d859e')+path('m18 19 6 6','none','#f4dd9c',1);
+  if(item.kind==='dungeon-key'&&item.dungeonId==='slime-volcano')art=path('m7 2 12 0 6 9-8 8-9-3-6-8z','#ad593d','#653b3c',1)+path('m11 4 7 2 3 6-6 5-7-6z','#ffc66d')+path('m16 16 4-2 11 12-3 5-4-4-3 2-4-5 3-2z','#b9a68a','#62515a',1)+path('m14 6 4 4-3 4-3-4z','#fff0b7');
   if(item.kind==='certificate')art=path('M7 3h21v24H6V8H3V3z','#dfd0a4')+path('M7 3v5H3m4 19h21v-4H9','none','#a08b62')+path('M11 10h12m-12 4h8','none','#9d8a61')+path('m20 17 5 3-1 7-4-2-4 2-1-7z',p.base)+elementSigil(item.element,14,15,.38,p.gem);
   if (item.kind === "core" || item.slot === "Noyau")
     art =
