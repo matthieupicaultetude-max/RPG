@@ -405,7 +405,7 @@ Les **cinq Slimes de magma de niveau 6**, Terre / Feu, portent une carapace réd
 
 Le magma **reste au sol**, même après avoir touché plusieurs personnages : brûlure Feu toutes les 0,6 s au maximum par personnage, résistances et boucliers applicables, aucun recul automatique de brûlure. Les flaques ne suivent pas les personnages. Elles sont nettoyées à la sortie, après une défaite ou lors d’une réinitialisation du combat du boss. Les projections voisines fusionnent ; les dangers permanents sont plafonnés à 100 flaques pour borner la mémoire.
 
-Au nord-est, **Pyroclaste, le Slime-Volcan**, boss niveau 9, se réveille avec **F** ou une attaque du héros principal à proximité. Son cratère projette des slimes vers des emplacements annoncés et verrouillés, puis les créatures atterrissent et combattent. Les vagues alternent slimes Feu et slimes de magma ; leurs impacts sont respectivement Feu et Terre, et laissent du magma. Sous **40 % de PV**, trois projections remplacent les deux habituelles et leur rythme accélère. Maximum six invocations vivantes, sans XP, or ou butin.
+Au nord-est, **Pyroclaste, le Slime-Volcan**, boss niveau 9, se réveille avec **F** ou une attaque du héros principal à proximité. Son cratère projette uniquement des **slimes de magma Terre/Feu**, sur des emplacements annoncés et verrouillés **à 120–180 pixels du boss**, avec un chemin de retour praticable. Pyroclaste se protège pendant l’invocation. Attirez une de ses invocations près de lui, puis faites éclater sa carapace : si l’explosion atteint le boss, sa protection tombe pendant **8 secondes**. Les slimes ordinaires ne comptent pas. Si toutes ses invocations meurent sans le débloquer, il recommence après un court délai, une fois les explosions en attente résolues. Sous **40 % de PV**, il invoque trois slimes au lieu de deux. Maximum six invocations vivantes, sans XP, or ou butin.
 
 Les slimes de magma donnent une gelée ou un cœur de Terre ou de Feu, avec variantes chromatiques et possibilité d’un noyau de l’élément tiré. Pyroclaste ne donne pour le moment aucun objet ni noyau ; son XP et son or sont conservés. Les monstres du donjon ne réapparaissent pas durant l’expédition. Le bestiaire et le guide détaillent les règles. Les outils dev proposent l’accès gratuit au volcan, l’approche du boss et les ingrédients de la clé.
 
@@ -476,3 +476,13 @@ Une panoplie normale complète donne donc au total **76 Vitalité, 40 de sa cara
 Seules les pièces réellement portées par le même personnage comptent, avec un emplacement distinct par pièce. Le sac, les autres personnages, familiers et trophées ne comptent pas. Mélanger plusieurs panoplies active leurs petits bonus séparément. Les versions normales et chromatiques d’une même panoplie comptent ensemble ; chaque pièce chromatique garde son bonus de 2 Puissance, et l’aura exige toujours les neuf pièces chromatiques.
 
 Dans **I**, sélectionner une pièce montre le bonus actif, le prochain palier et **Voir les bonus de 2 à 9 pièces**. Dans **P**, les résistances et les bonus actifs apparaissent séparément, tout en étant déjà inclus dans les caractéristiques totales. Retirer, remplacer ou recycler une pièce recalcule immédiatement ses bonus et ses PV maximum. Équiper ne soigne pas et ne cumule pas les bonus à chaque recalcul.
+
+
+### Pyroclaste · Briser sa protection avec une invocation
+
+- **Phase protégée** : tous les coups, sorts et copies de cible bonus sont bloqués. Le bouclier est visible autour du boss et sa barre de vie affiche l’objectif. Les alliés IA se concentrent sur les invocations.
+- **Amener puis faire exploser** : rapprocher un slime invoqué du boss avant de lui infliger assez de dégâts pour faire éclater sa carapace. Le cercle d’explosion reste fixé à l’endroit où la carapace a cédé. Seules ses propres invocations de cette rencontre peuvent retirer la protection ; une explosion suffisamment proche doit aussi avoir une ligne de vue vers le boss.
+- **Ouverture de 8 secondes** : le boss reçoit alors les dégâts normalement. À la prochaine vague, sa protection revient.
+- **Vague ratée** : si toutes les invocations sont mortes, attendre la résolution de leurs dernières explosions, puis 1,2 seconde avant une nouvelle préparation d’invocation. Une explosion au coup fatal peut donc encore ouvrir le boss.
+
+Les éruptions conservent leurs annonces de 1,5 s et leur vol de 0,8 s. La sortie ou une défaite annule les invocations, les projections et la protection. Les boss ne donnent toujours aucun objet ni noyau ; leur XP et leur or restent inchangés.

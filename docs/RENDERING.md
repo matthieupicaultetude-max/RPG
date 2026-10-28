@@ -178,3 +178,8 @@ Le slime Vent garde une base turquoise pâle et une spirale claire, puis dilate 
 ### Ressources élémentaires des slimes
 
 Les gelées et cœurs des slimes utilisent désormais huit icônes partagées par nom canonique, indépendamment de l’espèce ou de la zone. La gelée et le cœur conservent chacun une silhouette commune, avec palette et symbole de l’élément ; les variations chromatiques gardent ce symbole. Le sac, les recettes et le bestiaire emploient le même dessin. Les anciennes silhouettes restent disponibles pour afficher un éventuel ancien objet, mais ne figurent plus dans les tables de butin actuelles.
+
+
+### Protection de Pyroclaste
+
+Le boss protégé porte une enveloppe elliptique dorée et le texte « INVULNÉRABLE ». Le repère au sol de rayon 57 px correspond au chevauchement réel entre le souffle de carapace de 33 px et la collision du boss de 24 px ; les obstacles restent contrôlés dans la simulation. Les invocations sont identifiées « Invocation · Terre / Feu » et leurs projections ne représentent plus de slimes Feu purs. Le HUD différencie préparation, attente d’une explosion et fenêtre de dégâts avec compte à rebours. Le déverrouillage affiche un message et un bruit de rupture, sans changer le gabarit du joueur.

@@ -1,3 +1,4 @@
+import {isVolcanoInvulnerable} from '../game/volcano.js';
 import { weaponDamage } from '../data/equipment.js';
 import { launchAttack } from '../combat/attacks.js';
 // Local steering prototype. Companions receive intentions, never player inputs.
@@ -141,7 +142,7 @@ export function stepCompanions(state, dt, canStand, hitMonster, cast = null) {
     if (index === state.main || member.hp <= 0 || !state.deployed) { member.moving = index === state.main && leader.moving; return; }
     if (!member.motion) clearRoute(member);
     const motion = member.motion;
-    const enemies = state.monsters.filter(enemy => enemy.hp > 0 && !enemy.emergence && (!enemy.boss||!["dormant","split"].includes(enemy.bossPhase)) && distance(enemy, leader) < 130);
+    const enemies = state.monsters.filter(enemy => enemy.hp > 0 && !enemy.emergence && !isVolcanoInvulnerable(enemy) && (!enemy.boss||!["dormant","split"].includes(enemy.bossPhase)) && distance(enemy, leader) < 130);
     const nearest = enemies.slice().sort((a,b) => distance(a,member) - distance(b,member))[0];
     const target = enemies.includes(motion.target) ? motion.target : nearest;
     motion.target = target || null;

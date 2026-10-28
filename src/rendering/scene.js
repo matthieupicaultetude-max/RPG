@@ -144,7 +144,7 @@ export function createRenderer(canvas) {
           ctx.fillRect(x - 14, y - 24, 28, 3);
           ctx.fillStyle = "#cfb17c";
           ctx.fillRect(x - 14, y - 24, (28 * m.hp) / m.maxHp, 2);
-          label(m.volcanoBoss?"Pyroclaste":m.boss?"Gorgelimon":m.depthsSlime?`${m.dualElement?"Mixte":m.element==="earth"?"Limon":"Abyssal"} · ${m.growth}/3`:m.marshSlime?`Slime · ${m.growth}/3`:m.name, x, Math.round(m.y-(m.lift||0)+17));
+          label(m.volcanoSummon?"Invocation · Terre / Feu":m.volcanoBoss?"Pyroclaste":m.boss?"Gorgelimon":m.depthsSlime?`${m.dualElement?"Mixte":m.element==="earth"?"Limon":"Abyssal"} · ${m.growth}/3`:m.marshSlime?`Slime · ${m.growth}/3`:m.name, x, Math.round(m.y-(m.lift||0)+17));
           drawMarshSlimeStatus(ctx,m,s);
           drawMountainStatus(ctx,m,s);
           if(m.magmaSlime&&!m.shellBroken&&Math.hypot(m.x-s.player.x,m.y-s.player.y)<100)label(`Carapace ${Math.round((m.shellDamage||0)/Math.ceil(m.maxHp*.25)*100)} %`,m.x,m.y-57);

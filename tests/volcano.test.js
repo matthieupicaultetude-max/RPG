@@ -343,15 +343,17 @@ test("boss : rage, plafond d’invocations, pas d’XP/loot et population borné
   awakenVolcanoBoss(s);
   b.hp = Math.floor(b.maxHp * 0.3);
   const ctx = { canStand: map.canWalkVolcano, damage: () => {} };
+  b.cooldown = 0;
+  stepVolcanoBoss(s, b, 0.01);
+  assert.equal(b.intent.zones.length, 3);
+  stepVolcanoBoss(s, b, 1.6);
+  stepMagmaHazards(s, 0.9, ctx);
+  assert.equal(s.monsters.filter((m) => m.volcanoSummon).length, 3);
   for (let i = 0; i < 8; i++) {
     b.cooldown = 0;
-    stepVolcanoBoss(s, b, 0.01);
-    assert.equal(b.intent.zones.length, 3);
-    stepVolcanoBoss(s, b, 1.6);
-    assert.equal(b.cooldown, 3.8);
-    stepMagmaHazards(s, 0.9, ctx);
+    stepVolcanoBoss(s, b, 0.5);
+    assert.equal(b.intent, undefined);
   }
-  assert.equal(s.monsters.filter((m) => m.volcanoSummon).length, 6);
   const gold = s.gold,
     bag = structuredClone(s.bag),
     xp = s.team[0].xp;
@@ -363,7 +365,8 @@ test("boss : rage, plafond d’invocations, pas d’XP/loot et population borné
   assert.equal(s.team[0].xp, xp);
   assert.deepEqual(s.bag, bag);
   b.cooldown = 0;
-  stepVolcanoBoss(s, b, 0.01);
+  stepVolcanoBoss(s, b, 1.3);
+  assert.equal(b.intent.zones.length, 3);
   stepVolcanoBoss(s, b, 1.6);
   stepMagmaHazards(s, 0.9, ctx);
   assert.ok(s.monsters.length <= 4);
@@ -376,15 +379,19 @@ test("victoire : aucun butin, fin de run et invocations supprimées", () => {
   Object.assign(s.team[0], s.player);
   s.dungeonRun = { active: true, dungeonId: "slime-volcano" };
   awakenVolcanoBoss(s);
-  const summon = createMonster("magma-slime", 430, 210, 6);
+  const summon = createMonster("magma-slime", b.x + 10, b.y + 10, 6);
   summon.volcanoSummon = true;
+  summon.volcanoEncounter = b.encounterId;
   s.monsters.push(summon);
+  spellContext.hitMonster(s, summon, 80, s.team[0]);
+  stepMagmaHazards(s, 1.2, { canStand: map.canWalkVolcano, damage: () => {} });
+  assert.equal(b.invulnerable, false);
   spellContext.hitMonster(s, b, 99999, s.team[0]);
   assert.equal(b.hp, 0);
   assert.equal(b.bossPhase, "dead");
   assert.equal(s.dungeonRun.completed, true);
   assert.ok(s.monsters.every((m) => !m.volcanoSummon));
-  assert.equal(s.bag.length,0);
+  assert.equal(s.bag.length, 0);
   const n = s.bag.length;
   spellContext.hitMonster(s, b, 99999, s.team[0]);
   assert.equal(s.bag.length, n);
@@ -441,6 +448,7 @@ test("élaguer les invocations conserve les cibles des ricochets et des sceaux d
   const dead = createMonster("magma-slime", 440, 220, 6),
     alive = createMonster("magma-slime", 450, 230, 6);
   dead.volcanoSummon = alive.volcanoSummon = true;
+  dead.volcanoEncounter = alive.volcanoEncounter = b.encounterId;
   dead.hp = 0;
   s.monsters.push(dead, alive);
   s.spellMissiles = [{ hits: [0, 1, 2], bounce: 2 }];
@@ -450,11 +458,12 @@ test("élaguer les invocations conserve les cibles des ricochets et des sceaux d
       age: 0,
       duration: 0.1,
       from: { x: b.x, y: b.y },
-      to: { x: 430, y: 210 },
+      to: { x: 338, y: 185 },
       radius: 21,
       damage: 10,
       source: b,
       summon: true,
+      encounterId: b.encounterId,
       species: "fire-slime",
       element: "fire",
       level: 9,

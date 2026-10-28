@@ -1,7 +1,7 @@
 import {slimeResource,monsterElements} from '../data/slime-loot.js';
 import {stepWindSuction} from '../game/wind-slimes.js';
 import {WIND_SPAWN} from '../world/slime-wind-map.js';
-import {magmaDamage,recordMagmaDamage,stepMagmaHazards,stepVolcanoBoss,awakenVolcanoBoss,finishVolcanoBoss} from '../game/volcano.js';
+import {magmaDamage,recordMagmaDamage,stepMagmaHazards,stepVolcanoBoss,awakenVolcanoBoss,finishVolcanoBoss,isVolcanoInvulnerable} from '../game/volcano.js';
 import {VOLCANO_SPAWN} from '../world/volcano-map.js';
 import {leaveFireTrail,stepFireHazards,onFireSlimeDeath,resetFireSlime,stepFireEmergence} from '../game/fire-slimes.js';
 import {FIRE_SPAWN} from '../world/slime-fire-map.js';
@@ -228,6 +228,10 @@ function hitMonster(s, monster, damage, member, options={}) {
   if(monster.boss){
     if(monster.bossPhase==='dormant'&&(member.id!==s.main||!(monster.volcanoBoss?awakenVolcanoBoss(s,monster):awakenDepthsBoss(s,monster))))return;
     if(monster.bossPhase==='split')return;
+    if(isVolcanoInvulnerable(monster)){
+      if((monster.nextShieldMessage||0)<=s.time){monster.nextShieldMessage=s.time+.6;s.effects.push({x:monster.x,y:monster.y-78,text:'Invulnérable',color:'#f7cf96',life:.75});s.revision++;}
+      return;
+    }
   }
   damage=magmaDamage(monster,shellDamage(monster,damage,options.bonus),options.bonus);
   const actualDamage=Math.min(monster.hp,damage);

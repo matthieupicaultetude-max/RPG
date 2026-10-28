@@ -259,7 +259,7 @@ export const MONSTERS = Object.freeze(
       family: "Boss · Terre / Feu",
       habitat: "Donjon du Volcan",
       description:
-        "Un volcan vivant au cratère incandescent. Réveillez-le avec F. Il projette des slimes sur les emplacements annoncés des personnages : esquivez avant leur atterrissage. Ses éruptions laissent du magma permanent. Sous 40 % de PV, trois projections et un rythme accéléré. Six invocations vivantes au maximum ; elles ne donnent ni XP ni butin. Son butin sera défini plus tard.",
+        "Un volcan vivant au cratère incandescent. Réveillez-le avec F. Il invoque seulement des slimes de magma Terre/Feu à distance et devient invulnérable. Attirez une de ses invocations près de lui, puis faites exploser sa carapace sur le boss : sa protection tombe pendant 8 secondes. Les slimes ordinaires ne comptent pas. Si toutes les invocations meurent sans le débloquer, il en réinvoque. Sous 40 % de PV, il projette trois slimes au lieu de deux. Les invocations ne donnent ni XP ni butin. Le butin du boss sera défini plus tard.",
       hp: 520,
       damage: 13,
       attackDelay: 1.2,

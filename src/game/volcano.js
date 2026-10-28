@@ -1,3 +1,4 @@
+import { findPath } from "../ai/companions.js";
 import { createMonster } from "../data/monsters.js";
 import {
   MAGMA_SLIMES,
@@ -18,9 +19,19 @@ export const MAGMA_RULES = Object.freeze({
   maxSummons: 6,
   eruptionWindup: 1.5,
   flight: 0.8,
+  summonMinDistance: 120,
+  summonMaxDistance: 180,
+  exposedDuration: 8,
+  retryDelay: 1.2,
+  bossHitRadius: 24,
 });
 export const volcanoBoss = (s) =>
   s.zone === "slime-volcano" ? s.monsters.find((m) => m.volcanoBoss) : null;
+export const isVolcanoInvulnerable = (b) =>
+  !!b?.volcanoBoss &&
+  b.hp > 0 &&
+  b.bossPhase === "combat" &&
+  b.invulnerable === true;
 export function createVolcanoWorld() {
   return {
     monsters: [
@@ -64,6 +75,8 @@ export function recordMagmaDamage(s, m, n) {
     radius: MAGMA_RULES.blastRadius,
     damage: Math.round(m.damage * 1.3),
     source: source(m),
+    volcanoSummon: m.volcanoSummon === true,
+    encounterId: m.volcanoEncounter,
   });
   emitSound(s, "rock-break", m, { element: "earth" });
   s.revision++;
@@ -113,6 +126,13 @@ export function awakenVolcanoBoss(s, b = volcanoBoss(s)) {
   b.bossPhase = "combat";
   b.cooldown = 1;
   b.eruptionSerial = 0;
+  s.nextVolcanoEncounter = (s.nextVolcanoEncounter || 0) + 1;
+  b.encounterId = s.nextVolcanoEncounter;
+  b.invulnerable = true;
+  b.waitingForSummons = false;
+  b.retryIn = MAGMA_RULES.retryDelay;
+  delete b.bonusTarget;
+  delete b.lastReceivedDamage;
   s.revision++;
   emitSound(s, "magic", b, { element: "fire" });
   return true;
@@ -161,6 +181,8 @@ export function resetVolcanoBoss(s) {
   clearSummons(s);
   if (b.hp <= 0) {
     b.bossPhase = "dead";
+    b.invulnerable = false;
+    b.waitingForSummons = false;
     delete b.intent;
     return;
   }
@@ -172,6 +194,9 @@ export function resetVolcanoBoss(s) {
     bossPhase: "dormant",
     cooldown: 1,
     eruptionSerial: 0,
+    invulnerable: false,
+    waitingForSummons: false,
+    retryIn: MAGMA_RULES.retryDelay,
     moving: false,
     lift: 0,
   });
@@ -181,6 +206,9 @@ export function resetVolcanoBoss(s) {
     "bonusTarget",
     "lastReceivedDamage",
     "vulnerableUntil",
+    "encounterId",
+    "unshieldedUntil",
+    "nextShieldMessage",
   ])
     delete b[key];
   clearMagmaHazards(s);
@@ -188,6 +216,8 @@ export function resetVolcanoBoss(s) {
 }
 export function finishVolcanoBoss(s, b) {
   b.bossPhase = "dead";
+  b.invulnerable = false;
+  b.waitingForSummons = false;
   delete b.intent;
   clearSummons(s);
   s.volcanoFlights = [];
@@ -207,6 +237,77 @@ function safeTarget(p, offset = 0) {
       if (canWalkVolcano(q.x, q.y)) return q;
     }
   return null;
+}
+function aliveSummons(s, b) {
+  return s.monsters.filter(
+    (m) => m.volcanoSummon && m.volcanoEncounter === b.encounterId && m.hp > 0,
+  );
+}
+function summonDestinations(s, b, count) {
+  const targets = party(s),
+    points = [],
+    candidates = [];
+  const rotation = (b.eruptionSerial || 0) * 0.7;
+  for (const radius of [145, 170, 125])
+    for (let i = 0; i < 32; i++) {
+      const angle = rotation + (i * Math.PI) / 16,
+        p = {
+          x: b.x + Math.cos(angle) * radius,
+          y: b.y + Math.sin(angle) * radius,
+        };
+      if (!canWalkVolcano(p.x, p.y)) continue;
+      candidates.push(p);
+    }
+  const existing = aliveSummons(s, b);
+  for (let i = 0; i < count; i++) {
+    const target = targets[i % targets.length] || b;
+    const sorted = [...candidates].sort(
+      (a, c) =>
+        Math.hypot(a.x - target.x, a.y - target.y) -
+        Math.hypot(c.x - target.x, c.y - target.y),
+    );
+    const chosen = sorted.find(
+      (p) =>
+        [...points, ...existing].every(
+          (q) => Math.hypot(p.x - q.x, p.y - q.y) >= 40,
+        ) &&
+        (lineClear(b, p, canWalkVolcano) ||
+          findPath(b, p, canWalkVolcano).length),
+    );
+    if (chosen) points.push(chosen);
+  }
+  return points;
+}
+export function breakVolcanoShield(s, blast) {
+  const b = volcanoBoss(s);
+  if (
+    !isVolcanoInvulnerable(b) ||
+    !blast.volcanoSummon ||
+    blast.encounterId !== b.encounterId
+  )
+    return false;
+  if (
+    Math.hypot(blast.x - b.x, blast.y - b.y) >
+      blast.radius + MAGMA_RULES.bossHitRadius ||
+    !lineClear(blast, b, canWalkVolcano)
+  )
+    return false;
+  b.invulnerable = false;
+  b.waitingForSummons = false;
+  b.cooldown = MAGMA_RULES.exposedDuration;
+  b.unshieldedUntil = s.time + MAGMA_RULES.exposedDuration;
+  b.retryIn = MAGMA_RULES.retryDelay;
+  delete b.intent;
+  s.effects.push({
+    x: b.x,
+    y: b.y - 80,
+    text: "Protection brisée · 8 s !",
+    color: "#e8f4a3",
+    life: 1.5,
+  });
+  emitSound(s, "rock-break", b, { element: "earth" });
+  s.revision++;
+  return true;
 }
 export function stepVolcanoBoss(s, b, dt) {
   b.moving = false;
@@ -230,43 +331,59 @@ export function stepVolcanoBoss(s, b, dt) {
         damage: Math.round(b.damage * 1.3),
         source: owner,
         summon: true,
-        species: b.intent.species,
-        element: b.intent.element,
+        species: "magma-slime",
+        element: "earth",
         level: b.level,
+        encounterId: b.encounterId,
       });
     delete b.intent;
     b.eruptionSerial++;
-    b.cooldown = b.hp < b.maxHp * 0.4 ? 3.8 : 5.5;
+    b.waitingForSummons = true;
+    b.retryIn = MAGMA_RULES.retryDelay;
+    b.cooldown = 0;
     s.revision++;
-    emitSound(s, "magic", b, { element: "fire" });
+    emitSound(s, "magic", b, { element: "earth" });
     return;
   }
-  if (b.cooldown > 0 || b.spellState?.root > 0) return;
-  const targets = party(s),
-    count = b.hp < b.maxHp * 0.4 ? 3 : 2,
-    zones = [];
-  for (let i = 0; i < count; i++) {
-    const target = targets[i % targets.length];
-    if (!target) break;
-    const p = safeTarget({ x: target.x + i * 20, y: target.y + i * 14 }, i);
-    if (p && !zones.some((q) => Math.hypot(p.x - q.x, p.y - q.y) < 15))
-      zones.push(p);
-  }
+  if (b.invulnerable && b.waitingForSummons) {
+    const pending =
+      (s.volcanoFlights || []).some(
+        (h) => h.summon && h.encounterId === b.encounterId,
+      ) ||
+      (s.magmaBlasts || []).some(
+        (h) => h.volcanoSummon && h.encounterId === b.encounterId,
+      );
+    if (aliveSummons(s, b).length || pending) {
+      b.retryIn = MAGMA_RULES.retryDelay;
+      return;
+    }
+    b.retryIn = Math.max(0, (b.retryIn ?? MAGMA_RULES.retryDelay) - dt);
+    if (b.retryIn > 0) return;
+  } else if (b.cooldown > 0) return;
+  if (b.spellState?.root > 0) return;
+  const count = Math.min(
+      b.hp < b.maxHp * 0.4 ? 3 : 2,
+      MAGMA_RULES.maxSummons - aliveSummons(s, b).length,
+    ),
+    zones = summonDestinations(s, b, count);
   if (!zones.length) return;
+  b.invulnerable = true;
+  delete b.bonusTarget;
+  delete b.lastReceivedDamage;
   b.intent = {
     kind: "volcano-eruption",
     phase: "windup",
     age: 0,
     windup: MAGMA_RULES.eruptionWindup,
-    element: (b.eruptionSerial || 0) % 2 ? "earth" : "fire",
-    species: (b.eruptionSerial || 0) % 2 ? "magma-slime" : "fire-slime",
+    element: "earth",
+    species: "magma-slime",
     zones,
     radius: 21,
     from: { x: b.x, y: b.y },
     to: zones[0],
   };
   s.revision++;
-  emitSound(s, "cast", b, { element: "fire" });
+  emitSound(s, "cast", b, { element: "earth" });
 }
 export function stepMagmaHazards(s, dt, ctx) {
   if (dt <= 0) return;
@@ -276,6 +393,7 @@ export function stepMagmaHazards(s, dt, ctx) {
   s.magmaBlasts = (s.magmaBlasts || []).filter((h) => {
     h.age += dt;
     if (h.age < MAGMA_RULES.shellWindup) return true;
+    breakVolcanoShield(s, h);
     for (const p of party(s))
       if (hit(h, p)) ctx.damage(p, h.damage, h.source, "earth", "explosion");
     s.monsterImpacts ??= [];
@@ -312,7 +430,20 @@ export function stepMagmaHazards(s, dt, ctx) {
     if (h.age < h.duration) return true;
     if (h.summon) {
       const b = volcanoBoss(s);
-      if (!b || b.hp <= 0 || b.bossPhase !== "combat") return false;
+      if (
+        !b ||
+        b.hp <= 0 ||
+        b.bossPhase !== "combat" ||
+        h.encounterId !== b.encounterId
+      )
+        return false;
+      const distance = Math.hypot(h.to.x - b.x, h.to.y - b.y);
+      if (
+        distance < MAGMA_RULES.summonMinDistance ||
+        distance > MAGMA_RULES.summonMaxDistance ||
+        !canWalkVolcano(h.to.x, h.to.y)
+      )
+        return false;
       for (const p of party(s))
         if (hit({ ...h.to, radius: h.radius }, p))
           ctx.damage(p, h.damage, h.source, h.element || "fire", "eruption");
@@ -322,8 +453,10 @@ export function stepMagmaHazards(s, dt, ctx) {
         s.monsters.filter((m) => m.volcanoSummon && m.hp > 0).length <
         MAGMA_RULES.maxSummons
       ) {
-        const m = createMonster(h.species, h.to.x, h.to.y, h.level);
+        const m = createMonster("magma-slime", h.to.x, h.to.y, h.level);
         m.volcanoSummon = true;
+        m.volcanoEncounter = b.encounterId;
+        m.detection = 230;
         m.cooldown = 0.8;
         m.maxHp = Math.round(m.maxHp * 0.55);
         m.hp = m.maxHp;

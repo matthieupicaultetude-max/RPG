@@ -754,3 +754,5 @@ canvas.paper-avatar { position:relative; inset:auto; object-fit:contain; flex-sh
 /* Keep the full stat caption visible as set bonuses add more information. */
 .character-stage .avatar-caption { flex-shrink: 0; }
 .character-stage .paper-avatar { min-height: 60px; flex: 1 1 auto; }
+.boss-hud[data-invulnerable="true"] { border-color: #e8bd73; box-shadow: 0 0 18px #d69e3b33; }
+.boss-hud[data-invulnerable="true"] p { color: #ffdf9e; }

@@ -1,4 +1,8 @@
-import { MAGMA_RULES, volcanoBoss } from "../game/volcano.js";
+import {
+  MAGMA_RULES,
+  volcanoBoss,
+  isVolcanoInvulnerable,
+} from "../game/volcano.js";
 import { FIRE_VOLCANO_GATE, VOLCANO_ENTRY } from "../world/volcano-map.js";
 function circle(g, p, r, fill, stroke) {
   g.beginPath();
@@ -72,6 +76,21 @@ export function drawVolcanoGround(g, s) {
     g.fillText("CARAPACE · EXPLOSION", h.x, h.y - h.radius - 5);
   }
   const b = volcanoBoss(s);
+  if (isVolcanoInvulnerable(b)) {
+    g.setLineDash([4, 4]);
+    circle(
+      g,
+      b,
+      MAGMA_RULES.blastRadius + MAGMA_RULES.bossHitRadius,
+      "#e5ad3c11",
+      "#f3d493",
+    );
+    g.setLineDash([]);
+    g.font = "7px monospace";
+    g.textAlign = "center";
+    g.fillStyle = "#ffe2a6";
+    g.fillText("EXPLOSION D’INVOCATION ICI", b.x, b.y + 58);
+  }
   for (const z of b?.intent?.zones || []) {
     circle(
       g,
@@ -297,4 +316,18 @@ export function drawVolcanoBoss(g, b, time) {
     );
   }
   g.restore();
+  if (isVolcanoInvulnerable(b)) {
+    g.save();
+    g.globalAlpha = 0.8 + 0.15 * Math.sin(time * 4);
+    g.strokeStyle = "#ffe0a3";
+    g.lineWidth = 2;
+    g.beginPath();
+    g.ellipse(b.x, b.y - 28, 52, 54, 0, 0, Math.PI * 2);
+    g.stroke();
+    g.fillStyle = "#ffe0a3";
+    g.font = "bold 7px monospace";
+    g.textAlign = "center";
+    g.fillText("INVULNÉRABLE", b.x, b.y - 91);
+    g.restore();
+  }
 }
