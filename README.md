@@ -486,3 +486,11 @@ Dans **I**, sélectionner une pièce montre le bonus actif, le prochain palier e
 - **Vague ratée** : si toutes les invocations sont mortes, attendre la résolution de leurs dernières explosions, puis 1,2 seconde avant une nouvelle préparation d’invocation. Une explosion au coup fatal peut donc encore ouvrir le boss.
 
 Les éruptions conservent leurs annonces de 1,5 s et leur vol de 0,8 s. La sortie ou une défaite annule les invocations, les projections et la protection. Les boss ne donnent toujours aucun objet ni noyau ; leur XP et leur or restent inchangés.
+
+### Sauvegarde navigateur
+
+La progression est sauvegardée automatiquement toutes les deux secondes, au passage de l’onglet en arrière-plan et à la fermeture de la page. Les trois héros, XP, points et caractéristiques, sorts équipés/déséquipés, équipements, sac, or, collections, adoptions et métiers sont conservés. Le tutoriel reprend à son étape ; sinon la troupe revient au village avec ses PV restaurés. Les combats, positions, monstres et expéditions ne sont pas restaurés ; une clé déjà dépensée reste dépensée.
+
+Le stockage local utilise les clés stables `auroria-progress` et `auroria-progress-backup`, indépendantes des versions déployées. Le document porte un numéro de schéma (actuellement 1) : toute évolution incompatible devra ajouter une migration dans `src/game/browser-save.js`, sans changer ces clés. La génération précédente valide sert de secours. Une sauvegarde illisible ou provenant d’une version future est conservée et ne peut pas être écrasée automatiquement ; une erreur de stockage est affichée dans l’interface.
+
+Cette sauvegarde appartient à ce navigateur et à cette adresse du site : elle ne se synchronise pas entre appareils. Effacer les données du site ou utiliser une session privée peut la supprimer. Les anciennes sessions qui n’avaient jamais été sauvegardées ne peuvent pas être récupérées. Une sauvegarde serveur sera nécessaire pour les comptes multijoueurs.

@@ -1,3 +1,4 @@
+import { createBrowserSave } from './browser-save.js';
 import {nearVolcanoBoss,awakenVolcanoBoss} from './volcano.js';
 import {nearHandyman} from './handyman.js';
 import {nearDepthsBoss,awakenDepthsBoss} from './depths-boss.js';
@@ -18,12 +19,16 @@ import { createRenderer } from '../rendering/scene.js';
 
 export function createGame(canvas, touchControls, onChange, onTimers = () => {}, onInteraction = () => {}) {
   const state = createSandbox();
+  const persistence = createBrowserSave(state);
   try { state.lighting=localStorage.getItem("auroria-lighting-v1")!=="off"; } catch {}
   const controls = createControls(canvas, touchControls);
   const render = createRenderer(canvas);
   const controller = new AbortController();
   let previous, frame, lastRevision = -1, lastHome;
   let interfaceOpen = false;
+  const saveTimer = setInterval(() => persistence.save(), 2000);
+  window.addEventListener('pagehide', () => persistence.save(), { signal: controller.signal });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) persistence.save(); }, { signal: controller.signal });
   canvas.addEventListener('wheel', createCharacterWheel(direction => { if (!interfaceOpen && !state.zoneDive) cycleMain(state, direction); }), { passive: false, signal: controller.signal });
   canvas.addEventListener('keydown', event => {
     if (interfaceOpen || state.zoneDive) return;
@@ -70,5 +75,5 @@ export function createGame(canvas, touchControls, onChange, onTimers = () => {},
     frame = requestAnimationFrame(tick);
   }
   frame = requestAnimationFrame(tick);
-  return { state, clearInput(){controls.clear();state.spellCharge=null;state.aim.active=false;}, setInterfaceOpen(open) { interfaceOpen = open;if(open)cancelWoodcutting(state); state.spellCharge=null; state.aim.active = false; controls.clear(); }, refresh() { state.revision++; }, reset() { teleport(state, 'maison'); }, destroy() { cancelAnimationFrame(frame); controls.destroy(); render.destroy?.(); controller.abort(); } };
+  return { state, clearInput(){controls.clear();state.spellCharge=null;state.aim.active=false;}, setInterfaceOpen(open) { interfaceOpen = open;if(open)cancelWoodcutting(state); state.spellCharge=null; state.aim.active = false; controls.clear(); }, refresh() { state.revision++; }, reset() { teleport(state, 'maison'); }, destroy() { persistence.save(); clearInterval(saveTimer); cancelAnimationFrame(frame); controls.destroy(); render.destroy?.(); controller.abort(); } };
 }
