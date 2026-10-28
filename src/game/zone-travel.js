@@ -1,3 +1,5 @@
+import { consumeDungeonKey } from "./handyman.js";
+import { dungeonKeyCount } from "../data/handyman.js";
 import { createMountainWorld } from "./mountain-slimes.js";
 import {
   MOUNTAIN_ENTRY,
@@ -44,7 +46,7 @@ export function nearZoneGate(state) {
             {
               ...MARSH_DEPTHS_GATE,
               destination: "slime-depths",
-              label: "Sauter par la cascade",
+              label: `Entrer dans le donjon · 1 clé (${dungeonKeyCount(state)} en sac)`,
             },
           ]
         : state.zone === "slime-depths"
@@ -70,7 +72,12 @@ export function nearZoneGate(state) {
     ) || null
   );
 }
-export function travelToZone(state, destination) {
+// Direct travel is used by developer tools. Normal paid entry goes through useZoneGate.
+export function travelToZone(
+  state,
+  destination,
+  { freshDungeon = false } = {},
+) {
   if (
     !ZONES.includes(state.zone) ||
     !ZONES.includes(destination) ||
@@ -78,6 +85,10 @@ export function travelToZone(state, destination) {
   )
     return false;
   const origin = state.zone;
+  if (origin === "slime-depths" && state.dungeonRun?.active) {
+    state.dungeonRun.active = false;
+    state.dungeonRun.endedAt = state.time;
+  }
   // Cancel on the departing world before replacing its monster array.
   resetDepthsBoss(state);
   clearMonsterAttacks(state);
@@ -89,7 +100,10 @@ export function travelToZone(state, destination) {
     npcs: state.npcs,
     trees: state.trees,
   };
-  let world = state.zoneWorlds[destination];
+  let world =
+    freshDungeon && destination === "slime-depths"
+      ? null
+      : state.zoneWorlds[destination];
   if (destination === "slime-depths" && world?.monsters.every((m) => m.hp <= 0))
     world = null;
   world ||=
@@ -151,6 +165,15 @@ export function useZoneGate(state) {
   if (!gate) return false;
   if (gate.destination !== "slime-depths")
     return travelToZone(state, gate.destination);
+  if (state.team[state.main].hp <= 0) return false;
+  if (!consumeDungeonKey(state)) {
+    state.log.unshift(
+      "Clé de la Crevasse requise : fabriquez-la auprès de Tessa au village (5 planches de châtaignier, 1 Cœur de gelée, 1 Cœur d’ambre).",
+    );
+    state.log.length = Math.min(state.log.length, 6);
+    state.revision++;
+    return false;
+  }
   clearMonsterAttacks(state);
   for (const key of [
     "attacks",
@@ -167,6 +190,7 @@ export function useZoneGate(state) {
   state.zoneDive = {
     age: 0,
     duration: 1.1,
+    paidDungeon: true,
     from: { x: state.player.x, y: state.player.y },
     to: SEA_SINKHOLE,
     members: state.team.map((m) => ({ x: m.x, y: m.y })),
@@ -198,6 +222,25 @@ export function stepZoneDive(state, dt) {
       });
     }
   }
-  if (t >= 1) travelToZone(state, "slime-depths");
+  if (
+    t >= 1 &&
+    travelToZone(state, "slime-depths", {
+      freshDungeon: dive.paidDungeon === true,
+    })
+  ) {
+    state.nextDungeonRun = (state.nextDungeonRun || 0) + 1;
+    state.dungeonRun = {
+      id: state.nextDungeonRun,
+      dungeonId: "slime-depths",
+      active: true,
+      startedAt: state.time,
+      completed: false,
+    };
+    state.log.unshift(
+      "Une clé consommée pour toute la troupe · Nouvelle expédition dans le Donjon de la Crevasse.",
+    );
+    state.log.length = Math.min(state.log.length, 6);
+    state.revision++;
+  }
   return true;
 }

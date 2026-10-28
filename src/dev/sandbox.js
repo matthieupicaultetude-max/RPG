@@ -21,7 +21,7 @@ import { castSpell, stepSpells, receiveSpellDamage } from '../combat/spells.js';
 import { castCompanionSpell } from '../ai/spell-tactics.js';
 import { nearForge } from '../game/forge.js';
 import { recordSetLoot, nearPetShop } from '../game/pet-quests.js';
-import { PET_SHOP, FORGE } from '../world/map.js';
+import { PET_SHOP, FORGE, HANDYMAN_WORKSHOP } from '../world/map.js';
 import { STARTER_SETS, ELEMENTS, CORE_CHANCE, createCore, rollCoreEquipment, characterStats, syncEquipmentHealth } from '../data/equipment.js';
 import { createMonster, monsterDefinition } from '../data/monsters.js';
 import { stepAttacks } from '../combat/attacks.js';
@@ -31,7 +31,7 @@ import { createState, update as movePlayer } from '../game/state.js';
 export const ROLES = { melee: 'Corps à corps', support: 'Soutien', ranged: 'Distance' };
 export const COLORS = Object.fromEntries(Object.entries(CLASS_STYLES).map(([role,style])=>[role,style.accent]));
 export const SLOTS = ['Coiffe', 'Cape', 'Ceinture', 'Bottes', 'Anneau 1', 'Anneau 2', 'Amulette', 'Arme', 'Bouclier', 'Familier', ...Array.from({ length: 6 }, (_, i) => `Trophée ${i + 1}`)];
-export const STATIONS = { maison: { x: 110, y: 135 }, combat: { x: 480, y: 255 }, atelier: { x: 190, y: 310 }, forge: { x: 212, y: 334 }, animalerie: { x:250,y:157 }, fontaine:{x:365,y:155}, scierie:{x:76,y:222}, bucheron:{x:207,y:108} };
+export const STATIONS = { maison: { x: 110, y: 135 }, combat: { x: 480, y: 255 }, atelier: { x: 190, y: 310 }, forge: { x: 212, y: 334 }, animalerie: { x:250,y:157 }, fontaine:{x:365,y:155}, scierie:{x:76,y:222}, bricoleur:{x:100,y:326}, bucheron:{x:207,y:108} };
 const names = ['Aëlan', 'Liora', 'Sylas'];
 export function makeMember(role, i) {
   return { id: i, name: names[i], role, level: 1, xp: 0, hp: 100, maxHp: 100, equipment: {}, x: 280 - i * 20, y: 210 + i * 13, facing: 'down', moving: false, cooldown: 0, loadout:defaultLoadout(role), spellCooldowns:{}, buffs:{}, ultimateCharge:0, ultimateLock:0, characteristicPoints:0, allocatedStats:emptyAllocation(), learnedUltimates:[] };
@@ -41,11 +41,11 @@ export function createSandbox() {
   Object.assign(state, {
     zone: 'garden', lighting:true,
     team: ['melee', 'support', 'ranged'].map(makeMember), main: 0, deployed: true,
-    collections: {}, petQuests: {}, npcs:[{...PET_SHOP.npc},{...FORGE.npc}],
+    collections: {}, petQuests: {}, npcs:[{...PET_SHOP.npc},{...FORGE.npc},{...HANDYMAN_WORKSHOP.npc}],
     bag: [], nextItem: 1, gold: 0, log: ['Bienvenue dans le jardin des essais.'], revision: 0,
     monsters: [createMonster('slime',455,220), createMonster('boar',535,285),createMonster('firefly',530,165),createMonster('moth',585,240)],
     bots: Array.from({ length: 3 }, (_, i) => ({ name: ['Milo', 'Éline', 'Orin'][i], x: 290 + i * 70, y: 110, role: ['melee', 'support', 'ranged'][i], facing: 'down', moving: true, phase: i * 2, target: { x: 270 + i * 70, y: 110 } })),
-    woodcutting:{level:1,xp:0,action:null},trees:createTrees(),
+    handyman:{level:1,xp:0},woodcutting:{level:1,xp:0,action:null},trees:createTrees(),
     monsterTornadoes: [], monsterImpacts: [],
     effects: [], attacks: [], spellEvents:[], spellAreas:[], spellMissiles:[], spellVisuals:[], nextSpell:1, aim: { x: 0, y: 0, active: false }, autoAttack: false,
   });

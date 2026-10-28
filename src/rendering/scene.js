@@ -87,7 +87,7 @@ export function createRenderer(canvas) {
           ctx.save();
           const felled=prop.kind==="tree"&&s.trees.find(tree=>tree.id===prop.id)?.respawn>0;
           if (
-            ["tree","house","petshop","market","sawmill","mushroom","stalagmite","mountain-ridge","mountain-boulder"].includes(prop.kind) && !felled &&
+            ["tree","house","workshop","petshop","market","sawmill","mushroom","stalagmite","mountain-ridge","mountain-boulder"].includes(prop.kind) && !felled &&
             s.player.y < prop.y &&
             s.player.x + 8 > prop.bounds.left &&
             s.player.x - 8 < prop.bounds.right &&

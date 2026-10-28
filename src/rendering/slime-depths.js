@@ -77,7 +77,7 @@ export function drawSeaSinkhole(g, s) {
   g.beginPath();
   g.ellipse(p.x, p.y, 14, 7, 0, 0, Math.PI * 2);
   g.stroke();
-  caption(g, "CASCADE · F", p.x, p.y - 13);
+  caption(g, "DONJON · F", p.x, p.y - 13);
   g.restore();
 }
 export function drawDepthsGround(g, s) {

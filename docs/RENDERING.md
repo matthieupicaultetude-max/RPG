@@ -149,3 +149,8 @@ La pluie est dessinée uniquement dans `slime-marsh`. Les rayons et ombres de so
 `data/rock-shell.js` centralise la palette ambrée et l’identification des formes contenant de la Terre. `rendering/rock-shell.js` partage le dessin des plaques, fissures et cœur exposé entre les slimes de schiste et ceux de la crevasse. Les formes mixtes conservent leur corps bicolore bleu/ambré et leur taille issue des fusions. Les barrettes de vie et indications de carapace tiennent compte du relief des plaques. Les illustrations du bestiaire et la ressource Limon humide reprennent cette même palette.
 
 Le calcul de roulade distingue les rochers et parois de la grotte des berges des mares. Les avertissements suivent la trajectoire réellement praticable ; une collision rocheuse déclenche les particules de schiste, le bruit de rupture et la fenêtre de vulnérabilité existants.
+
+
+### Atelier de bricolage
+
+L’atelier du village possède un sprite dédié (toit d’ardoise, charpente, enseigne de clé et établi), une emprise solide et une liaison au chemin. Il participe au tri d’occlusion et aux ombres solaires comme les autres bâtiments. Tessa utilise le gabarit de personnage existant. Les clés ont une icône dédiée dans le sac ; le panneau Bricoleur adapte les ingrédients à la quantité saisie et se replie en une colonne sur petit écran.

@@ -97,6 +97,7 @@ export function resetDepthsBoss(s) {
 }
 export function finishDepthsBoss(s, b) {
   b.bossPhase = "dead";
+  if(s.dungeonRun?.active&&s.dungeonRun.dungeonId==="slime-depths"){s.dungeonRun.completed=true;s.dungeonRun.completedAt=s.time;}
   delete b.intent;
   b.lift = 0;
   clearSummons(s, b);

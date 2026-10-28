@@ -94,11 +94,13 @@ function smooth(points) {
   }
   return result;
 }
+export const HANDYMAN_WORKSHOP=Object.freeze({x:85,y:300,npc:{id:"tessa",name:"Tessa · Bricoleuse",x:112,y:315,role:"ranged",facing:"down",moving:false,equipment:{}}});
 export const SAWMILL = Object.freeze({x:76,y:205});
 export const FOUNTAIN = Object.freeze({x:365,y:125});
 export const FORGE = Object.freeze({npc:{id:'borin',name:'Borin',x:212,y:314,role:'melee',facing:'down',moving:false,equipment:{}}});
 export const PET_SHOP = Object.freeze({x:250,y:138,npc:{id:'nola',name:'Nola',x:268,y:153,role:'support',facing:'down',moving:false,equipment:{}}});
 export const ROADS = [
+ {id:"handyman-route",width:16,points:[[140,180],[125,220],[125,318],[100,318]]},
  {id:"mountain-route",width:18,points:[[470,180],[520,145],[565,100]]},
  {id:"slime-marsh-route",width:20,points:[[320,300],[345,330],[390,355]]},
  {id:"sawmill",width:18,points:[[76,222],[110,222],[110,180]]},
@@ -179,6 +181,7 @@ export const isRoad = (x, y) => roadDistance(x, y) <= 0;
 
 // Sprite origin is its ground anchor. Only the footprint blocks movement.
 export const PROPS = [
+ {id:"handyman-workshop",kind:"workshop",x:85,y:300,footprint:{type:"box",left:-25,right:25,top:-25,bottom:0}},
  {id:"sawmill",kind:"sawmill",x:SAWMILL.x,y:SAWMILL.y,footprint:{type:"box",left:-20,right:20,top:-7,bottom:0}},
   {id:"fountain",kind:"fountain",x:FOUNTAIN.x,y:FOUNTAIN.y,footprint:{type:"circle",radius:13}},
   {id:'petshop',kind:'petshop',x:PET_SHOP.x,y:PET_SHOP.y,footprint:{type:'box',left:-34,right:34,top:-36,bottom:0}},

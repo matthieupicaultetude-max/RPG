@@ -16,7 +16,7 @@ export function drawSunShadows(ctx, environment, state) {
       if (
         ![
           "tree",
-          "house",
+          "house","workshop",
           "petshop",
           "market",
           "sawmill",

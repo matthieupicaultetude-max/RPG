@@ -439,6 +439,21 @@ function fountain(g){
  oval(g,0,-20,11,5,'#a9b59e');oval(g,0,-22,10,4,'#7bb6c0');
  g.fillStyle='#d9edcf';g.fillRect(-1,-31,2,10);g.fillRect(-5,-26,2,9);g.fillRect(4,-26,2,9);g.fillStyle='#b5dfd3';g.fillRect(-15,-9,7,1);g.fillRect(7,-5,6,1);
 }
+function handymanWorkshop(g){
+ oval(g,2,4,36,9,'#53603e44');
+ g.fillStyle='#766348';g.fillRect(-29,-36,59,38);g.fillStyle='#c7b385';g.fillRect(-27,-34,54,34);
+ for(const x of [-27,-7,25]){g.fillStyle='#745338';g.fillRect(x,-35,3,36);}g.fillStyle='#715135';g.fillRect(-28,-18,56,3);
+ poly(g,[[-36,-38],[-25,-64],[26,-64],[37,-38]],'#465b61','#334951');
+ for(let row=0;row<4;row++){const y=-61+row*6;g.fillStyle=row%2?'#768a87':'#657c7c';g.fillRect(-24-row*3,y,49+row*6,3);for(let x=-20-row*3;x<25+row*3;x+=10){g.fillStyle='#94a396';g.fillRect(x+(row%2?4:0),y,1,4);}}
+ g.fillStyle='#9b7c4d';g.fillRect(-34,-38,69,4);g.fillStyle='#d5bd83';g.fillRect(-34,-38,69,1);
+ g.fillStyle='#695038';g.fillRect(-8,-17,17,17);g.fillStyle='#a17d4a';g.fillRect(-6,-15,13,15);g.fillStyle='#e5cc89';g.fillRect(3,-8,2,2);
+ g.fillStyle='#4c716d';g.fillRect(-22,-30,11,10);g.fillStyle='#bac6a3';g.fillRect(-17,-30,1,10);
+ g.fillStyle='#526f70';g.fillRect(11,-30,11,10);g.fillStyle='#b8caa8';g.fillRect(16,-30,1,10);
+ g.fillStyle='#604b31';g.fillRect(-13,-51,27,11);g.fillStyle='#c8ac73';g.fillRect(-12,-50,25,9);
+ g.strokeStyle='#3b655e';g.lineWidth=2;g.beginPath();g.arc(-4,-46,3,0,Math.PI*2);g.moveTo(-1,-44);g.lineTo(6,-41);g.lineTo(8,-43);g.stroke();
+ g.fillStyle='#cdb888';g.fillRect(-11,0,22,3);
+ g.fillStyle='#74583b';g.fillRect(23,-5,13,5);g.fillRect(24,0,2,5);g.fillRect(33,0,2,5);g.fillStyle='#7ca5a2';g.fillRect(24,-7,12,3);
+}
 function sawmill(g){
  g.fillStyle='#745338';g.fillRect(-22,-7,44,7);g.fillRect(-19,0,4,5);g.fillRect(15,0,4,5);g.fillStyle='#bf9d64';g.fillRect(-24,-10,48,4);
  g.fillStyle='#a8b7af';g.fillRect(-9,-16,27,3);g.fillStyle='#6b5035';g.fillRect(-14,-20,7,15);g.fillStyle='#ddbf82';g.fillRect(-17,-20,13,3);
@@ -454,6 +469,7 @@ function marshMushroom(g,p){
 function marshReeds(g){for(let i=0;i<5;i++){const x=-8+i*4,h=12+(i*7)%17;g.fillStyle='#416c54';g.fillRect(x,-h,2,h+1);g.fillStyle='#94ac6b';g.fillRect(x,-h,1,h);g.fillStyle='#886352';g.fillRect(x-1,-h-7,3,8);g.fillStyle='#bdac70';g.fillRect(x,-h-7,1,6);} }
 function waterLily(g){oval(g,0,-1,11,4,'#477f68');g.fillStyle='#80b28a';g.fillRect(-7,-3,10,2);poly(g,[[0,-3],[2,-9],[5,-6],[9,-8],[8,-3]],'#d7a6c5');g.fillStyle='#f4d4df';g.fillRect(3,-7,3,4);g.fillStyle='#f4dca0';g.fillRect(3,-4,3,2);}
 const DEFINITIONS = {
+ workshop:{bounds:[-40,-68,82,79],origin:[0,0],paint:handymanWorkshop},
  'mountain-boulder':{bounds:[-23,-33,47,42],origin:[0,0],paint:mountainBoulder},
  'mountain-ridge':{bounds:[-35,-42,72,54],origin:[0,0],paint:mountainRidge},
  'alpine-tuft':{bounds:[-10,-12,22,19],origin:[0,0],paint:alpineTuft},

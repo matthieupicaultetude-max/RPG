@@ -303,6 +303,7 @@ export function renderItemIcon(item = {}) {
   const original = PALETTES[item.element] || PALETTES.neutral;
   const p = item.chromatic && item.setId ? {...original,base:CHROMATIC_COLORS[item.element],light:'#f1e1ff',gem:'#fff5ce'} : original;
   let art = item.kind==='pet' ? petArt(item,p) : resourceArt(item);
+  if(item.kind==='dungeon-key')art=path('m6 3 10-1 6 8-5 7-7-1-6-7z','#72b8bb','#315e76',1)+path('m8 5 6-1 5 6-4 4-5-1-4-5z','#b2e8de')+path('m16 15 3-2 11 12-3 5-3-4-3 2-3-4 3-2z','#d2b779','#725e40',1)+path('m8 7 3-1 3 3-2 3-3-1z','#3d859e')+path('m18 19 6 6','none','#f4dd9c',1);
   if(item.kind==='certificate')art=path('M7 3h21v24H6V8H3V3z','#dfd0a4')+path('M7 3v5H3m4 19h21v-4H9','none','#a08b62')+path('M11 10h12m-12 4h8','none','#9d8a61')+path('m20 17 5 3-1 7-4-2-4 2-1-7z',p.base)+elementSigil(item.element,14,15,.38,p.gem);
   if (item.kind === "core" || item.slot === "Noyau")
     art =

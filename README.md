@@ -304,7 +304,7 @@ Un saut raté par un slime de taille 2 ou 3 provoque une scission : le parent pe
 
 ### Crevasse des profondeurs
 
-Au **sud-est des Marais de Gelée**, un trou sombre dans la mer reçoit une cascade. Approchez-vous de sa lèvre et appuyez sur **F — Sauter par la cascade** : un bond et une chute animés emmènent toute la troupe dans la grotte. Le bouton contextuel fonctionne aussi sur mobile. **Outils dev → Crevasse des profondeurs** donne un accès direct.
+Au **sud-est des Marais de Gelée**, un trou sombre dans la mer reçoit une cascade. Approchez-vous de sa lèvre et appuyez sur **F — Entrer dans le donjon** : un bond et une chute animés emmènent toute la troupe dans la grotte. Le bouton contextuel fonctionne aussi sur mobile. La descente consomme **une Clé de la Crevasse pour toute la troupe**. Sans clé, le passage reste fermé. **Outils dev → Donjon · accès dev** permet une visite de test gratuite.
 
 La crevasse est une carte distincte : sol rocheux humide sans pavage, mares infranchissables, trois cascades animées, stalagmites, champignons lumineux et éclairage souterrain bleuté. La lumière dorée extérieure s’efface dans cette zone. La **remontée lumineuse à l’ouest + F** ramène à la cascade des marais.
 
@@ -314,7 +314,7 @@ La crevasse est une carte distincte : sol rocheux humide sans pavage, mares infr
 - Les fusions mixtes alternent **bond Eau / roulade Terre**. La masse totale de la horde est conservée lors des transformations : pas de multiplication sans fin des ennemis vivants. La fusion ne donne ni XP ni loot.
 - Ressources propres aux créatures : **Gelée abyssale / Perle des profondeurs** et **Limon humide / Géode suintante**, avec variantes chromatiques ; noyaux Eau ou Terre selon le monstre. Fiches disponibles dans le bestiaire avec aperçu par niveau.
 
-Les ennemis vaincus restent morts pendant l’expédition. Une crevasse entièrement nettoyée se repeuple à la prochaine entrée ; sinon ses blessures et transformations restent conservées pendant la session. Une défaite ramène la troupe soignée sur la berge d’entrée, avec son or et ses objets.
+Les ennemis vaincus restent morts pendant l’expédition. Chaque nouvelle entrée payante recrée le donjon complet, avec ses sept slimes et Gorgelimon. Le retour vers les marais est gratuit. Une défaite ramène la troupe soignée sur la berge d’entrée, avec son or et ses objets.
 
 ### Boss — Gorgelimon, Cœur du gouffre
 
@@ -363,3 +363,20 @@ Les **slimes de limon et les fusions mixtes Eau/Terre** utilisent la même carap
 Les formes mixtes gardent leur alternance **bond Eau / roulade Terre**, ainsi que leurs scissions et fusions. La scission conserve l’état de la carapace chez le parent et le petit. Une fusion conserve une protection cassée si toute sa composante Terre était déjà brisée ; une composante Terre encore intacte apporte sa carapace. Ajouter de l’Eau seule ne répare donc pas la protection.
 
 La teinte Terre de la caverne, des formes mixtes, de leurs illustrations et du limon utilise désormais la **même palette ambrée que le slime de schiste**. Le guide de zone et le bestiaire expliquent les roulades et les carapaces.
+
+
+## Bricoleur et clés de donjon
+
+**Tessa · Bricoleuse** tient l’atelier de bricolage au village. Approchez et appuyez sur **F**, ou ouvrez **Métiers (L) → Bricoleur** pour consulter la recette. La fabrication nécessite d’être près de Tessa.
+
+La **Clé de la Crevasse**, accessible au niveau 1 bricoleur, demande :
+
+- **5 Planches de châtaignier** : bois débloqué au niveau 5 bûcheron, 2 bois par planche à la scierie.
+- **1 Cœur de gelée** : ressource rare des slimes Eau de surface.
+- **1 Cœur d’ambre** : ressource rare des slimes des montagnes.
+
+Les variantes chromatiques ne remplacent pas ces ingrédients. Le frêne et le bois brut ne remplacent pas les planches de châtaignier. Posséder les planches suffit : le bricoleur n’exige pas lui-même le niveau 5 bûcheron.
+
+La quantité peut être choisie pour fabriquer en lot. Chaque clé rapporte **25 XP bricoleur**, avec une progression indépendante du combat et du bûcheron. Les clés se regroupent en sac et disposent du filtre **Clés de donjon**. Une réanimation dans le donjon conserve l’expédition et ne consomme aucune autre clé.
+
+Les outils dev proposent l’atelier, les ingrédients d’une clé et +30 XP bricoleur. La progression reste locale à la session.

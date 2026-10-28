@@ -8,7 +8,7 @@ Les décisions explicitement définies ci-dessous constituent la cible. Les prop
 
 Un RPG fantasy coloré en pixel art, en vue **top-down 2D**, jouable dans un navigateur et conçu pour le **multijoueur**. Des joueurs humains et des bots simulant d’autres joueurs partagent les zones du monde.
 
-Le joueur constitue une équipe de trois personnages, explore, combat des monstres, gagne de l’XP et du butin, puis revient à sa maison pour revoir sa composition. Les métiers enrichiront cette progression dans une phase ultérieure.
+Le joueur constitue une équipe de trois personnages, explore, combat des monstres, gagne de l’XP et du butin, puis revient à sa maison pour revoir sa composition. Les métiers de bûcheron et de bricoleur enrichissent cette progression.
 
 ## 2. Monde partagé et population
 
@@ -110,7 +110,7 @@ Aucun plafond au niveau 3 ni aucune remise à niveau automatique lors d’un cha
 
 ### Métiers : développement ultérieur
 
-Le premier **métier de bûcheron** est implémenté dans le jardin des essais (section 30). Les autres métiers seront développés plus tard. Les autres métiers, leur progression, leurs récoltes et recettes restent à définir. L’XP de métier et son articulation avec l’XP de combat devront être explicitées avant leur implémentation.
+Les métiers de **bûcheron** (section 30) et de **bricoleur** (section 45) sont implémentés. Chaque métier possède une progression partagée par la troupe, indépendante de l’XP de combat. Les métiers supplémentaires restent à définir.
 
 ## 8. Inventaire et équipement
 
@@ -578,7 +578,7 @@ Deux slimes à moins de 30 px, à portée visuelle, sans attaque, immobilisation
 
 Chaque espèce possède ses ressources normale et rare, leurs variations chromatiques et les noyaux de son élément. Les ressources des profondeurs sont distinctes des ingrédients des recettes débutantes actuelles. Les fiches du bestiaire expliquent les transformations et permettent de consulter les statistiques de taille 1 à chaque niveau.
 
-Les ennemis de cette expédition n’ont pas de réapparition individuelle : une population complètement vaincue est renouvelée à la prochaine visite. Sinon, le monde reste conservé en session. La masse ne peut donc pas croître indéfiniment à force de fusionner et de se diviser. La défaite soigne la troupe à l’entrée sans perte d’or ni de sac. Un changement de zone annule les préparations de fusion et les attaques en cours avant de sauvegarder le monde quitté.
+Les ennemis de cette expédition n’ont pas de réapparition individuelle : chaque entrée payante renouvelle toute la population et Gorgelimon, même si la précédente expédition était inachevée. Une réanimation sur place conserve la même expédition. La masse ne peut donc pas croître indéfiniment à force de fusionner et de se diviser. La défaite soigne la troupe à l’entrée sans perte d’or ni de sac. Un changement de zone annule les préparations de fusion et les attaques en cours avant de sauvegarder le monde quitté.
 
 ## 40. Gorgelimon, Cœur du gouffre
 
@@ -640,3 +640,16 @@ Le slime de limon et toute fusion mixte contenant de la Terre portent la carapac
 Les formes mixtes alternent le bond Eau et une roulade Terre ; le limon pur utilise la roulade. Les annonces et les spécifications du mouvement restent figées pour l’attaque en cours. Scissions et fusions restent actives : un bond Eau raté d’une grosse forme produit un petit, avec le même état de carapace que le parent. En fusion, la carapace est intacte si au moins une composante Terre entrante l’était encore ; elle reste brisée si toutes les composantes Terre étaient déjà brisées. L’Eau seule n’apporte aucune réparation. Les aspects de Gorgelimon suivent ces mêmes règles élémentaires.
 
 La palette Terre est partagée avec le slime de schiste : base #c59a4d, ombre #8f672e et lumière #efd497. Les formes mixtes gardent une moitié bleue lisible ; la carapace est dessinée avec les mêmes plaques rocheuses que dans les montagnes. Le bestiaire et le guide décrivent cette variante de combat. Les propriétés du boss Gorgelimon restent propres à son affrontement.
+
+
+## 45. Bricoleur et accès au donjon de la Crevasse
+
+Tessa tient un atelier de bricolage physique au village, relié au réseau de chemins. F à proximité ouvre l’onglet Bricoleur du panneau Métiers. La consultation est libre ; fabriquer exige proximité et personnage principal vivant.
+
+La clé de niveau 1 exige exactement 5 Planches de châtaignier (essence récoltable au niveau 5 bûcheron), 1 Cœur de gelée non chromatique des slimes Eau de surface et 1 Cœur d’ambre non chromatique des slimes de schiste. Aucun substitut : ni frêne, ni bois brut, ni ressources chromatiques ou rares abyssales. Le niveau bûcheron n’est pas exigé pour utiliser des planches déjà possédées.
+
+La fabrication par lots de 1 à 9999 clés vérifie tous les coûts avant consommation, empile les clés et rapporte 25 XP bricoleur par clé. Le seuil d’XP est 30 × niveau actuel. Cette progression ne dépend ni de la Sagesse, ni de l’XP de combat ou du bûcheron.
+
+La cascade devient l’entrée du donjon. Une clé est consommée au départ du saut pour toute la troupe ; une interaction répétée pendant la chute ne consomme rien. Sans clé, aucune traversée ne commence. Chaque entrée payante ouvre une expédition neuve avec les sept slimes et Gorgelimon. La remontée est gratuite. Une défaite soigne la troupe au point d’entrée de la même expédition, sans nouvelle clé. La victoire sur le boss marque l’expédition terminée sans remboursement.
+
+Le téléporteur développeur est explicitement gratuit et distinct du passage normal. Les outils proposent ingrédients de test et XP bricoleur. Les clés, recettes et états d’expédition restent locaux à la session ; aucune persistance serveur n’est ajoutée.

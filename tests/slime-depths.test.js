@@ -1,3 +1,4 @@
+import {createDungeonKey} from '../src/data/handyman.js';
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
@@ -68,6 +69,7 @@ test("cascade : F lance un bond puis la chute transporte la troupe et préserve 
   const s = createSandbox();
   travelToZone(s, "slime-marsh");
   movePartyToZone(s, "slime-marsh", MARSH_DEPTHS_GATE);
+  s.bag.push({...createDungeonKey(),id:s.nextItem++});
   s.gold = 123;
   s.team[0].hp = 75;
   const bag = s.bag;
