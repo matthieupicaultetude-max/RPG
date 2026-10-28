@@ -731,3 +731,26 @@ canvas.paper-avatar { position:relative; inset:auto; object-fit:contain; flex-sh
 .monster-list .bestiary-group-buttons button > span { min-width: 0; }
 .no-boss-loot { padding: 16px; background: #31433777; border-radius: 10px; }
 @media(max-width:700px) { .bestiary-group-buttons { grid-template-columns: repeat(2,minmax(0,1fr)); } .monster-list .bestiary-group-buttons button { padding: 8px 4px; gap: 5px; } }
+
+.set-active { color: #d1e6a8!important; }
+.set-next { color: #b4c6a0!important; }
+.set-bonus-details { margin-top: 6px; font-size: 11px; }
+.set-bonus-details summary { color: #e4d29b; cursor: pointer; padding: 4px 0; }
+.set-bonus-details > p { font-size: 10px!important; }
+.set-bonus-details ol { list-style: none; padding: 0; margin: 6px 0; display: grid; gap: 5px; max-height: 180px; overflow-y: auto; }
+.set-bonus-details li { padding: 6px 8px; background: #243a2f; border: 1px solid #70875a44; border-radius: 4px; }
+.set-bonus-details li > strong, .set-bonus-details li > span { display: block; line-height: 1.5; }
+.set-bonus-details li.current { border-color: #c4b87d; background: #3a5035; }
+.set-bonus-details li.locked { color: #8ba184; }
+.worn-set-bonuses, .equipment-resistances { margin: 18px 0; padding: 16px; border: 1px solid #71815e66; background: #1b3027; border-radius: 8px; }
+.worn-set-bonuses > h3, .equipment-resistances > h3 { color: #e5d6a8; margin: 0 0 8px; }
+.worn-set-bonuses p, .worn-set-bonuses small { color: #acbe9c; line-height: 1.6; font-size: 12px; }
+.worn-set-bonuses article { padding: 12px 0; border-top: 1px solid #71815e44; }
+.worn-set-bonuses article > strong { color: #d7e5ba; }
+.equipment-resistances > div { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 8px; }
+.equipment-resistances span { padding: 10px; background: #283f30; color: #aabd9d; border-radius: 4px; }
+.equipment-resistances strong { display: block; color: #e3ddba; margin-top: 5px; }
+@media(max-width:520px) { .equipment-resistances > div { grid-template-columns: repeat(2,minmax(0,1fr)); } .set-bonus-details { font-size: 9px; } }
+/* Keep the full stat caption visible as set bonuses add more information. */
+.character-stage .avatar-caption { flex-shrink: 0; }
+.character-stage .paper-avatar { min-height: 60px; flex: 1 1 auto; }

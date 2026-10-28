@@ -21,17 +21,16 @@ import {
   rewardMonster,
 } from "../src/dev/sandbox.js";
 
-test("quatre panoplies, neuf pièces chacune équipables niveau 1, sans caractéristique secondaire", () => {
+test("quatre panoplies guerrières de slime, neuf pièces chacune équipables niveau 1", () => {
   assert.equal(STARTER_SETS.length, 4);
   for (const set of STARTER_SETS) {
     assert.equal(set.pieces.length, 9);
     assert.equal(new Set(set.pieces.map((p) => p.slot)).size, 9);
     for (const piece of set.pieces) {
       assert.equal(piece.requiredLevel, 1);
-      assert.deepEqual(
-        Object.keys(piece.stats).sort(),
-        [ELEMENTS[set.element].stat, "Vitalité"].sort(),
-      );
+      assert.ok(piece.stats[ELEMENTS[set.element].stat]>0);
+      assert.ok(piece.stats.Vitalité>0);
+      assert.ok(Object.keys(piece.stats).every(stat=>[ELEMENTS[set.element].stat,'Vitalité','Sagesse',...Object.values(ELEMENTS).map(e=>`Résistance ${e.name}`)].includes(stat)));
     }
   }
 });
@@ -93,7 +92,7 @@ test("équipement : bonus effectifs et PV sans duplication ni soin gratuit au re
   const item = openCore(s, s.bag[0].id, () => 0);
   const hp = s.team[0].hp;
   equip(s, item.id);
-  assert.equal(s.team[0].maxHp, 103);
+  assert.equal(s.team[0].maxHp, 108);
   assert.equal(s.team[0].hp, hp);
   assert.equal(equipmentStats(s.team[0]).Force, 3);
   const weapon = {
@@ -103,10 +102,10 @@ test("équipement : bonus effectifs et PV sans duplication ni soin gratuit au re
   };
   s.bag.push(weapon);
   equip(s, weapon.id);
-  assert.equal(weaponDamage(s.team[0], 100), 108);
+  assert.equal(weaponDamage(s.team[0], 100), 110);
   unequip(s, "Coiffe");
-  assert.equal(s.team[0].maxHp, 101);
-  assert.equal(weaponDamage(s.team[0], 100), 105);
+  assert.equal(s.team[0].maxHp, 104);
+  assert.equal(weaponDamage(s.team[0], 100), 106);
 });
 test("récompenses : noyau de la caractéristique principale en plus du loot, tirage indépendant", () => {
   for (const [species, element] of [

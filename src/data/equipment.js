@@ -21,32 +21,158 @@ export function levelBand(level) {
     Math.floor((Math.max(1, Math.floor(Number(level) || 1)) - 1) / 10) * 10 + 1;
   return { min, max: min + 9 };
 }
+// Low-level warrior profile shared by the four classic elemental slime sets.
+const PIECE_PROFILE = Object.freeze({
+  Coiffe: {
+    vitality: 8,
+    element: 3,
+    wisdom: 1,
+    resistances: ["earth", "fire"],
+  },
+  Cape: { vitality: 7, element: 3, wisdom: 1, resistances: ["air", "water"] },
+  Ceinture: { vitality: 6, element: 3, wisdom: 1, ownResistance: 1 },
+  Bottes: { vitality: 6, element: 3, resistances: ["earth", "air"] },
+  Amulette: {
+    vitality: 5,
+    element: 4,
+    wisdom: 1,
+    resistances: ["fire", "water"],
+  },
+  "Anneau 1": { vitality: 4, element: 3, wisdom: 1, ownResistance: 1 },
+  "Anneau 2": { vitality: 4, element: 3, wisdom: 1, ownResistance: 1 },
+  Arme: { vitality: 4, element: 6 },
+  Bouclier: {
+    vitality: 10,
+    element: 2,
+    resistances: ["earth", "fire", "air", "water"],
+  },
+});
+// Each row is the TOTAL bonus at that piece count, not another cumulative layer.
+const BONUS_PROFILE = Object.freeze([
+  { pieces: 2, vitality: 4, element: 1 },
+  { pieces: 3, vitality: 6, element: 2, ownResistance: 1 },
+  { pieces: 4, vitality: 8, element: 3, wisdom: 1, ownResistance: 1 },
+  {
+    pieces: 5,
+    vitality: 10,
+    element: 4,
+    wisdom: 1,
+    resistance: 1,
+    ownResistance: 1,
+  },
+  {
+    pieces: 6,
+    vitality: 12,
+    element: 5,
+    wisdom: 2,
+    resistance: 1,
+    ownResistance: 2,
+  },
+  {
+    pieces: 7,
+    vitality: 15,
+    element: 6,
+    wisdom: 2,
+    resistance: 2,
+    ownResistance: 2,
+  },
+  {
+    pieces: 8,
+    vitality: 18,
+    element: 8,
+    wisdom: 3,
+    resistance: 2,
+    ownResistance: 2,
+  },
+  {
+    pieces: 9,
+    vitality: 22,
+    element: 10,
+    wisdom: 4,
+    resistance: 3,
+    ownResistance: 3,
+  },
+]);
+function warriorStats(element, profile) {
+  const e = ELEMENTS[element],
+    stats = { Vitalité: profile.vitality, [e.stat]: profile.element };
+  if (profile.wisdom) stats.Sagesse = profile.wisdom;
+  for (const key of Object.keys(ELEMENTS)) {
+    const resistance =
+      (profile.resistance || 0) +
+      (profile.resistances?.includes(key) ? 1 : 0) +
+      (key === element ? profile.ownResistance || 0 : 0);
+    if (resistance) stats[`Résistance ${ELEMENTS[key].name}`] = resistance;
+  }
+  return Object.freeze(stats);
+}
 export const STARTER_SETS = Object.freeze(
   Object.entries(ELEMENTS).map(([element, e]) =>
     Object.freeze({
       id: element,
       name: `Panoplie ${e.set}`,
       element,
+      archetype: "guerrier",
+      source: "slime",
       minLevel: 1,
-      band: { min: 1, max: 10 },
-      pieces: SET_SLOTS.map((slot) =>
-        Object.freeze({
-          name: `${slot} de ${e.set}`,
-          slot,
-          requiredLevel: 1,
-          element,
-          setId: element,
-          setName: `Panoplie ${e.set}`,
-          color: e.color,
-          stats: {
-            [e.stat]: slot === "Arme" ? 5 : slot === "Bouclier" ? 2 : 3,
-            Vitalité: slot === "Bouclier" ? 5 : slot === "Arme" ? 1 : 3,
-          },
-        }),
+      band: Object.freeze({ min: 1, max: 10 }),
+      description: `Panoplie débutante des slimes ${e.name} : vitalité, résistances, ${e.stat} et un peu de sagesse.`,
+      bonuses: Object.freeze(
+        BONUS_PROFILE.map((profile) =>
+          Object.freeze({
+            pieces: profile.pieces,
+            stats: warriorStats(element, profile),
+          }),
+        ),
+      ),
+      pieces: Object.freeze(
+        SET_SLOTS.map((slot) =>
+          Object.freeze({
+            name: `${slot} de ${e.set}`,
+            slot,
+            requiredLevel: 1,
+            element,
+            setId: element,
+            setName: `Panoplie ${e.set}`,
+            color: e.color,
+            stats: warriorStats(element, PIECE_PROFILE[slot]),
+          }),
+        ),
       ),
     }),
   ),
 );
+export function equippedSetCount(member, set) {
+  return set.pieces.filter((piece) => {
+    const item = member.equipment?.[piece.slot];
+    return (
+      item?.setId === set.id &&
+      item.element === set.element &&
+      item.slot === piece.slot &&
+      item.name === piece.name
+    );
+  }).length;
+}
+export function setProgress(member, setId) {
+  const set = STARTER_SETS.find((s) => s.id === setId);
+  if (!set) return null;
+  const count = equippedSetCount(member, set),
+    active =
+      [...set.bonuses].reverse().find((tier) => tier.pieces <= count) || null,
+    next = set.bonuses.find((tier) => tier.pieces > count) || null;
+  return { set, count, active, next };
+}
+export const wornSets = (member) =>
+  STARTER_SETS.map((set) => setProgress(member, set.id)).filter(
+    (progress) => progress.count > 0,
+  );
+export function setBonusStats(member) {
+  const result = {};
+  for (const progress of wornSets(member))
+    for (const [stat, value] of Object.entries(progress.active?.stats || {}))
+      result[stat] = (result[stat] || 0) + value;
+  return result;
+}
 export function setForCore(core) {
   return STARTER_SETS.find(
     (set) =>
@@ -83,7 +209,7 @@ export function rollCoreEquipment(core, random = Math.random) {
     quantity: 1,
   };
 }
-export function equipmentStats(member) {
+export function rawEquipmentStats(member) {
   const result = {
     Vitalité: 0,
     Force: 0,
@@ -96,9 +222,16 @@ export function equipmentStats(member) {
       result[key] = (result[key] || 0) + value;
   return result;
 }
+export function equipmentStats(member) {
+  const result = rawEquipmentStats(member);
+  for (const [stat, value] of Object.entries(setBonusStats(member)))
+    result[stat] = (result[stat] || 0) + value;
+  return result;
+}
 export function characterStats(member) {
-  const result=equipmentStats(member);
-  for(const [stat,value]of Object.entries(member.allocatedStats||{}))result[stat]=(result[stat]||0)+value;
+  const result = equipmentStats(member);
+  for (const [stat, value] of Object.entries(member.allocatedStats || {}))
+    result[stat] = (result[stat] || 0) + value;
   return result;
 }
 export function syncEquipmentHealth(member) {
@@ -112,10 +245,9 @@ export function syncEquipmentHealth(member) {
 export function weaponDamage(member, baseDamage = 12) {
   const weapon = member.equipment.Arme;
   const stats = characterStats(member);
-  const bonus = weapon?.element
-    ? stats[ELEMENTS[weapon.element].stat]
-    : 0;
+  const bonus = weapon?.element ? stats[ELEMENTS[weapon.element].stat] : 0;
   return Math.round(
-    (baseDamage + (weapon && !weapon.setId ? 5 : 0)) * (1 + (bonus + (stats.Puissance || 0)) / 100),
+    (baseDamage + (weapon && !weapon.setId ? 5 : 0)) *
+      (1 + (bonus + (stats.Puissance || 0)) / 100),
   );
 }

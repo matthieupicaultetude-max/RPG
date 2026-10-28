@@ -92,7 +92,7 @@ Les monstres peuvent donner un noyau en plus de leur ressource : slime → Eau, 
 
 **Où que vous soyez**, ouvrir **I**, sélectionner le noyau dans le sac puis cliquer **Ouvrir le noyau**. Un noyau est consommé pour une pièce aléatoire du bon élément et de la bonne tranche ; neuf choix équiprobables, doublons possibles. Les noyaux donnent uniquement des pièces standards. Les versions chromatiques sont fabriquées à la forge de Borin. Les autres tranches n’ont pas encore d’équipements et leurs noyaux ne peuvent pas être consommés.
 
-Les pièces donnent Vitalité et caractéristique élémentaire, sans bonus de panoplie supplémentaire. Dans le prototype, 1 Vitalité donne 1 PV maximum ; les dégâts des sorts utilisent leur propre élément, sa caractéristique correspondante et la Puissance (+1 % par point). Les PV actuels ne sont pas restaurés par un échange d’équipement. Les sorts élémentaires sont disponibles dans le grimoire (K). Les outils dev proposent les quatre noyaux et la téléportation **Maison**, pour tester sans attendre un drop.
+Les panoplies des slimes élémentaires ont un profil guerrier débutant : Vitalité, caractéristique élémentaire, résistances et un peu de Sagesse. Des bonus progressifs récompensent 2 à 9 pièces d’un même ensemble. Dans le prototype, 1 Vitalité donne 1 PV maximum ; les dégâts des sorts utilisent leur propre élément, sa caractéristique correspondante et la Puissance (+1 % par point). Les PV actuels ne sont pas restaurés par un échange d’équipement. Les sorts élémentaires sont disponibles dans le grimoire (K). Les outils dev proposent les quatre noyaux et la téléportation **Maison**, pour tester sans attendre un drop.
 
 ## Direction graphique — premier passage
 
@@ -441,3 +441,38 @@ Les ressources normale et rare possèdent chacune une variante chromatique. Les 
 Pour un slime à deux éléments, un élément est choisi à parts égales pour la victoire : gelée/cœur et éventuel noyau correspondent à cet élément. Cela couvre le magma Terre/Feu et les fusions Eau/Terre des profondeurs. Aucun noyau chromatique.
 
 **Gorgelimon et Pyroclaste n’ont aucun butin pour le moment** : ni ressource ni noyau, y compris dans le générateur de loot dev. Leur XP, leur or et la validation de victoire restent inchangés. Les ingrédients des clés et la nourriture du familier Eau utilisent les nouveaux cœurs ; un cœur du bon élément peut provenir de n’importe quelle zone. Les butins des sangliers et insectes restent inchangés.
+
+
+## Panoplies de slime · Profil guerrier débutant
+
+Ronce, Braise, Brise et Rosée restent équipables **niveau 1** et accessibles dans les noyaux de tranche 1–10. Elles possèdent les mêmes valeurs, avec Force, Intelligence, Agilité ou Chance selon leur élément. Les familles et noms des pièces restent conservés.
+
+| Pièce | Vitalité | Caractéristique élémentaire | Sagesse | Résistances |
+| --- | ---: | ---: | ---: | --- |
+| Coiffe | 8 | 3 | 1 | Terre et Feu : 1 % chacune |
+| Cape | 7 | 3 | 1 | Air et Eau : 1 % chacune |
+| Ceinture | 6 | 3 | 1 | Son élément : 1 % |
+| Bottes | 6 | 3 | 0 | Terre et Air : 1 % chacune |
+| Amulette | 5 | 4 | 1 | Feu et Eau : 1 % chacune |
+| Chaque anneau | 4 | 3 | 1 | Son élément : 1 % |
+| Arme | 4 | 6 | 0 | — |
+| Bouclier | 10 | 2 | 0 | Tous les éléments : 1 % chacun |
+
+Les **bonus de panoplie** ci-dessous s’ajoutent aux pièces. Chaque ligne est le **total du palier courant**, et remplace la précédente : les lignes ne s’additionnent pas entre elles.
+
+| Pièces portées | Vitalité | Caractéristique | Sagesse | Résistance à tous les éléments | Résistance supplémentaire à son élément |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 2 | 4 | 1 | 0 | 0 % | 0 % |
+| 3 | 6 | 2 | 0 | 0 % | 1 % |
+| 4 | 8 | 3 | 1 | 0 % | 1 % |
+| 5 | 10 | 4 | 1 | 1 % | 1 % |
+| 6 | 12 | 5 | 2 | 1 % | 2 % |
+| 7 | 15 | 6 | 2 | 2 % | 2 % |
+| 8 | 18 | 8 | 3 | 2 % | 2 % |
+| 9 | 22 | 10 | 4 | 3 % | 3 % |
+
+Une panoplie normale complète donne donc au total **76 Vitalité, 40 de sa caractéristique, 10 Sagesse, 12 % de résistance à son élément et 6 % aux trois autres**. La Sagesse augmente l’XP de combat de 10 %, sans effet sur les métiers. Les caractéristiques et résistances passent par les calculs existants des sorts et des dégâts reçus.
+
+Seules les pièces réellement portées par le même personnage comptent, avec un emplacement distinct par pièce. Le sac, les autres personnages, familiers et trophées ne comptent pas. Mélanger plusieurs panoplies active leurs petits bonus séparément. Les versions normales et chromatiques d’une même panoplie comptent ensemble ; chaque pièce chromatique garde son bonus de 2 Puissance, et l’aura exige toujours les neuf pièces chromatiques.
+
+Dans **I**, sélectionner une pièce montre le bonus actif, le prochain palier et **Voir les bonus de 2 à 9 pièces**. Dans **P**, les résistances et les bonus actifs apparaissent séparément, tout en étant déjà inclus dans les caractéristiques totales. Retirer, remplacer ou recycler une pièce recalcule immédiatement ses bonus et ses PV maximum. Équiper ne soigne pas et ne cumule pas les bonus à chaque recalcul.

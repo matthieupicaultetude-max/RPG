@@ -71,6 +71,7 @@ function refresh(s) {
   refreshUltimate(s);
   app.querySelector('#notification').textContent = s.log[0];
   if (!inventoryOpen) return;
+  const previousSetDetails=panel.querySelector('[data-set-bonus-details][open]')?.dataset.setBonusDetails;
   const previousKeyQuantity=panel.querySelector('#key-quantity')?.value;
   const previousPlankQuantity=panel.querySelector('#plank-quantity')?.value;
   const previousStatQuantity = panel.querySelector('#stat-quantity')?.value;
@@ -111,6 +112,7 @@ function refresh(s) {
   if (quantityInput && previousCore === panel.querySelector('[data-open-core]')?.dataset.openCore && previousQuantity) {
     quantityInput.value = Math.min(Number(previousQuantity), Number(quantityInput.max));
   }
+  if(previousSetDetails){const details=panel.querySelector(`[data-set-bonus-details="${CSS.escape(previousSetDetails)}"]`);if(details)details.open=true;}
   panel.scrollTop = scrollTop;
   if (panel.querySelector('.inventory-items')) panel.querySelector('.inventory-items').scrollTop = bagScrollTop;
   if (focusKey) (panel.querySelector(focusKey) || panel.querySelector('.item-details button') || app.querySelector('[data-action="close-inventory"]')).focus({ preventScroll: true });
