@@ -380,3 +380,17 @@ Les variantes chromatiques ne remplacent pas ces ingrédients. Le frêne et le b
 La quantité peut être choisie pour fabriquer en lot. Chaque clé rapporte **25 XP bricoleur**, avec une progression indépendante du combat et du bûcheron. Les clés se regroupent en sac et disposent du filtre **Clés de donjon**. Une réanimation dans le donjon conserve l’expédition et ne consomme aucune autre clé.
 
 Les outils dev proposent l’atelier, les ingrédients d’une clé et +30 XP bricoleur. La progression reste locale à la session.
+
+## Champs de Braise · Slimes de feu
+
+Le passage **au sud-est des Cimes de Schiste** mène aux Champs de Braise, une zone de basalte entourée de lave, avec trois bassins infranchissables, des rochers et des braises en suspension. **F** près du passage traverse dans les deux sens ; les outils dev proposent aussi un accès direct. Aucun coût de clé pour cette zone extérieure.
+
+Six **Slimes de braise de niveau 5** y sautillent et bondissent :
+
+- Leurs déplacements laissent une traînée au sol. Les braises sont annoncées **0,35 seconde**, puis brûlent pendant **4 secondes**. Les superpositions ne multiplient pas les touches : au maximum une brûlure toutes les **0,6 seconde par personnage**.
+- Leur bond Feu conserve une zone d’atterrissage annoncée avant l’impact.
+- À la mort, un cercle fixe annonce une **explosion après 0,9 seconde**, dans un rayon de **36 pixels**. Le coup fatal donne le butin immédiatement, mais il faut encore s’éloigner !
+
+Les résistances Feu s’appliquent aux bonds, traînées et explosions. Les obstacles bloquent les dégâts. Les dangers disparaissent en changeant de zone ou après une défaite ; la troupe est alors soignée au passage d’entrée. Les slimes réapparaissent après **18 secondes**.
+
+Butins : **Gelée incandescente**, **Cœur de braise** rare, chacun avec variation chromatique, et possibilité de noyau Feu standard. Le bestiaire inclut les mécanismes, les visuels et les statistiques réglables par niveau. Les recettes d’armures et la nourriture des familiers existants conservent leurs ingrédients.

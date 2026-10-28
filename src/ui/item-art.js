@@ -193,6 +193,10 @@ function equipmentArt(item, p) {
 function resourceArt(item) {
   const c = item.chromatic;
   switch (item.name) {
+    case "Gelée incandescente":
+      return path('M3 25 7 15l5-4 4-8 3 9 7 6 3 8-7 4H9z',c?'#ad75cf':'#d96435')+path('m10 24 3-8 4 4 2-6 5 12-8 3z',c?'#efb5fa':'#ffcf6c')+path('m8 19 3-5','none','#fff1b2',2);
+    case "Cœur de braise":
+      return path('m16 2 10 9 2 12-12 8L4 23l2-12z',c?'#9754b5':'#8d3d31')+path('m16 6 7 9-3 10-5 2-6-7 2-9z',c?'#eda8f5':'#ffb958')+path('m16 10-2 7 4 3-2 5','none','#fff2bf',2);
     case "Éclat de schiste":
       return path('m3 25 4-15 13-7 9 11-6 15-13 1z',c?'#a28bc5':'#7b8d8c')+path('m7 10 12 6 10-2m-10 2-9 14','none',c?'#d9b9ed':'#c3c7ac',2)+path('m10 14 2 8m7-13 2 4','none','#d8bb7c',2);
     case "Cœur d’ambre":

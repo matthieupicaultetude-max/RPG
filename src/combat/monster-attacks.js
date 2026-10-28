@@ -1,3 +1,4 @@
+import {clearFireHazards} from '../game/fire-slimes.js';
 import {hasRockShell} from '../data/rock-shell.js';
 import {traceShellCharge,breakRockShell} from '../game/mountain-slimes.js';
 import {onBossLanding} from '../game/depths-boss.js';
@@ -26,6 +27,7 @@ export function isolatedPartyMember(members, monster) {
   )[0];
 }
 export function clearMonsterAttacks(state) {
+  clearFireHazards(state);
   for (const monster of state.monsters) {
     if(monster.intent?.phase==='flight')Object.assign(monster,monster.intent.from);
     delete monster.intent;

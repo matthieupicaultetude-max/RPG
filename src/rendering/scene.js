@@ -1,3 +1,5 @@
+import * as fireMap from '../world/slime-fire-map.js';
+import {drawFireGround,drawFireAtmosphere} from './slime-fire.js';
 import {hasRockShell} from '../data/rock-shell.js';
 import * as mountainMap from '../world/slime-mountains-map.js';
 import {drawMountainGround,drawMountainStatus} from './slime-mountains.js';
@@ -33,7 +35,7 @@ export function createRenderer(canvas) {
   const village = createEnvironment();
   const lighting = createGoldenHour(frame.width,frame.height);
   const rain=createMarshRain();
-  let tutorial, marsh, depths, mountains;
+  let tutorial, marsh, depths, mountains, fire;
   function label(text, x, y) {
     ctx.font = "8px monospace";
     ctx.textAlign = "center";
@@ -65,7 +67,7 @@ export function createRenderer(canvas) {
     label(bot ? `${p.name} · BOT` : p.name, x, y + 16);
   }
   const render = (s) => {
-    const environment = s.zone === "slime-mountains" ? (mountains ||= createEnvironment(mountainMap)) : s.zone === "slime-depths" ? (depths ||= createEnvironment(depthsMap)) : s.zone === "tutorial" ? (tutorial ||= createEnvironment(tutorialMap)) : s.zone==='slime-marsh'?(marsh ||= createEnvironment(marshMap)):village;
+    const environment = s.zone === "slime-fire" ? (fire ||= createEnvironment(fireMap)) : s.zone === "slime-mountains" ? (mountains ||= createEnvironment(mountainMap)) : s.zone === "slime-depths" ? (depths ||= createEnvironment(depthsMap)) : s.zone === "tutorial" ? (tutorial ||= createEnvironment(tutorialMap)) : s.zone==='slime-marsh'?(marsh ||= createEnvironment(marshMap)):village;
     const canStand = (x,y)=>canWalkZone(x,y,s.zone);
     ctx.drawImage(environment.ground, 0, 0);
     if(s.lighting!==false && !["slime-depths","slime-marsh"].includes(s.zone))drawSunShadows(ctx,environment,s);
@@ -74,6 +76,7 @@ export function createRenderer(canvas) {
     drawSeaSinkhole(ctx,s);
     drawDepthsGround(ctx,s);
     drawMountainGround(ctx,s);
+    drawFireGround(ctx,s);
     rain.ground(ctx,s);
     for(const marker of environment.markers)label(marker.text,marker.x,marker.y);
     if(s.zone === "tutorial")drawTutorialGate(ctx,s);
@@ -266,6 +269,7 @@ export function createRenderer(canvas) {
     drawBonusTargets(ctx,s);
     drawWoodcutting(ctx,s);
     drawDepthsAtmosphere(ctx,s);
+    drawFireAtmosphere(ctx,s);
     const width = Math.round(canvas.clientWidth),
       height = Math.round(canvas.clientHeight);
     if (canvas.width !== width || canvas.height !== height) {

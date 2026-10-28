@@ -154,3 +154,9 @@ Le calcul de roulade distingue les rochers et parois de la grotte des berges des
 ### Atelier de bricolage
 
 L’atelier du village possède un sprite dédié (toit d’ardoise, charpente, enseigne de clé et établi), une emprise solide et une liaison au chemin. Il participe au tri d’occlusion et aux ombres solaires comme les autres bâtiments. Tessa utilise le gabarit de personnage existant. Les clés ont une icône dédiée dans le sac ; le panneau Bricoleur adapte les ingrédients à la quantité saisie et se replie en une colonne sur petit écran.
+
+### Champs de Braise
+
+Le terrain basaltique emploie des textures périodiques de 64 pixels, échantillonnées dans les coordonnées du monde. Le masque de sol soustrait les trois bassins de lave au contour extérieur et pilote aussi les collisions et le placement des flammes. Les routes utilisent leur union de distances. Les rochers conservent le tri en profondeur des autres environnements.
+
+Les slimes ont une palette orange et un cœur lumineux, une compression avant bond, une ombre au sol et des sautillements décoratifs ; la hauteur du bond réel vient de la simulation. Les traînées et cercles d’explosion sont dessinés au sol à partir des mêmes positions, rayons et durées que les dégâts. L’explosion disparaît après un unique déclenchement, remplacée par l’impact Feu et des particules. Des bulles de lave et des braises atmosphériques animent le décor sans ajouter de collisions ou de dégâts cachés.
