@@ -108,9 +108,9 @@ function refresh(s) {
 function refreshUltimate(s) {
   sound.update(s);
   const sunButton=app.querySelector('[data-action="lighting"]');
-  sunButton.disabled=s.zone==="slime-depths";
+  sunButton.disabled=["slime-depths","slime-marsh"].includes(s.zone);
   sunButton.setAttribute("aria-pressed",String(s.lighting!==false));
-  sunButton.title=s.zone==="slime-depths"?"Éclairage souterrain":s.lighting!==false?"Désactiver la lumière dorée":"Activer la lumière dorée";
+  sunButton.title=s.zone==="slime-depths"?"Éclairage souterrain":s.zone==="slime-marsh"?"Ciel couvert · Pluie battante":s.lighting!==false?"Désactiver la lumière dorée":"Activer la lumière dorée";
   tutorial?.update();
   const isTutorial=s.zone === "tutorial",isMarsh=s.zone === "slime-marsh",isDepths=s.zone === "slime-depths";
   const boss=depthsBoss(s),bossHud=app.querySelector('#boss-hud');
@@ -124,7 +124,7 @@ function refreshUltimate(s) {
   app.querySelector("#marsh-guide").hidden=inventoryOpen||!isMarsh||!s.marshGuideOpen;app.querySelector("#marsh-help").hidden=!isMarsh&&!isDepths;app.querySelector("#depths-guide").hidden=inventoryOpen||!isDepths||!s.depthsGuideOpen;
   app.querySelector(".zone-card h1").textContent=isTutorial?"Île des premiers pas":isDepths?"Crevasse des profondeurs":isMarsh?"Marais de Gelée":"Jardin des essais";
   app.querySelector(".zone-card .eyebrow").textContent=isTutorial?"AURORIA · TUTORIEL":isDepths?"AURORIA · PROFONDEURS":isMarsh?"AURORIA · ZONE SLIME":"AURORIA · ZONE DEV";
-  app.querySelector(".session-label").textContent=isTutorial?"Initiation · Iris vous accompagne":isDepths?"Eau & Terre · Scissions / Fusions":isMarsh?"Cascade vers les profondeurs · Sud-est":"Marais de Gelée · Sortie sud-est";
+  app.querySelector(".session-label").textContent=isTutorial?"Initiation · Iris vous accompagne":isDepths?"Eau & Terre · Scissions / Fusions":isMarsh?"Pluie battante · Cascade au sud-est":"Marais de Gelée · Sortie sud-est";
   app.querySelector("#tutorial-exit").hidden=inventoryOpen||!nearTutorialExit(s)||!canLeaveTutorial(s);
   app.querySelector('#sawmill-interaction').hidden=inventoryOpen||!nearSawmill(s);
   const harvest=app.querySelector('#harvest-status'),action=s.woodcutting.action;harvest.hidden=!action;

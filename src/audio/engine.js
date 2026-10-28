@@ -1,3 +1,4 @@
+import { createRainAmbience } from "./rain.js";
 import { audioPreferences } from "./events.js";
 import {
   makeNoise,
@@ -31,6 +32,7 @@ export function createAudioEngine({
     music,
     effects,
     buffer,
+    rain,
     interval,
     suspendTimer,
     nextTime = 0,
@@ -121,6 +123,12 @@ export function createAudioEngine({
   }
   function process(state) {
     const events = state.soundEvents?.splice(0) || [];
+    if (destroyed) return;
+    if (context) {
+      if (state.zone === "slime-marsh" && !rain)
+        rain = createRainAmbience(context, effects, buffer);
+      rain?.setActive(state.zone === "slime-marsh");
+    }
     if (
       !context ||
       context.state !== "running" ||
@@ -208,6 +216,7 @@ export function createAudioEngine({
       destroyed = true;
       clearInterval(interval);
       clearTimeout(suspendTimer);
+      rain?.destroy();
       if (context) void context.close().catch(() => {});
     },
   };

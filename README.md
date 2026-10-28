@@ -327,3 +327,9 @@ Au sud-est de la crevasse sommeille **Gorgelimon**, un boss **niveau 8 Eau / Ter
 - Les aspects peuvent se scinder et fusionner entre eux ; ils ne fusionnent pas avec les slimes ordinaires. La dernière phase accélère les attaques.
 
 La barre de vie indique les seuils, la phase et le temps avant réabsorption. Sa fiche de bestiaire décrit ses attaques et son butin : **Éclat de carapace abyssale**, **Cœur de Gorgelimon**, leurs variantes chromatiques, plus **un noyau Eau et un noyau Terre garantis** à la victoire. Les réabsorptions ne donnent aucune récompense. Une fuite, une défaite ou un départ de la zone remet le boss vivant au repos avec tous ses PV et supprime ses aspects. Un boss vaincu reste mort pendant l’expédition ; il revient avec la population suivante une fois la grotte entièrement nettoyée.
+
+### Météo des marais
+
+Les **Marais de Gelée** sont sous une pluie battante : gouttes obliques en deux profondeurs, éclaboussures sur la terre et rides sur l’eau, avec un ciel couvert plus froid. Les annonces d’attaque, cibles bonus et interfaces restent lisibles. La pluie reste limitée à cette carte ; la grotte et le village conservent leur ambiance. La préférence système de réduction des animations est respectée.
+
+Un bruit de pluie stéréo accompagne les marais et s’estompe en quittant la zone. Son volume suit **🔊 → Bruitages**, ainsi que le volume général et la sourdine. Le son démarre après la première interaction et se met en pause avec l’audio lorsque l’onglet est masqué.

@@ -130,3 +130,9 @@ Les slimes des profondeurs reprennent la silhouette de gelée avec palettes Eau 
 `rendering/depths-boss.js` dessine la silhouette originale du boss, la carapace de limon, les crêtes rocheuses et le cœur cristallin, ainsi que le repaire et les annonces d’éboulement. Le sprite est propre au boss : aucun changement de gabarit des personnages. Les états sommeil, scission, exposition et rage changent les yeux, la carapace et la lumière du cœur.
 
 Les cercles d’éboulement sont dessinés au même niveau que les autres annonces, au-dessus des zones de sorts au sol, avant les acteurs. Le cœur en scission est relié aux aspects par des lignes élémentaires, avec un compte à rebours. La barre de vie HTML reste hors du traitement de la scène et affiche les seuils de phase et les fenêtres de vulnérabilité. Le bestiaire et les deux ressources du boss disposent d’illustrations SVG distinctes.
+
+## 14. Pluie battante des marais
+
+`rendering/marsh-rain.js` pré-calcule des graines visuelles déterministes et des points d’éclaboussure classés terre/eau. L’animation utilise l’horloge du jeu, des coordonnées entières et de petits rectangles à la résolution native ; elle ne consomme jamais le hasard du gameplay. Les gouttes se répartissent en deux profondeurs. Le voile froid, les éclaboussures et la couche arrière passent avant les acteurs et les annonces ; la couche avant passe sous les effets d’attaque, textes de dégâts et cibles bonus. Les interfaces HTML restent hors de la pluie.
+
+La pluie est dessinée uniquement dans `slime-marsh`. Les rayons et ombres de soleil y sont remplacés par une ambiance de ciel couvert, sans modifier la préférence d’éclairage extérieure mémorisée. La préférence `prefers-reduced-motion` réduit la densité et fige les animations de pluie. Aucun état de combat ou de déplacement n’est modifié.

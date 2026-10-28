@@ -11,3 +11,9 @@ Le contexte est suspendu après un court fondu lors de la coupure générale ou 
 Les impacts de sorts portent les métadonnées de leur véritable source, y compris pour les projectiles, dégâts périodiques et zones. La classification ne dépend pas du dernier bouton pressé. Les effets d’épée, d’arc et de magie sont déclenchés à l’impact ; un petit retour de lancement reste distinct du bruit d’impact.
 
 La validation combine des tests de logique et un parcours navigateur avec contexte natif. Un rendu hors ligne vérifie le signal produit par les trois familles d’impacts et une boucle musicale complète : signal non nul, formes distinctes, raccord musical actif et absence de saturation. Les essais navigateur couvrent activation, volumes réels, persistance de la coupure, reprise et interface mobile.
+
+### Pluie des marais
+
+`audio/rain.js` produit une ambiance continue à partir de deux boucles de bruit déterministe décalées et panoramiques. Un passe-haut à 700 Hz et un passe-bas à 6 200 Hz donnent une texture de pluie. L’enveloppe entre et sort progressivement selon la zone. Le moteur crée cette ambiance à la première visite des marais après déverrouillage de l’audio, puis réutilise les deux sources.
+
+La pluie passe par le bus Bruitages et le volume général : ces réglages, la sourdine et la suspension de l’onglet s’appliquent. Au départ des marais, son gain revient à zéro ; à la destruction du moteur, les sources sont arrêtées et les nœuds déconnectés. Aucun téléchargement audio ni événement répété par goutte.

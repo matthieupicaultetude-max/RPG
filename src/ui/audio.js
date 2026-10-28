@@ -19,7 +19,7 @@ export function createAudioUI(app) {
       ([key, label]) =>
         `<label class="audio-level" for="audio-${key}"><span>${label}</span><output for="audio-${key}"></output><input id="audio-${key}" data-audio-level="${key}" type="range" min="0" max="100" step="1"/></label>`,
     )
-    .join("")}<small>Musique rétro douce et ambiance du jardin.</small>`;
+    .join("")}<small>Musique rétro douce · Pluie des marais réglable avec les bruitages.</small>`;
   app.querySelector(".game-screen").append(panel);
   button.setAttribute("aria-controls", panel.id);
   button.setAttribute("aria-expanded", "false");

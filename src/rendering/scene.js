@@ -1,3 +1,4 @@
+import {createMarshRain} from './marsh-rain.js';
 import {drawBossGround} from './depths-boss.js';
 import * as depthsMap from '../world/slime-depths-map.js';
 import {drawSeaSinkhole,drawDepthsGround,drawDepthsAtmosphere} from './slime-depths.js';
@@ -28,6 +29,7 @@ export function createRenderer(canvas) {
   ctx.imageSmoothingEnabled = false;
   const village = createEnvironment();
   const lighting = createGoldenHour(frame.width,frame.height);
+  const rain=createMarshRain();
   let tutorial, marsh, depths;
   function label(text, x, y) {
     ctx.font = "8px monospace";
@@ -63,11 +65,12 @@ export function createRenderer(canvas) {
     const environment = s.zone === "slime-depths" ? (depths ||= createEnvironment(depthsMap)) : s.zone === "tutorial" ? (tutorial ||= createEnvironment(tutorialMap)) : s.zone==='slime-marsh'?(marsh ||= createEnvironment(marshMap)):village;
     const canStand = (x,y)=>canWalkZone(x,y,s.zone);
     ctx.drawImage(environment.ground, 0, 0);
-    if(s.lighting!==false && s.zone!=="slime-depths")drawSunShadows(ctx,environment,s);
+    if(s.lighting!==false && !["slime-depths","slime-marsh"].includes(s.zone))drawSunShadows(ctx,environment,s);
     drawZonePassage(ctx,s);
     drawMarshGround(ctx,s);
     drawSeaSinkhole(ctx,s);
     drawDepthsGround(ctx,s);
+    rain.ground(ctx,s);
     for(const marker of environment.markers)label(marker.text,marker.x,marker.y);
     if(s.zone === "tutorial")drawTutorialGate(ctx,s);
     drawSpellGround(ctx,s);
@@ -186,6 +189,7 @@ export function createRenderer(canvas) {
       }
       ctx.restore();
     }
+    rain.foreground(ctx,s);
     drawMonsterAttackEffects(ctx,s);
     drawSpellOverlays(ctx,s);
     if (s.aim.active && !s.woodcutting.action && !s.monsters.some(monster=>monster.hp>0&&monster.bonusTarget?.time>0&&Math.hypot(s.aim.x-bonusTargetPosition(monster).x,s.aim.y-bonusTargetPosition(monster).y)<=BONUS_TARGET_RADIUS)) {
@@ -266,9 +270,10 @@ export function createRenderer(canvas) {
     screen.imageSmoothingEnabled = false;
     // Fill every viewport without stretching sprites. Follow the player when cropped.
     const view = viewport(width, height, s.player);
-    const litFrame = lighting.draw(frame,s.time,s.lighting!==false&&s.zone!=="slime-depths");
+    const litFrame = lighting.draw(frame,s.time,s.lighting!==false&&!["slime-depths","slime-marsh"].includes(s.zone));
     canvas.dataset.zone=s.zone;
-    canvas.dataset.lighting=s.zone==="slime-depths"?"cave":s.lighting===false?"off":lighting.mode;
+    canvas.dataset.weather=s.zone==="slime-marsh"?"heavy-rain":"clear";
+    canvas.dataset.lighting=s.zone==="slime-depths"?"cave":s.zone==="slime-marsh"?"overcast":s.lighting===false?"off":lighting.mode;
     screen.drawImage(
       litFrame,
       -view.x * view.scale,
