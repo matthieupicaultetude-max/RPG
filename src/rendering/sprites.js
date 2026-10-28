@@ -454,6 +454,9 @@ function handymanWorkshop(g){
  g.fillStyle='#cdb888';g.fillRect(-11,0,22,3);
  g.fillStyle='#74583b';g.fillRect(23,-5,13,5);g.fillRect(24,0,2,5);g.fillRect(33,0,2,5);g.fillStyle='#7ca5a2';g.fillRect(24,-7,12,3);
 }
+function windmill(g){
+ g.fillStyle='#556e6344';g.beginPath();g.ellipse(2,4,16,5,0,0,Math.PI*2);g.fill();g.fillStyle='#6f8f82';g.fillRect(-10,-31,20,34);g.fillStyle='#d0d4b2';g.fillRect(-8,-30,16,32);g.fillStyle='#9eb99d';for(let y=-26;y<0;y+=7)g.fillRect(-8,y,16,1);g.fillStyle='#5d8f8c';g.beginPath();g.moveTo(-15,-30);g.lineTo(0,-47);g.lineTo(15,-30);g.closePath();g.fill();g.fillStyle='#405f60';g.fillRect(-4,-10,8,13);g.fillStyle='#e5d4a4';g.fillRect(1,-6,1,2);g.fillStyle='#658b83';g.fillRect(-3,-26,6,6);g.fillStyle='#c9ece0';g.fillRect(-2,-25,4,4);
+}
 function sawmill(g){
  g.fillStyle='#745338';g.fillRect(-22,-7,44,7);g.fillRect(-19,0,4,5);g.fillRect(15,0,4,5);g.fillStyle='#bf9d64';g.fillRect(-24,-10,48,4);
  g.fillStyle='#a8b7af';g.fillRect(-9,-16,27,3);g.fillStyle='#6b5035';g.fillRect(-14,-20,7,15);g.fillStyle='#ddbf82';g.fillRect(-17,-20,13,3);
@@ -470,6 +473,7 @@ function marshReeds(g){for(let i=0;i<5;i++){const x=-8+i*4,h=12+(i*7)%17;g.fillS
 function waterLily(g){oval(g,0,-1,11,4,'#477f68');g.fillStyle='#80b28a';g.fillRect(-7,-3,10,2);poly(g,[[0,-3],[2,-9],[5,-6],[9,-8],[8,-3]],'#d7a6c5');g.fillStyle='#f4d4df';g.fillRect(3,-7,3,4);g.fillStyle='#f4dca0';g.fillRect(3,-4,3,2);}
 const DEFINITIONS = {
  workshop:{bounds:[-40,-68,82,79],origin:[0,0],paint:handymanWorkshop},
+ windmill:{bounds:[-25,-60,51,69],origin:[0,0],paint:windmill},
  'mountain-boulder':{bounds:[-23,-33,47,42],origin:[0,0],paint:mountainBoulder},
  'mountain-ridge':{bounds:[-35,-42,72,54],origin:[0,0],paint:mountainRidge},
  'alpine-tuft':{bounds:[-10,-12,22,19],origin:[0,0],paint:alpineTuft},

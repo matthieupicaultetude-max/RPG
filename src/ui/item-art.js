@@ -193,6 +193,10 @@ function equipmentArt(item, p) {
 function resourceArt(item) {
   const c = item.chromatic;
   switch (item.name) {
+    case "Gelée aérienne":
+      return path('M3 24 8 14l3-9 10 1 3 10 5 9-9 6-14-2z',c?'#b58cd9':'#83cfc9')+path('M9 19c3-9 14-4 10 2-3 5-10 2-7-2','none',c?'#f1cefa':'#daf5d7',2)+path('m8 11 2-3','none','#f0ffe6',2);
+    case "Perle d’alizé":
+      return path('M5 25 7 10l11-8 11 8-3 15-11 6z',c?'#9361b9':'#5e9f9d')+path('M11 12c10-10 19 9 5 13-11 2-11-10-2-12','none',c?'#f4d0fa':'#dff8d5',3)+path('M12 16c5-5 10 4 2 5','none',c?'#d69be8':'#a9dfcc',2);
     case "Scorie de magma":
       return path('m3 24 5-17 13-3 8 15-8 11-13-2z',c?'#9470bc':'#51414a')+path('m9 9 4 8-3 7 8 2 5-5-4-9','none',c?'#f0b6f5':'#ffb963',3)+path('m19 7 4 10','none','#fff0b4',1);
     case "Géode de fournaise":

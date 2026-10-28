@@ -408,3 +408,18 @@ Le magma **reste au sol**, même après avoir touché plusieurs personnages : br
 Au nord-est, **Pyroclaste, le Slime-Volcan**, boss niveau 9, se réveille avec **F** ou une attaque du héros principal à proximité. Son cratère projette des slimes vers des emplacements annoncés et verrouillés, puis les créatures atterrissent et combattent. Les vagues alternent slimes Feu et slimes de magma ; leurs impacts sont respectivement Feu et Terre, et laissent du magma. Sous **40 % de PV**, trois projections remplacent les deux habituelles et leur rythme accélère. Maximum six invocations vivantes, sans XP, or ou butin.
 
 Les slimes de magma donnent **Scorie de magma / Géode de fournaise**, avec variantes chromatiques et possibilité d’un noyau Terre ou Feu. Pyroclaste donne **Obsidienne de Pyroclaste / Cœur du volcan**, plus **un noyau Terre et un noyau Feu garantis** à la victoire. Les monstres du donjon ne réapparaissent pas durant l’expédition. Le bestiaire et le guide détaillent les règles. Les outils dev proposent l’accès gratuit au volcan, l’approche du boss et les ingrédients de la clé.
+
+## Hauts des Alizés · Slimes Vent
+
+Le passage du **plateau central des Cimes de Schiste + F** rejoint les Hauts des Alizés, sans clé. Trois plateaux verdoyants au-dessus des nuages sont reliés par des ponts suspendus ; moulins animés, herbes et feuilles portées par le vent habillent la zone. Le passage à l’ouest revient aux montagnes. **Outils dev → Hauts des Alizés** donne aussi un accès direct. L’arrivée est à l’écart des rencontres pour lire le guide.
+
+Les six **Slimes des alizés de niveau 5**, d’élément Air, enchaînent :
+
+1. **Gonflement pendant 1,8 s** : le grand cercle de 78 pixels aspire doucement la troupe. Le petit cercle de 43 pixels indique l’explosion à venir. Déplacez-vous pour en sortir ; la marche reste plus rapide que l’aspiration, même si plusieurs champs se superposent.
+2. **Explosion d’Air** à gonflement maximal, puis propulsion immédiate vers le premier atterrissage annoncé.
+3. **Deux bonds en ricochet**, avec des cercles numérotés **1 et 2** verrouillés dès le début. Chaque vol dure 0,5 s, avec une pause de 0,22 s entre les deux ; chaque impact touche dans un rayon de 23 pixels.
+4. **Récupération de 3,2 s** avant le prochain cycle.
+
+Immobiliser le slime pendant le gonflement ou la pause interrompt le cycle ; un saut déjà lancé va jusqu’à son atterrissage. L’aspiration respecte obstacles et précipices : aucun personnage n’est aspiré dans le vide. Les résistances Air et protections habituelles s’appliquent à l’explosion et aux impacts.
+
+Butins : **Gelée aérienne / Perle d’alizé**, avec variantes chromatiques, et possibilité d’un noyau Air standard. Le bestiaire présente les règles, les icônes et les statistiques réglables. Réapparition après 18 s ; une défaite soigne la troupe au point d’entrée. Les ingrédients des recettes existantes restent inchangés.

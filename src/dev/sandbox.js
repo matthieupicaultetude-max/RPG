@@ -1,3 +1,5 @@
+import {stepWindSuction} from '../game/wind-slimes.js';
+import {WIND_SPAWN} from '../world/slime-wind-map.js';
 import {magmaDamage,recordMagmaDamage,stepMagmaHazards,stepVolcanoBoss,awakenVolcanoBoss,finishVolcanoBoss} from '../game/volcano.js';
 import {VOLCANO_SPAWN} from '../world/volcano-map.js';
 import {leaveFireTrail,stepFireHazards,onFireSlimeDeath,resetFireSlime,stepFireEmergence} from '../game/fire-slimes.js';
@@ -65,7 +67,7 @@ export function note(s, message) {
 }
 export function teleport(s, station) {
   if(s.zone === "tutorial") {note(s,"Terminez ou passez le tutoriel pour rejoindre le village.");return;}
-  if(['slime-volcano','slime-fire','slime-marsh','slime-depths','slime-mountains'].includes(s.zone))travelToZone(s,'garden');
+  if(['slime-wind','slime-volcano','slime-fire','slime-marsh','slime-depths','slime-mountains'].includes(s.zone))travelToZone(s,'garden');
   const point = STATIONS[station];
   if (!point) return;
   cancelWoodcutting(s);
@@ -297,7 +299,7 @@ export function stepSandbox(s, direction, dt, elapsed = dt) {
       if(target.id===s.main)cancelWoodcutting(s);
       emitSound(s,kind==='tornado'?'magic':'hurt',target,{element,damage:taken});
       const origin=monster.intent?.from||monster,dx=target.x-origin.x,dy=target.y-origin.y,d=Math.hypot(dx,dy)||1;
-      const strength=kind==='burn'?0:kind==='charge'?7:kind==='leap'?4:2;
+      const strength=kind==='burn'?0:kind==='air-burst'?12:kind==='charge'?7:kind==='leap'?4:2;
       const point={x:target.x+dx/d*strength,y:target.y+dy/d*strength};
       if(canStand(point.x,point.y)){Object.assign(target,point);if(target.id===s.main)Object.assign(s.player,point);}
     }
@@ -308,6 +310,7 @@ export function stepSandbox(s, direction, dt, elapsed = dt) {
     s.revision++;
     if(s.team.every(m=>m.hp<=0))defeated=true;
   }};
+  stepWindSuction(s,dt,enemyContext);
   for(const monster of s.monsters)if(monster.fireSlime&&monster.hp>0&&!monster.fireTrailPoint)monster.fireTrailPoint={x:monster.x,y:monster.y};
   s.monsters.forEach((monster,index) => {
     monster.cooldown = Math.max(0, monster.cooldown - dt);
@@ -340,8 +343,8 @@ export function stepSandbox(s, direction, dt, elapsed = dt) {
   stepMonsterHazards(s,dt,enemyContext);
   if(defeated&&s.team.every(m=>m.hp<=0)){
     clearMonsterAttacks(s);setCombatMode(s,true);
-    if(s.zone==='tutorial'){Object.assign(s.player,{x:230,y:250});s.team.forEach(m=>Object.assign(m,s.player));placeAllies(s,canStand);}else if(s.zone==='slime-volcano')movePartyToZone(s,'slime-volcano',VOLCANO_SPAWN);else if(s.zone==='slime-fire')movePartyToZone(s,'slime-fire',FIRE_SPAWN);else if(s.zone==='slime-mountains')movePartyToZone(s,'slime-mountains',MOUNTAIN_SPAWN);else if(s.zone==='slime-depths')movePartyToZone(s,'slime-depths',DEPTHS_SPAWN);else if(s.zone==='slime-marsh')movePartyToZone(s,'slime-marsh',{x:MARSH_ENTRY.x+30,y:MARSH_ENTRY.y});else teleport(s,'maison');
-    heal(s);if(s.deployed)placeAllies(s,canStand);note(s,s.zone==='tutorial'?'Iris vous remet sur pied. Réessayez !':s.zone==='slime-volcano'?'Défaite : retour à l’entrée du volcan, sans nouvelle clé.':s.zone==='slime-fire'?'Défaite : retour au passage des Champs de Braise.':s.zone==='slime-mountains'?'Défaite : retour au col des montagnes.':s.zone==='slime-depths'?'Défaite : retour sur la berge des profondeurs.':s.zone==='slime-marsh'?'Défaite : retour à l’entrée des marais.':'Défaite : retour à la maison (règle de test).');
+    if(s.zone==='tutorial'){Object.assign(s.player,{x:230,y:250});s.team.forEach(m=>Object.assign(m,s.player));placeAllies(s,canStand);}else if(s.zone==='slime-wind')movePartyToZone(s,'slime-wind',WIND_SPAWN);else if(s.zone==='slime-volcano')movePartyToZone(s,'slime-volcano',VOLCANO_SPAWN);else if(s.zone==='slime-fire')movePartyToZone(s,'slime-fire',FIRE_SPAWN);else if(s.zone==='slime-mountains')movePartyToZone(s,'slime-mountains',MOUNTAIN_SPAWN);else if(s.zone==='slime-depths')movePartyToZone(s,'slime-depths',DEPTHS_SPAWN);else if(s.zone==='slime-marsh')movePartyToZone(s,'slime-marsh',{x:MARSH_ENTRY.x+30,y:MARSH_ENTRY.y});else teleport(s,'maison');
+    heal(s);if(s.deployed)placeAllies(s,canStand);note(s,s.zone==='tutorial'?'Iris vous remet sur pied. Réessayez !':s.zone==='slime-wind'?'Défaite : retour au passage des Alizés.':s.zone==='slime-volcano'?'Défaite : retour à l’entrée du volcan, sans nouvelle clé.':s.zone==='slime-fire'?'Défaite : retour au passage des Champs de Braise.':s.zone==='slime-mountains'?'Défaite : retour au col des montagnes.':s.zone==='slime-depths'?'Défaite : retour sur la berge des profondeurs.':s.zone==='slime-marsh'?'Défaite : retour à l’entrée des marais.':'Défaite : retour à la maison (règle de test).');
   }
   if(s.player.moving&&s.time>=(s.nextFootstep||0)){s.nextFootstep=s.time+.32;emitSound(s,"step",s.player,{owner:s.main});}
   s.bots.forEach(bot => {

@@ -1,3 +1,4 @@
+import {startWindCycle,stepWindSlime} from '../game/wind-slimes.js';
 import {clearMagmaHazards} from '../game/volcano.js';
 import {clearFireHazards} from '../game/fire-slimes.js';
 import {hasRockShell} from '../data/rock-shell.js';
@@ -66,6 +67,7 @@ function clippedEnd(from, to, canStand) {
   return end;
 }
 export function startMonsterAttack(state, monster, ctx) {
+  if(monster.windSlime)return startWindCycle(state,monster,ctx);
   const spec = monsterAttack(monster),
     members = activeParty(state);
   if (
@@ -183,6 +185,7 @@ function strikePath(state, attack, from, to, monster, ctx) {
     }
 }
 export function stepMonsterAbility(state, monster, dt, ctx) {
+  if(monster.windSlime)return stepWindSlime(state,monster,dt,ctx);
   const spec = monster.intent?.spec || monsterAttack(monster),
     a = monster.intent;
   if (!spec) return false;
