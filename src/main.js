@@ -1,3 +1,4 @@
+import {createMobileHud} from './ui/mobile-hud.js';
 import {depthsBoss,nearDepthsBoss,awakenDepthsBoss} from './game/depths-boss.js';
 import {nearZoneGate,useZoneGate,travelToZone} from './game/zone-travel.js';
 import { characterArt, paintCharacterArt } from './ui/character-art.js';
@@ -28,14 +29,14 @@ const app = document.querySelector('#app');
 app.innerHTML = `
 <main class="game-screen">
   <canvas width="640" height="400" tabindex="0" aria-label="Jardin des essais. Flèches ou ZQSD pour bouger, molette pour changer de personnage, clic gauche sur les cibles bonus, clic droit, R et C pour les sorts, T pour l’ultime personnel, E pour basculer combat ou exploration, K pour le grimoire, P pour les caractéristiques, I pour l’inventaire."></canvas>
-  <div class="hud-top"><div class="zone-card"><span class="eyebrow">AURORIA · ZONE DEV</span><h1>Jardin des essais</h1><span class="session-label"><i></i> Session locale · 3 bots</span></div><div class="hud-menu"><button data-action="inventory" aria-controls="inventory" aria-expanded="false">▣ Inventaire <kbd>I</kbd></button><button data-action="bestiary" aria-label="Bestiaire B">☷ <span>Bestiaire</span> <kbd>B</kbd></button><button data-action="characteristics">◈ <span>Carac.</span> <kbd>P</kbd></button><button data-action="spells">✦ <span>Grimoire</span> <kbd>K</kbd></button><button data-action="professions">🪓 <span>Métiers</span> <kbd>L</kbd></button><button data-action="tools">⚙ Outils dev</button><button data-action="audio" aria-label="Réglages audio">🔊</button><button data-action="marsh-help" id="marsh-help" aria-label="Guide de la zone" hidden>✿</button><button data-action="lighting" aria-label="Lumière dorée" aria-pressed="true" title="Désactiver la lumière dorée">☀</button><button data-action="fullscreen" aria-label="Basculer le plein écran">⛶</button></div></div>
+  <div class="hud-top"><div class="zone-card"><span class="eyebrow">AURORIA · ZONE DEV</span><h1>Jardin des essais</h1><span class="session-label"><i></i> Session locale · 3 bots</span></div><div class="menu-dock"><button id="mobile-menu-toggle" aria-label="Ouvrir le menu" aria-controls="hud-menu-panel" aria-expanded="false" hidden><span aria-hidden="true">☰</span></button><nav class="hud-menu" id="hud-menu-panel" aria-label="Menu du jeu"><button data-action="inventory" aria-controls="inventory" aria-expanded="false">▣ Inventaire <kbd>I</kbd></button><button data-action="bestiary" aria-label="Bestiaire B">☷ <span>Bestiaire</span> <kbd>B</kbd></button><button data-action="characteristics">◈ <span>Carac.</span> <kbd>P</kbd></button><button data-action="spells">✦ <span>Grimoire</span> <kbd>K</kbd></button><button data-action="professions">🪓 <span>Métiers</span> <kbd>L</kbd></button><button data-action="tools">⚙ Outils dev</button><button data-action="audio" aria-label="Réglages audio">🔊</button><button data-action="marsh-help" id="marsh-help" aria-label="Guide de la zone" hidden>✿<span class="mobile-menu-label">Guide</span></button><button data-action="lighting" aria-label="Lumière dorée" aria-pressed="true" title="Désactiver la lumière dorée">☀<span class="mobile-menu-label">Lumière</span></button><button data-action="fullscreen" aria-label="Basculer le plein écran">⛶<span class="mobile-menu-label">Écran</span></button></nav></div></div><button id="mobile-menu-scrim" aria-label="Fermer le menu" tabindex="-1" hidden></button>
   <div class="hud-team"><p class="hud-hint">VOTRE TROUPE <span>↕ Molette pour changer</span></p><div id="team" class="team-grid"></div></div>
   <div class="hud-notification" id="notification" role="status"></div>
   <div class="hud-bottom"><div class="controls-hint"><kbd>ZQSD</kbd> Bouger <span>·</span> <kbd>Clic droit</kbd> Attaquer <span>·</span> <kbd>Clic gauche</kbd> Cible bonus <span>·</span> <kbd>↕</kbd> Changer</div><div class="action-bar"><div id="spellbar" class="spellbar"></div><div class="ultimate-box"><button data-action="deploy" id="deploy">Exploration · E</button><span id="combat-status">Combat · 3 personnages · Vitesse normale</span></div></div></div>
   <aside id="marsh-guide" class="marsh-guide" aria-label="Guide des Marais de Gelée" hidden><p class="eyebrow">MARAIS DE GELÉE</p><h2>Absorption & fleurs éponges</h2><p>Chaque saut laisse une flaque pendant 18 s. Un slime qui y atterrit l’absorbe et grossit, jusqu’à trois tailles : plus de PV, de dégâts et une zone plus large, avec une préparation plus lente.</p><p>Faites rater le saut d’un gros slime : il perd une taille et libère un slime de taille 1, puis devient vulnérable pendant 2,5 s et reçoit +50 % de dégâts.</p><p>Un slime qui atterrit sur une fleur éponge violette boit son nectar et gagne une taille, jusqu’à trois. La fleur se recharge en 10 s et ne nettoie pas les flaques. Évitez les fleurs pour limiter la croissance, ou attirez-y un slime pour exploiter sa vulnérabilité après un saut raté !</p><button data-action="close-marsh-guide">Compris · Explorer le marais</button></aside>
   <aside id="depths-guide" class="marsh-guide" aria-label="Guide des profondeurs" hidden><p class="eyebrow">SOUS LA CASCADE</p><h2>La crevasse des profondeurs</h2><p>Les slimes abyssaux (Eau) et de limon (Terre), niveau 5, sont plus agressifs : bonds plus rapides, poursuite plus longue et peu de répit. Les zones d’impact annoncent toujours leurs attaques.</p><p>Esquivez un gros slime : il perd une taille et libère un petit. Deux slimes proches peuvent fusionner jusqu’à la taille 3 ; des anneaux dorés annoncent la fusion pendant 1 seconde. Repoussez-les ou éliminez-en un pour l’interrompre. Après une scission ou une fusion, ils attendent 5 secondes avant de refusionner.</p><p>Une fusion mixte alterne les attaques Eau et Terre. Séparez la horde ! Gorgelimon, boss de niveau 8, sommeille au sud-est : approchez puis appuyez sur F. À 70 % et 35 % de vie, éliminez ses aspects avant leur réabsorption. La remontée lumineuse à l’ouest vous ramène aux marais. Les ennemis vaincus restent morts ; une expédition entièrement nettoyée se renouvelle à votre prochaine visite.</p><button data-action="close-depths-guide">Compris · Explorer la crevasse</button></aside>
   <section id="boss-hud" class="boss-hud" aria-label="Gorgelimon, barre de vie du boss" hidden><div><strong>Gorgelimon</strong><span>Niveau 8 · Eau / Terre</span></div><div class="boss-life"><progress max="1" value="1" aria-label="Vie de Gorgelimon"></progress><i style="left:35%"></i><i style="left:70%"></i></div><p></p></section><button id="boss-interaction" data-action="awaken-boss" class="world-interaction" hidden>Réveiller Gorgelimon · F</button>
-  <button id="zone-gate" data-action="zone-gate" class="world-interaction" hidden></button><button id="tutorial-exit" data-action="tutorial-exit" class="world-interaction" hidden>Rejoindre le village · F</button><div id="harvest-status" class="harvest-status" hidden><span></span><progress max="1" value="0"></progress><button data-action="cancel-harvest">Annuler</button></div><button id="sawmill-interaction" data-action="sawmill" class="world-interaction" hidden>Scierie · F</button><button id="fountain-interaction" data-action="fountain" class="world-interaction" hidden>Fontaine du renouveau · F</button><button id="forge-interaction" data-action="forge" class="world-interaction" hidden>Parler à Borin · F</button><button id="petshop-interaction" data-action="petshop" class="world-interaction" hidden>Parler à Nola · F</button><nav class="touch-controls" aria-label="Déplacement tactile"><button data-direction="up" aria-label="Haut">↑</button><div><button data-direction="left" aria-label="Gauche">←</button><button data-direction="down" aria-label="Bas">↓</button><button data-direction="right" aria-label="Droite">→</button></div></nav>
+  <button id="zone-gate" data-action="zone-gate" class="world-interaction" hidden></button><button id="tutorial-exit" data-action="tutorial-exit" class="world-interaction" hidden>Rejoindre le village · F</button><div id="harvest-status" class="harvest-status" hidden><span></span><progress max="1" value="0"></progress><button data-action="cancel-harvest">Annuler</button></div><button id="sawmill-interaction" data-action="sawmill" class="world-interaction" hidden>Scierie · F</button><button id="fountain-interaction" data-action="fountain" class="world-interaction" hidden>Fontaine du renouveau · F</button><button id="forge-interaction" data-action="forge" class="world-interaction" hidden>Parler à Borin · F</button><button id="petshop-interaction" data-action="petshop" class="world-interaction" hidden>Parler à Nola · F</button><div class="touch-controls"><div class="joystick" data-joystick role="group" aria-label="Joystick de déplacement"><div class="joystick-base" aria-hidden="true"></div><div class="joystick-knob" aria-hidden="true"></div></div><span class="joystick-caption" aria-hidden="true">DÉPLACER</span></div>
   <div id="inventory-backdrop" class="inventory-backdrop" hidden></div>
   <section id="inventory" class="inventory-window" role="dialog" aria-modal="true" aria-labelledby="inventory-title" hidden>
     <h2 id="inventory-title" class="sr-only">Inventaire</h2>
@@ -56,7 +57,7 @@ let forgeItem = null;
 let devLootMonster = 'slime';
 const panel = app.querySelector('#panel');
 function refresh(s) {
-  app.querySelector('#team').innerHTML = s.team.map((m,i)=>`<button class="member ${i===s.main?'selected':''} ${m.hp===0?'fallen':''}" data-main="${i}" style="--role:${COLORS[m.role]}" aria-pressed="${i===s.main}"><span class="portrait">${characterArt(m,true)}</span><span class="member-text"><strong>${m.name}<small>Niv. ${m.level}</small></strong><span>${ROLES[m.role]}</span><span class="hp-track"><span style="width:${m.hp/m.maxHp*100}%"></span></span><small>${m.hp} / ${m.maxHp} PV</small></span></button>`).join('');
+  app.querySelector('#team').innerHTML = s.team.map((m,i)=>`<button class="member ${i===s.main?'selected':''} ${m.hp===0?'fallen':''}" data-main="${i}" aria-label="${m.name} · ${ROLES[m.role]} · Niveau ${m.level}" style="--role:${COLORS[m.role]}" aria-pressed="${i===s.main}"><span class="portrait">${characterArt(m,true)}</span><span class="member-text"><strong>${m.name}<small>Niv. ${m.level}</small></strong><span>${ROLES[m.role]}</span><span class="hp-track"><span style="width:${m.hp/m.maxHp*100}%"></span></span><small>${m.hp} / ${m.maxHp} PV</small></span></button>`).join('');
   paintCharacterArt(app.querySelector('#team'),s.team);
   app.querySelector('#bag-count').textContent = s.bag.reduce((sum,item)=>sum+item.quantity,0);
   refreshUltimate(s);
@@ -138,12 +139,13 @@ function refreshUltimate(s) {
   app.querySelector('#forge-interaction').hidden = inventoryOpen || !nearForge(s);
   app.querySelector('#petshop-interaction').hidden = inventoryOpen || !nearPetShop(s);
   const button = app.querySelector('#deploy');
-  button.textContent = s.deployed ? 'Exploration · E' : 'Mode combat · E';
+  button.textContent = mobileHud?.isMobile ? (s.deployed?'Explorer':'Combat') : (s.deployed?'Exploration · E':'Mode combat · E');
   button.setAttribute('aria-pressed', String(s.deployed));
   button.title = s.deployed ? 'Passer en exploration : un personnage et vitesse +50 %' : 'Déployer la troupe : trois personnages et vitesse normale';
-  app.querySelector('#combat-status').textContent = s.deployed ? 'Combat · 3 personnages · Vitesse normale' : 'Exploration · 1 personnage · Vitesse +50 %';
+  app.querySelector('#combat-status').textContent = mobileHud?.isMobile ? (s.deployed?'Troupe déployée':'Vitesse +50 %') : (s.deployed?'Combat · 3 personnages · Vitesse normale':'Exploration · 1 personnage · Vitesse +50 %');
 }
 function setInventory(open, tab = currentTab) {
+  mobileHud?.close();
   if(open)sound.close();
   if(currentTab!==tab)panel.scrollTop=0;
   inventoryOpen = open;
@@ -160,13 +162,25 @@ function setInventory(open, tab = currentTab) {
     app.querySelector('[data-action="close-inventory"]').focus();
   } else app.querySelector('canvas').focus({ preventScroll: true });
 }
-let tutorial;
+let tutorial,mobileHud;
 const game = createGame(app.querySelector('canvas'),app.querySelector('.touch-controls'),refresh,refreshUltimate,tab=>setInventory(true,tab));
+mobileHud=createMobileHud(app,{onOpen:()=>game.clearInput(),onLayoutChange:()=>{game.clearInput();game.refresh();}});
 tutorial = createTutorialUI(app, game, setInventory);
 refresh(game.state);
+const touchSpellCasts=new WeakMap(),touchUIController=new AbortController();
+function castHudSpell(button){
+  castEquipped(game.state,Number(button.dataset.castSpell),mobileHud.isMobile?null:undefined);
+  game.refresh();app.querySelector('canvas').focus({preventScroll:true});
+}
+app.addEventListener('pointerdown',event=>{
+  const button=event.target.closest('button[data-cast-spell]');
+  if(event.pointerType!=='touch'||!button||button.disabled||inventoryOpen)return;
+  event.preventDefault();touchSpellCasts.set(button,performance.now());castHudSpell(button);
+},{signal:touchUIController.signal});
 app.addEventListener('click',event=>{
   const button=event.target.closest('button'); if(!button)return;
   const s=game.state;
+  if(['mobile-menu-toggle','mobile-menu-scrim'].includes(button.id))return;
   if(button.dataset.action==='audio'||button.closest('#audio-settings')||button.closest('.tutorial'))return;
   if(button.dataset.action === 'tutorial-exit'){if(nearTutorialExit(s)&&canLeaveTutorial(s)){finishTutorial(s);game.refresh();refresh(s);}return;}
   if(button.dataset.action==='awaken-boss'){if(nearDepthsBoss(s))awakenDepthsBoss(s);game.refresh();refresh(s);app.querySelector('canvas').focus({preventScroll:true});return;}
@@ -182,7 +196,7 @@ app.addEventListener('click',event=>{
   if (button.dataset.action === 'characteristics') {setInventory(true,'characteristics');return;}
   if (button.dataset.action === 'fountain') {if(nearFountain(s))setInventory(true,'characteristics');return;}
   if (button.dataset.action === 'spells') {setInventory(true,'spells');return;}
-  if(button.dataset.castSpell!==undefined&&!inventoryOpen){castEquipped(s,Number(button.dataset.castSpell));game.refresh();app.querySelector('canvas').focus({preventScroll:true});return;}
+  if(button.dataset.castSpell!==undefined&&!inventoryOpen){const touchTime=touchSpellCasts.get(button);touchSpellCasts.delete(button);if(touchTime!==undefined&&performance.now()-touchTime<1000&&event.detail!==0)return;castHudSpell(button);return;}
   if (button.dataset.action === 'forge') { if(nearForge(s))setInventory(true,'forge'); return; }
   if (button.dataset.action === 'petshop') { if(nearPetShop(s))setInventory(true,'petshop'); return; }
   if (button.dataset.action === 'tools') { setInventory(true, 'tools'); return; }
@@ -279,4 +293,4 @@ window.addEventListener('keydown', event => {
 }, uiOptions);
 // Read-only inspection for browser checks; mutations go through the visible tools.
 window.auroria={snapshot:()=>JSON.parse(JSON.stringify(game.state))};
-if(import.meta.hot)import.meta.hot.dispose(()=>{uiController.abort();sound.destroy();tutorial.destroy();game.destroy();delete window.auroria;});
+if(import.meta.hot)import.meta.hot.dispose(()=>{uiController.abort();touchUIController.abort();mobileHud.destroy();sound.destroy();tutorial.destroy();game.destroy();delete window.auroria;});

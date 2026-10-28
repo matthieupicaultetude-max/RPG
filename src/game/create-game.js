@@ -68,5 +68,5 @@ export function createGame(canvas, touchControls, onChange, onTimers = () => {},
     frame = requestAnimationFrame(tick);
   }
   frame = requestAnimationFrame(tick);
-  return { state, setInterfaceOpen(open) { interfaceOpen = open;if(open)cancelWoodcutting(state); state.spellCharge=null; state.aim.active = false; controls.clear(); }, refresh() { state.revision++; }, reset() { teleport(state, 'maison'); }, destroy() { cancelAnimationFrame(frame); controls.destroy(); render.destroy?.(); controller.abort(); } };
+  return { state, clearInput(){controls.clear();state.spellCharge=null;state.aim.active=false;}, setInterfaceOpen(open) { interfaceOpen = open;if(open)cancelWoodcutting(state); state.spellCharge=null; state.aim.active = false; controls.clear(); }, refresh() { state.revision++; }, reset() { teleport(state, 'maison'); }, destroy() { cancelAnimationFrame(frame); controls.destroy(); render.destroy?.(); controller.abort(); } };
 }

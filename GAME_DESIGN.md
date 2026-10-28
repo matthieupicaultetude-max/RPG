@@ -607,3 +607,13 @@ Le cœur est invulnérable pendant cette séquence, jusqu’à 12 secondes. Éli
 ## 41. Pluie battante dans les Marais de Gelée
 
 La météo des marais est une pluie battante permanente, limitée à cette carte : gouttes obliques, éclaboussures et rides sur l’eau, palette sous ciel couvert et bruit de pluie stéréo. Les avertissements d’attaque et cibles bonus conservent leur priorité visuelle. La pluie n’ajoute aucun malus, bonus de dégâts ou changement de déplacement. Elle respecte la réduction des animations du système ; son volume suit les bruitages et la sourdine. L’ambiance sonore s’estompe lors des trajets vers le village ou les profondeurs.
+
+## 42. Interface tactile
+
+L’interface compacte s’active sur les écrans étroits ou avec pointeur tactile principal. Un carré ☰ en haut à droite déploie les panneaux du jeu dans une grille de boutons. La sélection ferme le menu et ouvre le panneau choisi ; toucher à côté ou presser Échap ferme le menu. L’ouverture remet les entrées de mouvement à zéro. Les portraits compacts restent accessibles en haut à gauche pour changer de personnage.
+
+Un joystick fixe en bas à gauche remplace les flèches. Sa zone morte évite la dérive ; son inclinaison contrôle progressivement la vitesse jusqu’à la vitesse du mode courant. Le vecteur reste borné pour ne pas accélérer en diagonale. La capture du pointeur permet de dépasser le socle sans perdre le geste. Relâchement, annulation tactile, perte de visibilité, changement de disposition et ouverture d’un panneau annulent le mouvement.
+
+À droite, le bouton principal Base est entouré des trois autres emplacements : Sort 2, Sort 3 et Ultime. Les sorts partent à la pression tactile et utilisent l’assistance de ciblage du système de combat. Le second doigt peut lancer un sort pendant que le premier maintient le joystick. Le clic synthétique suivant un toucher ne doit jamais lancer deux actions. Recharges, disponibilité, jauge et restrictions de niveau restent partagées avec les commandes classiques. Le bouton Explorer / Combat se trouve près des sorts.
+
+La disposition est prévue pour les deux orientations, respecte les zones de sécurité de l’écran et laisse les dialogues défiler normalement. Les commandes clavier, souris et la disposition large restent disponibles sur ordinateur.

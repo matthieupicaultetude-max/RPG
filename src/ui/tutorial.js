@@ -23,11 +23,11 @@ export function createTutorialUI(app, game, openPanel) {
     ],
     move: [
       "Faites vos premiers pas",
-      "Déplacez-vous avec ZQSD, WASD ou les flèches. Sur mobile, utilisez les flèches tactiles. Parcourez quelques pas pour continuer.",
+      "Déplacez-vous avec ZQSD, WASD ou les flèches. Sur mobile, utilisez le joystick en bas à gauche. Parcourez quelques pas pour continuer.",
     ],
     ready: [
       "Prêt pour le combat ?",
-      "Visez à la souris et attaquez au clic droit. R et C lancent les autres sorts équipés. Cliquez gauche sur une cible dorée pour répéter les derniers dégâts ! Le combat est le mode initial : vos trois personnages sont déployés. E bascule librement en exploration (un personnage, vitesse +50 %) ou en combat (troupe déployée, vitesse normale). T est l’ultime personnel, à débloquer dès le niveau 5. Sur mobile, touchez les sorts en bas.",
+      "Visez à la souris et attaquez au clic droit. R et C lancent les autres sorts équipés. Cliquez gauche sur une cible dorée pour répéter les derniers dégâts ! Le combat est le mode initial : vos trois personnages sont déployés. E bascule librement en exploration (un personnage, vitesse +50 %) ou en combat (troupe déployée, vitesse normale). T est l’ultime personnel, à débloquer dès le niveau 5. Sur mobile, déplacez-vous avec le joystick à gauche, touchez les sorts à droite et ouvrez les panneaux depuis le petit menu en haut à droite.",
     ],
     combat: [
       "Battez le slime d’entraînement",

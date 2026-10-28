@@ -1,36 +1,54 @@
-const bindings = { ArrowUp: 'up', KeyW: 'up', KeyZ: 'up', ArrowDown: 'down', KeyS: 'down', ArrowLeft: 'left', KeyA: 'left', KeyQ: 'left', ArrowRight: 'right', KeyD: 'right' };
+import { createJoystick } from "./joystick.js";
+const bindings = {
+  ArrowUp: "up",
+  KeyW: "up",
+  KeyZ: "up",
+  ArrowDown: "down",
+  KeyS: "down",
+  ArrowLeft: "left",
+  KeyA: "left",
+  KeyQ: "left",
+  ArrowRight: "right",
+  KeyD: "right",
+};
 
 export function createControls(canvas, touchControls) {
   const controller = new AbortController();
   const options = { signal: controller.signal };
   const keys = new Set();
-  const pointers = new Map();
-  const clear = () => { keys.clear(); pointers.clear(); };
-  canvas.addEventListener('keydown', event => {
-    if (!bindings[event.code]) return;
-    event.preventDefault();
-    keys.add(event.code);
-  }, options);
-  window.addEventListener('keyup', event => keys.delete(event.code), options);
-  window.addEventListener('blur', clear, options);
-  canvas.addEventListener('blur', clear, options);
-  document.addEventListener('visibilitychange', clear, options);
-  touchControls.querySelectorAll('[data-direction]').forEach(button => {
-    button.addEventListener('pointerdown', event => {
+  const joystick = createJoystick(
+    touchControls.querySelector("[data-joystick]"),
+  );
+  const clear = () => {
+    keys.clear();
+    joystick.clear();
+  };
+  canvas.addEventListener(
+    "keydown",
+    (event) => {
+      if (!bindings[event.code]) return;
       event.preventDefault();
-      button.setPointerCapture(event.pointerId);
-      pointers.set(event.pointerId, button.dataset.direction);
-    }, options);
-    for (const name of ['pointerup', 'pointercancel', 'lostpointercapture']) {
-      button.addEventListener(name, event => pointers.delete(event.pointerId), options);
-    }
-  });
+      keys.add(event.code);
+    },
+    options,
+  );
+  window.addEventListener("keyup", (event) => keys.delete(event.code), options);
+  window.addEventListener("blur", clear, options);
+  // Tapping a spell with the other thumb must not cancel the captured joystick.
+  canvas.addEventListener("blur", () => keys.clear(), options);
+  document.addEventListener("visibilitychange", clear, options);
   return {
     clear,
     direction() {
-      const active = new Set([...keys].map(key => bindings[key]).concat([...pointers.values()]));
-      return { x: Number(active.has('right')) - Number(active.has('left')), y: Number(active.has('down')) - Number(active.has('up')) };
+      const active = new Set([...keys].map((key) => bindings[key]));
+      const x = Number(active.has("right")) - Number(active.has("left")),
+        y = Number(active.has("down")) - Number(active.has("up"));
+      return x || y ? { x, y } : joystick.direction();
     },
-    destroy() { clear(); controller.abort(); },
+    destroy() {
+      clear();
+      joystick.destroy();
+      controller.abort();
+    },
   };
 }

@@ -29,7 +29,7 @@ export function createAudioUI(app) {
   }
   function sync() {
     const settings = engine.preferences;
-    button.textContent = settings.muted ? "🔇" : "🔊";
+    button.innerHTML = `${settings.muted ? "🔇" : "🔊"}<span class="mobile-menu-label">Audio</span>`;
     button.setAttribute(
       "aria-label",
       settings.muted ? "Réglages audio · son coupé" : "Réglages audio",

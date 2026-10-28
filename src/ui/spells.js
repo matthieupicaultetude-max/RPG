@@ -22,7 +22,7 @@ export function renderSpellbook(state, slot = 0, filter = "all") {
   return `<div class="petshop-heading"><p class="eyebrow">GRIMOIRE · ${member.role === "melee" ? "COMBATTANT" : member.role === "support" ? "SOUTIEN" : "DISTANCE"}</p><h2>Les sorts de ${member.name}</h2><p>Niveau ${member.level} · ${known}/12 sorts normaux · ${member.learnedUltimates.length}/4 ultimes · <strong>${choices} choix d’ultime disponible${choices > 1 ? "s" : ""}</strong></p><p>Un sort par niveau : Terre, Feu, Air, Eau, puis le cycle reprend. Un choix d’ultime tous les 5 niveaux. Mélangez les éléments débloqués de votre classe.</p></div><div class="spellbook-party">${state.team.map((m) => `<button data-main="${m.id}" aria-pressed="${m.id === state.main}">${m.name}</button>`).join("")}</div><div class="spell-loadout">${member.loadout
     .map((id, index) => {
       const spell = spellById(id);
-      return `<button data-spell-slot="${index}" aria-pressed="${slot === index}">${spellIcon(spell)}<small>${["Clic droit", "R", "C", "T · Ultime"][index]}</small><strong>${spell?.name || "Emplacement libre"}</strong><span>${spell ? ELEMENTS[spell.element].name : index === 3 ? "Choix aux niveaux 5, 10, 15, 20" : "Équipez un sort débloqué"}</span></button>`;
+      return `<button data-spell-slot="${index}" aria-pressed="${slot === index}">${spellIcon(spell)}<small>${["Base · Clic droit", "Sort 2 · R", "Sort 3 · C", "Ultime · T"][index]}</small><strong>${spell?.name || "Emplacement libre"}</strong><span>${spell ? ELEMENTS[spell.element].name : index === 3 ? "Choix aux niveaux 5, 10, 15, 20" : "Équipez un sort débloqué"}</span></button>`;
     })
     .join(
       "",
@@ -53,7 +53,7 @@ export function updateSpellBar(state, container) {
     container.innerHTML = member.loadout
       .map((id, index) => {
         const spell = spellById(id);
-        return `<button data-cast-spell="${index}" title="${spell ? `${spell.name} · ${ELEMENTS[spell.element].name} — ${spell.description}` : "Choisissez un sort débloqué dans le grimoire (K)"}" style="--spell-color:${spell ? ELEMENTS[spell.element].color : "#65715d"}">${spellIcon(spell)}<strong>${spell?.name || "Emplacement libre"}</strong><kbd>${["Clic droit", "R", "C", "T"][index]}</kbd><small class="spell-timer"></small><span class="spell-charge-track"><span></span></span></button>`;
+        return `<button data-cast-spell="${index}" aria-label="${spell?.name || "Emplacement libre"}${index===0?" · Sort de base":index===3?" · Ultime":""}" title="${spell ? `${spell.name} · ${ELEMENTS[spell.element].name} — ${spell.description}` : "Choisissez un sort débloqué dans le grimoire (K)"}" style="--spell-color:${spell ? ELEMENTS[spell.element].color : "#65715d"}">${spellIcon(spell)}<span class="touch-spell-label">${index===0?"Base":index===3?"Ultime":`Sort ${index+1}`}</span><strong>${spell?.name || "Emplacement libre"}</strong><kbd>${["Clic droit", "R", "C", "T"][index]}</kbd><small class="spell-timer"></small><span class="spell-charge-track"><span></span></span></button>`;
       })
       .join("");
   }
@@ -62,12 +62,13 @@ export function updateSpellBar(state, container) {
     if (!spell) {
       button.disabled = true;
       button.querySelector(".spell-timer").textContent =
-        index === 3 && member.level < 5 ? "Niveau 5" : "Grimoire K";
+        index === 3 && member.level < 5 ? "Niveau 5" : "À équiper";
       button.querySelector(".spell-charge-track > span").style.width = "0%";
       return;
     }
     const cooldown = member.spellCooldowns[spell.id] || 0,
       danceExit = index === 3 && member.buffs.dance?.time > 0;
+    button.setAttribute("aria-label",`${danceExit?"Choisir la sortie":spell.name}${index===0?" · Sort de base":index===3?" · Ultime":""}`);
     button.disabled =
       member.hp <= 0 ||
       !isSpellUnlocked(member, spell) ||

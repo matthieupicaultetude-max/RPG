@@ -333,3 +333,12 @@ La barre de vie indique les seuils, la phase et le temps avant réabsorption. Sa
 Les **Marais de Gelée** sont sous une pluie battante : gouttes obliques en deux profondeurs, éclaboussures sur la terre et rides sur l’eau, avec un ciel couvert plus froid. Les annonces d’attaque, cibles bonus et interfaces restent lisibles. La pluie reste limitée à cette carte ; la grotte et le village conservent leur ambiance. La préférence système de réduction des animations est respectée.
 
 Un bruit de pluie stéréo accompagne les marais et s’estompe en quittant la zone. Son volume suit **🔊 → Bruitages**, ainsi que le volume général et la sourdine. Le son démarre après la première interaction et se met en pause avec l’audio lorsque l’onglet est masqué.
+
+### Commandes sur téléphone
+
+- **☰ en haut à droite** ouvre un menu compact : Inventaire, Bestiaire, Caractéristiques, Grimoire, Métiers, Outils dev, Audio et affichage. Touchez un bloc pour ouvrir son panneau ; le menu se referme après la sélection. Touchez à côté ou de nouveau sur le carré pour le fermer.
+- **Joystick en bas à gauche** : direction libre, inclinaison légère pour marcher doucement, inclinaison complète pour la vitesse normale. Relâcher arrête le personnage. Le joystick et les sorts acceptent deux doigts simultanés.
+- **Gros bouton Base à droite**, avec **Sort 2, Sort 3 et Ultime** autour. Les sorts tactiles partent dès la pression et utilisent la visée assistée du jeu, avec les recharges et la jauge d’ultime visibles. Les emplacements vides se configurent dans le Grimoire depuis ☰.
+- **Portraits de l’équipe en haut à gauche** : touchez un héros pour le contrôler. **Explorer / Combat**, au-dessus des sorts, permet de changer de mode.
+
+La disposition s’adapte au portrait et au paysage, aux petits écrans et aux zones réservées par l’encoche. L’interface ordinateur conserve ses menus, raccourcis clavier et barre de sorts habituels.
