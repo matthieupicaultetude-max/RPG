@@ -1,4 +1,9 @@
-import {resetDepthsBoss} from './depths-boss.js';
+import { createMountainWorld } from "./mountain-slimes.js";
+import {
+  MOUNTAIN_ENTRY,
+  MOUNTAIN_SPAWN,
+} from "../world/slime-mountains-map.js";
+import { resetDepthsBoss } from "./depths-boss.js";
 import { movePartyToZone } from "../world/zones.js";
 import {
   MARSH_ENTRY,
@@ -10,8 +15,9 @@ import { createMarshWorld, stepSlimeMarsh } from "./slime-marsh.js";
 import { createDepthsWorld, clearDepthsFusions } from "./slime-depths.js";
 import { clearMonsterAttacks } from "../combat/monster-attacks.js";
 import { emitSound } from "../audio/events.js";
+export const GARDEN_MOUNTAIN_GATE = { x: 565, y: 100 };
 export const GARDEN_MARSH_GATE = { x: 390, y: 355 };
-const ZONES = ["garden", "slime-marsh", "slime-depths"];
+const ZONES = ["garden", "slime-marsh", "slime-depths", "slime-mountains"];
 export function nearZoneGate(state) {
   if (state.zoneDive) return null;
   const gates =
@@ -21,6 +27,11 @@ export function nearZoneGate(state) {
             ...GARDEN_MARSH_GATE,
             destination: "slime-marsh",
             label: "Entrer dans les Marais de Gelée",
+          },
+          {
+            ...GARDEN_MOUNTAIN_GATE,
+            destination: "slime-mountains",
+            label: "Gravir les Cimes de Schiste",
           },
         ]
       : state.zone === "slime-marsh"
@@ -44,7 +55,15 @@ export function nearZoneGate(state) {
                 label: "Remonter aux marais",
               },
             ]
-          : [];
+          : state.zone === "slime-mountains"
+            ? [
+                {
+                  ...MOUNTAIN_ENTRY,
+                  destination: "garden",
+                  label: "Redescendre au village",
+                },
+              ]
+            : [];
   return (
     gates.find(
       (g) => Math.hypot(state.player.x - g.x, state.player.y - g.y) < 32,
@@ -74,25 +93,32 @@ export function travelToZone(state, destination) {
   if (destination === "slime-depths" && world?.monsters.every((m) => m.hp <= 0))
     world = null;
   world ||=
-    destination === "slime-depths"
-      ? createDepthsWorld(state.time)
-      : destination === "slime-marsh"
-        ? createMarshWorld(state)
-        : null;
+    destination === "slime-mountains"
+      ? createMountainWorld()
+      : destination === "slime-depths"
+        ? createDepthsWorld(state.time)
+        : destination === "slime-marsh"
+          ? createMarshWorld(state)
+          : null;
   if (!world) return false;
   delete state.zoneDive;
   Object.assign(state, world);
   const point =
-    destination === "slime-depths"
-      ? DEPTHS_SPAWN
-      : destination === "slime-marsh"
-        ? origin === "slime-depths"
-          ? { x: MARSH_DEPTHS_GATE.x, y: MARSH_DEPTHS_GATE.y - 15 }
-          : { x: MARSH_ENTRY.x + 30, y: MARSH_ENTRY.y }
-        : { x: GARDEN_MARSH_GATE.x, y: GARDEN_MARSH_GATE.y - 25 };
+    destination === "slime-mountains"
+      ? MOUNTAIN_SPAWN
+      : destination === "slime-depths"
+        ? DEPTHS_SPAWN
+        : destination === "slime-marsh"
+          ? origin === "slime-depths"
+            ? { x: MARSH_DEPTHS_GATE.x, y: MARSH_DEPTHS_GATE.y - 15 }
+            : { x: MARSH_ENTRY.x + 30, y: MARSH_ENTRY.y }
+          : origin === "slime-mountains"
+            ? { x: GARDEN_MOUNTAIN_GATE.x - 15, y: GARDEN_MOUNTAIN_GATE.y + 15 }
+            : { x: GARDEN_MARSH_GATE.x, y: GARDEN_MARSH_GATE.y - 25 };
   movePartyToZone(state, destination, point);
   state.marshGuideOpen = false;
   state.depthsGuideOpen = false;
+  state.mountainGuideOpen = false;
   if (destination === "slime-marsh") {
     stepSlimeMarsh(state);
     state.marshGuideOpen = !state.slimeMarsh.visited;
@@ -103,12 +129,18 @@ export function travelToZone(state, destination) {
     state.visitedDepths = true;
     emitSound(state, "magic", point, { element: "water" });
   }
+  if (destination === "slime-mountains") {
+    state.mountainGuideOpen = !state.visitedMountains;
+    state.visitedMountains = true;
+  }
   state.log.unshift(
-    destination === "slime-depths"
-      ? "Crevasse des profondeurs : bonds rapides, scissions et fusions Eau / Terre."
-      : destination === "slime-marsh"
-        ? "Marais de Gelée : attention, les fleurs éponges font grossir les slimes !"
-        : "Retour au village.",
+    destination === "slime-mountains"
+      ? "Cimes de Schiste : attirez les charges contre les rochers pour briser les carapaces !"
+      : destination === "slime-depths"
+        ? "Crevasse des profondeurs : bonds rapides, scissions et fusions Eau / Terre."
+        : destination === "slime-marsh"
+          ? "Marais de Gelée : attention, les fleurs éponges font grossir les slimes !"
+          : "Retour au village.",
   );
   state.log.length = Math.min(6, state.log.length);
   state.revision++;

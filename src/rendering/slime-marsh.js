@@ -156,7 +156,7 @@ export function drawMarshGround(g, state) {
   g.restore();
 }
 export function drawMarshSlimeStatus(g, monster, state) {
-  if ((!monster.marshSlime&&!monster.depthsSlime) || monster.hp <= 0) return;
+  if ((!monster.marshSlime&&!monster.depthsSlime&&!monster.mountainSlime) || monster.hp <= 0) return;
   const scale = slimeScale(monster),
     y = monster.y - 30 * scale - (monster.lift || 0);
   g.save();

@@ -617,3 +617,17 @@ Un joystick fixe en bas à gauche remplace les flèches. Sa zone morte évite la
 À droite, le bouton principal Base est entouré des trois autres emplacements : Sort 2, Sort 3 et Ultime. Les sorts partent à la pression tactile et utilisent l’assistance de ciblage du système de combat. Le second doigt peut lancer un sort pendant que le premier maintient le joystick. Le clic synthétique suivant un toucher ne doit jamais lancer deux actions. Recharges, disponibilité, jauge et restrictions de niveau restent partagées avec les commandes classiques. Le bouton Explorer / Combat se trouve près des sorts.
 
 La disposition est prévue pour les deux orientations, respecte les zones de sécurité de l’écran et laisse les dialogues défiler normalement. Les commandes clavier, souris et la disposition large restent disponibles sur ordinateur.
+
+## 43. Cimes de Schiste — carapace et collisions
+
+Zone montagneuse reliée au nord-est du village par F, également accessible depuis les outils dev. Trois plateaux rocheux sont reliés par des ponts de bois au-dessus de crevasses. Les rochers et parois servant de points d’impact sont solides, visibles et distincts des précipices. Le col au sud-ouest permet le retour. La pluie reste propre aux marais ; les cimes conservent l’éclairage extérieur et les préférences habituelles. Les commandes téléphone et le guide de zone restent accessibles par le menu compact.
+
+**Slime de schiste.** Élément Terre, niveau 5, 133 PV, corps ambré entouré de plaques de schiste gris et de veines ocres. Sa carapace réduit tous les dégâts de 40 %, avec un minimum de 1 dégât. Les fissures suivent visuellement ses blessures ; la réduction reste constante jusqu’à la rupture. Les copies de dégâts des cibles dorées utilisent directement le dernier montant réellement reçu et ne réappliquent ni réduction ni vulnérabilité.
+
+**Roulade de schiste.** Annonce Terre de 1,3 s, demi-largeur 12 px, portée 170 px, vitesse 170 px/s, repos 2,1 s, dégâts de base ×1,4. Le slime vise le membre vivant déployé le plus proche, verrouille sa direction et dépasse la position ciblée. La trajectoire est coupée au premier obstacle ou bord inaccessible ; le couloir visible correspond à cet arrêt. Chaque personnage ne peut subir qu’une touche par charge.
+
+**Briser la carapace.** Une collision avec un gros rocher ou une paroi détruit la protection et expose le cœur pendant 3 s : le slime ne lance aucune nouvelle attaque et reçoit +50 % de dégâts. Il conserve ensuite sa forme sans armure jusqu’à sa mort, sans réparation intermédiaire. Les collisions suivantes ne créent pas une nouvelle rupture. Un arrêt au bord du vide ou une interruption par enracinement ne détruit pas la carapace. Les points d’impact sont revalidés si le slime est repoussé pendant la préparation.
+
+La zone se concentre sur cette interaction avec le terrain. Les éboulements, filons de réparation et ondes de résonance proposés restent réservés à d’autres monstres. Il n’y a pas de scission ou de fusion pour le slime de schiste.
+
+**Progression et persistance.** Ressources normale et rare : Éclat de schiste et Cœur d’ambre, chacune avec variation chromatique selon les probabilités usuelles. Le noyau bonus est Terre et suit la tranche de niveau du monstre. Pas de nouvelle recette débutante dans cette zone. Les blessures et carapaces restent conservées lors des allers-retours pendant la session ; chaque réapparition après 18 s restaure les PV et la carapace au point d’origine. Une défaite ramène la troupe soignée au col sans perte d’or ni d’objets.

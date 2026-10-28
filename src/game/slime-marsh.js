@@ -17,7 +17,7 @@ export const isMarshSlime = (monster) => monster.marshSlime === true;
 export const slimeScale = (monster) =>
   (isMarshSlime(monster)||monster.depthsSlime===true) ? 1 + ((monster.growth || 1) - 1) * 0.22 : 1;
 export const slimeVulnerable = (state, monster) =>
-  (isMarshSlime(monster)||monster.depthsSlime===true||monster.boss===true) && (monster.vulnerableUntil || 0) > state.time;
+  (isMarshSlime(monster)||monster.depthsSlime===true||monster.boss===true||monster.mountainSlime===true) && (monster.vulnerableUntil || 0) > state.time;
 export function resetMarshSlime(monster) {
   if (!isMarshSlime(monster)) return;
   monster.growth = monster.spawnGrowth || 1;

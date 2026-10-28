@@ -1,3 +1,4 @@
+import {traceMountainCharge,breakMountainShell} from '../game/mountain-slimes.js';
 import {onBossLanding} from '../game/depths-boss.js';
 import { onDepthsLanding } from '../game/slime-depths.js';
 import {onSlimeLanding,slimeVulnerable} from '../game/slime-marsh.js';
@@ -93,9 +94,13 @@ export function startMonsterAttack(state, monster, ctx) {
   }
   if (!target || distance(monster, target) > spec.range) return false;
   const from = { x: monster.x, y: monster.y };
-  let to = { x: target.x, y: target.y };
+  let to = { x: target.x, y: target.y },mountainPath;
   if (spec.kind === "leap") {
     if (!ctx.canStand(to.x, to.y)) return false;
+  } else if(monster.mountainSlime){
+    const angle=Math.atan2(to.y-from.y,to.x-from.x),goal={x:from.x+Math.cos(angle)*spec.range,y:from.y+Math.sin(angle)*spec.range};
+    mountainPath={...traceMountainCharge(from,goal,ctx.canStand),chargeGoal:goal};to=mountainPath.to;
+    if(distance(from,to)<2&&!mountainPath.wallCollision)return false;
   } else {
     const angle = Math.atan2(to.y - from.y, to.x - from.x),
       length = Math.min(spec.range, Math.max(55, distance(from, to) + 24));
@@ -110,6 +115,7 @@ export function startMonsterAttack(state, monster, ctx) {
     if (distance(from, to) < 8) return false;
   }
   monster.intent = {
+    ...mountainPath,
     spec: { ...spec },
     kind: spec.kind,
     element: spec.element,
@@ -195,7 +201,8 @@ export function stepMonsterAbility(state, monster, dt, ctx) {
   if (a.phase === "windup") {
     // Recoil can move the caster; the destination always stays locked to the announced ground point.
     a.from = { x: monster.x, y: monster.y };
-    if (a.kind !== "leap") a.to = clippedEnd(a.from, a.to, ctx.canStand);
+    if(monster.mountainSlime)Object.assign(a,traceMountainCharge(a.from,a.chargeGoal,ctx.canStand));
+    else if (a.kind !== "leap") a.to = clippedEnd(a.from, a.to, ctx.canStand);
     face(monster, a.to);
     if (a.age < a.windup) return true;
     a.age = 0;
@@ -255,6 +262,7 @@ export function stepMonsterAbility(state, monster, dt, ctx) {
       },
       previous = { x: monster.x, y: monster.y };
     if (!lineClear(previous, next, ctx.canStand)) {
+      if(monster.mountainSlime){const crash=traceMountainCharge(previous,next,ctx.canStand);Object.assign(monster,crash.to);if(crash.wallCollision)breakMountainShell(state,monster,crash.impactPoint);}
       finish(monster, spec);
       return true;
     }
@@ -262,7 +270,7 @@ export function stepMonsterAbility(state, monster, dt, ctx) {
     monster.y = next.y;
     monster.moving = true;
     strikePath(state, a, previous, next, monster, ctx);
-    if (progress >= 1) finish(monster, spec);
+    if (progress >= 1){if(monster.mountainSlime&&a.wallCollision)breakMountainShell(state,monster,a.impactPoint);finish(monster, spec);}
   }
   return true;
 }

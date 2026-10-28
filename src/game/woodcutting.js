@@ -25,7 +25,7 @@ export const createTrees = (props=PROPS) =>
     wood: prop.wood,
     respawn: 0,
   }));
-export const nearSawmill = (s) => !["slime-marsh","slime-depths"].includes(s.zone) && distance(s.player, s.zone === "tutorial" ? TUTORIAL_SAWMILL : SAWMILL) < 48;
+export const nearSawmill = (s) => !["slime-marsh","slime-depths","slime-mountains"].includes(s.zone) && distance(s.player, s.zone === "tutorial" ? TUTORIAL_SAWMILL : SAWMILL) < 48;
 export function grantWoodcuttingXp(s, amount) {
   if (!Number.isFinite(amount) || amount <= 0) return false;
   const job = s.woodcutting;

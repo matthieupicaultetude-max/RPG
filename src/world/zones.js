@@ -1,3 +1,4 @@
+import {canWalkMountains} from './slime-mountains-map.js';
 import {resetDepthsBoss} from '../game/depths-boss.js';
 import { canWalkDepths } from './slime-depths-map.js';
 import { clearDepthsFusions } from '../game/slime-depths.js';
@@ -8,7 +9,7 @@ import { canWalkTutorial, TUTORIAL_EXIT } from "./tutorial-map.js";
 import { clearRoute, placeAllies } from "../ai/companions.js";
 export const inTutorialZone = (state) => state.zone === "tutorial";
 export const canWalkZone = (x, y, zone) =>
-  zone === "slime-depths" ? canWalkDepths(x,y) : zone === "tutorial" ? canWalkTutorial(x, y) : zone === "slime-marsh" ? canWalkMarsh(x,y) : canWalkMap(x, y);
+  zone === "slime-mountains" ? canWalkMountains(x,y) : zone === "slime-depths" ? canWalkDepths(x,y) : zone === "tutorial" ? canWalkTutorial(x, y) : zone === "slime-marsh" ? canWalkMarsh(x,y) : canWalkMap(x, y);
 export const nearTutorialExit = (state) =>
   inTutorialZone(state) &&
   Math.hypot(

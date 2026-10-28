@@ -192,6 +192,11 @@ function equipmentArt(item, p) {
 function resourceArt(item) {
   const c = item.chromatic;
   switch (item.name) {
+    case "Éclat de schiste":
+      return path('m3 25 4-15 13-7 9 11-6 15-13 1z',c?'#a28bc5':'#7b8d8c')+path('m7 10 12 6 10-2m-10 2-9 14','none',c?'#d9b9ed':'#c3c7ac',2)+path('m10 14 2 8m7-13 2 4','none','#d8bb7c',2);
+    case "Cœur d’ambre":
+      return path('m16 2 11 8 2 13-13 8-12-8 2-13z',c?'#b68dd1':'#9c6e32')+path('m16 6 7 7-2 10-5 4-7-6 1-9z',c?'#efc8f4':'#ebc37a')+path('m12 12 4-3 3 5-4 6-3-2z',c?'#bb7ebc':'#ac8745')+path('m10 11 1 7','none','#fff0c2',2);
+
     case "Éclat de carapace abyssale":
       return path('m3 24 5-14 8-7 11 11-3 14-12 2z',c?'#9e84bf':'#667c80')+path('m8 11 8 6 10-3m-10 3-4 13','none',c?'#d9b5ef':'#b5c9ba',2)+path('m8 23 6 3 8-3','none','#958461',2);
     case "Cœur de Gorgelimon":

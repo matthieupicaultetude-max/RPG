@@ -1,3 +1,5 @@
+import {resetMountainSlime,shellDamage} from '../game/mountain-slimes.js';
+import {MOUNTAIN_SPAWN} from '../world/slime-mountains-map.js';
 import { chromaticVersion } from '../data/chromatic.js';
 import {stepDepthsBoss,awakenDepthsBoss,finishDepthsBoss} from '../game/depths-boss.js';
 import {stepDepthsSlimes} from '../game/slime-depths.js';
@@ -59,7 +61,7 @@ export function note(s, message) {
 }
 export function teleport(s, station) {
   if(s.zone === "tutorial") {note(s,"Terminez ou passez le tutoriel pour rejoindre le village.");return;}
-  if(['slime-marsh','slime-depths'].includes(s.zone))travelToZone(s,'garden');
+  if(['slime-marsh','slime-depths','slime-mountains'].includes(s.zone))travelToZone(s,'garden');
   const point = STATIONS[station];
   if (!point) return;
   cancelWoodcutting(s);
@@ -217,6 +219,7 @@ function hitMonster(s, monster, damage, member, options={}) {
     if(monster.bossPhase==='dormant'&&(member.id!==s.main||!awakenDepthsBoss(s,monster)))return;
     if(monster.bossPhase==='split')return;
   }
+  damage=shellDamage(monster,damage,options.bonus);
   if(!options.bonus&&slimeVulnerable(s,monster))damage=Math.round(damage*1.5);
   monster.hp = Math.max(0, monster.hp - damage);
   emitSound(s,options.bonus?"bonus":options.sound||impactKind(member),monster,{owner:member.id,element:options.element,damage});
@@ -304,7 +307,7 @@ export function stepSandbox(s, direction, dt, elapsed = dt) {
       s.monsterTornadoes=s.monsterTornadoes.filter(a=>a.owner!==index);
       if(monster.splitSpawn||monster.depthsSlime||monster.boss)return;
       monster.respawn -= dt;
-      if (monster.respawn <= 0) { resetMarshSlime(monster);monster.hp = monster.maxHp; delete monster.bonusTarget;delete monster.lastReceivedDamage;monster.bonusTargetCooldown=0; monster.x = monster.homeX; monster.y = monster.homeY;monster.cooldown=.6;s.revision++; }
+      if (monster.respawn <= 0) { resetMarshSlime(monster);resetMountainSlime(monster);monster.hp = monster.maxHp; delete monster.bonusTarget;delete monster.lastReceivedDamage;monster.bonusTargetCooldown=0; monster.x = monster.homeX; monster.y = monster.homeY;monster.cooldown=.6;s.revision++; }
       return;
     }
     if(monster.boss){stepDepthsBoss(s,monster,dt,enemyContext);return;}
@@ -323,8 +326,8 @@ export function stepSandbox(s, direction, dt, elapsed = dt) {
   stepMonsterHazards(s,dt,enemyContext);
   if(defeated&&s.team.every(m=>m.hp<=0)){
     clearMonsterAttacks(s);setCombatMode(s,true);
-    if(s.zone==='tutorial'){Object.assign(s.player,{x:230,y:250});s.team.forEach(m=>Object.assign(m,s.player));placeAllies(s,canStand);}else if(s.zone==='slime-depths')movePartyToZone(s,'slime-depths',DEPTHS_SPAWN);else if(s.zone==='slime-marsh')movePartyToZone(s,'slime-marsh',{x:MARSH_ENTRY.x+30,y:MARSH_ENTRY.y});else teleport(s,'maison');
-    heal(s);if(s.deployed)placeAllies(s,canStand);note(s,s.zone==='tutorial'?'Iris vous remet sur pied. Réessayez !':s.zone==='slime-depths'?'Défaite : retour sur la berge des profondeurs.':s.zone==='slime-marsh'?'Défaite : retour à l’entrée des marais.':'Défaite : retour à la maison (règle de test).');
+    if(s.zone==='tutorial'){Object.assign(s.player,{x:230,y:250});s.team.forEach(m=>Object.assign(m,s.player));placeAllies(s,canStand);}else if(s.zone==='slime-mountains')movePartyToZone(s,'slime-mountains',MOUNTAIN_SPAWN);else if(s.zone==='slime-depths')movePartyToZone(s,'slime-depths',DEPTHS_SPAWN);else if(s.zone==='slime-marsh')movePartyToZone(s,'slime-marsh',{x:MARSH_ENTRY.x+30,y:MARSH_ENTRY.y});else teleport(s,'maison');
+    heal(s);if(s.deployed)placeAllies(s,canStand);note(s,s.zone==='tutorial'?'Iris vous remet sur pied. Réessayez !':s.zone==='slime-mountains'?'Défaite : retour au col des montagnes.':s.zone==='slime-depths'?'Défaite : retour sur la berge des profondeurs.':s.zone==='slime-marsh'?'Défaite : retour à l’entrée des marais.':'Défaite : retour à la maison (règle de test).');
   }
   if(s.player.moving&&s.time>=(s.nextFootstep||0)){s.nextFootstep=s.time+.32;emitSound(s,"step",s.player,{owner:s.main});}
   s.bots.forEach(bot => {

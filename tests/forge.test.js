@@ -64,7 +64,7 @@ test("36 versions chromatiques : statistiques conservées, bonus de puissance et
   assert.equal(canUpgrade({ slot: "Trophée 1" }), false);
 });
 test("recettes : ressources du bon monstre, quantités exactes et rare chromatique conservé", () => {
-  for (const monster of MONSTERS.filter(m=>!m.depthsSlime&&!m.boss)) {
+  for (const monster of MONSTERS.filter(m=>!m.depthsSlime&&!m.boss&&!m.mountainSlime)) {
     const s = createSandbox(),
       item = piece(s, monster.element);
     teleport(s, "forge");

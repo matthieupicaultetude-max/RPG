@@ -383,6 +383,22 @@ function stalagmite(g) {
   g.fillStyle='#3e7470';g.fillRect(-7,-3,6,3);g.fillRect(1,-4,4,2);
   g.fillStyle='#b1ccd0';g.fillRect(-2,-22,1,6);
 }
+function mountainBoulder(g,p){
+ oval(g,2,3,18,5,'#3b494255');
+ poly(g,[[-18,1],[-20,-9],[-13,-25],[-2,-30],[13,-23],[20,-8],[16,3]],'#65777b','#48585c');
+ poly(g,[[-17,-9],[-11,-23],[-1,-27],[9,-23],[3,-12]],'#adb6aa');
+ poly(g,[[3,-12],[9,-23],[17,-8],[13,0],[2,1]],'#7f908c');
+ g.fillStyle='#d5c99c';g.fillRect(-9,-20,6,2);g.fillRect(5,-13,2,5);g.fillStyle='#526e50';g.fillRect(-16,-1,9,3);
+}
+function mountainRidge(g){
+ oval(g,1,4,30,5,'#3b494255');
+ poly(g,[[-31,5],[-32,-10],[-25,-26],[-13,-33],[-5,-26],[6,-38],[19,-29],[31,-12],[29,7]],'#687a7c','#48585c');
+ poly(g,[[-29,-10],[-22,-25],[-13,-30],[-5,-21],[-11,-7]],'#a7b2a8');
+ poly(g,[[-5,-12],[7,-35],[17,-27],[24,-10]],'#b8beb0');
+ poly(g,[[1,3],[-3,-15],[7,-35],[9,-15],[13,5]],'#899b96');
+ g.fillStyle='#6d7759';g.fillRect(-28,3,18,3);g.fillRect(15,2,13,3);g.fillStyle='#d5c99c';g.fillRect(-16,-20,1,12);g.fillRect(18,-18,1,9);
+}
+function alpineTuft(g){for(let i=0;i<5;i++){g.fillStyle=i%2?'#a6ab78':'#758766';g.fillRect(-6+i*3,-4-(i*3)%6,1,7+(i*3)%6);}g.fillStyle='#d2bd8c';g.fillRect(-7,-1,4,2);g.fillRect(4,0,4,1);}
 function rock(g) {
   poly(
     g,
@@ -438,6 +454,9 @@ function marshMushroom(g,p){
 function marshReeds(g){for(let i=0;i<5;i++){const x=-8+i*4,h=12+(i*7)%17;g.fillStyle='#416c54';g.fillRect(x,-h,2,h+1);g.fillStyle='#94ac6b';g.fillRect(x,-h,1,h);g.fillStyle='#886352';g.fillRect(x-1,-h-7,3,8);g.fillStyle='#bdac70';g.fillRect(x,-h-7,1,6);} }
 function waterLily(g){oval(g,0,-1,11,4,'#477f68');g.fillStyle='#80b28a';g.fillRect(-7,-3,10,2);poly(g,[[0,-3],[2,-9],[5,-6],[9,-8],[8,-3]],'#d7a6c5');g.fillStyle='#f4d4df';g.fillRect(3,-7,3,4);g.fillStyle='#f4dca0';g.fillRect(3,-4,3,2);}
 const DEFINITIONS = {
+ 'mountain-boulder':{bounds:[-23,-33,47,42],origin:[0,0],paint:mountainBoulder},
+ 'mountain-ridge':{bounds:[-35,-42,72,54],origin:[0,0],paint:mountainRidge},
+ 'alpine-tuft':{bounds:[-10,-12,22,19],origin:[0,0],paint:alpineTuft},
  stalagmite:{bounds:[-12,-36,26,42],origin:[0,0],paint:stalagmite},
  mushroom:{bounds:[-22,-46,46,52],origin:[0,0],paint:marshMushroom},
  reeds:{bounds:[-12,-38,27,43],origin:[0,0],paint:marshReeds},

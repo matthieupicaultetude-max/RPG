@@ -221,6 +221,11 @@ export function playEffect(context, bus, buffer, event, time, variation = 0) {
       noise(context, bus, buffer, time, 0.1, 0.2, 430);
       tone(context, bus, time, 110, 0.11, 0.12, "sine", 55);
       break;
+    case "rock-break":
+      noise(context,bus,buffer,time,.22,.35,1800);
+      tone(context,bus,time,130,.2,.22,"triangle",48);
+      noise(context,bus,buffer,time+.07,.13,.16,3200);
+      break;
     case "chop":
       noise(context, bus, buffer, time, 0.055, 0.25, 850);
       tone(context, bus, time, 180 * pitch, 0.095, 0.25, "triangle", 85);

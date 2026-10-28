@@ -342,3 +342,15 @@ Un bruit de pluie stéréo accompagne les marais et s’estompe en quittant la z
 - **Portraits de l’équipe en haut à gauche** : touchez un héros pour le contrôler. **Explorer / Combat**, au-dessus des sorts, permet de changer de mode.
 
 La disposition s’adapte au portrait et au paysage, aux petits écrans et aux zones réservées par l’encoche. L’interface ordinateur conserve ses menus, raccourcis clavier et barre de sorts habituels.
+
+### Cimes de Schiste — slimes des montagnes
+
+Un passage au **nord-est du village + F** conduit aux **Cimes de Schiste**. Trois plateaux rocheux, reliés par des ponts de bois, accueillent six **Slimes de schiste Terre, niveau 5**. Des blocs de roche et des parois solides sont répartis pour préparer les collisions. **Outils dev → Cimes de Schiste** permet un accès direct ; le col au sud-ouest ramène au village.
+
+Leur mécanique est la **carapace rocheuse** :
+
+- Tant qu’elle est intacte, elle réduit **tous les dégâts reçus de 40 %**. Les fissures visuelles accompagnent les blessures.
+- Le slime annonce un couloir Terre pendant **1,3 s**, puis roule en ligne droite. Placez un rocher ou une paroi sur sa trajectoire et esquivez latéralement.
+- La première collision qui brise la carapace étourdit le slime et expose son cœur pendant **3 s**, avec **+50 % de dégâts reçus**. La protection reste ensuite perdue jusqu’au respawn. Un arrêt au bord d’un précipice ne brise pas la carapace.
+
+La fiche du bestiaire comprend les statistiques par niveau, la mécanique et les ressources **Éclat de schiste / Cœur d’ambre**, avec leurs variantes chromatiques, ainsi que le noyau Terre habituel. Les personnages et le sac sont conservés entre les zones. Une défaite soigne la troupe au col ; les slimes réapparaissent après 18 s avec leur carapace restaurée.

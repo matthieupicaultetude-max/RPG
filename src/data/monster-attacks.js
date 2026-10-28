@@ -45,6 +45,8 @@ export const MONSTER_ATTACKS = Object.freeze({
   },
 });
 export const monsterAttack = (monster) => {
+ if(monster.mountainSlime||monster.species==='mountain-slime')return {kind:'charge',name:'Roulade de schiste',element:'earth',windup:1.3,radius:12,range:170,speed:170,multiplier:1.4,recovery:2.1};
+
  if(monster.boss||monster.species==='gorgelimon'){
    const rage=(monster.bossStage||0)>=2,serial=(monster.attackSerial||0)%3;
    const common={range:230,recovery:rage?1.25:1.8};

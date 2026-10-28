@@ -1,3 +1,5 @@
+import * as mountainMap from '../world/slime-mountains-map.js';
+import {drawMountainGround,drawMountainStatus} from './slime-mountains.js';
 import {createMarshRain} from './marsh-rain.js';
 import {drawBossGround} from './depths-boss.js';
 import * as depthsMap from '../world/slime-depths-map.js';
@@ -30,7 +32,7 @@ export function createRenderer(canvas) {
   const village = createEnvironment();
   const lighting = createGoldenHour(frame.width,frame.height);
   const rain=createMarshRain();
-  let tutorial, marsh, depths;
+  let tutorial, marsh, depths, mountains;
   function label(text, x, y) {
     ctx.font = "8px monospace";
     ctx.textAlign = "center";
@@ -62,7 +64,7 @@ export function createRenderer(canvas) {
     label(bot ? `${p.name} · BOT` : p.name, x, y + 16);
   }
   const render = (s) => {
-    const environment = s.zone === "slime-depths" ? (depths ||= createEnvironment(depthsMap)) : s.zone === "tutorial" ? (tutorial ||= createEnvironment(tutorialMap)) : s.zone==='slime-marsh'?(marsh ||= createEnvironment(marshMap)):village;
+    const environment = s.zone === "slime-mountains" ? (mountains ||= createEnvironment(mountainMap)) : s.zone === "slime-depths" ? (depths ||= createEnvironment(depthsMap)) : s.zone === "tutorial" ? (tutorial ||= createEnvironment(tutorialMap)) : s.zone==='slime-marsh'?(marsh ||= createEnvironment(marshMap)):village;
     const canStand = (x,y)=>canWalkZone(x,y,s.zone);
     ctx.drawImage(environment.ground, 0, 0);
     if(s.lighting!==false && !["slime-depths","slime-marsh"].includes(s.zone))drawSunShadows(ctx,environment,s);
@@ -70,6 +72,7 @@ export function createRenderer(canvas) {
     drawMarshGround(ctx,s);
     drawSeaSinkhole(ctx,s);
     drawDepthsGround(ctx,s);
+    drawMountainGround(ctx,s);
     rain.ground(ctx,s);
     for(const marker of environment.markers)label(marker.text,marker.x,marker.y);
     if(s.zone === "tutorial")drawTutorialGate(ctx,s);
@@ -83,7 +86,7 @@ export function createRenderer(canvas) {
           ctx.save();
           const felled=prop.kind==="tree"&&s.trees.find(tree=>tree.id===prop.id)?.respawn>0;
           if (
-            ["tree","house","petshop","market","sawmill","mushroom","stalagmite"].includes(prop.kind) && !felled &&
+            ["tree","house","petshop","market","sawmill","mushroom","stalagmite","mountain-ridge","mountain-boulder"].includes(prop.kind) && !felled &&
             s.player.y < prop.y &&
             s.player.x + 8 > prop.bounds.left &&
             s.player.x - 8 < prop.bounds.right &&
@@ -124,13 +127,14 @@ export function createRenderer(canvas) {
           }
           drawCreature(ctx, m, s.time);
           const x = Math.round(m.x),
-            y = Math.round(m.y-(m.lift||0)-24*(slimeScale(m)-1)-(m.boss?38:0));
+            y = Math.round(m.y-(m.lift||0)-24*(slimeScale(m)-1)-(m.boss?38:m.mountainSlime?10:0));
           ctx.fillStyle = "#625d3e";
           ctx.fillRect(x - 14, y - 24, 28, 3);
           ctx.fillStyle = "#cfb17c";
           ctx.fillRect(x - 14, y - 24, (28 * m.hp) / m.maxHp, 2);
           label(m.boss?"Gorgelimon":m.depthsSlime?`${m.dualElement?"Mixte":m.element==="earth"?"Limon":"Abyssal"} · ${m.growth}/3`:m.marshSlime?`Slime · ${m.growth}/3`:m.name, x, Math.round(m.y-(m.lift||0)+17));
           drawMarshSlimeStatus(ctx,m,s);
+          drawMountainStatus(ctx,m,s);
         },
       })),
     ];
