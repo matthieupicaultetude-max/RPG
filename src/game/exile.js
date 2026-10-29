@@ -8,7 +8,7 @@ export function createExileWorld() {
   const bots = [];
   for (let i = 0; i < 16; i++) {
     const road = ROADS[i % ROADS.length];
-    let index = 2 + (i % (road.points.length - 4));
+    let index = i % road.points.length;
     for (let offset = 0; offset < road.points.length; offset++) {
       const candidate = (index + offset) % road.points.length,
         p = road.points[candidate];

@@ -13,6 +13,14 @@ export function texturePixel(material, worldX, worldY) {
   const x = mod(worldX, TEXTURE_SIZE),
     y = mod(worldY, TEXTURE_SIZE),
     grain = hash(x, y, 7);
+  if (material === 'harbor-sidewalk' || material === 'harbor-cobbles') {
+    const slab = material === 'harbor-sidewalk', w = slab ? 16 : 8, h = slab ? 8 : 4;
+    const row = Math.floor(y / h), sx = (x + (row % 2) * w / 2) % w, sy = y % h;
+    const shade = hash(Math.floor((x + (row % 2) * w / 2) / w) % (64 / w), row, 73) % 9;
+    if (!sx || !sy) return slab ? [107,115,119,255] : [109,111,106,255];
+    if (sy === 1) return slab ? [203,208,209,255] : [188,187,171,255];
+    return slab ? [166+shade,174+shade,178+shade,255] : [149+shade,151+shade,139+shade,255];
+  }
   if(material==='harbor-stone'){
     const row=Math.floor(y/8),offset=(row%2)*4,sx=(x+offset)%8,sy=y%8,h=hash(Math.floor((x+offset)/8)%8,row,32)%4;
     if(sx===0||sy===0||(sx===1&&sy===1))return [166,160,133,255];

@@ -824,3 +824,7 @@ La ville conserve ses bâtiments et son emprise compacte. Les vingt îlots sont 
 Des courtines crénelées et dix tours suivent le littoral ; elles se raccordent à la porte du port et à une nouvelle porte nord. Les trois accès aux pontons restent ouverts. La variante de tour reprend la texture de la porte existante. Les lignes des remparts sont utilisées pour les collisions et le dessin ; les remparts devant le joueur s’estompent comme les bâtiments.
 
 Deux fronts de terrasse créent trois niveaux : port (0), terrasse intermédiaire (+18), ville haute (+38). Les faces sont infranchissables, sauf au droit des dix escaliers définis dans les mêmes données. Les alliés partagent ces collisions et les contournent par les escaliers. Le plan local montre murs, niveaux et passages. Les PNJ conservent un espace d’approche libre devant leurs commerces ; les promeneurs commencent sur un point praticable du nouveau réseau.
+
+### Voirie du Comptoir
+
+Les rues pavées suivent les retraits propres à chaque façade et rejoignent les ruelles latérales. Des trottoirs continus en pierre taillée grise desservent chaque entrée. Les textures se répètent dans les coordonnées du monde pour éviter les raccords visibles aux intersections. La place de la fontaine conserve son dallage et sa mosaïque. Les escaliers restent les passages entre les terrasses.

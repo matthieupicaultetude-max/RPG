@@ -66,7 +66,9 @@ function path(g, r) {
 function plotGround(g) {
   const water = g.createPattern(tile("harbor-water"), "repeat"),
     grass = g.createPattern(tile("grass"), "repeat"),
-    pavers = g.createPattern(tile("pavers"), "repeat");
+    pavers = g.createPattern(tile("pavers"), "repeat"),
+    cobbles = g.createPattern(tile("harbor-cobbles"), "repeat"),
+    sidewalk = g.createPattern(tile("harbor-sidewalk"), "repeat");
   rect(g, 0, 0, map.MAP_SIZE.width, map.MAP_SIZE.height, water);
   poly(g, map.LAND, "#596e65");
   g.save();
@@ -91,16 +93,16 @@ function plotGround(g) {
   g.lineCap = g.lineJoin = "round";
   for (const r of map.ROADS) {
     path(g, r);
-    g.lineWidth = r.width + 10;
-    g.strokeStyle = "#ab9f82";
+    g.lineWidth = r.width + 20;
+    g.strokeStyle = "#747d80";
     g.stroke();
   }
   for (const p of map.PLAZAS)
     ellipse(g, p.x, p.y, p.rx + 5, p.ry + 5, "#ab9f82");
   for (const r of map.ROADS) {
     path(g, r);
-    g.lineWidth = r.width + 5;
-    g.strokeStyle = "#e5d5ad";
+    g.lineWidth = r.width + 16;
+    g.strokeStyle = sidewalk;
     g.stroke();
   }
   for (const p of map.PLAZAS)
@@ -108,9 +110,17 @@ function plotGround(g) {
   for (const r of map.ROADS) {
     path(g, r);
     g.lineWidth = r.width;
-    g.strokeStyle = pavers;
+    g.strokeStyle = cobbles;
     g.stroke();
   }
+  for (const r of map.SIDEWALKS) {
+    path(g, r);
+    g.lineCap = "butt";
+    g.lineWidth = r.width;
+    g.strokeStyle = sidewalk;
+    g.stroke();
+  }
+  g.lineCap = "round";
   for (const p of map.PLAZAS) ellipse(g, p.x, p.y, p.rx, p.ry, pavers);
   // Gardens, clover and flower beds are planted off every road and building apron.
   for (let i = 0; i < 2200; i++) {

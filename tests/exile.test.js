@@ -24,6 +24,7 @@ import {
   BUILDINGS,
   ENTRANCES,
   ROADS,
+  SIDEWALKS,
   EXILE_SPAWN,
   EXILE_RETURN,
   SERVICES,
@@ -432,4 +433,57 @@ test("Les habitants gardent une approche libre entre façades, escaliers et remp
     assert.ok(canWalkExile(p.x, p.y), p.id);
     assert.ok(canWalkExile(p.x, p.y + 16), `${p.id} : approche`);
   }
+});
+
+test("Chaque façade possède un trottoir jusqu’aux portes et une rue raccordée aux ruelles", () => {
+  for (const entrance of ENTRANCES) {
+    const apron = SIDEWALKS.find(
+      (s) =>
+        Math.abs(s.points[0][1] - entrance.y) < s.width / 2 &&
+        entrance.x >= s.points[0][0] &&
+        entrance.x <= s.points[1][0],
+    );
+    assert.ok(apron, entrance.id);
+  }
+  for (const street of ROADS.filter((r) => r.id.startsWith("frontage-"))) {
+    for (const endpoint of [street.points[0], street.points.at(-1)]) {
+      assert.ok(
+        ROADS.some(
+          (r) =>
+            !r.id.startsWith("frontage-") &&
+            r.points.slice(1).some((b, i) => {
+              const a = r.points[i],
+                dx = b[0] - a[0],
+                dy = b[1] - a[1];
+              const t = Math.max(
+                0,
+                Math.min(
+                  1,
+                  ((endpoint[0] - a[0]) * dx + (endpoint[1] - a[1]) * dy) /
+                    (dx * dx + dy * dy),
+                ),
+              );
+              return (
+                Math.hypot(
+                  endpoint[0] - a[0] - t * dx,
+                  endpoint[1] - a[1] - t * dy,
+                ) < 0.01
+              );
+            }),
+        ),
+        street.id,
+      );
+    }
+  }
+  for (const material of ["harbor-sidewalk", "harbor-cobbles"])
+    for (let i = 0; i < 64; i++) {
+      assert.deepEqual(
+        texturePixel(material, i, 0),
+        texturePixel(material, i, 64),
+      );
+      assert.deepEqual(
+        texturePixel(material, 0, i),
+        texturePixel(material, 64, i),
+      );
+    }
 });

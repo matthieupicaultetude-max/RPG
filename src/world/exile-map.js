@@ -144,41 +144,6 @@ export const ROADS = [
     [740, 400],
     [720, 140],
   ]),
-  road("rue-du-premier-accueil", 24, [
-    [120, 310],
-    [390, 318],
-    [650, 335],
-    [730, 333],
-    [1080, 310],
-    [1330, 337],
-  ]),
-  road("rue-des-echoppes", 26, [
-    [115, 498],
-    [390, 505],
-    [645, 522],
-    [720, 620],
-    [805, 495],
-    [1080, 496],
-    [1330, 520],
-  ]),
-  road("rue-des-artisans", 26, [
-    [115, 677],
-    [390, 673],
-    [650, 675],
-    [720, 707],
-    [820, 670],
-    [1080, 675],
-    [1330, 674],
-  ]),
-  road("rue-des-voiles", 24, [
-    [120, 829],
-    [390, 824],
-    [650, 821],
-    [720, 825],
-    [825, 827],
-    [1080, 824],
-    [1320, 805],
-  ]),
   road("promenade-des-quais", 34, [
     [150, 957],
     [310, 970],
@@ -345,14 +310,54 @@ for (const [row, layout] of BLOCK_LAYOUT.entries())
       edge += w;
     }
     FRONTAGES.push(frontage);
-    // A short shared sidewalk opens at both ends into the neighboring alley.
-    ROADS.push(
-      road(`frontage-${row}-${block}`, 12, [
-        [left - 14, y + 14],
-        [edge + 14, y + 14],
-      ]),
-    );
+    // Each street follows its own facade setback and joins the two real alleys.
+    // No smoothing here: the endpoints must meet the existing street exactly.
+    const alleys = [
+      "ruelle-occidentale",
+      "passage-des-tisserands",
+      "avenue-du-refuge",
+      "passage-du-levant",
+      "ruelle-orientale",
+    ];
+    const streetY = y + 36;
+    const atY = (id) => {
+      const points = ROADS.find((r) => r.id === id).points;
+      for (let i = 1; i < points.length; i++) {
+        const a = points[i - 1],
+          b = points[i];
+        if (
+          streetY >= Math.min(a[1], b[1]) &&
+          streetY <= Math.max(a[1], b[1])
+        ) {
+          const t = (streetY - a[1]) / (b[1] - a[1]);
+          return [a[0] + (b[0] - a[0]) * t, streetY];
+        }
+      }
+      return points.reduce((a, b) =>
+        Math.abs(a[1] - streetY) < Math.abs(b[1] - streetY) ? a : b,
+      );
+    };
+    ROADS.push({
+      id: `frontage-${row}-${block}`,
+      width: 18,
+      points: [
+        atY(alleys[block]),
+        [left, streetY],
+        [edge, streetY],
+        atY(alleys[block + 1]),
+      ],
+    });
   }
+export const SIDEWALKS = BLOCK_LAYOUT.flatMap((row, r) =>
+  row.map((lot, b) => ({
+    id: `sidewalk-${r}-${b}`,
+    width: 24,
+    points: [
+      [lot.left, lot.y + 12],
+      [lot.left + lot.widths.reduce((a, b) => a + b, 0), lot.y + 12],
+    ],
+  })),
+);
 export const TOWN_FOUNTAIN = {
   id: "exile-fountain",
   kind: "exile-fountain",
