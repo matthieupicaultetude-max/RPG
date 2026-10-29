@@ -796,3 +796,9 @@ La [carte de référence et le dossier du pays](docs/world/PAYS_DES_SLIMES.md) f
 Première zone réelle `exile` : 2 240 × 1 760 pixels, 24 bâtiments et quatre quartiers reliés à la place du Refuge et aux quais. Rues et accès de portes explicites, pavés périodiques ancrés dans le monde, décors validés sur terre ferme, sols précalculés et sprites mis en cache. Caméra, pointeur, déplacements, ombres et navigation des alliés prennent en compte les dimensions réelles de la zone, indépendamment de la fenêtre de rendu 640 × 400.
 
 Ville pacifique : 16 promeneurs, 12 habitants dont deux slimes amicaux, fontaine et ambiance animée. Services existants, petites boutiques de voyage, revente de ressources et auberge. Plan local et carte du pays dans Monde → Comptoir. Traversée gratuite depuis le Jardin, retour au port ; positions du Comptoir sauvegardées dans un champ optionnel compatible avec les anciennes progressions. Les raccords aux quatre futures régions restent à construire.
+
+## 59. Comptoir médiéval dense
+
+Le Comptoir conserve son rôle d’accueil sur le littoral sud de la carte du pays, ses quais et ses services. Il passe à 55 bâtiments, dont 29 ajouts mitoyens, répartis en douze rangées de plusieurs façades. Les constructions ont deux à trois étages, colombages, soubassements de pierre, fenêtres à volets, tuiles en terre cuite et ardoises, cheminées et auvents de commerces.
+
+Les grandes pelouses centrales deviennent des cours minérales. Les trottoirs de façade desservent plusieurs portes avec un raccord commun, tandis que les jardins et la place du Refuge restent ouverts. Les empreintes des murs mitoyens se rejoignent : aucun passage caché à travers les façades. La génération réserve les rues, les abords des portes, les ateliers et les habitants ; les tests vérifient l’accès à chaque bâtiment depuis le port.

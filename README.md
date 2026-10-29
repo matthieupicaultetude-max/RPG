@@ -556,7 +556,7 @@ Le sac et le coffre partagent des catégories et sous-catégories : armures, arm
 
 Après le tutoriel, ouvrez **Monde → Comptoir → Embarquer pour le Comptoir**. Une traversée gratuite est aussi accessible avec F près de `(310,365)` dans le Jardin des essais. Pour revenir, rejoignez l’extrémité du ponton central et appuyez sur F.
 
-La ville s’étend sur **2 240 × 1 760 pixels**, avec caméra mobile, 24 bâtiments, rues pavées, jardins, place de la fontaine, port et marché. Approchez les habitants puis utilisez **F**, ou cliquez/touchez-les. Forge, animalerie, bricolage, scierie et fontaine sont utilisables. Maëla et Oriel vendent du matériel de voyage ; Silo rachète les ressources ordinaires et rares ; l’auberge restaure la troupe contre 5 or.
+La ville s’étend sur **2 240 × 1 760 pixels**, avec caméra mobile, 55 bâtiments médiévaux de deux ou trois étages, îlots mitoyens, ruelles et cours pavées, jardins, place de la fontaine, port et marché. Approchez les habitants puis utilisez **F**, ou cliquez/touchez-les. Forge, animalerie, bricolage, scierie et fontaine sont utilisables. Maëla et Oriel vendent du matériel de voyage ; Silo rachète les ressources ordinaires et rares ; l’auberge restaure la troupe contre 5 or.
 
 Le bouton **Plan du Comptoir** montre les quartiers et bonnes adresses. L’onglet **Pays des Slimes** conserve la carte illustrée de référence. Votre position dans la ville est sauvegardée. Les outils dev proposent des accès directs au port, à la place, aux artisans et aux jardins.
 

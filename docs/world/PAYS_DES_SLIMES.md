@@ -27,15 +27,15 @@ Les canaux, fortifications, routes et ateliers témoignent d’abord de la const
 
 ## Première zone jouable : le Comptoir
 
-Carte extérieure de 2 240 × 1 760 pixels monde, avec caméra à l’échelle des personnages. 24 bâtiments : 12 habitations, capitainerie, auberge, forge, atelier de bricolage, scierie, animalerie, armurerie, enchanteur, échoppe, Maison du Premier Accueil, entrepôt et halle.
+Carte extérieure de 2 240 × 1 760 pixels monde, avec caméra à l’échelle des personnages. 55 bâtiments : 43 habitations, capitainerie, auberge, forge, atelier de bricolage, scierie, animalerie, armurerie, enchanteur, échoppe, Maison du Premier Accueil, entrepôt et halle.
 
 - **Sud :** trois pontons, liaison entre quais, deux voiliers et promenade du marché.
 - **Centre :** place du Refuge, fontaine du renouveau, mosaïque aux quatre couleurs et commerces.
 - **Ouest :** forge, cour des métiers, atelier de Tessa et scierie.
 - **Est :** allées du Levant, habitations, refuge animalier et halle.
-- **Nord :** jardins, maisons espacées et Maison du Premier Accueil.
+- **Nord :** jardins, îlots résidentiels et Maison du Premier Accueil.
 
-Les rues sont sinueuses, reliées aux portes par des allées. Une palette commune de pierre, enduit clair, bois et trois teintes d’ardoises assure la cohésion. Les pavés utilisent un motif périodique unique en coordonnées monde ; les intersections partagent le même revêtement. Les arbres sont placés sur terre ferme et hors des accès. Les collisions utilisent les pieds des bâtiments, avec transparence des façades devant le joueur.
+Les rues sont sinueuses et bordées de façades mitoyennes de deux à trois étages. Douze rangées partagent des trottoirs raccordés au réseau ; les anciennes pelouses du centre sont devenues des cours pavées. Les murs mitoyens sont fermés à la circulation, tout en gardant les portes accessibles. Une palette commune de pierre, enduit clair, bois et ardoises et tuiles de plusieurs teintes assure la cohésion. Les pavés utilisent un motif périodique unique en coordonnées monde ; les intersections partagent le même revêtement. Les arbres sont placés sur terre ferme et hors des accès. Les collisions utilisent les pieds des bâtiments, avec transparence des façades devant le joueur.
 
 Seize promeneurs suivent les rues avec pauses et changements d’orientation. Douze habitants fixes incluent deux slimes pacifiques. Fontaine, enseignes, fumées, mouettes et reflets sont animés. Le plan du Comptoir et la carte du pays sont accessibles dans Monde → Comptoir.
 

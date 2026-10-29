@@ -51,9 +51,22 @@ const town = () => {
 };
 const approach = (s, id) =>
   movePartyToZone(s, "exile", { x: SERVICES[id].x, y: SERVICES[id].y + 16 });
-test("Comptoir : grande carte, 24 maisons raccordées, aucune empreinte superposée ou arbre dans l’eau", () => {
+test("Comptoir : grande carte, quartiers médiévaux mitoyens raccordés, aucune empreinte superposée ou arbre dans l’eau", () => {
   assert.ok(MAP_SIZE.width * MAP_SIZE.height > SCENE.width * SCENE.height * 15);
-  assert.equal(BUILDINGS.length, 24);
+  assert.ok(BUILDINGS.length >= 50);
+  const attached = BUILDINGS.filter((p) => p.attachedTo);
+  assert.ok(attached.length > BUILDINGS.length / 2);
+  for (const p of attached) {
+    const neighbor = BUILDINGS.find((b) => b.id === p.attachedTo);
+    assert.ok(neighbor);
+    assert.equal(p.y, neighbor.y);
+    const joint = p.x + ((neighbor.x > p.x ? 1 : -1) * p.w) / 2;
+    assert.equal(canWalkExile(joint, p.y - 12), false, "mur mitoyen fermé");
+    assert.ok(
+      Math.abs(Math.abs(p.x - neighbor.x) - (p.w + neighbor.w) / 2) < 2,
+    );
+  }
+  assert.ok(BUILDINGS.every((p) => p.floors >= 2));
   assert.equal(ENTRANCES.length, BUILDINGS.length);
   assert.deepEqual(validateExileMap(), []);
   for (const p of PROPS) assert.ok(placementOnLand(p), p.id);

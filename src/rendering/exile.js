@@ -34,10 +34,12 @@ function tile(material) {
     for (let x = 0; x < 64; x++) {
       let rgba;
       rgba = texturePixel(
-        material === "pavers" ? "town-stone" : material,
+        ["pavers", "courtyard"].includes(material) ? "town-stone" : material,
         x,
         y,
       );
+      if (material === "courtyard")
+        rgba = rgba.map((v, i) => (i < 3 ? v - 12 : v));
       pixels.data.set(rgba, (y * 64 + x) * 4);
     }
   g.putImageData(pixels, 0, 0);
@@ -57,6 +59,9 @@ function plotGround(g) {
   poly(g, map.LAND);
   g.clip();
   rect(g, 0, 0, map.MAP_SIZE.width, map.MAP_SIZE.height, grass);
+  poly(g, map.URBAN_GROUND, g.createPattern(tile("courtyard"), "repeat"));
+  for (const p of map.PARKS) ellipse(g, p.x, p.y, p.rx, p.ry, grass);
+  poly(g, map.LAND);
   // Exposed stone coast is drawn from the same contour used for collision.
   g.strokeStyle = "#708f86";
   g.lineWidth = 15;
@@ -98,6 +103,7 @@ function plotGround(g) {
     const x = 180 + (hash(i, 2, 18) % 1870),
       y = 110 + (hash(i, 3, 18) % 1250);
     if (
+      map.isUrbanGround(x, y) ||
       map.roadDistance(x, y) < 12 ||
       map.BUILDINGS.some(
         (p) =>
@@ -117,7 +123,18 @@ function plotGround(g) {
     for (const side of [-1, 1]) {
       const cx = p.x + side * (p.w / 2 + 17),
         cy = p.y + 4;
-      if (map.roadDistance(cx, cy) < 20 || !map.isLand(cx, cy)) continue;
+      if (
+        map.roadDistance(cx, cy) < 20 ||
+        !map.isLand(cx, cy) ||
+        map.BUILDINGS.some(
+          (other) =>
+            other !== p &&
+            Math.abs(other.x - cx) < other.w / 2 + 4 &&
+            cy > other.y + other.footprint.top &&
+            cy < other.y + 12,
+        )
+      )
+        continue;
       ellipse(g, cx, cy, 15, 19, "#7a8c55");
       ellipse(g, cx, cy - 1, 12, 16, "#5c8158");
       for (let k = 0; k < 18; k++) {
@@ -180,6 +197,8 @@ function plotGround(g) {
   }
 }
 const roofColors = {
+  clay: ["#8e493b", "#b86748", "#d79768"],
+  ochre: ["#9b6245", "#bf8a59", "#d9b179"],
   teal: ["#527c80", "#709598", "#94b2ac"],
   wine: ["#8f535b", "#b27672", "#d49a85"],
   slate: ["#647a83", "#879699", "#afbbb0"],
@@ -199,119 +218,105 @@ function window(g, x, y, w = 18, h = 22) {
   }
 }
 function building(g, p) {
-  const { w, h } = p,
+  const w = p.w,
     a = w / 2,
-    top = -h * 0.45,
-    roof = roofColors[p.roof],
-    wall = p.roof === "wine" ? "#e2cfaa" : "#e4d6b3";
-  ellipse(g, 4, 4, a + 8, 10, "#384e4733");
-  rect(g, -a + 7, top, w - 14, -top, "#67543f");
-  rect(g, -a + 10, top + 3, w - 20, -top - 6, wall);
-  // Stone foundation, offset coursing, and a shared timber frame on every house.
-  for (let row = 0; row < 3; row++) {
-    const y = -row * 9 - 9;
-    for (let x = -a + 10; x < a - 9; x += 20) {
-      const xx = x + (row % 2) * 8;
-      rect(g, xx, y, 18, 7, row % 2 ? "#a7ad98" : "#bcc0a6");
+    floors = p.floors || 2,
+    wall = floors * 34 + 32,
+    h = p.h,
+    roof = roofColors[p.roof] || roofColors.clay;
+  const plaster = ["#dfcba7", "#d9b99a", "#d4c6a9", "#e5d4ad"][(p.x + p.y) % 4];
+  ellipse(g, 3, 4, a + 5, 8, "#384e4733");
+  // Party walls meet exactly; adjoining façades form a continuous street frontage.
+  rect(g, -a, -wall, w, wall, "#735b45");
+  rect(g, -a + 3, -wall + 2, w - 6, wall - 3, plaster);
+  for (let y = -24; y < 0; y += 8)
+    for (let x = -a + 2; x < a - 2; x += 16)
+      rect(g, x + (y % 16 ? 0 : 7), y, 14, 7, y % 16 ? "#a5a992" : "#c1bea0");
+  for (const x of [-a + 1, a - 4]) rect(g, x, -wall, 3, wall, "#735540");
+  for (let floor = 1; floor <= floors; floor++) {
+    const y = -floor * 34 - 7;
+    rect(g, -a, y + 28, w, 4, "#866147");
+    const bay = w > 115 ? 3 : 2,
+      bayWidth = Math.min(17, Math.floor(w / (bay * 2.4)));
+    for (let i = 0; i < bay; i++) {
+      const x = -a + ((i + 1) * w) / (bay + 1) - bayWidth / 2;
+      window(g, x, y, bayWidth, 20);
+    }
+    // Diagonal timber braces on alternating plaster bays.
+    if (floor % 2 === 0) {
+      g.strokeStyle = "#9b7652";
+      g.lineWidth = 2;
+      g.beginPath();
+      g.moveTo(-a + 6, y + 24);
+      g.lineTo(-a + 20, y + 5);
+      g.moveTo(a - 6, y + 24);
+      g.lineTo(a - 20, y + 5);
+      g.stroke();
     }
   }
-  for (const x of [-a + 12, -a + 34, a - 34, a - 15])
-    rect(g, x, top + 3, 4, -top - 4, "#856445");
-  rect(g, -a + 9, top + 5, w - 18, 4, "#94724e");
-  rect(g, -a + 8, -29, w - 16, 4, "#94724e");
-  rect(g, -14, -38, 28, 39, "#715338");
-  rect(g, -11, -36, 22, 35, "#ae8555");
-  for (let x = -8; x < 10; x += 5) rect(g, x, -35, 1, 34, "#7b5b3e");
-  rect(g, 7, -19, 3, 3, "#e8cf87");
-  rect(g, -21, 0, 42, 5, "#b7b7a0");
-  rect(g, -25, 5, 50, 3, "#d6ceb0");
-  window(g, -a + 27, -53, 19, 21);
-  window(g, a - 46, -53, 19, 21);
-  const backRidge = [-5, -h],
-    frontRidge = [0, -h * 0.72],
-    backLeft = [-a - 7, -h * 0.71],
-    frontLeft = [-a, -h * 0.43],
-    backRight = [a, -h * 0.71],
-    frontRight = [a + 7, -h * 0.43];
-  poly(g, [frontLeft, frontRidge, frontRight], wall, "#785d42");
-  rect(g, -2, -h * 0.7, 4, h * 0.27, "#846344");
-  window(g, -9, -h * 0.58, 18, 19);
-  function slope(points, shade) {
+  rect(g, -12, -29, 24, 30, "#654833");
+  rect(g, -9, -26, 18, 26, "#a67b4d");
+  for (let x = -7; x < 9; x += 4) rect(g, x, -25, 1, 25, "#705034");
+  rect(g, 5, -13, 2, 2, "#e7c580");
+  rect(g, -17, 0, 34, 4, "#c4bfa0");
+  const back = [-4, -h],
+    front = [0, -wall - 40],
+    left = [-a - 3, -wall - 40],
+    right = [a + 3, -wall - 40],
+    lf = [-a - 3, -wall],
+    rf = [a + 3, -wall];
+  poly(g, [lf, front, rf], plaster, "#70553e");
+  const plane = (pts, shade, direction) => {
     g.save();
-    poly(g, points, roof[shade], "#4d5a57");
+    poly(g, pts, roof[shade], "#674c3c");
     g.clip();
-    for (let row = 0; row < 25; row++) {
-      const y = -h + row * 7;
+    for (let y = -h - 50; y < -wall + 60; y += 6) {
       g.strokeStyle = roof[Math.min(2, shade + 1)];
       g.lineWidth = 1;
       g.beginPath();
-      g.moveTo(-a - 20, y + 31);
-      g.lineTo(a + 20, y - 31);
+      g.moveTo(-a - 12, y - direction * a * 0.6);
+      g.lineTo(a + 12, y + direction * a * 0.6);
       g.stroke();
-      for (let col = -12; col < 12; col++) {
-        const x = col * 12 + (row % 2) * 6;
-        g.strokeStyle = roof[0];
-        g.beginPath();
-        g.moveTo(x, y - x * 0.38);
-        g.lineTo(x + 2, y + 7 - x * 0.38);
-        g.stroke();
+      for (let x = -a - 12; x < a + 12; x += 9) {
+        rect(
+          g,
+          x + (Math.round(y / 6) % 2) * 4,
+          y + direction * x * 0.6,
+          1,
+          5,
+          roof[0],
+        );
       }
     }
     g.restore();
-  }
-  slope([backLeft, backRidge, frontRidge, frontLeft], 1);
-  slope([backRidge, backRight, frontRight, frontRidge], 0);
-  g.strokeStyle = "#c4baa0";
+  };
+  plane([left, back, front, lf], 1, -1);
+  plane([back, right, rf, front], 0, 1);
+  g.strokeStyle = "#b59b79";
+  g.lineWidth = 2;
+  g.beginPath();
+  g.moveTo(...back);
+  g.lineTo(...front);
+  g.stroke();
+  g.strokeStyle = "#73523c";
   g.lineWidth = 3;
   g.beginPath();
-  g.moveTo(...backRidge);
-  g.lineTo(...frontRidge);
+  g.moveTo(...lf);
+  g.lineTo(...front);
+  g.lineTo(...rf);
   g.stroke();
-  g.strokeStyle = "#776149";
-  g.lineWidth = 4;
-  g.beginPath();
-  g.moveTo(...frontLeft);
-  g.lineTo(...frontRidge);
-  g.lineTo(...frontRight);
-  g.stroke();
-  rect(g, a * 0.48, -h * 0.88, 12, 29, "#8b8f7e");
-  rect(g, a * 0.48 + 2, -h * 0.88, 7, 27, "#bfc0a6");
-  rect(g, a * 0.48 - 2, -h * 0.89, 16, 5, "#d7cfaf");
-  if (["armor", "magic", "trader", "petshop"].includes(p.service)) {
-    const left = -w * 0.32,
-      right = w * 0.32;
-    poly(
-      g,
-      [
-        [left - 5, -34],
-        [left, -49],
-        [right, -49],
-        [right + 5, -34],
-      ],
-      "#e3d7b2",
-      "#796b51",
-    );
-    for (let i = 0; i < 8; i++)
-      if (i % 2 === 0)
-        poly(
-          g,
-          [
-            [left - 5 + ((right - left + 10) * i) / 8, -34],
-            [left + ((right - left) * i) / 8, -49],
-            [left + ((right - left) * (i + 1)) / 8, -49],
-            [left - 5 + ((right - left + 10) * (i + 1)) / 8, -34],
-          ],
-          p.roof === "wine" ? "#b57a70" : "#73a09b",
-        );
-    rect(g, left - 3, -34, 2, 28, "#8f704c");
-    rect(g, right + 2, -34, 2, 28, "#8f704c");
+  if (w > 85) window(g, -7, -wall - 24, 14, 15);
+  const chimneyX = a * 0.48;
+  rect(g, chimneyX, -h + 14, 10, 25, "#9c8c73");
+  for (let yy = -h + 16; yy < -h + 36; yy += 6)
+    rect(g, chimneyX, yy, 10, 1, "#cbb89a");
+  rect(g, chimneyX - 2, -h + 12, 14, 4, "#d6c5a6");
+  // Small projecting bays and shop canopies break up long rows of façades.
+  if (!p.service && p.x % 3 === 0) {
+    rect(g, -a - 2, -65, 3, 28, "#d3c19e");
+    rect(g, -a - 3, -67, 5, 4, "#856046");
   }
   if (p.service) {
-    rect(g, -a + 20, -27, w - 40, 9, "#5e6f61");
-    rect(g, -a + 23, -26, w - 46, 1, "#c9c69b");
-    g.fillStyle = "#eee2bb";
-    g.font = "6px monospace";
-    g.textAlign = "center";
     const labels = {
       forge: "FORGE",
       handyman: "BRICOLAGE",
@@ -324,16 +329,34 @@ function building(g, p) {
       inn: "AUBERGE",
       history: "PREMIER ACCUEIL",
     };
-    g.fillText(labels[p.service], 0, -20);
+    const canopy = Math.min(w - 8, 100);
+    poly(
+      g,
+      [
+        [-canopy / 2, -29],
+        [-canopy / 2 + 4, -43],
+        [canopy / 2 - 4, -43],
+        [canopy / 2, -29],
+      ],
+      "#e0d0a5",
+    );
+    for (let i = 0; i < 8; i += 2)
+      poly(
+        g,
+        [
+          [-canopy / 2 + (i * canopy) / 8, -29],
+          [-canopy / 2 + 4 + (i * (canopy - 8)) / 8, -43],
+          [-canopy / 2 + 4 + ((i + 1) * (canopy - 8)) / 8, -43],
+          [-canopy / 2 + ((i + 1) * canopy) / 8, -29],
+        ],
+        p.roof === "wine" ? "#ab6157" : "#658c87",
+      );
+    rect(g, -a + 6, -20, w - 12, 9, "#526b60");
+    g.font = "6px monospace";
+    g.textAlign = "center";
+    g.fillStyle = "#f0dfb4";
+    g.fillText(labels[p.service], 0, -13);
   }
-  // Ivy and planters are part of the façade silhouette, never collision walls.
-  for (let i = 0; i < 9; i++) {
-    const xx = -a + 13 + (i % 3) * 3,
-      yy = -12 - i * 4;
-    rect(g, xx, yy, 4, 4, i % 2 ? "#78995b" : "#587e58");
-  }
-  rect(g, a - 17, -8, 9, 8, "#ab7e54");
-  ellipse(g, a - 13, -10, 8, 5, "#7a9e61");
 }
 function lamp(g) {
   rect(g, -2, -38, 4, 38, "#536358");

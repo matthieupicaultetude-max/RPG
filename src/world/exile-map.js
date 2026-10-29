@@ -288,7 +288,7 @@ export const BUILDINGS = [
 // Every front door has an explicit approach to the shared street network.
 export const ENTRANCES = [];
 const streets = [...ROADS];
-for (const house of BUILDINGS) {
+function connectEntrance(house) {
   const door = [house.x, house.y + 12],
     apron = [house.x, house.y + 26];
   let nearest = null,
@@ -334,6 +334,7 @@ for (const house of BUILDINGS) {
     ENTRANCES.push({ id: house.id, x: door[0], y: door[1] });
   }
 }
+for (const house of BUILDINGS) connectEntrance(house);
 export const FOUNTAIN = { x: 1120, y: 808 };
 const npc = (id, name, x, y, role = "support") => ({
   id,
@@ -482,12 +483,217 @@ for (const [x, y] of [
   add("exile-stall", x, y, {
     footprint: { type: "box", left: -22, right: 22, top: -15, bottom: 0 },
   });
+// Continuous medieval frontages: adjoining plots share their party-wall line.
+// Preserve service doors and the road network while replacing isolated villas by blocks.
+export const URBAN_GROUND = [
+  [250, 510],
+  [490, 300],
+  [940, 230],
+  [1500, 240],
+  [1930, 500],
+  [2010, 1040],
+  [1960, 1360],
+  [1450, 1380],
+  [1090, 1410],
+  [620, 1370],
+  [290, 1260],
+  [190, 860],
+];
+export const PARKS = [
+  { x: 980, y: 550, rx: 70, ry: 60 },
+  { x: 1120, y: 170, rx: 145, ry: 60 },
+];
+export const isUrbanGround = (x, y) =>
+  insidePolygon(x, y, URBAN_GROUND) &&
+  !PARKS.some((p) => Math.hypot((x - p.x) / p.rx, (y - p.y) / p.ry) < 1);
+const blocksApron = (a, b) =>
+  b.kind === "exile-house" &&
+  a.y !== b.y &&
+  footprintsOverlap(
+    {
+      ...a,
+      footprint: { ...a.footprint, left: -a.w / 2, right: a.w / 2, bottom: 32 },
+    },
+    {
+      ...b,
+      footprint: { ...b.footprint, left: -b.w / 2, right: b.w / 2, bottom: 32 },
+    },
+  );
+const anchors = [...BUILDINGS];
+for (const p of anchors) {
+  p.floors = p.service ? 3 : 2 + (p.x % 3 === 0 ? 1 : 0);
+  p.h = p.floors * 34 + 116;
+}
+for (const anchor of anchors) {
+  for (const side of [-1, 1]) {
+    let edge = anchor.x + (side * anchor.w) / 2;
+    for (let n = 0; n < 4; n++) {
+      const w = 64 + ((anchor.x + anchor.y + n * 17) % 4) * 8,
+        x = edge + (side * w) / 2,
+        y = anchor.y;
+      const floors = 2 + ((anchor.x + n) % 3 === 0 ? 1 : 0),
+        candidate = building(
+          `block-${anchor.id}-${side}-${n}`,
+          [
+            "Logis des Navigateurs",
+            "Logis des Tisserands",
+            "Logis des Écumeurs",
+            "Logis du Refuge",
+          ][(n + anchor.x) % 4],
+          x,
+          y,
+          w,
+          floors * 34 + 116,
+          ["clay", "wine", "ochre", "slate"][(n + anchor.y) % 4],
+        );
+      candidate.floors = floors;
+      candidate.attachedTo = n
+        ? `block-${anchor.id}-${side}-${n - 1}`
+        : anchor.id;
+      candidate.footprint = {
+        type: "box",
+        left: -w / 2 + 1,
+        right: w / 2 - 1,
+        top: anchor.footprint.top,
+        bottom: 0,
+      };
+      const box = candidate.footprint;
+      let clear = true;
+      for (let yy = box.top - 4; yy <= 8; yy += 5)
+        for (let xx = box.left - 3; xx <= box.right + 3; xx += 5) {
+          if (
+            landDistance(x + xx, y + yy) < 22 ||
+            roadDistance(x + xx, y + yy) < 5
+          ) {
+            clear = false;
+            break;
+          }
+        }
+      if (
+        !clear ||
+        [...BUILDINGS, ...STREET_PROPS, TOWN_FOUNTAIN].some(
+          (p) => footprintsOverlap(candidate, p) || blocksApron(candidate, p),
+        ) ||
+        Object.values(SERVICES).some(
+          (p) =>
+            Math.abs(p.x - x) < w / 2 + 18 &&
+            p.y > y + box.top - 18 &&
+            p.y < y + 25,
+        )
+      )
+        break;
+      BUILDINGS.push(candidate);
+      edge = x + (side * w) / 2;
+    }
+  }
+}
+// Fill the former lawns with residential blocks; keep parks and all existing streets open.
+for (const y of [330, 450, 520, 690, 880, 960, 1050, 1140, 1220])
+  for (let x = 300; x < 1980; x += 72) {
+    const w = 72,
+      floors = 2 + ((x + y) % 5 === 0 ? 1 : 0),
+      candidate = building(
+        `urban-${x}-${y}`,
+        "Logis du Comptoir",
+        x,
+        y,
+        w,
+        floors * 34 + 116,
+        ["clay", "wine", "ochre"][(x + y) % 3],
+      );
+    candidate.floors = floors;
+    candidate.footprint = {
+      type: "box",
+      left: -35,
+      right: 35,
+      top: -62,
+      bottom: 0,
+    };
+    let clear = true;
+    for (let yy = -70; yy <= 22; yy += 6)
+      for (let xx = -39; xx <= 39; xx += 6)
+        if (
+          !isUrbanGround(x + xx, y + yy) ||
+          landDistance(x + xx, y + yy) < 32 ||
+          roadDistance(x + xx, y + yy) < 9
+        )
+          clear = false;
+    if (
+      !clear ||
+      [...BUILDINGS, ...STREET_PROPS, TOWN_FOUNTAIN].some(
+        (p) => footprintsOverlap(candidate, p) || blocksApron(candidate, p),
+      ) ||
+      Object.values(SERVICES).some(
+        (p) => Math.abs(p.x - x) < 55 && p.y > y - 80 && p.y < y + 33,
+      )
+    )
+      continue;
+    const neighbor = BUILDINGS.find(
+      (p) => p.y === y && Math.abs(Math.abs(p.x - x) - (p.w + w) / 2) < 2,
+    );
+    if (neighbor) candidate.attachedTo = neighbor.id;
+    BUILDINGS.push(candidate);
+  }
+
+// Close shared collision walls as well as the visible façades.
+for (const p of BUILDINGS.filter((p) => p.attachedTo)) {
+  const neighbor = BUILDINGS.find((b) => b.id === p.attachedTo);
+  if (p.x < neighbor.x) {
+    p.footprint.right = p.w / 2;
+    neighbor.footprint.left = -neighbor.w / 2;
+  } else {
+    p.footprint.left = -p.w / 2;
+    neighbor.footprint.right = neighbor.w / 2;
+  }
+}
+// A frontage shares one sidewalk and one street connection instead of a path per door.
+ROADS.splice(streets.length);
+ENTRANCES.length = 0;
+export const FRONTAGES = [];
+for (const y of new Set(BUILDINGS.map((p) => p.y))) {
+  const row = BUILDINGS.filter((p) => p.y === y).sort((a, b) => a.x - b.x);
+  let block = [];
+  const finish = () => {
+    if (!block.length) return;
+    FRONTAGES.push(block.map((p) => p.id));
+    if (block.length > 1) {
+      const first = block[0],
+        last = block.at(-1);
+      ROADS.push(
+        road(`frontage-${first.id}`, 14, [
+          [first.x - first.w / 2, y + 14],
+          [last.x + last.w / 2, y + 14],
+        ]),
+      );
+    }
+    const representative = [...block].sort(
+      (a, b) => roadDistance(a.x, a.y + 28) - roadDistance(b.x, b.y + 28),
+    )[0];
+    connectEntrance(representative);
+    for (const p of block)
+      if (!ENTRANCES.some((e) => e.id === p.id))
+        ENTRANCES.push({ id: p.id, x: p.x, y: p.y + 12 });
+    block = [];
+  };
+  for (const house of row) {
+    const previous = block.at(-1);
+    if (previous && house.x - house.w / 2 - (previous.x + previous.w / 2) > 6)
+      finish();
+    block.push(house);
+  }
+  finish();
+}
 const trees = [];
 for (let y = 170; y < 1370; y += 93)
   for (let x = 240; x < 2040; x += 119) {
     const px = x + Math.round(Math.sin(x + y) * 23),
       py = y + Math.round(Math.cos(x - y) * 19);
-    if (landDistance(px, py) < 48 || roadDistance(px, py) < 53) continue;
+    if (
+      landDistance(px, py) < 48 ||
+      roadDistance(px, py) < 53 ||
+      isUrbanGround(px, py)
+    )
+      continue;
     if (
       [...BUILDINGS, ...STREET_PROPS].some(
         (p) =>
@@ -516,7 +722,14 @@ export function canWalkExile(x, y) {
     y > 15 &&
     y < MAP_SIZE.height - 15 &&
     (landDistance(x, y) >= 6 || onDock(x, y, 5)) &&
-    !SOLIDS.some((p) => inFootprint(x, y, p))
+    !SOLIDS.some((p) =>
+      p.footprint.type === "box"
+        ? x >= p.x + p.footprint.left &&
+          x <= p.x + p.footprint.right &&
+          y >= p.y + p.footprint.top &&
+          y <= p.y + p.footprint.bottom
+        : inFootprint(x, y, p),
+    )
   );
 }
 export const placementOnLand = (p) =>
