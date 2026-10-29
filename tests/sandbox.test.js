@@ -13,8 +13,8 @@ test('les quatre variations de butin restent distinctes et les piles se cumulent
 test('équipement et échange ne perdent ni ne dupliquent les objets, chaque personnage a sa grille',()=>{
  const s=createSandbox();giveEquipment(s,'Arme');giveEquipment(s,'Arme');const ids=s.bag.map(i=>i.id);
  equip(s,ids[0]);equip(s,ids[1]);assert.equal(s.bag.length,1);assert.equal(s.team[0].equipment.Arme.id,ids[1]);
- chooseMain(s,1);assert.equal(s.team[1].equipment.Arme,undefined);chooseMain(s,0);unequip(s,'Arme');assert.equal(s.bag.length,2);
- assert.equal(new Set(s.bag.map(i=>i.id)).size,2);
+ chooseMain(s,1);assert.equal(s.team[1].equipment.Arme,undefined);chooseMain(s,0);unequip(s,'Arme');assert.equal(s.bag.length,1);assert.equal(s.bag[0].quantity,2);
+ assert.equal(new Set(s.bag.map(i=>i.id)).size,1);
 });
 test('XP multi-niveau conserve le reste et augmente les PV',()=>{
  const s=createSandbox();grantXp(s,175);assert.equal(s.team[0].level,3);assert.equal(s.team[0].xp,25);assert.equal(s.team[0].maxHp,120);

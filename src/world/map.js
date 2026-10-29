@@ -1,3 +1,4 @@
+import {DEV_CHEST} from './dev-chest.js';
 import { SCENE } from "../game/config.js";
 
 export const MAP_SIZE = Object.freeze({
@@ -323,7 +324,7 @@ export const FENCES = [
     bottom: 4,
   },
 }));
-export const SOLIDS = [...PROPS, ...FENCES];
+export const SOLIDS = [...PROPS, ...FENCES, DEV_CHEST];
 
 export function footprintPoints(prop) {
   const f = prop.footprint;

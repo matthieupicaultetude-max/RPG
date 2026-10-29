@@ -766,3 +766,11 @@ Recette chromatique : pièce normale transformée sans duplication + 1 Bois de n
 Chaque victoire sur un boss donne son morceau de clé royale garanti et, indépendamment, son familier à 5 % : Limonceau, Pyrolin, Nimbulin ou Siroccotin. Attribution une seule fois par boss. Familiers équipables au niveau de personnage 10, niveau familier 1 à 20, 10 XP par cœur rare chromatique du duo. Bonus : Vitalité = 2 × niveau, chaque caractéristique = niveau + 1. Un familier ne compte pas pour les bonus des neuf pièces et ne s’obtient pas par adoption. Nourrir un familier équipé recalcule les PV maximaux sans soigner gratuitement.
 
 Clé du Roi des slimes : un des quatre morceaux différents, aucun substitut par doublons, recette bricoleur niveau 1 donnant 100 XP, consommation atomique. Le donjon royal reste à construire. Les données d’inventaire et de progression sont sauvegardées avec le schéma navigateur existant ; aucun effacement des objets antérieurs.
+
+## 55. Coffre de développement et piles d’équipements
+
+Coffre physique à côté de la maison du Jardin des essais `(160,200)`, collision hors route et accès par F, clic à portée ou bouton tactile. Les outils dev permettent de rejoindre son point d’approche `(160,225)`. Il reste inaccessible depuis les autres zones et pendant le tutoriel.
+
+Catalogue dérivé des données existantes, couvrant 247 types/variantes (normales et chromatiques distinctes). Stock initial de 99 par entrée ; recherche, catégories, retrait de 1 à 99, transfert global et bouton de réapprovisionnement. Le stock restant se sauvegarde avec des clés stables, sans changer le schéma des anciennes sauvegardes ; une nouvelle entrée de catalogue démarre à 99.
+
+Les retraits du coffre et retours d’équipement regroupent les objets strictement équivalents dans le sac, en tenant compte des statistiques, variantes et progression des familiers. Une pile d’équipements est scindée avant équipement, amélioration chromatique ou nourrissage. Un exemplaire équipé a toujours quantité 1 et un ID indépendant. Déséquiper fusionne les exemplaires identiques. Recyclage et échange d’un certificat consomment une unité. Les retraits du coffre enregistrent les pièces obtenues pour les collections d’adoption ; ils ne débloquent pas artificiellement les niveaux de personnages ou les métiers.

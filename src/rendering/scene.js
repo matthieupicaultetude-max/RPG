@@ -1,3 +1,5 @@
+import {drawDevChest} from './dev-chest.js';
+import {DEV_CHEST} from '../world/dev-chest.js';
 import * as furnaceMap from '../world/furnace-map.js';
 import {drawFurnaceGround,drawFurnaceAtmosphere,drawFurnaceBrazier,drawFurnaceForge} from './furnace.js';
 import * as stormMap from '../world/storm-map.js';
@@ -96,6 +98,7 @@ export function createRenderer(canvas) {
     drawBossGround(ctx,s);
     drawMonsterTelegraphs(ctx,s,environment.land);
     const layers = [
+      ...(s.zone==='garden'?[{y:DEV_CHEST.y,draw:()=>drawDevChest(ctx,s)}]:[]),
       ...(s.zone==='slime-furnace'?furnaceMap.FORGES.map(p=>({y:p.y,draw:()=>drawFurnaceForge(ctx,p,s)})):[]),
       ...(s.zone==='slime-furnace'?(s.furnace?.braziers||furnaceMap.BRAZIERS).map(b=>({y:b.y,draw:()=>drawFurnaceBrazier(ctx,b,s)})):[]),
       ...environment.props.map((prop) => ({

@@ -23,6 +23,7 @@ export function progressSnapshot(state) {
       collections: state.collections, petQuests: state.petQuests,
       woodcutting: pick(state.woodcutting, ['level', 'xp']),
       handyman: pick(state.handyman, ['level', 'xp']),
+      ...(state.devChest?{devChest:state.devChest}:{}),
       tutorial: state.tutorial ? pick(state.tutorial, TUTORIAL_FIELDS) : null,
     },
   };
@@ -48,6 +49,7 @@ export function decodeSave(raw) {
         (m.emptySpellSlots !== undefined && (!Array.isArray(m.emptySpellSlots) || !m.emptySpellSlots.every(n => integer(n) && n < 4)))) throw new Error('invalid-member');
     items.push(...Object.values(m.equipment));
   }
+  if(p.devChest!==undefined&&(!object(p.devChest)||!Object.values(p.devChest).every(n=>integer(n)&&n<=99)))throw new Error("invalid-chest");
   const ids = new Set();
   for (const item of items) {
     if (!object(item) || !integer(item.id, 1) || ids.has(item.id) || typeof item.name !== 'string' ||
@@ -76,6 +78,7 @@ export function restoreProgress(state, save) {
     m.hp = m.maxHp;
   });
   for (const key of ['main', 'deployed', 'bag', 'gold', 'collections', 'petQuests']) state[key] = p[key];
+  if(p.devChest)state.devChest=p.devChest;
   state.nextItem = Math.max(p.nextItem, 1 + Math.max(0, ...state.bag.concat(state.team.flatMap(m => Object.values(m.equipment))).map(i => i.id)));
   Object.assign(state.woodcutting, p.woodcutting, { action: null });
   Object.assign(state.handyman, p.handyman);

@@ -1,3 +1,4 @@
+import {putInBag,takeOne} from './item-stacks.js';
 import { syncEquipmentHealth, SET_SLOTS, ELEMENTS } from "../data/equipment.js";
 import {
   PET_FOOD_XP,
@@ -64,7 +65,7 @@ export function claimPet(s, element) {
     return null;
   }
   const pet = { ...createPet(element), id: s.nextItem++ };
-  s.bag.splice(index, 1);
+  if(--s.bag[index].quantity===0)s.bag.splice(index,1);
   s.bag.push(pet);
   s.petQuests[element] = { status: "completed", petId: pet.id };
   tell(
@@ -78,7 +79,7 @@ export function feedPet(s, id) {
     ...s.bag,
     ...s.team.flatMap((m) => Object.values(m.equipment)),
   ];
-  const pet = owned.find((i) => i.id === id && i.kind === "pet");
+  let pet = owned.find((i) => i.id === id && i.kind === "pet");
   const def = pet && petDefinition(pet.petId);
   if (!def) return false;
   if (pet.level >= PET_MAX_LEVEL) {
@@ -93,6 +94,8 @@ export function feedPet(s, id) {
     tell(s, `${pet.name} mange uniquement : ${def.food} chromatique (rare).`);
     return false;
   }
+  const split=s.bag.includes(pet)&&pet.quantity>1;
+  if(split)pet=takeOne(s,pet.id);
   if (--s.bag[index].quantity === 0) s.bag.splice(index, 1);
   pet.xp += PET_FOOD_XP;
   while (pet.level < PET_MAX_LEVEL && pet.xp >= petLevelXp(pet.level)) {
@@ -102,6 +105,8 @@ export function feedPet(s, id) {
   if (pet.level === PET_MAX_LEVEL) pet.xp = 0;
   pet.stats = petStats(pet.petId, pet.level);
   const owner=s.team.find(m=>m.equipment.Familier?.id===pet.id);if(owner)syncEquipmentHealth(owner);
+  if(split)pet=putInBag(s,pet);
+  s.lastFedPetId=pet.id;
   tell(s, `${pet.name} a mangé : +${PET_FOOD_XP} XP · Niveau ${pet.level}.`);
   return true;
 }

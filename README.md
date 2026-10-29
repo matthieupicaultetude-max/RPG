@@ -535,3 +535,11 @@ Les familiers de boss s’équipent au niveau de personnage 10 et progressent du
 Chaque boss donne **un morceau royal garanti**, indépendamment du jet de familier à 5 %. Un morceau différent de chacun des quatre boss fabrique **une Clé du Roi des slimes** chez Tessa, pour 100 XP bricoleur (recette niveau 1). Les doublons ne remplacent pas un morceau manquant. La clé est conservée pour le futur donjon royal, qui n’est pas encore accessible.
 
 Les outils dev donnent les quatre panoplies, noyaux, matériaux, familiers et morceaux pour tester. Tous ces objets, y compris les familiers nourris et équipements portés, sont compatibles avec la sauvegarde navigateur existante sans effacement.
+
+### Coffre de développement · Tous les objets ×99
+
+Un coffre est posé dans le Jardin des essais, près de la maison, à `(160,200)`. Approchez puis **F**, cliquez dessus à portée, ou utilisez le bouton d’interaction sur téléphone. **Outils dev → Rejoindre le coffre** place directement la troupe devant lui.
+
+Le catalogue contient les **247 objets et variantes actuellement implémentés**, chacun en une pile de **99** : les huit panoplies normales/chromatiques, noyaux et fragments, ressources normales/rares/chromatiques, bois/planches, huit familiers, clés, morceaux royaux, certificats et équipements d’essai. Recherche, filtres, quantité de retrait de 1 à 99, transfert de tout le coffre et réapprovisionnement à 99 sont disponibles. Les nouvelles entrées du catalogue apparaîtront automatiquement avec 99 exemplaires lors des futures mises à jour.
+
+Le stock restant et les objets retirés sont sauvegardés dans ce navigateur. Le réapprovisionnement ne supprime rien dans le sac ; les objets identiques s’y regroupent. Équiper prélève une unité avec un ID indépendant ; déséquiper la remet en pile. Améliorer une armure, nourrir un familier, recycler une pièce ou remettre un certificat consomme/modifie une seule unité. Des familiers ayant des niveaux ou XP différents restent dans des piles séparées. Les conditions normales de niveau et de proximité des ateliers restent appliquées.

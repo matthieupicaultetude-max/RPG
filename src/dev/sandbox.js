@@ -1,3 +1,4 @@
+import {putInBag,takeOne} from '../game/item-stacks.js';
 import {HYBRID_SLIMES,hybridForMonster,hybridResource} from '../data/hybrid-slimes.js';
 import {grantBossLoot} from '../game/boss-loot.js';
 import {stepFurnaceMonster,stepFurnaceHazards,onFurnaceDeath,awakenFurnaceBoss,finishFurnaceBoss} from '../game/furnace.js';
@@ -207,16 +208,17 @@ export function equip(s, id) {
   if (index < 0 || !s.bag[index].slot) return;
   const member = s.team[s.main];
   if ((s.bag[index].requiredLevel || 1)>member.level) { note(s,'Niveau insuffisant pour cet équipement.'); return; }
-  const item = s.bag.splice(index, 1)[0];
-  if (member.equipment[item.slot]) s.bag.push(member.equipment[item.slot]);
+  const item = takeOne(s,id);
+  if (member.equipment[item.slot]) putInBag(s,member.equipment[item.slot]);
   member.equipment[item.slot] = item;
   syncEquipmentHealth(member);
   note(s, `${member.name} équipe : ${item.name}.`);
+  return item;
 }
 export function unequip(s, slot) {
   const member = s.team[s.main];
   if (!member.equipment[slot]) return;
-  s.bag.push(member.equipment[slot]);
+  putInBag(s,member.equipment[slot]);
   delete member.equipment[slot];
   syncEquipmentHealth(member);
   note(s, `${slot} retiré.`);

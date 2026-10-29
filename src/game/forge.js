@@ -1,3 +1,4 @@
+import {putInBag,takeOne} from './item-stacks.js';
 import {HYBRID_SLIMES} from '../data/hybrid-slimes.js';
 import {
   fragmentForEquipment,
@@ -55,14 +56,17 @@ export function upgradeChromatic(state, id) {
     tell("Approchez de Borin à la forge.");
     return null;
   }
-  const item = forgeItems(state).find((item) => item.id === id);
+  let item = forgeItems(state).find((item) => item.id === id);
   if (!item) return null;
   const recipe = recipeStatus(state, item);
   if (recipe.some((ingredient) => ingredient.available < ingredient.quantity)) {
     tell("Il manque des ressources pour cette amélioration.");
     return null;
   }
-  // Validate all costs before consuming anything. Upgrade the same object, including equipped pieces.
+  // Split one piece only after the complete recipe has been validated.
+  const split=state.bag.includes(item)&&item.quantity>1;
+  if(split)item=takeOne(state,item.id);
+  // Equipped or single pieces retain their identity.
   for (const ingredient of recipe) {
     let remaining = ingredient.quantity;
     for (const resource of state.bag.filter((resource) =>
@@ -80,7 +84,7 @@ export function upgradeChromatic(state, id) {
   tell(
     `${item.name} amélioré en chromatique : +${CHROMATIC_POWER} Puissance !`,
   );
-  return item;
+  return split?putInBag(state,item):item;
 }
 
 export function recyclableItems(state) {
