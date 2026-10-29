@@ -1,6 +1,10 @@
 import * as world from "../world/exile-map.js";
 const copy = (value) => structuredClone(value);
-const originalProps = copy(world.PROPS);
+const originalProps = copy(world.PROPS).map((p) =>
+  p.kind === "exile-house"
+    ? { ...p, residenceVariant: Math.floor(p.x + p.y) % 3 }
+    : p,
+);
 const templates = new Map(originalProps.map((p) => [p.id, p]));
 const protectedKinds = new Set([
   "exile-fountain",
@@ -18,7 +22,8 @@ export const palette = originalProps.filter(
         q.kind === p.kind &&
         q.asset === p.asset &&
         q.district === p.district &&
-        q.variant === p.variant,
+        q.variant === p.variant &&
+        q.residenceVariant === p.residenceVariant,
     ) === i,
 );
 export let mapRevision = 0;

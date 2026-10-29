@@ -40,7 +40,7 @@ export function drawPortLandmark(g, p) {
   return drawFrame(g, p.asset, p);
 }
 const residenceKey = (p) =>
-  `${p.district === "artisans" ? "artisan" : "merchant"}-${Math.floor(p.x + p.y) % 3}`;
+  `${p.district === "artisans" ? "artisan" : "merchant"}-${p.residenceVariant ?? Math.floor(p.x + p.y) % 3}`;
 export function portSpriteSize(p) {
   const f = frames[p.asset || residenceKey(p)];
   if (!f) return null;

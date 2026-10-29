@@ -24,7 +24,7 @@ export function openMapEditor(game, onClose = () => {}) {
   dialog.className = "map-editor";
   dialog.innerHTML = `<header><strong>Éditeur · Comptoir de l’Exil</strong><button data-edit="close">Fermer</button></header>
   <div class="map-editor-tools"><button data-mode="select">Sélection</button><button data-mode="place">Placer</button><button data-mode="road">Route</button><button data-mode="sidewalk">Trottoir</button><button data-mode="pan">Déplacer la vue</button><button data-edit="undo">Annuler</button><button data-edit="redo">Rétablir</button><label><input type="checkbox" data-grid checked> Grille 4 px</label><label><input type="checkbox" data-collision> Collisions</label><button data-edit="fit">Vue entière</button></div>
-  <div class="map-editor-body"><aside><label>Palette<select data-palette></select></label><label>Éléments<select data-elements size="9"></select></label><div class="map-editor-fields"><label>X <input data-x type="number" step="1"></label><label>Y <input data-y type="number" step="1"></label><label>Largeur <input data-width type="number" min="4" max="80"></label></div><button data-edit="duplicate">Dupliquer</button><button data-edit="delete">Supprimer</button><button data-edit="point-add">Ajouter un point</button><button data-edit="point-delete">Retirer le point</button><button data-edit="finish">Terminer le tracé</button><p>Glissez un objet ou un point. Molette : zoom. Outil Vue : panoramique. Les portes, tours et la fontaine sont verrouillées.</p><p>En mode Route ou Trottoir, cliquez pour tracer puis « Terminer ». Sélectionnez un tracé dans la liste pour le modifier.</p></aside><canvas tabindex="0" aria-label="Carte éditable du Comptoir"></canvas></div>
+  <div class="map-editor-body"><aside><label>Palette<select data-palette></select></label><label>Éléments<select data-elements size="9"></select></label><div class="map-editor-fields"><label>X <input data-x type="number" step="1"></label><label>Y <input data-y type="number" step="1"></label><label>Largeur <input data-width type="number" min="4" max="80"></label></div><button data-edit="duplicate">Dupliquer</button><button data-edit="delete">Supprimer</button><button data-edit="point-add">Ajouter un point</button><button data-edit="point-delete">Retirer le point</button><button data-edit="finish">Terminer le tracé</button><p>Glissez un objet ou un point. Molette : zoom. Outil Vue : panoramique. Les portes, tours et la fontaine sont verrouillées.</p><p>En mode Route ou Trottoir, cliquez pour tracer puis « Terminer ». Sélectionnez un tracé dans la liste pour le modifier.</p></aside><canvas class="map-editor-map" tabindex="0" aria-label="Carte éditable du Comptoir"></canvas><aside class="map-editor-palette" aria-label="Palette de décors"><strong>Décors à placer</strong><p>Glissez une miniature sur la carte, ou cliquez puis placez-la.</p><label>Catégorie<select data-palette-category><option value="all">Tout</option><option value="houses">Bâtiments</option><option value="nature">Végétation</option><option value="props">Objets</option></select></label><div class="map-editor-tiles"></div></aside></div>
   <footer><button data-edit="save">Appliquer et sauvegarder</button><button data-edit="export">Exporter JSON</button><label class="map-editor-import">Importer JSON<input data-import type="file" accept=".json,application/json"></label><button data-edit="reset">Carte d’origine</button><span role="status">Modifications locales, indépendantes de la sauvegarde du personnage.</span></footer>`;
   document.body.append(dialog);
   dialog.showModal();
@@ -45,6 +45,8 @@ export function openMapEditor(game, onClose = () => {}) {
     alive = true,
     version = -1,
     timer;
+  let paletteVersion = -1,
+    paletteDrag = null;
   const status = (t) => ($('[role="status"]').textContent = t);
   const paletteSelect = $("[data-palette]");
   for (const p of palette) {
@@ -53,6 +55,127 @@ export function openMapEditor(game, onClose = () => {}) {
       p.id,
     );
     paletteSelect.add(option);
+  }
+  const tiles = $(".map-editor-tiles");
+  function chooseTemplate(id) {
+    finishTraces();
+    paletteSelect.value = id;
+    mode = "place";
+    sync();
+    for (const b of tiles.querySelectorAll("button"))
+      b.setAttribute("aria-pressed", String(b.dataset.template === id));
+  }
+  function renderPalette() {
+    const bank = createExileEnvironment(previewMap(defaultMap));
+    paletteVersion = portAssetVersion();
+    tiles.replaceChildren();
+    for (const template of palette) {
+      const prop = bank.props.find((p) => p.id === template.id);
+      if (!prop) continue;
+      const card = document.createElement("button");
+      card.type = "button";
+      card.dataset.template = template.id;
+      card.dataset.category =
+        template.kind === "exile-house"
+          ? "houses"
+          : ["tree", "flowers"].includes(template.kind)
+            ? "nature"
+            : "props";
+      card.setAttribute(
+        "aria-pressed",
+        String(paletteSelect.value === template.id),
+      );
+      const label =
+        template.name ||
+        {
+          tree: "Arbre",
+          flowers: "Fleurs",
+          bench: "Banc",
+          crate: "Caisse",
+          barrel: "Tonneau",
+          "exile-lamp": "Lampadaire",
+          "exile-stall": "Étal",
+        }[template.kind] ||
+        template.kind;
+      card.setAttribute("aria-label", `Placer : ${label}`);
+      const thumb = document.createElement("canvas");
+      thumb.width = 128;
+      thumb.height = 112;
+      thumb.setAttribute("aria-hidden", "true");
+      const ctx = thumb.getContext("2d"),
+        b = prop.bounds;
+      const scale = Math.min(
+        116 / (b.right - b.left),
+        104 / (b.bottom - b.top),
+        2,
+      );
+      ctx.imageSmoothingEnabled = false;
+      ctx.translate(
+        (128 - (b.right - b.left) * scale) / 2,
+        (112 - (b.bottom - b.top) * scale) / 2,
+      );
+      ctx.scale(scale, scale);
+      ctx.translate(-b.left, -b.top);
+      prop.draw(ctx);
+      const caption = document.createElement("span");
+      caption.textContent = label;
+      card.append(thumb, caption);
+      tiles.append(card);
+      card.addEventListener("click", () => chooseTemplate(template.id));
+      card.addEventListener("pointerdown", (e) => {
+        if (e.button !== 0) return;
+        e.preventDefault();
+        chooseTemplate(template.id);
+        card.setPointerCapture(e.pointerId);
+        const ghost = document.createElement("img");
+        ghost.src = thumb.toDataURL();
+        ghost.className = "map-editor-drag-ghost";
+        dialog.append(ghost);
+        paletteDrag = { id: template.id, ghost };
+        moveGhost(e);
+      });
+      card.addEventListener("pointermove", (e) => {
+        if (paletteDrag) moveGhost(e);
+      });
+      card.addEventListener("pointerup", (e) => {
+        if (!paletteDrag) return;
+        const rect = canvas.getBoundingClientRect();
+        if (
+          e.clientX >= rect.left &&
+          e.clientX <= rect.right &&
+          e.clientY >= rect.top &&
+          e.clientY <= rect.bottom
+        )
+          placeTemplate(paletteDrag.id, position(e));
+        paletteDrag.ghost.remove();
+        paletteDrag = null;
+      });
+      card.addEventListener("pointercancel", () => {
+        paletteDrag?.ghost.remove();
+        paletteDrag = null;
+      });
+    }
+    filterPalette();
+  }
+  function moveGhost(e) {
+    paletteDrag.ghost.style.left = `${e.clientX - 64}px`;
+    paletteDrag.ghost.style.top = `${e.clientY - 90}px`;
+  }
+  function filterPalette() {
+    const category = $("[data-palette-category]").value;
+    for (const card of tiles.children)
+      card.hidden = category !== "all" && card.dataset.category !== category;
+  }
+  $("[data-palette-category]").addEventListener("change", filterPalette);
+  paletteSelect.addEventListener("change", () =>
+    chooseTemplate(paletteSelect.value),
+  );
+  function placeTemplate(template, point) {
+    change(() => {
+      const id = `placed-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+      doc.objects.push({ id, template, ...clamp(point) });
+      selected = { type: "object", id };
+    });
   }
   const selectedValue = () =>
     selected?.type === "object"
@@ -96,6 +219,7 @@ export function openMapEditor(game, onClose = () => {}) {
     } catch (e) {
       status(e.message);
     }
+    if (paletteVersion !== portAssetVersion()) renderPalette();
     sync();
     draw();
   }
@@ -258,12 +382,7 @@ export function openMapEditor(game, onClose = () => {}) {
       return;
     }
     if (mode === "place") {
-      const q = clamp(p),
-        id = `placed-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
-      doc.objects.push({ id, template: paletteSelect.value, ...q });
-      remember(before);
-      select("object", id);
-      rebuild();
+      placeTemplate(paletteSelect.value, p);
       return;
     }
     if (mode === "road" || mode === "sidewalk") {
@@ -391,6 +510,7 @@ export function openMapEditor(game, onClose = () => {}) {
   function close() {
     alive = false;
     clearInterval(timer);
+    paletteDrag?.ghost.remove();
     observer.disconnect();
     dialog.close();
     dialog.remove();

@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   captureMap,
   finishMapTraces,
+  palette,
   defaultMap,
   previewMap,
   applyMap,
@@ -102,4 +103,29 @@ test("Les tracés provisoires ne bloquent pas la sauvegarde et les tracés termi
   applyMap(defaultMap);
   ready.roads[0].width = 90;
   assert.throws(() => validateDocument(finishMapTraces(ready)), /Route/);
+});
+
+test("La palette couvre les variantes de maisons et leur apparence reste stable au déplacement", () => {
+  const houses = palette.filter((p) => p.kind === "exile-house" && !p.asset);
+  for (const district of ["merchants", "artisans"])
+    assert.equal(
+      new Set(
+        houses
+          .filter((p) => p.district === district)
+          .map((p) => p.residenceVariant),
+      ).size,
+      3,
+    );
+  const template = houses[0],
+    doc = copy(defaultMap);
+  doc.objects.push({
+    id: "preview-house",
+    template: template.id,
+    x: 720,
+    y: 200,
+  });
+  const first = previewMap(doc).PROPS.find((p) => p.id === "preview-house");
+  doc.objects.at(-1).x += 1;
+  const moved = previewMap(doc).PROPS.find((p) => p.id === "preview-house");
+  assert.equal(first.residenceVariant, moved.residenceVariant);
 });
