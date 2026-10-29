@@ -223,6 +223,6 @@ test("interface : total actif, prochain palier, tous les paliers et résistances
   const stats = renderCharacteristics(s);
   assert.ok(stats.includes("Résistances élémentaires"));
   assert.ok(stats.includes('data-worn-set="fire"'));
-  assert.ok(stats.includes("équipement et panoplies"));
+  assert.ok(stats.includes("équipement et les panoplies"));
   assert.equal(/NaN|undefined/.test(detail + inv + stats), false);
 });

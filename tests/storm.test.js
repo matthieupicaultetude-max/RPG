@@ -279,7 +279,7 @@ test("storm bestiary and rewards: standard Air/Water resources, boss with royal 
   assert.deepEqual(drops[0].elements, ["air", "water"]);
   assert.deepEqual(monsterLoot("nimbulimon").map(i=>i.chance), [1,.05]);
   assert.ok(
-    renderBestiary("nimbulimon", 10).includes("Dernier impact sur dalle sèche"),
+    renderBestiary("nimbulimon", 10).includes("Guidez le dernier ricochet sur sol sec"),
   );
   const { s, m } = fixture(true);
   s.dungeonRun = { dungeonId: "slime-storm", active: true, completed: false };

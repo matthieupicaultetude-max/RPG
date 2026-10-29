@@ -1,3 +1,4 @@
+import {sections,disclosure} from './organization.js';
 import {HYBRID_SLIMES,hybridForMonster} from '../data/hybrid-slimes.js';
 import { monsterElements } from "../data/slime-loot.js";
 import { AMBER_SLIME } from "../data/rock-shell.js";
@@ -39,8 +40,8 @@ export function bestiaryValues(id, level) {
 export function coreDropMarkup(id, level) {
   const monster = monsterDefinition(id);
   const hybrid=hybridForMonster(monster);
-  if(monster.boss)return `<h3>Butin du boss</h3><p>Un morceau de clé royale garanti et un jet indépendant à 5 % pour son familier. Aucun noyau ni pièce d’armure directement sur le boss.</p>${monsterLoot(id).map(item=>`<div class="monster-loot">${itemIcon('',false,item.color,item)}<div><strong>${item.name}</strong><small>${item.kind==='pet'?`Familier niveau 10 · Nourriture : ${hybrid.rare} chromatique`:'Un des quatre morceaux différents nécessaires à la clé du Roi des slimes'}</small></div><b>${number(item.chance*100)} %</b></div>`).join('')}`;
-  if(hybrid){const core=createHybridCore(hybrid.id),set=setForCore(core);return `<h3>${core.name} · ${number(CORE_CHANCE*100)} %</h3><div class="monster-loot">${itemIcon('Noyau',false,core.color,core)}<div><strong>${set.name}</strong><small>${hybrid.elements.map(e=>ELEMENTS[e].name).join(' / ')} · Équipable niveau 10</small></div></div><p>Bonus indépendant de la ressource. Ouvrez partout : une pièce normale aléatoire parmi neuf. Doublons possibles. Version chromatique à la forge : pièce + 1 Bois de noyer + 1 ${hybrid.normal} chromatique.</p>`;}
+  if(monster.boss)return `<h3>Butin du boss</h3><p>Un morceau de clé royale garanti · Familier à 5 % (jet indépendant).</p>${monsterLoot(id).map(item=>`<div class="monster-loot">${itemIcon('',false,item.color,item)}<div><strong>${item.name}</strong><small>${item.kind==='pet'?`Familier niveau 10 · Nourriture : ${hybrid.rare} chromatique`:'Un des quatre morceaux différents nécessaires à la clé du Roi des slimes'}</small></div><b>${number(item.chance*100)} %</b></div>`).join('')}`;
+  if(hybrid){const core=createHybridCore(hybrid.id),set=setForCore(core);return `<h3>${core.name} · ${number(CORE_CHANCE*100)} %</h3><div class="monster-loot">${itemIcon('Noyau',false,core.color,core)}<div><strong>${set.name}</strong><small>${hybrid.elements.map(e=>ELEMENTS[e].name).join(' / ')} · Équipable niveau 10</small></div></div><p>1 pièce parmi 9 · Doublons possibles. Chromatique : pièce + Bois de noyer + ${hybrid.normal} chromatique.</p>`;}
   const elements = monsterElements(monster),
     core = createCore(elements[0], level),
     set = setForCore(core);
@@ -52,7 +53,7 @@ export function coreDropMarkup(id, level) {
     })
     .join(
       "",
-    )}<p>Ouverture possible partout depuis le sac. Un équipement standard aléatoire de l’élément et de la tranche ; doublons possibles. Les ressources ont une variante chromatique, les noyaux restent standards.</p>`;
+    )}<p>Ouverture partout · 1 pièce normale aléatoire · Doublons possibles.</p>`;
 }
 const combatNote = (id) =>
   id === "wind-slime"
@@ -115,9 +116,7 @@ function lootMarkup(monster, level) {
   if (monster.boss)
     return `<section class="monster-drops boss-loot">${coreDropMarkup(monster.id, level)}${monster.depthsSlime?"<p>Une fusion Eau/Terre donne les ressources de limon abyssal et peut donner un Noyau de Gouffre (25 %) pour la panoplie biélément niveau 10.</p>":""}</section>`;
   const hybrid=hybridForMonster(monster);
-  const multiple =
-    !hybrid && monster.category === "slime" && monsterElements(monster).length > 1;
-  return `<section class="monster-drops"><h3>Butins possibles</h3><p>Un objet par victoire. ${multiple ? "Un des deux éléments est choisi à parts égales, puis la rareté et la variation chromatique sont tirées." : "La variation chromatique est tirée indépendamment de la rareté."} ${hybrid?"Les ressources sont propres à ce duo : normale chromatique pour la forge, rare chromatique pour le familier.":monster.category === "slime" ? "Les slimes du même élément partagent leur gelée et leur cœur." : ""}</p><div class="monster-loot-grid">${monsterLoot(
+  return `<section class="monster-drops"><h3>Butins possibles</h3><p>1 ressource par victoire · Noyau en bonus.${hybrid?" Forge : normale chromatique. Familier : rare chromatique.":""}</p><div class="monster-loot-grid">${monsterLoot(
     monster.id,
   )
     .map(
@@ -128,43 +127,11 @@ function lootMarkup(monster, level) {
       "",
     )}</div></section><section class="monster-drops bestiary-core">${coreDropMarkup(monster.id, level)}${monster.depthsSlime?"<p>Une fusion Eau/Terre donne les ressources de limon abyssal et peut donner un Noyau de Gouffre (25 %) pour la panoplie biélément niveau 10.</p>":""}</section>`;
 }
-export function renderBestiary(id, level) {
-  const monster = monsterDefinition(id),
-    stats = monsterStats(id, level),
-    values = bestiaryValues(id, level);
-  const names = {
-    maxHp: "Points de vie",
-    damage: "Dégâts de l’attaque",
-    attackDelay: "Repos après l’attaque",
-    speed: "Vitesse en poursuite",
-    detection: "Rayon d’engagement",
-    respawnDelay: "Réapparition",
-    xp: "Expérience gagnée",
-    gold: "Or obtenu",
-  };
-  const attack = monsterAttack({ species: id }),
-    kindText =
-      attack.kind === "furnace-cycle"
-        ? "Charge Feu en couloir, puis souffle Air en cône : visée brève suivie d’une seconde verrouillée pour esquiver. Les braises déplacées et explosions sont annoncées au sol."
-        : attack.kind === "storm-cycle"
-        ? "Bond Eau sur le héros isolé, aspiration, explosion Air puis ricochets Air et Eau. Dernier impact sur dalle sèche : esquivez pour exposer le cœur."
-        : attack.kind === "wind-cycle"
-        ? "Gonflement et aspiration, explosion proche puis deux atterrissages annoncés et verrouillés"
-        : attack.kind === "leap"
-          ? "Cercle d’atterrissage sur le membre le plus éloigné du centre du groupe"
-          : attack.kind === "eruption"
-            ? "Éruptions de slimes sur des cercles fixes, puis vols balistiques"
-            : attack.kind === "charge"
-              ? "Couloir de charge, cible et direction figées"
-              : "Tornade mobile, trajectoire figée";
-  return `<div class="bestiary-heading"><div><p class="eyebrow">LES CRÉATURES D’AURORIA</p><h2>Bestiaire</h2></div><span>${MONSTERS.length} espèces</span></div><div class="bestiary-layout">${renderBestiaryNavigation(id)}<article class="monster-sheet"><div class="monster-identity">${creature(id)}<div><p class="eyebrow">${monster.category === "slime" ? "Slime · " : ""}${monster.boss ? "Boss" : monster.family}</p><h3>${monster.name}</h3><span>${monster.habitat} · ${monster.elements ? monster.elements.map((e) => ELEMENTS[e].name).join(" / ") : ELEMENTS[monster.element].name + " / " + ELEMENTS[monster.element].stat}</span><p>${monster.description}</p></div></div><div class="monster-level"><label for="monster-level">Niveau de consultation <output id="monster-level-value" for="monster-level">${stats.level}</output></label><input id="monster-level" type="range" min="1" max="${MONSTER_LEVEL_MAX}" step="1" value="${stats.level}"><div><span>1</span><span>${MONSTER_LEVEL_MAX}</span></div><small>Aperçu uniquement : le niveau réel dépend de la zone (jardin 1, marais 3, montagnes, alizés, braises et profondeurs 5, magma et écume 6, Pyroclaste 9, Nimbulimon et Siroccolimon 10).</small></div><section class="monster-ability"><h3>${attack.name} · ${ELEMENTS[attack.element].name}</h3><p>Prévisualisation : ${number(attack.windup)} s · ${kindText}. Une même attaque ne touche chaque personnage qu’une fois.</p>${combatNote(id) ? `<p>${combatNote(id)}</p>` : ""}</section><dl class="monster-stats">${Object.entries(
-    names,
-  )
-    .map(
-      ([key, label]) =>
-        `<div><dt>${label}</dt><dd data-monster-stat="${key}">${values[key]}</dd></div>`,
-    )
-    .join(
-      "",
-    )}</dl>${lootMarkup(monster, stats.level)}<p class="panel-hint">Statistiques et probabilités de test. Par niveau supplémentaire : PV +12 %, dégâts +8 %, XP +10 %, or +5 % des valeurs du niveau 1, arrondis à l’entier. Vitesse et délais restent fixes.</p></article></div>`;
+export function renderBestiary(id,level){
+ const monster=monsterDefinition(id),stats=monsterStats(id,level),values=bestiaryValues(id,level),attack=monsterAttack({species:id});
+ const names={maxHp:'PV',damage:'Dégâts',attackDelay:'Recharge',speed:'Vitesse',detection:'Détection',respawnDelay:'Réapparition',xp:'XP',gold:'Or'};
+ const overview=`<dl class="monster-stats">${Object.entries(names).map(([key,label])=>`<div><dt>${label}</dt><dd data-monster-stat="${key}">${values[key]}</dd></div>`).join('')}</dl>${disclosure('bestiary-scaling','Progression par niveau','<p>PV +12 %, dégâts +8 %, XP +10 %, or +5 % des valeurs du niveau 1. Vitesse et délais fixes.</p>')}`;
+ const kindText={charge:'Esquivez le couloir.',leap:'Sortez du cercle d’atterrissage.',tornado:'Évitez la trajectoire.',eruption:'Attirez une invocation près du boss.', 'wind-cycle':'Sortez du souffle, puis évitez les deux impacts.', 'storm-cycle':'Guidez le dernier ricochet sur sol sec.', 'furnace-cycle':'Orientez le cône sur un brasero, puis esquivez.'}[attack.kind]||'Surveillez les zones annoncées.';
+ const combat=`<section class="monster-ability"><h3>${attack.name} · ${ELEMENTS[attack.element].name}</h3><p class="guide-rule">${kindText}</p><p>Préparation ${number(attack.windup)} s · Recharge ${number(attack.recovery)} s</p>${disclosure(`bestiary-behaviour-${id}`,'Comportement détaillé',`<p>${monster.description}</p>${combatNote(id)?`<p>${combatNote(id)}</p>`:''}`)}</section>`;
+ return `<div class="bestiary-heading"><div><p class="eyebrow">MONDE</p><h2>Bestiaire</h2></div><span>${MONSTERS.length} espèces</span></div><label class="bestiary-picker">Créature<select id="bestiary-monster-picker">${[["Slimes · Monstres",MONSTERS.filter(m=>m.category==="slime"&&!m.boss)],["Slimes · Boss",MONSTERS.filter(m=>m.category==="slime"&&m.boss)],["Bêtes",MONSTERS.filter(m=>m.category==="beast")],["Insectes",MONSTERS.filter(m=>m.category==="insect")]].map(([label,list])=>`<optgroup label="${label}">${list.map(m=>`<option value="${m.id}" ${m.id===id?"selected":""}>${m.name}</option>`).join("")}</optgroup>`).join("")}</select></label><div class="bestiary-layout">${renderBestiaryNavigation(id)}<article class="monster-sheet"><div class="monster-identity">${creature(id)}<div><p class="eyebrow">${monster.boss?'Boss':monster.family}</p><h3>${monster.name}</h3><span>${monster.habitat} · ${(monster.elements||[monster.element]).map(e=>ELEMENTS[e].name).join(' / ')}</span></div></div><div class="monster-level"><label for="monster-level">Niveau de consultation <output id="monster-level-value" for="monster-level">${stats.level}</output></label><input id="monster-level" type="range" min="1" max="${MONSTER_LEVEL_MAX}" step="1" value="${stats.level}"><small>Aperçu uniquement · ne modifie pas les monstres.</small></div>${sections('bestiary',[{id:'overview',label:'Statistiques',content:overview},{id:'combat',label:'Combat',content:combat},{id:'loot',label:'Butins',content:lootMarkup(monster,stats.level)}])}</article></div>`;
 }
