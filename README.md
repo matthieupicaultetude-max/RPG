@@ -563,3 +563,14 @@ Des remparts crénelés, dix tours d’angle et deux portes entourent la ville. 
 Le bouton **Plan du Comptoir** montre les quartiers et bonnes adresses. L’onglet **Pays des Slimes** conserve la carte illustrée de référence. Votre position dans la ville est sauvegardée. Les outils dev proposent des accès directs au port, à la place, aux artisans et aux jardins.
 
 Voir le [dossier du pays et sa carte](docs/world/PAYS_DES_SLIMES.md). Les autres régions réelles seront construites ensuite ; les terrains de développement restent disponibles.
+
+## Éditeur de carte
+
+Ouvrez **Développement → Éditeur de carte** pour modifier le Comptoir. Le jeu est mis en pause pendant l’édition.
+
+- **Sélection** : cliquez sur un décor puis glissez-le, ou sélectionnez-le dans la liste et renseignez X/Y. Sa collision suit sa position ; les commerces conservent leur PNJ et leur entrée.
+- **Placer** : choisissez un sprite dans la palette puis cliquez sur la carte. Les boutons permettent aussi de dupliquer et supprimer les décors. Les commerces ne peuvent pas être supprimés ; portes, tours et fontaine restent verrouillées.
+- **Route / Trottoir** : cliquez pour poser les points, puis **Terminer le tracé**. Sélectionnez un tracé dans la liste pour déplacer ses poignées, ajouter/retirer des points ou régler sa largeur.
+- Molette pour zoomer ; **Déplacer la vue** pour naviguer. Grille de 4 pixels et affichage des collisions facultatifs. **Annuler / Rétablir** conservent les 60 dernières opérations de la session.
+- **Appliquer et sauvegarder** vérifie les placements et enregistre la carte dans ce navigateur (`auroria-map-exile-v1`), séparément de la progression. Elle sera rechargée au prochain lancement. Fermer sans appliquer abandonne les modifications non enregistrées.
+- **Exporter JSON / Importer JSON** permettent de conserver ou partager une carte. L’import ouvre un brouillon ; il faut l’appliquer. L’export ne publie pas automatiquement les changements pour les autres joueurs : le fichier peut être intégré au projet ensuite. **Carte d’origine**, puis **Appliquer**, restaure le plan fourni avec le jeu.

@@ -828,3 +828,7 @@ Deux fronts de terrasse créent trois niveaux : port (0), terrasse intermédiair
 ### Voirie du Comptoir
 
 Les rues pavées suivent les retraits propres à chaque façade et rejoignent les ruelles latérales. Des trottoirs continus en pierre taillée grise desservent chaque entrée. Les textures se répètent dans les coordonnées du monde pour éviter les raccords visibles aux intersections. La place de la fontaine conserve son dallage et sa mosaïque. Les escaliers restent les passages entre les terrasses.
+
+### Éditeur local du Comptoir
+
+Un espace d’édition en mode développement permet le placement et le déplacement des bâtiments/décors, l’édition des polylignes de routes et de trottoirs, le réglage de largeur, l’inspection des collisions et l’historique annuler/rétablir. Le terrain, les remparts, les terrasses, la fontaine et les portes restent fixes dans cette première version. Les changements sont des brouillons jusqu’à application. Les collisions, les entrées et les PNJ commerciaux suivent les bâtiments ; les copies ne dupliquent pas les services. L’application est transactionnelle et rejette les chevauchements, les objets hors sol et les accès aux services obstrués. La carte utilise un document JSON versionné, sauvegardé indépendamment de la progression du compte dans le navigateur. Import et export facilitent son intégration ultérieure au projet partagé.

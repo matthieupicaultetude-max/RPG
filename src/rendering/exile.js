@@ -63,7 +63,7 @@ function path(g, r) {
   g.beginPath();
   r.points.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y)));
 }
-function plotGround(g) {
+function plotGround(g, map) {
   const water = g.createPattern(tile("harbor-water"), "repeat"),
     grass = g.createPattern(tile("grass"), "repeat"),
     pavers = g.createPattern(tile("pavers"), "repeat"),
@@ -532,7 +532,8 @@ function ship(g, x, y, color, caravel = false) {
     }
   g.restore();
 }
-export function createExileEnvironment() {
+export function createExileEnvironment(mapOverride = map) {
+  const map = mapOverride;
   loadPortAssets();
   const errors = map.validateExileMap();
   if (errors.length) throw Error(errors.join("; "));
@@ -540,7 +541,7 @@ export function createExileEnvironment() {
   Object.assign(ground, map.MAP_SIZE);
   const g = ground.getContext("2d");
   g.imageSmoothingEnabled = false;
-  plotGround(g);
+  plotGround(g, map);
   for (const p of map.SHIPS) ship(g, p.x, p.y, p.color, p.caravel);
   const atlas = createSpriteAtlas();
   const props = map.PROPS.map((p) => {
@@ -589,6 +590,17 @@ export function createExileEnvironment() {
         right: p.x - sprite.anchorX + sprite.canvas.width,
         top: p.y - sprite.anchorY,
         bottom: p.y - sprite.anchorY + sprite.canvas.height,
+      },
+      hitTest(x, y) {
+        const sx = Math.floor(x - p.x + sprite.anchorX),
+          sy = Math.floor(y - p.y + sprite.anchorY);
+        return (
+          sx >= 0 &&
+          sy >= 0 &&
+          sx < sprite.canvas.width &&
+          sy < sprite.canvas.height &&
+          sprite.canvas.getContext("2d").getImageData(sx, sy, 1, 1).data[3] > 32
+        );
       },
       draw(ctx) {
         ctx.drawImage(

@@ -31,7 +31,7 @@ export function createGame(canvas, touchControls, onChange, onTimers = () => {},
   const render = createRenderer(canvas);
   const controller = new AbortController();
   let previous, frame, lastRevision = -1, lastHome;
-  let interfaceOpen = false;
+  let interfaceOpen = false, editorOpen = false;
   const saveTimer = setInterval(() => persistence.save(), 2000);
   window.addEventListener('pagehide', () => persistence.save(), { signal: controller.signal });
   document.addEventListener('visibilitychange', () => { if (document.hidden) persistence.save(); }, { signal: controller.signal });
@@ -64,13 +64,13 @@ export function createGame(canvas, touchControls, onChange, onTimers = () => {},
   canvas.addEventListener('blur',()=>{state.spellCharge=null;},{signal:controller.signal});
   function tick(now) {
     const elapsed = previous === undefined ? 0 : Math.max(0, (now - previous) / 1000);
-    const dt = document.hidden ? 0 : Math.min(elapsed, .05);
+    const dt = document.hidden || editorOpen ? 0 : Math.min(elapsed, .05);
     previous = now;
     if(state.spellCharge){if(interfaceOpen||state.spellCharge.owner!==state.main)state.spellCharge=null;else{state.spellCharge.time+=dt;if(state.spellCharge.time>=1){castEquipped(state,0,undefined,{charge:1});state.spellCharge=null;}}}
     if (pointer && !interfaceOpen) updateAim(pointer);
     const autoAttack = state.autoAttack;
     if (interfaceOpen) state.autoAttack = false;
-    stepSandbox(state, interfaceOpen ? { x: 0, y: 0 } : controls.direction(), dt, elapsed);
+    if(!editorOpen)stepSandbox(state, interfaceOpen ? { x: 0, y: 0 } : controls.direction(), dt, elapsed);
     state.autoAttack = autoAttack;
     onTimers(state);
     render(state);
@@ -81,5 +81,5 @@ export function createGame(canvas, touchControls, onChange, onTimers = () => {},
     frame = requestAnimationFrame(tick);
   }
   frame = requestAnimationFrame(tick);
-  return { state, clearInput(){controls.clear();state.spellCharge=null;state.aim.active=false;}, setInterfaceOpen(open) { interfaceOpen = open;if(open)cancelWoodcutting(state); state.spellCharge=null; state.aim.active = false; controls.clear(); }, refresh() { state.revision++; }, reset() { teleport(state, 'maison'); }, destroy() { persistence.save(); clearInterval(saveTimer); cancelAnimationFrame(frame); controls.destroy(); render.destroy?.(); controller.abort(); } };
+  return { state, setEditorOpen(open){editorOpen=open;controls.clear();}, clearInput(){controls.clear();state.spellCharge=null;state.aim.active=false;}, setInterfaceOpen(open) { interfaceOpen = open;if(open)cancelWoodcutting(state); state.spellCharge=null; state.aim.active = false; controls.clear(); }, refresh() { state.revision++; }, reset() { teleport(state, 'maison'); }, destroy() { persistence.save(); clearInterval(saveTimer); cancelAnimationFrame(frame); controls.destroy(); render.destroy?.(); controller.abort(); } };
 }

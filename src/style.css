@@ -878,3 +878,18 @@ canvas.paper-avatar { position:relative; inset:auto; object-fit:contain; flex-sh
 .exile-shop-grid small {display:block;margin-top:5px;color:#aab993;}
 .exile-shop-grid button {white-space:nowrap;}
 @media(max-width:700px){.exile-plan-layout,.exile-shop-grid{grid-template-columns:1fr}.town-map-button{top:90px;bottom:auto;right:10px;padding:8px;font-size:11px}.exile-panel .section-tabs{flex-wrap:wrap}.exile-panel h2{font-size:23px}}
+
+/* A dedicated authoring workspace, separate from the player's inventory. */
+.map-editor{position:fixed;inset:10px;width:calc(100vw - 20px);height:calc(100dvh - 20px);max-width:none;max-height:none;margin:0;padding:0;color:#e8e5cf;background:#172b28;border:1px solid #b6ae83;border-radius:10px;overflow:hidden;}
+.map-editor[open]{display:flex;flex-direction:column;z-index:10000;}
+.map-editor::backdrop{background:#061516e8;}
+.map-editor header,.map-editor footer,.map-editor-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:9px 12px;flex-shrink:0;border-bottom:1px solid #526052;}
+.map-editor header{justify-content:space-between;}.map-editor button,.map-editor select,.map-editor input{font:inherit;font-size:12px;}
+.map-editor button,.map-editor-import{padding:7px 10px;border:1px solid #66765c;background:#293f35;color:#eee6c6;border-radius:5px;cursor:pointer;}
+.map-editor button[aria-pressed=true]{background:#77683a;border-color:#edcf79;}.map-editor button:disabled{opacity:.45;cursor:default;}
+.map-editor-body{display:flex;flex:1;min-height:0;}.map-editor aside{width:225px;padding:12px;overflow:auto;flex-shrink:0;display:flex;flex-direction:column;gap:9px;}
+.map-editor aside label{display:flex;flex-direction:column;gap:4px;}.map-editor select,.map-editor input[type=number]{width:100%;box-sizing:border-box;background:#142720;color:#eee6c6;border:1px solid #66765c;padding:5px;}
+.map-editor-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;}.map-editor aside p{font-size:12px;line-height:1.5;margin:0;color:#b2bca6;}
+.map-editor canvas{position:relative;inset:auto;height:100%;display:block;flex:1;width:0;min-width:0;touch-action:none;background:#172b2e;cursor:crosshair;image-rendering:pixelated;}
+.map-editor footer{border-top:1px solid #526052;border-bottom:0;}.map-editor [role=status]{font-size:12px;flex:1;min-width:180px;}.map-editor-import input{width:145px;display:block;margin-top:3px;}
+@media(max-width:650px){.map-editor{inset:0;width:100vw;height:100dvh;border-radius:0;}.map-editor aside{width:150px;padding:7px;}.map-editor-tools{gap:4px;padding:5px;}.map-editor button{padding:6px;}.map-editor header strong{font-size:13px;}.map-editor aside p{display:none;}.map-editor footer{max-height:150px;overflow:auto;}}
