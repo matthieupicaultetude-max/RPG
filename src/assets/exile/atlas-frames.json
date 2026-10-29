@@ -179,5 +179,82 @@
         "h": 420
       }
     }
+  },
+  {
+    "file": "blue-props.png",
+    "frames": {
+      "blue-prop-crates": {
+        "x": 40,
+        "y": 48,
+        "w": 317,
+        "h": 282
+      },
+      "blue-prop-barrels": {
+        "x": 424,
+        "y": 71,
+        "w": 309,
+        "h": 263
+      },
+      "blue-prop-workbench": {
+        "x": 778,
+        "y": 94,
+        "w": 369,
+        "h": 237
+      },
+      "blue-prop-anvil": {
+        "x": 1209,
+        "y": 108,
+        "w": 289,
+        "h": 225
+      },
+      "blue-prop-lumber-rack": {
+        "x": 38,
+        "y": 373,
+        "w": 330,
+        "h": 298
+      },
+      "blue-prop-stone-stack": {
+        "x": 395,
+        "y": 425,
+        "w": 362,
+        "h": 259
+      },
+      "blue-prop-tool-rack": {
+        "x": 808,
+        "y": 364,
+        "w": 335,
+        "h": 318
+      },
+      "blue-prop-banner-lamp": {
+        "x": 1254,
+        "y": 351,
+        "w": 232,
+        "h": 330
+      },
+      "blue-prop-bench": {
+        "x": 28,
+        "y": 787,
+        "w": 355,
+        "h": 198
+      },
+      "blue-prop-planter": {
+        "x": 434,
+        "y": 773,
+        "w": 334,
+        "h": 211
+      },
+      "blue-prop-well": {
+        "x": 848,
+        "y": 699,
+        "w": 255,
+        "h": 302
+      },
+      "blue-prop-market-stall": {
+        "x": 1193,
+        "y": 692,
+        "w": 308,
+        "h": 296
+      }
+    }
   }
 ]

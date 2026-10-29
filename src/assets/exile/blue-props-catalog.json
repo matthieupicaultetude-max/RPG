@@ -1,0 +1,86 @@
+[
+  {
+    "id": "blue-prop-crates",
+    "name": "Caisses du quartier bleu",
+    "w": 32,
+    "h": 28,
+    "depth": 12
+  },
+  {
+    "id": "blue-prop-barrels",
+    "name": "Tonneaux cerclés de bleu",
+    "w": 30,
+    "h": 26,
+    "depth": 12
+  },
+  {
+    "id": "blue-prop-workbench",
+    "name": "Établi d’artisan",
+    "w": 52,
+    "h": 33,
+    "depth": 13
+  },
+  {
+    "id": "blue-prop-anvil",
+    "name": "Enclume et brasero",
+    "w": 32,
+    "h": 25,
+    "depth": 12
+  },
+  {
+    "id": "blue-prop-lumber-rack",
+    "name": "Râtelier de bois",
+    "w": 40,
+    "h": 36,
+    "depth": 14
+  },
+  {
+    "id": "blue-prop-stone-stack",
+    "name": "Pierres taillées",
+    "w": 36,
+    "h": 26,
+    "depth": 12
+  },
+  {
+    "id": "blue-prop-tool-rack",
+    "name": "Panneau d’outils",
+    "w": 40,
+    "h": 38,
+    "depth": 10
+  },
+  {
+    "id": "blue-prop-banner-lamp",
+    "name": "Lampadaire à bannière bleue",
+    "w": 30,
+    "h": 43,
+    "depth": 7
+  },
+  {
+    "id": "blue-prop-bench",
+    "name": "Banc des artisans",
+    "w": 48,
+    "h": 27,
+    "depth": 10
+  },
+  {
+    "id": "blue-prop-planter",
+    "name": "Jardinière bleue",
+    "w": 36,
+    "h": 23,
+    "depth": 9
+  },
+  {
+    "id": "blue-prop-well",
+    "name": "Puits aux ardoises bleues",
+    "w": 48,
+    "h": 57,
+    "depth": 17
+  },
+  {
+    "id": "blue-prop-market-stall",
+    "name": "Étal bleu et crème",
+    "w": 68,
+    "h": 65,
+    "depth": 16
+  }
+]

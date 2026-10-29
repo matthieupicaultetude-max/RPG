@@ -513,6 +513,7 @@ export function createExileEnvironment(mapOverride = map) {
   const props = map.PROPS.map((p) => {
     const custom = [
       "exile-house",
+      "exile-prop",
       "exile-gate",
       "exile-city-gate",
       "exile-rampart-tower",
@@ -527,6 +528,7 @@ export function createExileEnvironment(mapOverride = map) {
       const canvas = document.createElement("canvas");
       const size = [
         "exile-house",
+        "exile-prop",
         "exile-gate",
         "exile-city-gate",
         "exile-rampart-tower",
@@ -540,7 +542,10 @@ export function createExileEnvironment(mapOverride = map) {
         anchorY = canvas.height - 10;
       cg.imageSmoothingEnabled = false;
       cg.translate(anchorX, anchorY);
-      if (p.kind === "exile-house") building(cg, p);
+      if (p.kind === "exile-prop") {
+        if (!drawPortLandmark(cg, p))
+          rect(cg, -p.w / 2, -p.h, p.w, p.h, "#526e81");
+      } else if (p.kind === "exile-house") building(cg, p);
       else if (["exile-gate", "exile-city-gate"].includes(p.kind))
         drawHarborGate(cg, p);
       else if (p.kind === "exile-rampart-tower") drawPortLandmark(cg, p);
@@ -550,14 +555,23 @@ export function createExileEnvironment(mapOverride = map) {
       else stall(cg, p);
       sprite = { canvas, anchorX, anchorY };
     }
+    const tight =
+      p.kind === "exile-prop" ? portSpriteSize(p) || { w: p.w, h: p.h } : null;
     return {
       ...p,
-      bounds: {
-        left: p.x - sprite.anchorX,
-        right: p.x - sprite.anchorX + sprite.canvas.width,
-        top: p.y - sprite.anchorY,
-        bottom: p.y - sprite.anchorY + sprite.canvas.height,
-      },
+      bounds: tight
+        ? {
+            left: p.x - tight.w / 2,
+            right: p.x + tight.w / 2,
+            top: p.y - tight.h,
+            bottom: p.y,
+          }
+        : {
+            left: p.x - sprite.anchorX,
+            right: p.x - sprite.anchorX + sprite.canvas.width,
+            top: p.y - sprite.anchorY,
+            bottom: p.y - sprite.anchorY + sprite.canvas.height,
+          },
       hitTest(x, y) {
         const sx = Math.floor(x - p.x + sprite.anchorX),
           sy = Math.floor(y - p.y + sprite.anchorY);

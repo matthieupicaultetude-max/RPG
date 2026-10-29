@@ -243,3 +243,32 @@ test("La taille manuelle conserve les proportions et les collisions et se sauveg
   bad.objects[0].scale = 99;
   assert.throws(() => validateDocument(bad), /Taille/);
 });
+
+test("Les douze décors bleus ont une miniature indépendante, une collision et un modèle sauvegardable", async () => {
+  const { BLUE_PROPS } = await import("../src/data/blue-props.js");
+  assert.equal(BLUE_PROPS.length, 12);
+  assert.equal(new Set(BLUE_PROPS.map((p) => p.asset)).size, 12);
+  for (const p of BLUE_PROPS) {
+    assert.ok(palette.some((t) => t.id === p.id));
+    assert.ok(p.footprint);
+    assert.equal(p.service, undefined);
+    assert.ok(!defaultMap.objects.some((t) => t.template === p.id));
+  }
+  const doc = copy(defaultMap);
+  doc.objects.push({
+    id: "blue-bench-test",
+    template: "blue-prop-bench",
+    x: 720,
+    y: 320,
+  });
+  applyMap(doc);
+  assert.ok(map.SOLIDS.some((p) => p.id === "blue-bench-test"));
+  const saved = captureMap();
+  applyMap(defaultMap);
+  applyMap(saved);
+  assert.equal(
+    map.PROPS.find((p) => p.id === "blue-bench-test").asset,
+    "blue-prop-bench",
+  );
+  applyMap(defaultMap);
+});

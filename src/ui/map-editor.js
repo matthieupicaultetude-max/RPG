@@ -27,7 +27,7 @@ export function openMapEditor(game, onClose = () => {}) {
   dialog.className = "map-editor";
   dialog.innerHTML = `<header><strong>Éditeur · Comptoir de l’Exil</strong><button data-edit="close">Fermer</button></header>
   <div class="map-editor-tools"><button data-mode="select">Sélection</button><button data-mode="place">Placer</button><button data-mode="resize">Taille</button><button data-mode="road">Route</button><button data-mode="sidewalk">Trottoir</button><button data-mode="pan">Déplacer la vue</button><button data-edit="undo">Annuler</button><button data-edit="redo">Rétablir</button><label><input type="checkbox" data-grid checked> Grille 4 px</label><label><input type="checkbox" data-collision> Collisions</label><button data-edit="fit">Vue entière</button></div>
-  <div class="map-editor-body"><aside><label>Palette<select data-palette></select></label><label>Éléments<select data-elements size="9"></select></label><div class="map-editor-fields"><label>X <input data-x type="number" step="1"></label><label>Y <input data-y type="number" step="1"></label><label>Largeur <input data-width type="number" min="4" max="80"></label></div><label>Service<select data-service><option value="">Aucun</option></select></label><p>Un emplacement par service. Glissez les coins bleus pour régler la taille.</p><button data-edit="duplicate">Dupliquer</button><button data-edit="delete">Supprimer</button><button data-edit="point-add">Ajouter un point</button><button data-edit="point-delete">Retirer le point</button><button data-edit="finish">Terminer le tracé</button><p>Glissez un objet ou un point. Molette : zoom. Outil Vue : panoramique. Les portes, tours et la fontaine sont verrouillées.</p><p>En mode Route ou Trottoir, cliquez pour tracer puis « Terminer ». Sélectionnez un tracé dans la liste pour le modifier.</p></aside><canvas class="map-editor-map" tabindex="0" aria-label="Carte éditable du Comptoir"></canvas><aside class="map-editor-palette" aria-label="Palette de décors"><strong>Décors à placer</strong><p>Glissez pour placer une fois. Cliquez pour placer plusieurs fois ; recliquez pour désélectionner.</p><label>Catégorie<select data-palette-category><option value="all">Tout</option><option value="houses">Bâtiments</option><option value="nature">Végétation</option><option value="props">Objets</option></select></label><div class="map-editor-tiles"></div></aside></div>
+  <div class="map-editor-body"><aside><label>Palette<select data-palette></select></label><label>Éléments<select data-elements size="9"></select></label><div class="map-editor-fields"><label>X <input data-x type="number" step="1"></label><label>Y <input data-y type="number" step="1"></label><label>Largeur <input data-width type="number" min="4" max="80"></label></div><label>Service<select data-service><option value="">Aucun</option></select></label><p>Un emplacement par service. Glissez les coins bleus pour régler la taille.</p><button data-edit="duplicate">Dupliquer</button><button data-edit="delete">Supprimer</button><button data-edit="point-add">Ajouter un point</button><button data-edit="point-delete">Retirer le point</button><button data-edit="finish">Terminer le tracé</button><p>Glissez un objet ou un point. Molette : zoom. Outil Vue : panoramique. Les portes, tours et la fontaine sont verrouillées.</p><p>En mode Route ou Trottoir, cliquez pour tracer puis « Terminer ». Sélectionnez un tracé dans la liste pour le modifier.</p></aside><canvas class="map-editor-map" tabindex="0" aria-label="Carte éditable du Comptoir"></canvas><aside class="map-editor-palette" aria-label="Palette de décors"><strong>Décors à placer</strong><p>Glissez pour placer une fois. Cliquez pour placer plusieurs fois ; recliquez pour désélectionner.</p><label>Catégorie<select data-palette-category><option value="all">Tout</option><option value="houses">Bâtiments</option><option value="nature">Végétation</option><option value="props">Objets</option><option value="blue-props">Décors du quartier bleu</option></select></label><div class="map-editor-tiles"></div></aside></div>
   <footer><button data-edit="save">Appliquer et sauvegarder</button><button data-edit="export">Exporter JSON</button><label class="map-editor-import">Importer JSON<input data-import type="file" accept=".json,application/json"></label><button data-edit="reset">Carte d’origine</button><span role="status">Modifications locales, indépendantes de la sauvegarde du personnage.</span></footer>`;
   document.body.append(dialog);
   dialog.showModal();
@@ -90,6 +90,7 @@ export function openMapEditor(game, onClose = () => {}) {
       const card = document.createElement("button");
       card.type = "button";
       card.dataset.template = template.id;
+      card.dataset.collection = template.collection || "";
       card.dataset.category =
         template.kind === "exile-house"
           ? "houses"
@@ -201,7 +202,11 @@ export function openMapEditor(game, onClose = () => {}) {
   function filterPalette() {
     const category = $("[data-palette-category]").value;
     for (const card of tiles.children)
-      card.hidden = category !== "all" && card.dataset.category !== category;
+      card.hidden =
+        category !== "all" &&
+        (category === "blue-props"
+          ? card.dataset.collection !== "blue-props"
+          : card.dataset.category !== category);
   }
   $("[data-palette-category]").addEventListener("change", filterPalette);
   paletteSelect.addEventListener("change", () =>
