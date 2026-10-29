@@ -51,7 +51,7 @@ app.innerHTML = `
   <div class="hud-top"><div class="zone-card"><span class="eyebrow">AURORIA · ZONE DEV</span><h1>Jardin des essais</h1><span class="session-label"><i></i> Session locale · 3 bots</span><span id="save-status" role="status"></span></div><div class="menu-dock"><button id="mobile-menu-toggle" aria-label="Ouvrir le menu" aria-controls="hud-menu-panel" aria-expanded="false" hidden><span aria-hidden="true">☰</span></button><nav class="hud-menu" id="hud-menu-panel" aria-label="Menu du jeu"><details class="hud-category"><summary>Héros</summary><div class="hud-category-items"><button data-action="inventory" aria-controls="inventory" aria-expanded="false">▣ Inventaire <kbd>I</kbd></button><button data-action="characteristics">◈ <span>Carac.</span> <kbd>P</kbd></button><button data-action="spells">✦ <span>Grimoire</span> <kbd>K</kbd></button><button data-open-panel="petshop">Familiers</button></div></details><details class="hud-category"><summary>Monde</summary><div class="hud-category-items"><button data-action="bestiary" aria-label="Bestiaire B">☷ <span>Bestiaire</span> <kbd>B</kbd></button><button data-open-panel="guides">Guides des zones</button><button data-open-panel="town">Comptoir de l’Exil</button><button data-action="marsh-help" id="marsh-help" aria-label="Guide de la zone" hidden>✿<span class="mobile-menu-label">Guide</span></button></div></details><details class="hud-category"><summary>Artisanat</summary><div class="hud-category-items"><button data-open-panel="forge">Forge</button><button data-action="professions">🪓 <span>Métiers</span> <kbd>L</kbd></button></div></details><details class="hud-category"><summary><span class="group-label-full">Développement</span><span class="group-label-short">Dev</span></summary><div class="hud-category-items"><button data-action="tools">⚙ Outils dev</button><button data-action="map-editor">Éditeur de carte</button><button data-open-panel="chest">Coffre</button></div></details><details class="hud-category"><summary>Réglages</summary><div class="hud-category-items"><button data-action="audio" aria-label="Réglages audio">🔊</button><button data-action="lighting" aria-label="Lumière dorée" aria-pressed="true" title="Désactiver la lumière dorée">☀<span class="mobile-menu-label">Lumière</span></button><button data-action="fullscreen" aria-label="Basculer le plein écran">⛶<span class="mobile-menu-label">Écran</span></button></div></details></nav></div></div><button id="mobile-menu-scrim" aria-label="Fermer le menu" tabindex="-1" hidden></button>
   <div class="hud-team"><p class="hud-hint">VOTRE TROUPE <span>↕ Molette pour changer</span></p><div id="team" class="team-grid"></div></div>
   <div class="hud-notification" id="notification" role="status"></div>
-  <div class="hud-bottom"><div class="controls-hint"><kbd>ZQSD</kbd> Bouger <span>·</span> <kbd>Clic droit</kbd> Attaquer <span>·</span> <kbd>Clic gauche</kbd> Cible bonus <span>·</span> <kbd>↕</kbd> Changer</div><div class="action-bar"><div id="spellbar" class="spellbar"></div><div class="ultimate-box"><button data-action="deploy" id="deploy">Exploration · E</button><span id="combat-status">Combat · 3 personnages · Vitesse normale</span></div></div></div>
+  <div class="hud-bottom"><div class="controls-hint"><kbd>ZQSD</kbd> Bouger <span>·</span> <kbd>Clic droit</kbd> Attaquer <span>·</span> <kbd>Clic gauche</kbd> Cible bonus <span>·</span> <kbd>↕</kbd> Changer</div><div class="action-bar"><div id="spellbar" class="spellbar"></div><div class="ultimate-box"><button data-action="deploy" id="deploy">Exploration · E</button><span id="combat-status">Combat · 3 personnages</span></div></div></div>
   ${renderZoneOverlays()}
   <section id="boss-hud" class="boss-hud" aria-label="Gorgelimon, barre de vie du boss" hidden><div><strong>Gorgelimon</strong><span>Niveau 8 · Eau / Terre</span></div><div class="boss-life"><progress max="1" value="1" aria-label="Vie de Gorgelimon"></progress><i style="left:35%"></i><i style="left:70%"></i></div><p></p></section><button id="boss-interaction" data-action="awaken-boss" class="world-interaction" hidden>Réveiller Gorgelimon · F</button>
   <button id="chest-interaction" data-action="dev-chest" class="world-interaction" hidden>Ouvrir le coffre dev · F</button>
@@ -183,14 +183,20 @@ function refreshUltimate(s) {
   const characteristicButton=app.querySelector('[data-action="characteristics"]');
   characteristicButton.classList.toggle('has-points',s.team[s.main].characteristicPoints>0);
   characteristicButton.title=`Caractéristiques · ${s.team[s.main].characteristicPoints} points à répartir (P)`;
-  updateSpellBar(s,app.querySelector('#spellbar'));
+  app.classList.toggle('exploring',!s.deployed);
+  const spellbar=app.querySelector('#spellbar');
+  spellbar.hidden=!s.deployed;
+  app.querySelector('.controls-hint').hidden=!s.deployed;
+  if(s.deployed)updateSpellBar(s,spellbar);
   app.querySelector('#forge-interaction').hidden = inventoryOpen || !nearForge(s);
   app.querySelector('#petshop-interaction').hidden = inventoryOpen || !nearPetShop(s);
   const button = app.querySelector('#deploy');
   button.textContent = mobileHud?.isMobile ? (s.deployed?'Explorer':'Combat') : (s.deployed?'Exploration · E':'Mode combat · E');
   button.setAttribute('aria-pressed', String(s.deployed));
-  button.title = s.deployed ? 'Passer en exploration : un personnage et vitesse +50 %' : 'Déployer la troupe : trois personnages et vitesse normale';
-  app.querySelector('#combat-status').textContent = mobileHud?.isMobile ? (s.deployed?'Troupe déployée':'Vitesse +50 %') : (s.deployed?'Combat · 3 personnages · Vitesse normale':'Exploration · 1 personnage · Vitesse +50 %');
+  button.title = s.deployed ? 'Passer en exploration' : 'Passer en combat et déployer la troupe';
+  const combatStatus=app.querySelector('#combat-status');
+  combatStatus.hidden=!s.deployed;
+  combatStatus.textContent = mobileHud?.isMobile ? 'Troupe déployée' : 'Combat · 3 personnages';
 }
 function setInventory(open, tab = currentTab) {
   mobileHud?.close();

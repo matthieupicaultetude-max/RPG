@@ -902,3 +902,4 @@ canvas.paper-avatar { position:relative; inset:auto; object-fit:contain; flex-sh
 .map-editor-drag-ghost{position:fixed;width:128px;height:112px;pointer-events:none;opacity:.8;z-index:2;image-rendering:pixelated;}
 @media(max-width:850px){.map-editor .map-editor-palette{width:132px;padding:7px;}.map-editor-tiles{grid-template-columns:1fr;}}
 @media(max-width:650px){.map-editor-body{position:relative;}.map-editor .map-editor-palette{position:absolute;right:0;top:0;bottom:0;width:96px;background:#172b28ed;}.map-editor .map-editor-map{margin-right:110px;}.map-editor-tiles span{font-size:9px;}.map-editor .map-editor-tiles canvas{height:74px;}.map-editor .map-editor-palette strong{font-size:11px;}.map-editor aside:not(.map-editor-palette){width:110px;}}
+.mobile-layout.exploring .ultimate-box{right:0;top:auto;bottom:0;}

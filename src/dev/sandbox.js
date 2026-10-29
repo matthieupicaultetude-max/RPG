@@ -116,7 +116,7 @@ export function setCombatMode(s, combat) {
   s.deployed = combat;
   s.team.forEach(clearRoute);
   if(combat)placeAllies(s,(x,y)=>canWalkZone(x,y,s.zone));
-  note(s,combat?'Mode combat : les trois personnages sont déployés.':'Mode exploration : compagnons rappelés · vitesse +50 %.');
+  note(s,combat?'Mode combat : les trois personnages sont déployés.':'Mode exploration : compagnons rappelés.');
   return true;
 }
 export function toggleCombatMode(s) { return setCombatMode(s,!s.deployed); }
