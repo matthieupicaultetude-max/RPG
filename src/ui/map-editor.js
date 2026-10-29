@@ -1,5 +1,8 @@
 import {
   captureMap,
+  BUILDING_SERVICES,
+  setBuildingService,
+  resizeBuilding,
   finishMapTraces,
   defaultMap,
   previewMap,
@@ -23,8 +26,8 @@ export function openMapEditor(game, onClose = () => {}) {
   const dialog = document.createElement("dialog");
   dialog.className = "map-editor";
   dialog.innerHTML = `<header><strong>Éditeur · Comptoir de l’Exil</strong><button data-edit="close">Fermer</button></header>
-  <div class="map-editor-tools"><button data-mode="select">Sélection</button><button data-mode="place">Placer</button><button data-mode="road">Route</button><button data-mode="sidewalk">Trottoir</button><button data-mode="pan">Déplacer la vue</button><button data-edit="undo">Annuler</button><button data-edit="redo">Rétablir</button><label><input type="checkbox" data-grid checked> Grille 4 px</label><label><input type="checkbox" data-collision> Collisions</label><button data-edit="fit">Vue entière</button></div>
-  <div class="map-editor-body"><aside><label>Palette<select data-palette></select></label><label>Éléments<select data-elements size="9"></select></label><div class="map-editor-fields"><label>X <input data-x type="number" step="1"></label><label>Y <input data-y type="number" step="1"></label><label>Largeur <input data-width type="number" min="4" max="80"></label></div><button data-edit="duplicate">Dupliquer</button><button data-edit="delete">Supprimer</button><button data-edit="point-add">Ajouter un point</button><button data-edit="point-delete">Retirer le point</button><button data-edit="finish">Terminer le tracé</button><p>Glissez un objet ou un point. Molette : zoom. Outil Vue : panoramique. Les portes, tours et la fontaine sont verrouillées.</p><p>En mode Route ou Trottoir, cliquez pour tracer puis « Terminer ». Sélectionnez un tracé dans la liste pour le modifier.</p></aside><canvas class="map-editor-map" tabindex="0" aria-label="Carte éditable du Comptoir"></canvas><aside class="map-editor-palette" aria-label="Palette de décors"><strong>Décors à placer</strong><p>Glissez pour placer une fois. Cliquez pour placer plusieurs fois ; recliquez pour désélectionner.</p><label>Catégorie<select data-palette-category><option value="all">Tout</option><option value="houses">Bâtiments</option><option value="nature">Végétation</option><option value="props">Objets</option></select></label><div class="map-editor-tiles"></div></aside></div>
+  <div class="map-editor-tools"><button data-mode="select">Sélection</button><button data-mode="place">Placer</button><button data-mode="resize">Taille</button><button data-mode="road">Route</button><button data-mode="sidewalk">Trottoir</button><button data-mode="pan">Déplacer la vue</button><button data-edit="undo">Annuler</button><button data-edit="redo">Rétablir</button><label><input type="checkbox" data-grid checked> Grille 4 px</label><label><input type="checkbox" data-collision> Collisions</label><button data-edit="fit">Vue entière</button></div>
+  <div class="map-editor-body"><aside><label>Palette<select data-palette></select></label><label>Éléments<select data-elements size="9"></select></label><div class="map-editor-fields"><label>X <input data-x type="number" step="1"></label><label>Y <input data-y type="number" step="1"></label><label>Largeur <input data-width type="number" min="4" max="80"></label></div><label>Service<select data-service><option value="">Aucun</option></select></label><p>Un emplacement par service. Glissez les coins bleus pour régler la taille.</p><button data-edit="duplicate">Dupliquer</button><button data-edit="delete">Supprimer</button><button data-edit="point-add">Ajouter un point</button><button data-edit="point-delete">Retirer le point</button><button data-edit="finish">Terminer le tracé</button><p>Glissez un objet ou un point. Molette : zoom. Outil Vue : panoramique. Les portes, tours et la fontaine sont verrouillées.</p><p>En mode Route ou Trottoir, cliquez pour tracer puis « Terminer ». Sélectionnez un tracé dans la liste pour le modifier.</p></aside><canvas class="map-editor-map" tabindex="0" aria-label="Carte éditable du Comptoir"></canvas><aside class="map-editor-palette" aria-label="Palette de décors"><strong>Décors à placer</strong><p>Glissez pour placer une fois. Cliquez pour placer plusieurs fois ; recliquez pour désélectionner.</p><label>Catégorie<select data-palette-category><option value="all">Tout</option><option value="houses">Bâtiments</option><option value="nature">Végétation</option><option value="props">Objets</option></select></label><div class="map-editor-tiles"></div></aside></div>
   <footer><button data-edit="save">Appliquer et sauvegarder</button><button data-edit="export">Exporter JSON</button><label class="map-editor-import">Importer JSON<input data-import type="file" accept=".json,application/json"></label><button data-edit="reset">Carte d’origine</button><span role="status">Modifications locales, indépendantes de la sauvegarde du personnage.</span></footer>`;
   document.body.append(dialog);
   dialog.showModal();
@@ -57,6 +60,8 @@ export function openMapEditor(game, onClose = () => {}) {
     paletteSelect.add(option);
   }
   const tiles = $(".map-editor-tiles");
+  for (const [value, label] of Object.entries(BUILDING_SERVICES))
+    $("[data-service]").add(new Option(label, value));
   function chooseTemplate(id, toggle = false) {
     const deselect = toggle && mode === "place" && paletteSelect.value === id;
     finishTraces();
@@ -284,8 +289,18 @@ export function openMapEditor(game, onClose = () => {}) {
         : null;
     $("[data-x]").value = pt?.[0] ?? "";
     $("[data-y]").value = pt?.[1] ?? "";
-    $("[data-width]").value = p?.width ?? "";
-    $("[data-width]").disabled = !p || selected.type === "object";
+    const building =
+      selected?.type === "object"
+        ? viewMap().BUILDINGS.find((b) => b.id === p?.id)
+        : null;
+    $("[data-width]").value = building
+      ? Math.round(building.w)
+      : (p?.width ?? "");
+    $("[data-width]").max = building ? 2000 : 80;
+    $("[data-width]").disabled =
+      !p || (selected.type === "object" && !building);
+    $("[data-service]").disabled = !building;
+    $("[data-service]").value = building?.service || "";
     for (const axis of ["x", "y"])
       $(`[data-${axis}]`).disabled =
         !p ||
@@ -299,6 +314,27 @@ export function openMapEditor(game, onClose = () => {}) {
     $('[data-edit="undo"]').disabled = !undo.length;
     $('[data-edit="redo"]').disabled = !redo.length;
   }
+  function selectionRect() {
+    if (selected?.type !== "object") return null;
+    const item = selectedValue(),
+      p = env?.props.find((p) => p.id === item?.id);
+    if (!p) return null;
+    const scale =
+      p.kind === "exile-house" ? (item.scale ?? 1) / (p.editorScale ?? 1) : 1;
+    return {
+      left: item.x + (p.bounds.left - p.x) * scale,
+      right: item.x + (p.bounds.right - p.x) * scale,
+      top: item.y + (p.bounds.top - p.y) * scale,
+      bottom: item.y + (p.bounds.bottom - p.y) * scale,
+      building: p.kind === "exile-house",
+    };
+  }
+  const corners = (r) => [
+    [r.left, r.top],
+    [r.right, r.top],
+    [r.left, r.bottom],
+    [r.right, r.bottom],
+  ];
   function draw() {
     if (!env) return;
     g.setTransform(1, 0, 0, 1, 0, 0);
@@ -312,6 +348,13 @@ export function openMapEditor(game, onClose = () => {}) {
       if (drag?.kind === "object" && selected?.id === p.id) {
         const item = selectedValue();
         g.translate(item.x - drag.original.x, item.y - drag.original.y);
+      }
+      if (drag?.kind === "resize" && selected?.id === p.id) {
+        const item = selectedValue(),
+          scale = (item.scale ?? 1) / (p.editorScale ?? 1);
+        g.translate(p.x, p.y);
+        g.scale(scale, scale);
+        g.translate(-p.x, -p.y);
       }
       p.draw(g);
       g.restore();
@@ -334,16 +377,12 @@ export function openMapEditor(game, onClose = () => {}) {
       g.fillStyle = "#66efff";
       g.lineWidth = 2 / zoom;
       if (selected.type === "object") {
-        const p = env.props.find((p) => p.id === item.id);
-        if (p) {
-          const dx = item.x - p.x,
-            dy = item.y - p.y;
-          g.strokeRect(
-            p.bounds.left + dx,
-            p.bounds.top + dy,
-            p.bounds.right - p.bounds.left,
-            p.bounds.bottom - p.bounds.top,
-          );
+        const r = selectionRect();
+        if (r) {
+          g.strokeRect(r.left, r.top, r.right - r.left, r.bottom - r.top);
+          if (r.building)
+            for (const [x, y] of corners(r))
+              g.fillRect(x - 5 / zoom, y - 5 / zoom, 10 / zoom, 10 / zoom);
         }
         g.beginPath();
         g.arc(item.x, item.y, 4 / zoom, 0, Math.PI * 2);
@@ -446,7 +485,22 @@ export function openMapEditor(game, onClose = () => {}) {
       }
       return;
     }
-    const item = selectedValue();
+    const item = selectedValue(),
+      rect = selectionRect();
+    if (item && rect?.building) {
+      const corner = corners(rect).find(
+        ([x, y]) => Math.hypot(p.x - x, p.y - y) < 14 / zoom,
+      );
+      if (corner) {
+        drag = {
+          kind: "resize",
+          before,
+          original: { ...item },
+          vector: [corner[0] - item.x, corner[1] - item.y],
+        };
+        return;
+      }
+    }
     if (item && selected.type !== "object") {
       const idx = item.points.findIndex(
         ([x, y]) => Math.hypot(p.x - x, p.y - y) < 12 / zoom,
@@ -497,7 +551,16 @@ export function openMapEditor(game, onClose = () => {}) {
     const p = position(e),
       item = selectedValue();
     if (!item) return;
-    if (drag.kind === "object")
+    if (drag.kind === "resize") {
+      const [dx, dy] = drag.vector;
+      const factor =
+        ((p.x - item.x) * dx + (p.y - item.y) * dy) / (dx * dx + dy * dy);
+      resizeBuilding(item, (drag.original.scale ?? 1) * factor);
+      const original = env.props.find((q) => q.id === item.id);
+      $("[data-width]").value = Math.round(
+        (original.w * (item.scale ?? 1)) / (original.editorScale ?? 1),
+      );
+    } else if (drag.kind === "object")
       Object.assign(
         item,
         clamp({
@@ -533,8 +596,12 @@ export function openMapEditor(game, onClose = () => {}) {
         n = Number(e.target.value);
       if (!item || !Number.isFinite(n)) return;
       change(() => {
-        if (key === "width") item.width = Math.max(4, Math.min(80, n));
-        else if (selected.type === "object")
+        if (key === "width") {
+          if (selected.type === "object") {
+            const building = viewMap().BUILDINGS.find((p) => p.id === item.id);
+            resizeBuilding(item, ((item.scale ?? 1) * n) / building.w);
+          } else item.width = Math.max(4, Math.min(80, n));
+        } else if (selected.type === "object")
           Object.assign(item, clamp({ ...item, [key]: n }));
         else
           item.points[pointIndex][key === "x" ? 0 : 1] = Math.max(
@@ -543,6 +610,11 @@ export function openMapEditor(game, onClose = () => {}) {
           );
       });
     });
+  $("[data-service]").addEventListener("change", (e) => {
+    const item = selectedValue();
+    if (!item) return;
+    change(() => setBuildingService(doc, item.id, e.target.value || null));
+  });
   $("[data-collision]").addEventListener("change", draw);
   function close() {
     alive = false;
@@ -601,6 +673,7 @@ export function openMapEditor(game, onClose = () => {}) {
           const p = {
             ...item,
             id: `placed-${Date.now()}`,
+            ...(base.kind === "exile-house" ? { service: null } : {}),
             x: Math.min(1440, item.x + 24),
             y: Math.min(1240, item.y + 24),
           };
@@ -611,8 +684,7 @@ export function openMapEditor(game, onClose = () => {}) {
       if (action === "delete" && item) {
         if (selected.type === "object") {
           const base = viewMap().PROPS.find((p) => p.id === item.id);
-          if (base.service || !editableProp(base))
-            throw Error("Commerce ou monument protégé.");
+          if (!editableProp(base)) throw Error("Monument protégé.");
         }
         change(() => {
           const type = selected.type === "object" ? "objects" : selected.type;

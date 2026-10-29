@@ -143,40 +143,6 @@ function plotGround(g, map) {
       rect(g, x - 1, y - 3, 3, 2, i % 2 ? "#f5dfb8" : "#dab2c5");
     }
   }
-  for (const p of map.BUILDINGS) {
-    for (const side of [-1, 1]) {
-      const cx = p.x + side * (p.w / 2 + 17),
-        cy = p.y + 4;
-      if (
-        map.roadDistance(cx, cy) < 20 ||
-        !map.isLand(cx, cy) ||
-        map.BUILDINGS.some(
-          (other) =>
-            other !== p &&
-            Math.abs(other.x - cx) < other.w / 2 + 4 &&
-            cy > other.y + other.footprint.top &&
-            cy < other.y + 12,
-        )
-      )
-        continue;
-      ellipse(g, cx, cy, 15, 19, "#7a8c55");
-      ellipse(g, cx, cy - 1, 12, 16, "#5c8158");
-      for (let k = 0; k < 18; k++) {
-        const xx = cx - 9 + (hash(k, p.x, 8) % 19),
-          yy = cy - 14 + (hash(k, p.y, 9) % 29);
-        rect(
-          g,
-          xx,
-          yy,
-          3,
-          2,
-          k % 3 ? "#94ae75" : p.roof === "wine" ? "#e1b690" : "#c5acd0",
-        );
-      }
-      rect(g, cx - 17, cy + 20, 34, 3, "#b0b295");
-      rect(g, cx - 15, cy + 19, 30, 1, "#e0d3ac");
-    }
-  }
   // Quays: dressed stone follows the southern shoreline, with deliberate breaks for piers.
   g.strokeStyle = "#778984";
   g.lineWidth = 10;

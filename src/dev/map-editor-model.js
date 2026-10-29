@@ -28,6 +28,46 @@ export const palette = catalogProps.filter(
         q.residenceVariant === p.residenceVariant,
     ) === i,
 );
+export const BUILDING_SERVICES = {
+  harbor: "Capitainerie",
+  forge: "Forge",
+  handyman: "Bricoleur",
+  sawmill: "Scierie",
+  petshop: "Animalerie",
+  armor: "Armurerie",
+  magic: "Magie",
+  trader: "Marchand",
+  inn: "Auberge",
+  history: "Archives",
+};
+const serviceProfiles = copy(world.SERVICES);
+const serviceOf = (item) =>
+  Object.hasOwn(item, "service")
+    ? item.service
+    : item.id === item.template
+      ? templates.get(item.template)?.service || null
+      : null;
+export function setBuildingService(doc, id, service) {
+  const item = doc.objects.find((p) => p.id === id);
+  if (
+    !item ||
+    templates.get(item.template)?.kind !== "exile-house" ||
+    (service !== null && !Object.hasOwn(BUILDING_SERVICES, service))
+  )
+    throw Error("Service de bâtiment invalide.");
+  if (service)
+    for (const other of doc.objects)
+      if (other !== item && serviceOf(other) === service) other.service = null;
+  item.service = service;
+}
+export function resizeBuilding(item, scale) {
+  if (
+    templates.get(item.template)?.kind !== "exile-house" ||
+    !Number.isFinite(scale)
+  )
+    throw Error("Taille de bâtiment invalide.");
+  item.scale = Math.round(Math.max(0.25, Math.min(3, scale)) * 100) / 100;
+}
 export let mapRevision = 0;
 export function captureMap() {
   return {
@@ -38,6 +78,9 @@ export function captureMap() {
       template: p.editorTemplate || p.id,
       x: p.x,
       y: p.y,
+      ...(p.kind === "exile-house"
+        ? { service: p.service || null, scale: p.editorScale || 1 }
+        : {}),
     })),
     roads: copy(world.ROADS),
     sidewalks: copy(world.SIDEWALKS),
@@ -66,7 +109,8 @@ export function validateDocument(doc) {
     doc.sidewalks.length > 200
   )
     throw Error("Format de carte invalide.");
-  const ids = new Set();
+  const ids = new Set(),
+    services = new Set();
   const point = (x, y) =>
     Number.isFinite(x) &&
     Number.isFinite(y) &&
@@ -84,6 +128,23 @@ export function validateDocument(doc) {
     )
       throw Error("Objet ou position invalide.");
     ids.add(p.id);
+    const template = templates.get(p.template),
+      service = serviceOf(p);
+    if (
+      (p.scale !== undefined &&
+        (template.kind !== "exile-house" ||
+          !Number.isFinite(p.scale) ||
+          p.scale < 0.25 ||
+          p.scale > 3)) ||
+      (service !== null &&
+        (template.kind !== "exile-house" ||
+          !Object.hasOwn(BUILDING_SERVICES, service) ||
+          services.has(service)))
+    )
+      throw Error(
+        "Taille ou tag de service invalide (un bâtiment par service).",
+      );
+    if (service) services.add(service);
     const base = templates.get(p.id);
     if (
       base &&
@@ -95,8 +156,8 @@ export function validateDocument(doc) {
       throw Error("Cet élément ne peut pas être dupliqué.");
   }
   for (const p of originalProps)
-    if ((p.service || !editableProp(p)) && !ids.has(p.id))
-      throw Error("Un commerce ou un monument ne peut pas être supprimé.");
+    if (!editableProp(p) && !ids.has(p.id))
+      throw Error("Un monument ne peut pas être supprimé.");
   for (const lines of [doc.roads, doc.sidewalks]) {
     const lineIds = new Set();
     for (const r of lines) {
@@ -136,6 +197,16 @@ export function previewMap(doc) {
       delete p.attachedTo;
       p.name = "Décor · " + (p.name || p.kind);
     }
+    if (p.kind === "exile-house") {
+      p.service = serviceOf(item);
+      const scale = item.scale ?? 1;
+      p.editorScale = scale;
+      p.w *= scale;
+      p.h *= scale;
+      if (p.footprint?.type === "box")
+        for (const key of ["left", "right", "top", "bottom"])
+          p.footprint[key] *= scale;
+    }
     return p;
   });
   return {
@@ -165,12 +236,15 @@ function install(doc) {
     world.ENTRANCES.length,
     ...world.BUILDINGS.map((p) => ({ id: p.id, x: p.x, y: p.y + 10 })),
   );
-  for (const [service, npc] of Object.entries(world.SERVICES)) {
+  for (const service of Object.keys(BUILDING_SERVICES)) {
     const p = world.BUILDINGS.find((p) => p.service === service);
-    if (p) {
-      npc.x = p.x + 16;
-      npc.y = p.y + 18;
-    }
+    if (p)
+      world.SERVICES[service] = {
+        ...copy(serviceProfiles[service]),
+        x: p.x + 16,
+        y: p.y + 18,
+      };
+    else delete world.SERVICES[service];
   }
 }
 export function applyMap(doc) {

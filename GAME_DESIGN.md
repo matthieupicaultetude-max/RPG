@@ -832,3 +832,10 @@ Les rues pavées suivent les retraits propres à chaque façade et rejoignent le
 ### Éditeur local du Comptoir
 
 Un espace d’édition en mode développement permet le placement et le déplacement des bâtiments/décors, l’édition des polylignes de routes et de trottoirs, le réglage de largeur, l’inspection des collisions et l’historique annuler/rétablir. Le terrain, les remparts, les terrasses, la fontaine et les portes restent fixes dans cette première version. Les changements sont des brouillons jusqu’à application. Les collisions, les entrées et les PNJ commerciaux suivent les bâtiments ; les copies ne dupliquent pas les services. L’application est transactionnelle et rejette les chevauchements, les objets hors sol et les accès aux services obstrués. La carte utilise un document JSON versionné, sauvegardé indépendamment de la progression du compte dans le navigateur. Import et export facilitent son intégration ultérieure au projet partagé.
+
+
+### Tags et taille des bâtiments dans l’éditeur
+
+Chaque bâtiment peut porter un service modifiable (capitainerie, forge, armurerie, magie, marchand, animalerie, bricoleur, scierie, auberge, archives) ou aucun. Chaque service conserve un emplacement unique : une nouvelle attribution déplace son PNJ et son accès ; retirer le tag retire le PNJ. Les bâtiments de service peuvent aussi être supprimés. Les copies sont créées sans service. Les monuments restent verrouillés.
+
+Les quatre poignées de sélection règlent manuellement l’échelle d’un bâtiment, entre 25 % et 300 %, en conservant ses proportions et son ancrage au sol. Visuel et collision utilisent la même échelle, conservée dans le JSON sans cumul lors des rechargements. Les anciens fichiers sans champs de taille ni de service restent compatibles. Les massifs de verdure procéduraux associés aux façades ont été retirés ; la végétation se place explicitement avec la palette.

@@ -4,6 +4,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   captureMap,
+  setBuildingService,
+  resizeBuilding,
   finishMapTraces,
   palette,
   defaultMap,
@@ -32,10 +34,12 @@ test("Une application invalide restaure aussi les services et les collisions", (
   assert.deepEqual(captureMap(), before);
   assert.deepEqual(map.validateExileMap(), []);
 });
-test("Les monuments et commerces sont protégés contre les suppressions et les imports malformés", () => {
+test("Les monuments restent protégés et un commerce peut être supprimé", () => {
   const doc = copy(defaultMap);
   doc.objects = doc.objects.filter((p) => p.id !== "armurier");
-  assert.throws(() => validateDocument(doc), /commerce/);
+  assert.doesNotThrow(() => validateDocument(doc));
+  doc.objects = doc.objects.filter((p) => p.id !== "exile-fountain");
+  assert.throws(() => validateDocument(doc), /monument/);
   const invalid = copy(defaultMap);
   invalid.roads[0].points[0][0] = NaN;
   assert.throws(() => validateDocument(invalid), /Route/);
@@ -66,9 +70,9 @@ test("Routes et trottoirs se sauvegardent et se restaurent sans modifier la prog
 test("Dupliquer un bâtiment crée un décor sans dupliquer son service", () => {
   const doc = copy(defaultMap),
     template = doc.objects.find((p) => p.id === "armurier");
-  doc.objects.push({ ...template, id: "copie-armurier" });
+  doc.objects.push({ ...template, id: "copie-armurier", service: null });
   const p = previewMap(doc).PROPS.find((p) => p.id === "copie-armurier");
-  assert.equal(p.service, undefined);
+  assert.equal(p.service, null);
   assert.equal(p.attachedTo, undefined);
 });
 test("Déplacer un commerce déplace son entrée, son PNJ et sa collision", () => {
@@ -181,4 +185,61 @@ test("Les quinze bâtiments d’artisans sont séparés, disponibles en palette 
   applyMap(saved);
   assert.ok(map.SOLIDS.some((p) => p.id === "atelier-test"));
   applyMap(defaultMap);
+});
+
+test("Les tags déplacent les services et peuvent être retirés, y compris après rechargement", () => {
+  const doc = copy(defaultMap),
+    target = doc.objects.find((p) => p.id === "logis-0-0-0");
+  setBuildingService(doc, target.id, "forge");
+  assert.equal(doc.objects.find((p) => p.id === "forge").service, null);
+  applyMap(doc);
+  assert.equal(map.SERVICES.forge.x, target.x + 16);
+  assert.equal(map.BUILDINGS.find((p) => p.id === target.id).service, "forge");
+  const saved = captureMap();
+  applyMap(defaultMap);
+  applyMap(saved);
+  assert.equal(map.SERVICES.forge.x, target.x + 16);
+  setBuildingService(saved, target.id, null);
+  applyMap(saved);
+  assert.equal(map.SERVICES.forge, undefined);
+  assert.ok(map.SERVICES.harbor);
+  applyMap(defaultMap);
+  assert.ok(map.SERVICES.forge);
+});
+test("Un ancien fichier garde ses services par défaut sans les champs ajoutés", () => {
+  const doc = copy(defaultMap);
+  for (const p of doc.objects) {
+    delete p.service;
+    delete p.scale;
+  }
+  applyMap(doc);
+  assert.ok(map.SERVICES.harbor);
+  assert.ok(map.SERVICES.forge);
+  applyMap(defaultMap);
+});
+test("La taille manuelle conserve les proportions et les collisions et se sauvegarde sans cumul", () => {
+  const doc = copy(defaultMap),
+    item = {
+      id: "petit-atelier",
+      template: "artisans-small-forge",
+      x: 720,
+      y: 320,
+    };
+  doc.objects.push(item);
+  const before = previewMap(doc).BUILDINGS.find((p) => p.id === item.id);
+  resizeBuilding(item, 0.75);
+  applyMap(doc);
+  let p = map.BUILDINGS.find((p) => p.id === item.id);
+  assert.equal(p.w, before.w * 0.75);
+  assert.equal(p.h, before.h * 0.75);
+  assert.equal(p.footprint.top, before.footprint.top * 0.75);
+  const saved = captureMap();
+  applyMap(saved);
+  p = map.BUILDINGS.find((p) => p.id === item.id);
+  assert.equal(p.w, before.w * 0.75);
+  assert.equal(saved.objects.find((p) => p.id === item.id).scale, 0.75);
+  applyMap(defaultMap);
+  const bad = copy(defaultMap);
+  bad.objects[0].scale = 99;
+  assert.throws(() => validateDocument(bad), /Taille/);
 });

@@ -45,7 +45,7 @@ export function loadPortAssets() {
 function drawFrame(g, key, p) {
   const f = frames[key];
   if (!f) return false;
-  const w = p.w + (p.asset === "gate" ? 0 : 12),
+  const w = p.w + (p.asset === "gate" ? 0 : 12 * (p.editorScale || 1)),
     h = (w * f.h) / f.w;
   g.drawImage(f.image, f.x, f.y, f.w, f.h, -w / 2, -h, w, h);
   return true;
@@ -58,7 +58,7 @@ const residenceKey = (p) =>
 export function portSpriteSize(p) {
   const f = frames[p.asset || residenceKey(p)];
   if (!f) return null;
-  const w = p.w + (p.asset === "gate" ? 0 : 12);
+  const w = p.w + (p.asset === "gate" ? 0 : 12 * (p.editorScale || 1));
   return { w, h: (w * f.h) / f.w };
 }
 export function drawPortResidence(g, p) {
