@@ -839,3 +839,26 @@ canvas.paper-avatar { position:relative; inset:auto; object-fit:contain; flex-sh
 }
 .group-label-short { display: none; }
 @media(max-width:700px) { .group-label-full { display: none; }.group-label-short { display: inline; } }
+
+/* Bestiary: families → species → loot-first monster sheet. */
+.bestiary-intro { color: #b5c29b; font-size: 13px; margin-bottom: 20px; }
+.bestiary-family-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 18px; }
+.bestiary-family-card { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; min-height: 225px; padding: 24px 16px; background: radial-gradient(ellipse at 50% 30%,#50664a55,#14281e 80%); border: 1px solid #7c8b5f; border-radius: 10px; }
+.bestiary-family-card svg { width: 130px; height: 100px; }.bestiary-family-card strong { font-size: 23px; color: #ecdfb3; }.bestiary-family-card small { color: #aebf98; font-size: 12px; }
+.bestiary-breadcrumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 16px; color: #bcc69e; font-size: 12px; }
+.bestiary-breadcrumbs button { font-size: 12px; padding: 7px 11px; }.bestiary-breadcrumbs strong { font-weight: 400; color: #e7d39e; }
+.bestiary-species-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; }
+.bestiary-species-card { display: flex; flex-direction: column; align-items: center; gap: 7px; min-height: 155px; padding: 14px 10px; border-radius: 8px; text-align: center; }
+.bestiary-species-card svg { width: 95px; height: 72px; }.bestiary-species-card strong { color: #e5d5a7; font-size: 13px; }.bestiary-species-card small { color: #b1c29d; font-size: 11px; line-height: 1.5; }
+.bestiary-monster-header { align-items: center; gap: 24px; padding: 8px 0 20px; }
+.bestiary-monster-header > svg { width: 160px; height: 125px; }.bestiary-monster-header h2 { color: #ecdfb3; font-size: 28px; margin: 3px 0 10px; }
+.monster-level-badge { display: inline-block; padding: 5px 9px; border: 1px solid #829264; border-radius: 5px; color: #eddb9e; font-size: 12px; background: #34492e; }
+.bestiary-monster-header .monster-zone { color: #d0d7ba; font-size: 13px; margin: 10px 0 6px; }.monster-zone span { color: #a7b88c; margin-right: 6px; }
+.bestiary-monster-header small { color: #adbf9a; font-size: 12px; }
+@media(max-width:700px) {
+  .bestiary-family-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+  .bestiary-family-card { min-height: 170px; padding: 16px 10px; }.bestiary-family-card svg { width: 95px; height: 75px; }.bestiary-family-card strong { font-size: 20px; }
+  .bestiary-species-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }.bestiary-species-card { min-height: 145px; padding: 10px 8px; }
+  .bestiary-monster-header { gap: 14px; }.bestiary-monster-header > svg { width: 95px; height: 85px; }.bestiary-monster-header h2 { font-size: 21px; }
+  .bestiary-breadcrumbs { font-size: 11px; gap: 5px; }.bestiary-breadcrumbs button { font-size: 11px; padding: 7px 9px; }
+}

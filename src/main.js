@@ -1,3 +1,4 @@
+import {monsterDefinition} from './data/monsters.js';
 import {panelNavigation,syncPanelNavigation,panelGroup,PANEL_GROUPS,applySectionChoices} from './ui/organization.js';
 import {renderDevTools} from './ui/dev-tools.js';
 import {renderZoneGuides,renderZoneOverlays,ZONE_GUIDES} from './ui/zone-guides.js';
@@ -31,7 +32,7 @@ import { renderForge } from './ui/forge.js';
 import { nearForge, upgradeChromatic, recycleEquipment, exchangeCoreFragments } from './game/forge.js';
 import { renderPetShop } from "./ui/petshop.js";
 import { acceptAdoption, claimPet, feedPet, nearPetShop } from "./game/pet-quests.js";
-import { renderBestiary, bestiaryValues, coreDropMarkup } from './ui/bestiary.js';
+import { renderBestiaryBrowser, bestiaryDefaultLevel, bestiaryValues, coreDropMarkup } from './ui/bestiary.js';
 import { renderInventory } from './ui/inventory.js';
 import './style.css';
 import { createGame } from './game/create-game.js';
@@ -63,7 +64,8 @@ const sectionChoices={},rememberedPanels={};
 let guideZone='slime-marsh';
 let selectedItem = null;
 let bagFilter = 'all';
-let bestiaryMonster = 'slime';
+let bestiaryMonster = null;
+let bestiaryFamily = null;
 let bestiaryLevel = 1;
 let chestCategory='all',chestQuery='',chestQuantity=99;
 let spellSlot=0;
@@ -95,9 +97,12 @@ function refresh(s) {
   const scrollTop = panel.scrollTop;
   const bagScrollTop = panel.querySelector('.inventory-items')?.scrollTop || 0;
   const m = s.team[s.main];
-  if(currentTab==='bestiary' && panel.querySelector('.monster-sheet')?.dataset.species!==bestiaryMonster) {
-    panel.innerHTML = renderBestiary(bestiaryMonster,bestiaryLevel);
-    panel.querySelector('.monster-sheet').dataset.species = bestiaryMonster;
+  if(currentTab==='bestiary'){
+    const view=`${bestiaryFamily||''}:${bestiaryMonster||''}`;
+    if(panel.dataset.bestiaryView!==view||!panel.querySelector('[data-bestiary-screen]')){
+      panel.innerHTML=renderBestiaryBrowser(bestiaryFamily,bestiaryMonster,bestiaryLevel);
+      panel.dataset.bestiaryView=view;
+    }
   }
   app.querySelector('#inventory-title').textContent = currentTab==='guides'?'Guides des zones':currentTab==='chest'?'Coffre de développement':currentTab==='professions'?'Métiers':currentTab==='characteristics' ? 'Caractéristiques' : currentTab==='spells' ? 'Grimoire' : currentTab==='bestiary' ? 'Bestiaire' : currentTab==='petshop' ? 'Animalerie' : currentTab==='forge' ? 'Forge' : 'Inventaire';
   app.querySelector('#inventory').classList.toggle('bestiary-open',currentTab==='bestiary');
@@ -183,6 +188,7 @@ function setInventory(open, tab = currentTab) {
   mobileHud?.close();
   if(open)sound.close();
   if(currentTab!==tab)panel.scrollTop=0;
+  if(open&&tab==='bestiary'&&(!inventoryOpen||currentTab!=='bestiary')){bestiaryFamily=null;bestiaryMonster=null;sectionChoices.bestiary='overview';sectionChoices['bestiary-family']='normal';}
   inventoryOpen = open;
   currentTab = tab;
   rememberedPanels[panelGroup(tab).id]=tab;
@@ -235,6 +241,8 @@ app.addEventListener('click',event=>{
   if(button.hasAttribute('data-craft-keys')){const input=panel.querySelector('#key-quantity');if(input.reportValidity())craftDungeonKeys(s,Number(input.value),s.handymanDungeon);game.refresh();refresh(s);return;}
   if(button.dataset.openPanel){setInventory(true,button.dataset.openPanel);return;}
   if(button.dataset.panelGroup){const group=PANEL_GROUPS.find(g=>g.id===button.dataset.panelGroup);setInventory(true,rememberedPanels[group.id]||group.tabs[0][0]);return;}
+  if(button.hasAttribute('data-bestiary-home')){bestiaryFamily=null;bestiaryMonster=null;panel.scrollTop=0;refresh(s);return;}
+  if(button.dataset.bestiaryFamily){bestiaryFamily=button.dataset.bestiaryFamily;bestiaryMonster=null;sectionChoices['bestiary-family']='normal';panel.scrollTop=0;refresh(s);return;}
   if(button.dataset.sectionScope){sectionChoices[button.dataset.sectionScope]=button.dataset.sectionId;applySectionChoices(panel,sectionChoices);return;}
   if(button.dataset.guideZone){guideZone=button.dataset.guideZone;refresh(s);return;}
   if(button.dataset.action==='dev-chest'){if(nearDevChest(s))setInventory(true,'chest');return;}
@@ -260,8 +268,8 @@ app.addEventListener('click',event=>{
     request?.catch(() => note(s, 'Le plein écran est indisponible dans ce navigateur.'));
     return;
   }
-  if(button.dataset.tab){rememberedPanels[panelGroup(button.dataset.tab).id]=button.dataset.tab;visitTutorialPanel(s,button.dataset.tab);if(currentTab!==button.dataset.tab)panel.scrollTop=0;currentTab=button.dataset.tab;app.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));}
-  if(button.dataset.monster) bestiaryMonster = button.dataset.monster;
+  if(button.dataset.tab){if(button.dataset.tab==='bestiary'&&currentTab!=='bestiary'){bestiaryFamily=null;bestiaryMonster=null;sectionChoices.bestiary='overview';sectionChoices['bestiary-family']='normal';}rememberedPanels[panelGroup(button.dataset.tab).id]=button.dataset.tab;visitTutorialPanel(s,button.dataset.tab);if(currentTab!==button.dataset.tab)panel.scrollTop=0;currentTab=button.dataset.tab;app.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));}
+  if(button.dataset.monster){const monster=monsterDefinition(button.dataset.monster);if(monster){bestiaryMonster=monster.id;bestiaryFamily=monster.category;bestiaryLevel=bestiaryDefaultLevel(monster.id);sectionChoices.bestiary='overview';panel.scrollTop=0;}}
   if(button.dataset.main!==undefined)chooseMain(s,Number(button.dataset.main));
   if(button.dataset.inspectSlot) selectedItem = { source:'equipment', slot:button.dataset.inspectSlot };
   if(button.dataset.inspectBag) {
@@ -304,7 +312,7 @@ app.addEventListener('click',event=>{
   game.refresh();refresh(s);
   if(!inventoryOpen && (button.dataset.main!==undefined || ['attack','home','combat','atelier','animalerie','deploy'].includes(button.dataset.action)))app.querySelector('canvas').focus({preventScroll:true});
 });
-app.addEventListener('change', event => {if(event.target.id==='bestiary-monster-picker'){bestiaryMonster=event.target.value;refresh(game.state);return;}if(event.target.id==='guide-zone'){guideZone=event.target.value;refresh(game.state);return;}if(event.target.id==='chest-category'){chestCategory=event.target.value;refresh(game.state);return;} if(event.target.id==='key-dungeon'){game.state.handymanDungeon=event.target.value;game.refresh();refresh(game.state);return;}  if(event.target.id==='spell-element'){spellFilter=event.target.value;refresh(game.state);} if(event.target.id==='loot-monster')devLootMonster=event.target.value; if(event.target.id==='bag-filter') { bagFilter=event.target.value; refresh(game.state); panel.querySelector('#bag-filter')?.focus(); } });
+app.addEventListener('change', event => {if(event.target.id==='guide-zone'){guideZone=event.target.value;refresh(game.state);return;}if(event.target.id==='chest-category'){chestCategory=event.target.value;refresh(game.state);return;} if(event.target.id==='key-dungeon'){game.state.handymanDungeon=event.target.value;game.refresh();refresh(game.state);return;}  if(event.target.id==='spell-element'){spellFilter=event.target.value;refresh(game.state);} if(event.target.id==='loot-monster')devLootMonster=event.target.value; if(event.target.id==='bag-filter') { bagFilter=event.target.value; refresh(game.state); panel.querySelector('#bag-filter')?.focus(); } });
 app.addEventListener('input', event => {
   if(event.target.id==='chest-search'){chestQuery=event.target.value;filterDevChest(panel,chestQuery);return;}
   if(event.target.id==='chest-quantity'){const n=Number(event.target.value);if(Number.isSafeInteger(n)&&n>=1&&n<=99)chestQuantity=n;return;}
@@ -317,6 +325,7 @@ app.addEventListener('input', event => {
   const corePanel=panel.querySelector('.bestiary-core');
   if(corePanel)corePanel.innerHTML=coreDropMarkup(bestiaryMonster,bestiaryLevel);
   panel.querySelector('#monster-level-value').textContent = bestiaryLevel;
+  panel.querySelector('#monster-level-badge').textContent=`Niveau ${bestiaryLevel}`;
   for(const [stat,value] of Object.entries(bestiaryValues(bestiaryMonster,bestiaryLevel))) panel.querySelector(`[data-monster-stat="${stat}"]`).textContent=value;
 });
 const uiController = new AbortController();

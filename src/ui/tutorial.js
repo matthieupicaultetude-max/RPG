@@ -23,7 +23,7 @@ export function createTutorialUI(app, game, openPanel) {
     combat:['Battez le slime d’entraînement','Attaquez au clic droit et sortez du cercle bleu avant son saut. Cette victoire vous fera gagner un niveau.'],
     stats:['Un niveau gagné : 5 points !','P → Répartition : dépensez les cinq points du héros qui a commencé le combat. Chaque caractéristique indique son effet.'],
     spells:['Votre premier sort Feu','K : choisissez un emplacement normal, puis équipez le sort Feu. Terre et Feu peuvent être équipés ensemble. Fermez avec Échap.'],
-    bestiary:['Connaître son adversaire','B : sélectionnez le Slime, puis réglez son niveau au-delà de 1. Consultez Statistiques, Combat ou Butins. Fermez avec Échap.'],
+    bestiary:['Connaître son adversaire','B → famille Slime → Slime. Ouvrez Statistiques et réglez son niveau au-delà de 1. Les butins sont sur sa fiche. Fermez avec Échap.'],
     loot:['Du monstre à la panoplie','I : ouvrez le noyau Eau reçu pour obtenir une pièce de la panoplie Rosée. Les noyaux s’ouvrent partout.'],
     armor:['Votre première pièce d’équipement','Dans I, sélectionnez la pièce puis Équiper, ou faites Maj + clic sur sa case. Ses bonus s’ajoutent à votre héros.'],
     professions:['Les métiers de votre troupe','L : découvrez le Bûcheron et ses bois, débloqués aux niveaux 1, 5 et 10. L’XP métier est séparée de celle des héros. Fermez pour récolter.'],

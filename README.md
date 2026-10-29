@@ -78,9 +78,9 @@ Chaque rôle a son animation : taille d’épée orientée, flèche guidée ou o
 
 ## Bestiaire
 
-**B**, le bouton Bestiaire en haut ou l’onglet du panneau ouvre les fiches des quatre espèces du jardin. Chaque fiche présente son apparence, son habitat, ses statistiques et ses quatre issues de butin avec leurs probabilités : normal standard 72 %, normal chromatique 8 %, rare standard 18 %, rare chromatique 2 %.
+**B**, le bouton Bestiaire ou l’onglet Monde ouvre les familles illustrées, triées par ordre alphabétique : Bêtes, Insectes, Slime. Choisissez une famille, puis un monstre ; les monstres normaux et les boss ont des sous-onglets séparés. Chaque fiche affiche d’abord son portrait, son nom, son niveau, sa zone et ses butins. Les onglets Combat et Statistiques contiennent les informations secondaires. Les ressources normales ont quatre variantes : normal standard 72 %, normal chromatique 8 %, rare standard 18 %, rare chromatique 2 %. Les boss affichent leurs récompenses propres.
 
-Le curseur de niveau **1 à 100** actualise PV, dégâts, XP et or ; vitesse et délais restent fixes. Il s’agit d’une consultation, qui ne modifie pas les monstres présents. Les statistiques de base et les tables de butin du combat et des fiches proviennent de `src/data/monsters.js`. Les règles de croissance sont provisoires : par niveau supplémentaire, +12 % des PV de base, +8 % des dégâts de base, +10 % de l’XP de base et +5 % de l’or de base, arrondis à l’entier.
+Dans l’onglet Statistiques, le curseur de niveau **1 à 100** actualise PV, dégâts, XP et or ; vitesse et délais restent fixes. Il s’agit d’une consultation, qui ne modifie pas les monstres présents. Les statistiques de base et les tables de butin du combat et des fiches proviennent de `src/data/monsters.js`. Les règles de croissance sont provisoires : par niveau supplémentaire, +12 % des PV de base, +8 % des dégâts de base, +10 % de l’XP de base et +5 % de l’or de base, arrondis à l’entier.
 
 **B** ou **Échap** ferme le bestiaire ; **I** revient à l’inventaire. Le monde continue pendant la consultation. Les tests couvrent aussi les bornes de niveau, la progression des statistiques, les probabilités et leur cohérence avec la simulation.
 

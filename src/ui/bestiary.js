@@ -74,9 +74,9 @@ const combatNote = (id) =>
                   ? "Statistiques affichées pour la taille 1. Absorption : jusqu’à trois tailles ; un saut raté expose les gros slimes pendant 2,5 s."
                   : "";
 export const BESTIARY_CATEGORIES = Object.freeze([
-  { id: "slime", name: "Slime" },
-  { id: "beast", name: "Bêtes" },
-  { id: "insect", name: "Insectes" },
+  { id: "beast", name: "Bêtes", portrait:"boar" },
+  { id: "insect", name: "Insectes", portrait:"firefly" },
+  { id: "slime", name: "Slime", portrait:"slime" },
 ]);
 export function renderBestiaryNavigation(selectedId) {
   const selected = monsterDefinition(selectedId);
@@ -127,11 +127,28 @@ function lootMarkup(monster, level) {
       "",
     )}</div></section><section class="monster-drops bestiary-core">${coreDropMarkup(monster.id, level)}${monster.depthsSlime?"<p>Une fusion Eau/Terre donne les ressources de limon abyssal et peut donner un Noyau de Gouffre (25 %) pour la panoplie biélément niveau 10.</p>":""}</section>`;
 }
-export function renderBestiary(id,level){
- const monster=monsterDefinition(id),stats=monsterStats(id,level),values=bestiaryValues(id,level),attack=monsterAttack({species:id});
+export const bestiaryDefaultLevel=id=>({
+ 'marsh-slime':3,'depths-water-slime':5,'depths-earth-slime':5,'mountain-slime':5,'fire-slime':5,'wind-slime':5,
+ 'magma-slime':6,'foam-slime':6,'cinder-slime':6,gorgelimon:8,'volcano-slime':9,nimbulimon:10,siroccolimon:10,
+}[id]||1);
+export function bestiaryFamilies(){return [...BESTIARY_CATEGORIES].filter(c=>MONSTERS.some(m=>m.category===c.id)).sort((a,b)=>a.name.localeCompare(b.name,'fr',{sensitivity:'base'}));}
+export function familyMonsters(id){return MONSTERS.filter(m=>m.category===id).sort((a,b)=>a.name.localeCompare(b.name,'fr',{sensitivity:'base'}));}
+const breadcrumbs=(family,monster)=>`<nav class="bestiary-breadcrumbs" aria-label="Parcours du bestiaire"><button data-bestiary-home>Familles</button>${family?`<span aria-hidden="true">›</span>${monster?`<button data-bestiary-family="${family.id}">${family.name}</button>`:`<strong>${family.name}</strong>`}`:''}${monster?`<span aria-hidden="true">›</span><strong>${monster.name}</strong>`:''}</nav>`;
+export function renderBestiaryFamilies(){
+ return `<section data-bestiary-screen="families"><div class="bestiary-heading"><div><p class="eyebrow">MONDE</p><h2>Bestiaire</h2></div><span>${MONSTERS.length} espèces</span></div><p class="bestiary-intro">Choisissez une famille.</p><div class="bestiary-family-grid">${bestiaryFamilies().map(f=>{const members=familyMonsters(f.id);return `<button class="bestiary-family-card" data-bestiary-family="${f.id}" aria-label="Famille ${f.name}">${creature(f.portrait||members[0].id)}<strong>${f.name}</strong><small>${members.length} espèce${members.length>1?'s':''}</small></button>`;}).join('')}</div></section>`;
+}
+export function renderBestiaryFamily(id){
+ const family=bestiaryFamilies().find(c=>c.id===id);if(!family)return renderBestiaryFamilies();
+ const members=familyMonsters(id),groups=[{id:'normal',name:'Monstres',boss:false},{id:'boss',name:'Boss',boss:true}].filter(g=>members.some(m=>!!m.boss===g.boss));
+ return `<section data-bestiary-screen="family" data-family="${id}">${breadcrumbs(family)}<div class="bestiary-heading"><h2>${family.name}</h2><span>${members.length} espèces</span></div>${sections('bestiary-family',groups.map(group=>({id:group.id,label:`${group.name} · ${members.filter(m=>!!m.boss===group.boss).length}`,content:`<div class="bestiary-species-grid" data-monster-group="${group.id}">${members.filter(m=>!!m.boss===group.boss).map(m=>`<button class="bestiary-species-card" data-monster="${m.id}" aria-label="${m.name}, niveau ${bestiaryDefaultLevel(m.id)}">${creature(m.id)}<strong>${m.name}</strong><small>Niveau ${bestiaryDefaultLevel(m.id)} · ${(m.elements||[m.element]).map(e=>ELEMENTS[e].name).join(' / ')}</small></button>`).join('')}</div>`})))}</section>`;
+}
+export function renderBestiaryBrowser(family=null,monster=null,level=1){return monster?renderBestiary(monster,level):family?renderBestiaryFamily(family):renderBestiaryFamilies();}
+export function renderBestiary(id,level=bestiaryDefaultLevel(id)){
+ const monster=monsterDefinition(id);if(!monster)return renderBestiaryFamilies();
+ const family=bestiaryFamilies().find(c=>c.id===monster.category),stats=monsterStats(id,level),values=bestiaryValues(id,level),attack=monsterAttack({species:id});
  const names={maxHp:'PV',damage:'Dégâts',attackDelay:'Recharge',speed:'Vitesse',detection:'Détection',respawnDelay:'Réapparition',xp:'XP',gold:'Or'};
- const overview=`<dl class="monster-stats">${Object.entries(names).map(([key,label])=>`<div><dt>${label}</dt><dd data-monster-stat="${key}">${values[key]}</dd></div>`).join('')}</dl>${disclosure('bestiary-scaling','Progression par niveau','<p>PV +12 %, dégâts +8 %, XP +10 %, or +5 % des valeurs du niveau 1. Vitesse et délais fixes.</p>')}`;
+ const statistics=`<div class="monster-level"><label for="monster-level">Niveau de consultation <output id="monster-level-value" for="monster-level">${stats.level}</output></label><input id="monster-level" type="range" min="1" max="${MONSTER_LEVEL_MAX}" step="1" value="${stats.level}"><small>Aperçu uniquement · ne modifie pas les monstres.</small></div><dl class="monster-stats">${Object.entries(names).map(([key,label])=>`<div><dt>${label}</dt><dd data-monster-stat="${key}">${values[key]}</dd></div>`).join('')}</dl>${disclosure('bestiary-scaling','Progression par niveau','<p>PV +12 %, dégâts +8 %, XP +10 %, or +5 % des valeurs du niveau 1. Vitesse et délais fixes.</p>')}`;
  const kindText={charge:'Esquivez le couloir.',leap:'Sortez du cercle d’atterrissage.',tornado:'Évitez la trajectoire.',eruption:'Attirez une invocation près du boss.', 'wind-cycle':'Sortez du souffle, puis évitez les deux impacts.', 'storm-cycle':'Guidez le dernier ricochet sur sol sec.', 'furnace-cycle':'Orientez le cône sur un brasero, puis esquivez.'}[attack.kind]||'Surveillez les zones annoncées.';
  const combat=`<section class="monster-ability"><h3>${attack.name} · ${ELEMENTS[attack.element].name}</h3><p class="guide-rule">${kindText}</p><p>Préparation ${number(attack.windup)} s · Recharge ${number(attack.recovery)} s</p>${disclosure(`bestiary-behaviour-${id}`,'Comportement détaillé',`<p>${monster.description}</p>${combatNote(id)?`<p>${combatNote(id)}</p>`:''}`)}</section>`;
- return `<div class="bestiary-heading"><div><p class="eyebrow">MONDE</p><h2>Bestiaire</h2></div><span>${MONSTERS.length} espèces</span></div><label class="bestiary-picker">Créature<select id="bestiary-monster-picker">${[["Slimes · Monstres",MONSTERS.filter(m=>m.category==="slime"&&!m.boss)],["Slimes · Boss",MONSTERS.filter(m=>m.category==="slime"&&m.boss)],["Bêtes",MONSTERS.filter(m=>m.category==="beast")],["Insectes",MONSTERS.filter(m=>m.category==="insect")]].map(([label,list])=>`<optgroup label="${label}">${list.map(m=>`<option value="${m.id}" ${m.id===id?"selected":""}>${m.name}</option>`).join("")}</optgroup>`).join("")}</select></label><div class="bestiary-layout">${renderBestiaryNavigation(id)}<article class="monster-sheet"><div class="monster-identity">${creature(id)}<div><p class="eyebrow">${monster.boss?'Boss':monster.family}</p><h3>${monster.name}</h3><span>${monster.habitat} · ${(monster.elements||[monster.element]).map(e=>ELEMENTS[e].name).join(' / ')}</span></div></div><div class="monster-level"><label for="monster-level">Niveau de consultation <output id="monster-level-value" for="monster-level">${stats.level}</output></label><input id="monster-level" type="range" min="1" max="${MONSTER_LEVEL_MAX}" step="1" value="${stats.level}"><small>Aperçu uniquement · ne modifie pas les monstres.</small></div>${sections('bestiary',[{id:'overview',label:'Statistiques',content:overview},{id:'combat',label:'Combat',content:combat},{id:'loot',label:'Butins',content:lootMarkup(monster,stats.level)}])}</article></div>`;
+ return `<section data-bestiary-screen="monster">${breadcrumbs(family,monster)}<article class="monster-sheet" data-species="${id}"><header class="monster-identity bestiary-monster-header">${creature(id)}<div><p class="eyebrow">${family?.name||monster.family}${monster.boss?' · Boss':''}</p><h2>${monster.name}</h2><strong class="monster-level-badge" id="monster-level-badge">Niveau ${stats.level}</strong><p class="monster-zone"><span>Zone</span> ${monster.habitat}</p><small>${(monster.elements||[monster.element]).map(e=>ELEMENTS[e].name).join(' / ')}</small></div></header>${sections('bestiary',[{id:'overview',label:'Butins',content:lootMarkup(monster,stats.level)},{id:'combat',label:'Combat',content:combat},{id:'stats',label:'Statistiques',content:statistics}])}</article></section>`;
 }

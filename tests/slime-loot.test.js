@@ -30,7 +30,7 @@ test("Slime est une catégorie unique avec tous les normaux avant tous les boss,
   const nav = renderBestiaryNavigation("slime"),
     slime = nav.slice(
       nav.indexOf('data-category="slime"'),
-      nav.indexOf("</details>"),
+      nav.indexOf("</details>", nav.indexOf('data-category="slime"')),
     );
   assert.equal(MONSTERS.filter((m) => m.category === "slime").length, 14);
   assert.ok(

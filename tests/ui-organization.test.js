@@ -90,7 +90,7 @@ test("panels separate primary actions without removing any crafting, allocation,
     [renderForge(s), ["upgrade", "recycle"]],
     [renderProfessions(s), ["harvest", "craft"]],
     [renderPetShop(s), ["adopt", "boss"]],
-    [renderBestiary("volcano-slime", 9), ["overview", "combat", "loot"]],
+    [renderBestiary("volcano-slime", 9), ["overview", "combat", "stats"]],
     [renderDevTools(s), ["progress", "objects", "travel", "journal"]],
   ];
   for (const [html, ids] of cases) {
