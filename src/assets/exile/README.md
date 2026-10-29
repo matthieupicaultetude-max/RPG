@@ -9,3 +9,5 @@ Le rendu charge les atlas à l’entrée dans le Comptoir. Les sprites sont déc
 Les grues, les quais à arcades, les escaliers, les emblèmes de slime et les détails d’ateliers sont des assets dessinés en Canvas dans `src/rendering/exile-port-assets.js`. Les matériaux pierre et eau du port sont périodiques sur 64 pixels, ancrés dans les coordonnées du monde.
 
 `port-streets.png` : six variantes de maisons et ateliers sur fond transparent. Ligne supérieure : trois façades marchandes aux toits chauds ; ligne inférieure : trois ateliers aux ardoises bleues. Les gouttières de découpe mesurées sont stockées dans le module de rendu pour conserver les potences, auvents et cheminées.
+
+La variante `tower` du manifeste réutilise une tour de la porte pour les remparts, sans nouvelle texture. La géométrie des courtines et des terrasses reste indépendante de ce cadre graphique.

@@ -102,84 +102,124 @@ function smooth(points) {
   return points;
 }
 const road = (id, width, points) => ({ id, width, points: smooth(points) });
+// Authored setbacks and uneven street lengths replace the repeated row grid.
+export const BLOCK_LAYOUT = [
+  [
+    { left: 165, y: 260, widths: [96, 94] },
+    { left: 410, y: 290, widths: [84, 136] },
+    { left: 810, y: 250, widths: [120, 100] },
+    { left: 1095, y: 285, widths: [84, 111] },
+  ],
+  [
+    { left: 140, y: 445, widths: [108, 82] },
+    { left: 405, y: 470, widths: [100, 120] },
+    { left: 815, y: 430, widths: [64, 92, 64] },
+    { left: 1110, y: 460, widths: [78, 117] },
+  ],
+  [
+    { left: 170, y: 615, widths: [80, 110] },
+    { left: 420, y: 625, widths: [62, 96, 62] },
+    { left: 835, y: 595, widths: [110, 54, 56] },
+    { left: 1105, y: 635, widths: [118, 77] },
+  ],
+  [
+    { left: 145, y: 790, widths: [102, 88] },
+    { left: 390, y: 770, widths: [64, 80, 76] },
+    { left: 820, y: 805, widths: [112, 108] },
+    { left: 1110, y: 765, widths: [72, 123] },
+  ],
+  [
+    { left: 160, y: 930, widths: [100, 90] },
+    { left: 400, y: 930, widths: [96, 64, 60] },
+    { left: 825, y: 925, widths: [76, 88, 56] },
+    { left: 1090, y: 915, widths: [120, 75] },
+  ],
+];
 export const ROADS = [
   road("avenue-du-refuge", 36, [
     [720, 1020],
-    [710, 850],
+    [704, 870],
+    [720, 710],
     [720, 620],
     [740, 400],
     [720, 140],
   ]),
   road("rue-du-premier-accueil", 24, [
-    [120, 300],
-    [380, 300],
-    [650, 300],
-    [720, 310],
-    [1060, 300],
-    [1320, 300],
+    [120, 310],
+    [390, 318],
+    [650, 335],
+    [730, 333],
+    [1080, 310],
+    [1330, 337],
   ]),
   road("rue-des-echoppes", 26, [
-    [120, 510],
-    [380, 510],
-    [610, 520],
+    [115, 498],
+    [390, 505],
+    [645, 522],
     [720, 620],
-    [840, 520],
-    [1060, 510],
-    [1320, 510],
+    [805, 495],
+    [1080, 496],
+    [1330, 520],
   ]),
   road("rue-des-artisans", 26, [
-    [120, 685],
-    [380, 685],
-    [620, 680],
-    [720, 700],
-    [820, 680],
-    [1060, 685],
-    [1320, 685],
+    [115, 677],
+    [390, 673],
+    [650, 675],
+    [720, 707],
+    [820, 670],
+    [1080, 675],
+    [1330, 674],
   ]),
   road("rue-des-voiles", 24, [
-    [120, 820],
-    [380, 820],
-    [650, 825],
-    [720, 830],
-    [1060, 820],
-    [1320, 820],
+    [120, 829],
+    [390, 824],
+    [650, 821],
+    [720, 825],
+    [825, 827],
+    [1080, 824],
+    [1320, 805],
   ]),
   road("promenade-des-quais", 34, [
-    [140, 950],
+    [150, 957],
     [310, 970],
     [510, 975],
     [720, 990],
     [940, 970],
     [1120, 975],
-    [1290, 945],
+    [1280, 940],
   ]),
   road("passage-des-tisserands", 22, [
-    [380, 260],
-    [380, 510],
-    [380, 685],
-    [380, 820],
+    [385, 280],
+    [380, 360],
+    [370, 490],
+    [390, 545],
+    [390, 670],
+    [365, 820],
     [380, 970],
   ]),
   road("passage-du-levant", 22, [
-    [1060, 260],
-    [1060, 510],
-    [1060, 685],
-    [1060, 820],
-    [1060, 970],
+    [1065, 270],
+    [1075, 410],
+    [1080, 540],
+    [1080, 690],
+    [1080, 840],
+    [1065, 965],
   ]),
   road("ruelle-occidentale", 20, [
-    [120, 300],
-    [120, 510],
-    [120, 685],
-    [120, 820],
-    [140, 950],
+    [122, 310],
+    [118, 480],
+    [120, 680],
+    [130, 805],
+    [142, 845],
+    [150, 957],
   ]),
   road("ruelle-orientale", 20, [
-    [1320, 300],
-    [1320, 510],
-    [1320, 685],
-    [1320, 820],
-    [1290, 945],
+    [1330, 337],
+    [1330, 480],
+    [1330, 675],
+    [1320, 805],
+    [1298, 835],
+    [1280, 940],
   ]),
 ];
 export const PLAZAS = [
@@ -249,14 +289,14 @@ const landmarks = { "1-1": "guildhall", "3-2": "forge", "4-0": "warehouse" };
 export const BUILDINGS = [],
   ENTRANCES = [],
   FRONTAGES = [];
-for (const [row, y] of [280, 450, 610, 780, 940].entries())
+for (const [row, layout] of BLOCK_LAYOUT.entries())
   for (const [block, lot] of lots.entries()) {
+    const { left, y } = layout[block];
+    const plotWidths = layout[block].widths;
     const widths = landmarks[`${row}-${block}`]
-      ? [lot.widths.reduce((a, b) => a + b, 0)]
-      : row === 0
-        ? [110, lot.widths.reduce((a, b) => a + b, 0) - 110]
-        : lot.widths;
-    let edge = lot.left,
+      ? [plotWidths.reduce((a, b) => a + b, 0)]
+      : plotWidths;
+    let edge = left,
       previous = null;
     const frontage = [];
     for (const [index, w] of widths.entries()) {
@@ -308,7 +348,7 @@ for (const [row, y] of [280, 450, 610, 780, 940].entries())
     // A short shared sidewalk opens at both ends into the neighboring alley.
     ROADS.push(
       road(`frontage-${row}-${block}`, 12, [
-        [lot.left - 14, y + 14],
+        [left - 14, y + 14],
         [edge + 14, y + 14],
       ]),
     );
@@ -340,7 +380,7 @@ for (const [key, [id, name, role, panel]] of Object.entries(identities)) {
     role,
     panel,
     x: house.x + 16,
-    y: house.y + 32,
+    y: house.y + 18,
     facing: "down",
     moving: false,
     equipment: {},
@@ -380,7 +420,7 @@ const add = (kind, x, y, footprint) =>
     ...(footprint ? { footprint } : {}),
   });
 for (const [x, y] of [
-  [642, 565],
+  [660, 565],
   [800, 565],
   [642, 670],
   [800, 670],
@@ -484,6 +524,172 @@ for (const [x, y] of [
     onDock: true,
     footprint: { type: "box", left: -9, right: 9, top: -16, bottom: 0 },
   });
+export const RAMPARTS = [
+  [
+    [130, 140],
+    [390, 110],
+    [640, 125],
+    [675, 125],
+  ],
+  [
+    [765, 125],
+    [1040, 110],
+    [1310, 150],
+  ],
+  [
+    [130, 140],
+    [95, 360],
+    [85, 570],
+    [110, 800],
+    [150, 950],
+    [300, 956],
+  ],
+  [
+    [1310, 150],
+    [1350, 400],
+    [1345, 780],
+    [1300, 870],
+    [1255, 940],
+  ],
+  [
+    [370, 956],
+    [510, 977],
+    [620, 1008],
+  ],
+  [
+    [820, 1008],
+    [940, 978],
+    [1105, 968],
+  ],
+  [
+    [1178, 960],
+    [1255, 940],
+  ],
+];
+export function rampartDistance(x, y) {
+  let d = Infinity;
+  for (const wall of RAMPARTS)
+    for (let i = 1; i < wall.length; i++)
+      d = Math.min(d, Math.sqrt(segmentDistanceSq(x, y, wall[i - 1], wall[i])));
+  return d;
+}
+export const RAMPART_TOWERS = [
+  [130, 140],
+  [390, 110],
+  [1040, 110],
+  [1310, 150],
+  [95, 400],
+  [110, 800],
+  [150, 950],
+  [1350, 440],
+  [1345, 780],
+  [1255, 940],
+].map(([x, y], i) => ({
+  id: `rempart-tour-${i}`,
+  kind: "exile-rampart-tower",
+  asset: "tower",
+  x,
+  y,
+  w: 32,
+  h: 100,
+  footprint: { type: "circle", radius: 12 },
+}));
+export const NORTH_GATE = {
+  id: "porte-du-sanctuaire",
+  kind: "exile-city-gate",
+  asset: "gate",
+  x: 720,
+  y: 125,
+  w: 120,
+  h: 90,
+};
+export const NORTH_GATE_SOLIDS = [-1, 1].map((side) => ({
+  id: `porte-nord-${side}`,
+  kind: "gate-collision",
+  x: 720 + side * 37,
+  y: 125,
+  footprint: { type: "circle", radius: 12 },
+}));
+const lineY = (x, points) => {
+  for (let i = 1; i < points.length; i++) {
+    const a = points[i - 1],
+      b = points[i];
+    if (x <= b[0])
+      return a[1] + (b[1] - a[1]) * Math.max(0, (x - a[0]) / (b[0] - a[0]));
+  }
+  return points.at(-1)[1];
+};
+export const TERRACES = [
+  {
+    id: "ville-haute",
+    height: 20,
+    points: [
+      [105, 515],
+      [390, 520],
+      [650, 535],
+      [720, 540],
+      [810, 500],
+      [1080, 500],
+      [1340, 530],
+    ],
+  },
+  {
+    id: "terrasse-des-ateliers",
+    height: 18,
+    points: [
+      [105, 848],
+      [390, 840],
+      [650, 842],
+      [720, 850],
+      [810, 862],
+      [1048, 862],
+      [1080, 842],
+      [1335, 830],
+    ],
+  },
+];
+export const TERRACE_STAIRS = TERRACES.flatMap((t) =>
+  (t.id === "ville-haute"
+    ? [120, 390, 720, 1080, 1320]
+    : [142, 390, 720, 1080, 1298]
+  ).map((x) => ({
+    id: `${t.id}-${x}`,
+    terrace: t.id,
+    x,
+    y: lineY(x, t.points),
+    w: x === 720 ? 74 : x === 142 ? 24 : x === 1298 ? 20 : 30,
+    length: t.height + 10,
+  })),
+);
+STAIRS.push(...TERRACE_STAIRS);
+export const terraceBoundaryY = (terrace, x) => lineY(x, terrace.points);
+export function blockedByTerrace(x, y) {
+  return TERRACES.some((t) => {
+    const edge = lineY(x, t.points);
+    return (
+      y >= edge - t.height &&
+      y <= edge + 3 &&
+      !TERRACE_STAIRS.some(
+        (s) => s.terrace === t.id && Math.abs(x - s.x) < s.w / 2 - 1,
+      )
+    );
+  });
+}
+export function elevationAt(x, y) {
+  return TERRACES.reduce((height, t) => {
+    const edge = lineY(x, t.points);
+    return (
+      height +
+      (y < edge - t.height
+        ? t.height
+        : TERRACE_STAIRS.some(
+              (s) => s.terrace === t.id && Math.abs(x - s.x) < s.w / 2,
+            ) && y < edge
+          ? (t.height * (edge - y)) / t.height
+          : 0)
+    );
+  }, 0);
+}
 const trees = [];
 for (const [x, y] of [
   [95, 260],
@@ -495,7 +701,13 @@ for (const [x, y] of [
   [675, 150],
   [790, 150],
 ]) {
-  if (landDistance(x, y) < 18 || roadDistance(x, y) < 19) continue;
+  if (
+    landDistance(x, y) < 18 ||
+    roadDistance(x, y) < 19 ||
+    rampartDistance(x, y) < 20 ||
+    blockedByTerrace(x, y)
+  )
+    continue;
   trees.push({
     id: `exile-tree-${trees.length}`,
     kind: "tree",
@@ -510,10 +722,16 @@ export const PROPS = [
   ...BUILDINGS,
   TOWN_FOUNTAIN,
   PORT_GATE,
+  NORTH_GATE,
+  ...RAMPART_TOWERS,
   ...STREET_PROPS,
   ...trees,
 ];
-export const SOLIDS = [...PROPS.filter((p) => p.footprint), ...GATE_TOWERS];
+export const SOLIDS = [
+  ...PROPS.filter((p) => p.footprint),
+  ...GATE_TOWERS,
+  ...NORTH_GATE_SOLIDS,
+];
 export function canWalkExile(x, y) {
   return (
     x > 15 &&
@@ -521,6 +739,8 @@ export function canWalkExile(x, y) {
     y > 15 &&
     y < MAP_SIZE.height - 15 &&
     (landDistance(x, y) >= 6 || onDock(x, y, 5)) &&
+    rampartDistance(x, y) > 5 &&
+    !blockedByTerrace(x, y) &&
     !SOLIDS.some((p) =>
       p.footprint.type === "box"
         ? x >= p.x + p.footprint.left &&

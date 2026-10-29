@@ -7,9 +7,17 @@ import {
 export function createExileWorld() {
   const bots = [];
   for (let i = 0; i < 16; i++) {
-    const road = ROADS[i % ROADS.length],
-      index = 2 + (i % (road.points.length - 4)),
-      p = road.points[index];
+    const road = ROADS[i % ROADS.length];
+    let index = 2 + (i % (road.points.length - 4));
+    for (let offset = 0; offset < road.points.length; offset++) {
+      const candidate = (index + offset) % road.points.length,
+        p = road.points[candidate];
+      if (canWalkExile(p[0], p[1])) {
+        index = candidate;
+        break;
+      }
+    }
+    const p = road.points[index];
     bots.push({
       id: `exile-walker-${i}`,
       name: [

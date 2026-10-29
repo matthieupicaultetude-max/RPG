@@ -816,3 +816,11 @@ La nouvelle référence montre un port en contrebas d’une ville de calcaire, a
 Deux atlas transparents originaux apportent dix assets : six façades de rue, halle marchande, forge, entrepôt et porte portuaire. Les grues, les escaliers, les quais à arcades et les emblèmes de slime complètent le décor. Quatre navires, des étals, des fumées, des braises et des bannières animent l’ensemble. Pavés et eau utilisent des motifs périodiques propres au port.
 
 Les images chargent à l’entrée dans la zone, avec un dessin de repli immédiat ; les cellules sont détourées selon l’alpha et mises en cache à l’échelle du jeu. Une nouvelle version d’atlas invalide le cache d’environnement une seule fois. Les emprises, les portes, les escaliers et les pontons restent décrits dans la carte : les images ne dictent pas la navigabilité. Les tours de la porte bloquent le mouvement mais laissent le passage central ouvert.
+
+## 62. Comptoir fortifié et terrasses irrégulières
+
+La ville conserve ses bâtiments et son emprise compacte. Les vingt îlots sont implantés avec des retraits et des largeurs de parcelles propres, et les rues suivent les nouveaux passages. Les façades mitoyennes restent jointives à l’intérieur de chaque îlot.
+
+Des courtines crénelées et dix tours suivent le littoral ; elles se raccordent à la porte du port et à une nouvelle porte nord. Les trois accès aux pontons restent ouverts. La variante de tour reprend la texture de la porte existante. Les lignes des remparts sont utilisées pour les collisions et le dessin ; les remparts devant le joueur s’estompent comme les bâtiments.
+
+Deux fronts de terrasse créent trois niveaux : port (0), terrasse intermédiaire (+18), ville haute (+38). Les faces sont infranchissables, sauf au droit des dix escaliers définis dans les mêmes données. Les alliés partagent ces collisions et les contournent par les escaliers. Le plan local montre murs, niveaux et passages. Les PNJ conservent un espace d’approche libre devant leurs commerces ; les promeneurs commencent sur un point praticable du nouveau réseau.

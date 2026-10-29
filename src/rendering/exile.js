@@ -1,4 +1,6 @@
 import {
+  drawTerraceGround,
+  rampartPieces,
   portSpriteSize,
   loadPortAssets,
   portAssetVersion,
@@ -174,6 +176,7 @@ function plotGround(g) {
   g.strokeStyle = "#d3cfab";
   g.lineWidth = 3;
   g.stroke();
+  drawTerraceGround(g, map);
   drawPortGround(g, map);
   // A memorial mosaic belongs to the square, not to the paving texture.
   g.strokeStyle = "#c7b77c";
@@ -534,6 +537,8 @@ export function createExileEnvironment() {
     const custom = [
       "exile-house",
       "exile-gate",
+      "exile-city-gate",
+      "exile-rampart-tower",
       "exile-crane",
       "exile-lamp",
       "exile-fountain",
@@ -543,10 +548,14 @@ export function createExileEnvironment() {
     if (!custom) sprite = atlas(p);
     else {
       const canvas = document.createElement("canvas");
-      const size =
-        p.kind === "exile-house" || p.kind === "exile-gate"
-          ? portSpriteSize(p)
-          : null;
+      const size = [
+        "exile-house",
+        "exile-gate",
+        "exile-city-gate",
+        "exile-rampart-tower",
+      ].includes(p.kind)
+        ? portSpriteSize(p)
+        : null;
       canvas.width = Math.max(p.w || 80, size?.w || 0) + 70;
       canvas.height = Math.max(p.h || 90, size?.h || 0) + 35;
       const cg = canvas.getContext("2d"),
@@ -554,7 +563,9 @@ export function createExileEnvironment() {
         anchorY = canvas.height - 10;
       cg.translate(anchorX, anchorY);
       if (p.kind === "exile-house") building(cg, p);
-      else if (p.kind === "exile-gate") drawHarborGate(cg, p);
+      else if (["exile-gate", "exile-city-gate"].includes(p.kind))
+        drawHarborGate(cg, p);
+      else if (p.kind === "exile-rampart-tower") drawPortLandmark(cg, p);
       else if (p.kind === "exile-crane") drawCargoCrane(cg);
       else if (p.kind === "exile-lamp") lamp(cg);
       else if (p.kind === "exile-fountain") fountain(cg);
@@ -580,7 +591,7 @@ export function createExileEnvironment() {
   });
   return {
     ground,
-    props,
+    props: [...props, ...rampartPieces(map)],
     markers: [],
     land: map.LAND,
     assetVersion: portAssetVersion(),

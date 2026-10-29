@@ -4,6 +4,13 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   MAP_SIZE,
+  RAMPARTS,
+  NORTH_GATE,
+  TERRACES,
+  TERRACE_STAIRS,
+  terraceBoundaryY,
+  elevationAt,
+  rampartDistance,
   SHIPS,
   GATE_TOWERS,
   PORT_GATE,
@@ -357,11 +364,72 @@ test("La troupe franchit la porte depuis le port sans traverser les tours", () =
   for (const m of s.team) assert.ok(canWalkExile(m.x, m.y));
 });
 
-test("Les dix assets possèdent un cadre mesuré valide dans leur atlas", () => {
+test("Les cadres des bâtiments et de la tour restent dans les atlas", () => {
   const all = atlasFrames.flatMap((bank) => Object.entries(bank.frames));
-  assert.equal(all.length, 10);
+  assert.equal(all.length, 11);
   for (const [key, rect] of all) {
     assert.ok(rect.x >= 0 && rect.y >= 0 && rect.w > 0 && rect.h > 0, key);
     assert.ok(rect.x + rect.w <= 1536 && rect.y + rect.h <= 1024, key);
+  }
+});
+
+test("Les remparts ferment le périmètre tout en gardant les portes et pontons ouverts", () => {
+  assert.ok(RAMPARTS.length >= 6);
+  for (const wall of RAMPARTS)
+    for (let i = 1; i < wall.length; i++) {
+      const a = wall[i - 1],
+        b = wall[i],
+        x = (a[0] + b[0]) / 2,
+        y = (a[1] + b[1]) / 2;
+      assert.ok(rampartDistance(x, y) < 0.01);
+      assert.equal(canWalkExile(x, y), false);
+    }
+  assert.ok(canWalkExile(NORTH_GATE.x, NORTH_GATE.y));
+  assert.ok(canWalkExile(PORT_GATE.x, PORT_GATE.y - 10));
+  assert.ok(canWalkExile(EXILE_RETURN.x, EXILE_RETURN.y));
+});
+test("Le relief possède trois niveaux et bloque les faces hors des escaliers", () => {
+  assert.equal(elevationAt(720, 950), 0);
+  assert.equal(elevationAt(720, 710), 18);
+  assert.equal(elevationAt(720, 160), 38);
+  for (const terrace of TERRACES) {
+    for (const x of [250, 500, 950, 1200])
+      assert.equal(
+        canWalkExile(x, terraceBoundaryY(terrace, x) - terrace.height / 2),
+        false,
+      );
+    for (const stair of TERRACE_STAIRS.filter((p) => p.terrace === terrace.id))
+      assert.ok(canWalkExile(stair.x, stair.y - terrace.height / 2));
+  }
+  const s = town(),
+    t = TERRACES[0],
+    edge = terraceBoundaryY(t, 250);
+  movePartyToZone(s, "exile", { x: 250, y: edge - t.height - 10 });
+  for (let i = 0; i < 30; i++) stepSandbox(s, { x: 0, y: 1 }, 0.05);
+  assert.ok(s.player.y < edge - t.height);
+});
+test("La troupe emprunte un escalier pour gagner la ville haute", () => {
+  const s = town(),
+    t = TERRACES[0],
+    edge = terraceBoundaryY(t, 720);
+  movePartyToZone(s, "exile", { x: 720, y: edge + 20 });
+  for (let i = 0; i < 60; i++) stepSandbox(s, { x: 0, y: -1 }, 0.05);
+  for (let i = 0; i < 80; i++) stepSandbox(s, { x: 0, y: 0 }, 0.05);
+  for (const p of s.team) {
+    assert.ok(p.y < edge - t.height, p.name);
+    assert.ok(canWalkExile(p.x, p.y));
+  }
+});
+test("Les îlots gardent des murs mitoyens mais varient alignements et largeurs", () => {
+  assert.ok(new Set(BUILDINGS.map((p) => p.y)).size > 12);
+  assert.ok(new Set(BUILDINGS.map((p) => p.w)).size > 10);
+  const shops = BUILDINGS.filter((p) => p.service);
+  assert.ok(new Set(shops.map((p) => p.y)).size > 6);
+});
+
+test("Les habitants gardent une approche libre entre façades, escaliers et remparts", () => {
+  for (const p of Object.values(SERVICES)) {
+    assert.ok(canWalkExile(p.x, p.y), p.id);
+    assert.ok(canWalkExile(p.x, p.y + 16), `${p.id} : approche`);
   }
 });

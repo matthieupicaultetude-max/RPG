@@ -15,7 +15,7 @@ export function drawSunShadows(ctx, environment, state) {
     for (const prop of environment.props) {
       if (
         ![
-          "exile-gate","exile-crane","exile-house","exile-lamp","exile-fountain","exile-stall","tree",
+          "exile-city-gate","exile-rampart-tower","exile-rampart","exile-gate","exile-crane","exile-house","exile-lamp","exile-fountain","exile-stall","tree",
           "house","workshop",
           "petshop",
           "market",

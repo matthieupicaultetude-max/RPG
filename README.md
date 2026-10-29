@@ -558,7 +558,7 @@ Après le tutoriel, ouvrez **Monde → Comptoir → Embarquer pour le Comptoir**
 
 La ville s’étend sur **1 440 × 1 240 pixels**, avec caméra mobile, 43 bâtiments et dix nouveaux assets architecturaux réutilisables, quartiers marchands à l’ouest et artisans à l’est, ruelles courtes et quais à arcades, jardins, place de la fontaine, port et marché. Approchez les habitants puis utilisez **F**, ou cliquez/touchez-les. Forge, animalerie, bricolage, scierie et fontaine sont utilisables. Maëla et Oriel vendent du matériel de voyage ; Silo rachète les ressources ordinaires et rares ; l’auberge restaure la troupe contre 5 or.
 
-La porte du port, les escaliers, les grues de chargement, les étals et quatre navires donnent une identité maritime au Comptoir.
+Des remparts crénelés, dix tours d’angle et deux portes entourent la ville. Les îlots sont décalés, les façades ont des largeurs variées et deux terrasses se franchissent par des escaliers. La porte du port, les grues de chargement, les étals et quatre navires donnent une identité maritime au Comptoir.
 
 Le bouton **Plan du Comptoir** montre les quartiers et bonnes adresses. L’onglet **Pays des Slimes** conserve la carte illustrée de référence. Votre position dans la ville est sauvegardée. Les outils dev proposent des accès directs au port, à la place, aux artisans et aux jardins.
 

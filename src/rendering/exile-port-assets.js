@@ -182,3 +182,114 @@ export function drawWorkshopDetails(g, p) {
     }
   }
 }
+
+// Terraces and ramparts use the same stone palette as the harbor gate.
+export function drawTerraceGround(g, map) {
+  g.save();
+  g.beginPath();
+  map.URBAN_GROUND.forEach(([x, y], i) =>
+    i ? g.lineTo(x, y) : g.moveTo(x, y),
+  );
+  g.closePath();
+  g.clip();
+  for (const t of map.TERRACES) {
+    g.beginPath();
+    g.moveTo(0, 0);
+    g.lineTo(map.MAP_SIZE.width, 0);
+    g.lineTo(map.MAP_SIZE.width, t.points.at(-1)[1] - t.height);
+    for (const [x, y] of [...t.points].reverse()) g.lineTo(x, y - t.height);
+    g.lineTo(0, t.points[0][1] - t.height);
+    g.closePath();
+    g.fillStyle = "rgba(255,239,197,.085)";
+    g.fill();
+  }
+  g.restore();
+  for (const t of map.TERRACES) {
+    g.save();
+    g.beginPath();
+    t.points.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y)));
+    for (const [x, y] of [...t.points].reverse()) g.lineTo(x, y - t.height);
+    g.closePath();
+    g.fillStyle = "#a49e86";
+    g.fill();
+    g.clip();
+    for (
+      let y = Math.min(...t.points.map((p) => p[1])) - t.height;
+      y < Math.max(...t.points.map((p) => p[1]));
+      y += 6
+    )
+      for (let x = 90; x < 1350; x += 14) {
+        box(g, x + (Math.round(y / 6) % 2) * 7, y, 12, 5, "#c6b99a");
+        box(g, x + (Math.round(y / 6) % 2) * 7, y, 12, 1, "#ddcfac");
+      }
+    g.restore();
+    g.strokeStyle = "#eee0bd";
+    g.lineWidth = 3;
+    g.beginPath();
+    t.points.forEach(([x, y], i) =>
+      i ? g.lineTo(x, y - t.height) : g.moveTo(x, y - t.height),
+    );
+    g.stroke();
+    g.strokeStyle = "#776f5b55";
+    g.lineWidth = 2;
+    g.beginPath();
+    t.points.forEach(([x, y], i) =>
+      i ? g.lineTo(x, y + 2) : g.moveTo(x, y + 2),
+    );
+    g.stroke();
+  }
+}
+export function rampartPieces(map) {
+  return map.RAMPARTS.flatMap((line, wall) =>
+    line.slice(1).map((b, i) => {
+      const a = line[i];
+      return {
+        id: `courtine-${wall}-${i}`,
+        kind: "exile-rampart",
+        x: (a[0] + b[0]) / 2,
+        y: Math.max(a[1], b[1]),
+        bounds: {
+          left: Math.min(a[0], b[0]) - 12,
+          right: Math.max(a[0], b[0]) + 12,
+          top: Math.min(a[1], b[1]) - 48,
+          bottom: Math.max(a[1], b[1]) + 5,
+        },
+        draw(g) {
+          drawRampart(g, a, b);
+        },
+      };
+    }),
+  );
+}
+function drawRampart(g, a, b) {
+  const minX = Math.min(a[0], b[0]) - 7,
+    maxX = Math.max(a[0], b[0]) + 7,
+    minY = Math.min(a[1], b[1]) - 39,
+    maxY = Math.max(a[1], b[1]);
+  g.save();
+  g.beginPath();
+  g.moveTo(a[0] - 6, a[1]);
+  g.lineTo(b[0] + 6, b[1]);
+  g.lineTo(b[0] + 6, b[1] - 38);
+  g.lineTo(a[0] - 6, a[1] - 38);
+  g.closePath();
+  g.fillStyle = "#b8ad91";
+  g.fill();
+  g.clip();
+  for (let y = Math.floor(minY / 8) * 8; y <= maxY; y += 8)
+    for (let x = Math.floor(minX / 16) * 16; x <= maxX; x += 16) {
+      box(g, x + (y % 16 ? 0 : 8), y, 14, 7, "#cbbb9a");
+      box(g, x + (y % 16 ? 0 : 8), y, 14, 1, "#e4d4af");
+    }
+  g.restore();
+  line(g, a[0], a[1] - 38, b[0], b[1] - 38, "#eadbb8", 5);
+  line(g, a[0], a[1] + 1, b[0], b[1] + 1, "#756e5755", 2);
+  const n = Math.max(1, Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / 17));
+  for (let i = 0; i <= n; i++) {
+    const t = i / n,
+      x = a[0] + (b[0] - a[0]) * t,
+      y = a[1] + (b[1] - a[1]) * t;
+    box(g, x - 4, y - 46, 8, 10, "#c8b797");
+    box(g, x - 4, y - 47, 8, 2, "#f0dfb8");
+  }
+}

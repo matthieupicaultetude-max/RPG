@@ -50,3 +50,11 @@ La référence portuaire guide désormais la direction artistique : tuiles chaud
 ### Aperçu du Comptoir intégré
 
 ![Rendu du Comptoir : marchands à l’ouest, artisans à l’est, porte et quais au sud](comptoir-port.png)
+
+### Remparts et relief
+
+Les remparts suivent les bords du littoral et se raccordent aux quais. Dix tours, la porte du Refuge au sud et une porte au nord structurent l’enceinte. Les courtines et les tours bloquent le passage, tandis que les portes et les accès aux trois pontons restent praticables.
+
+Le port, la terrasse intermédiaire et la ville haute forment trois paliers. Les deux fronts de terrasse suivent des contours irréguliers et se franchissent par dix escaliers, en plus des deux volées préexistantes. Les faces de soutènement sont infranchissables hors des escaliers ; les alliés utilisent la même navigation. Les différences de niveau sont de 18 puis 20 pixels, soit 38 pixels entre le port et la ville haute.
+
+Les vingt fronts bâtis ont désormais des retraits, des largeurs de lots et des alignements propres. Les rues sont retracées entre eux. Les habitants se tiennent sur un espace d’approche libre devant leurs commerces et les promeneurs démarrent uniquement sur un point de rue praticable.
