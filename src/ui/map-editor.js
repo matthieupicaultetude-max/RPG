@@ -1,5 +1,6 @@
 import {
   captureMap,
+  finishMapTraces,
   defaultMap,
   previewMap,
   applyMap,
@@ -70,6 +71,14 @@ export function openMapEditor(game, onClose = () => {}) {
   function change(fn) {
     const before = snapshot();
     fn();
+    remember(before);
+    rebuild();
+  }
+  function finishTraces() {
+    const before = snapshot();
+    doc = finishMapTraces(doc);
+    if (before === snapshot()) return;
+    if (!selectedValue()) selected = null;
     remember(before);
     rebuild();
   }
@@ -358,6 +367,7 @@ export function openMapEditor(game, onClose = () => {}) {
   canvas.addEventListener("pointercancel", endDrag);
   $("[data-elements]").addEventListener("change", (e) => {
     const [type, ...id] = e.target.value.split(":");
+    finishTraces();
     mode = "select";
     select(type, id.join(":"));
   });
@@ -397,6 +407,7 @@ export function openMapEditor(game, onClose = () => {}) {
     const b = e.target.closest("button");
     if (!b) return;
     if (b.dataset.mode) {
+      finishTraces();
       mode = b.dataset.mode;
       if (mode === "road" || mode === "sidewalk") selected = null;
       sync();
@@ -409,14 +420,10 @@ export function openMapEditor(game, onClose = () => {}) {
       if (action === "close") return close();
       if (action === "fit") return fit();
       if (action === "finish") {
-        if (item?.points?.length < 2) {
-          change(() => {
-            doc[selected.type] = doc[selected.type].filter((q) => q !== item);
-            selected = null;
-          });
-        }
+        finishTraces();
         mode = "select";
         sync();
+        draw();
         return;
       }
       if (action === "undo" || action === "redo") {
@@ -479,6 +486,7 @@ export function openMapEditor(game, onClose = () => {}) {
           selected = null;
         });
       if (action === "save") {
+        finishTraces();
         const previous = captureMap();
         applyMap(doc);
         try {
@@ -501,6 +509,7 @@ export function openMapEditor(game, onClose = () => {}) {
         );
       }
       if (action === "export") {
+        finishTraces();
         previewMap(doc);
         const blob = new Blob([JSON.stringify(doc, null, 2)], {
             type: "application/json",

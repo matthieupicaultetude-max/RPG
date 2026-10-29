@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   captureMap,
+  finishMapTraces,
   defaultMap,
   previewMap,
   applyMap,
@@ -77,4 +78,28 @@ test("Déplacer un commerce déplace son entrée, son PNJ et sa collision", () =
   assert.equal(map.ENTRANCES.find((q) => q.id === p.id).y, p.y + 10);
   assert.equal(map.SOLIDS.find((q) => q.id === p.id).y, p.y);
   applyMap(defaultMap);
+});
+
+test("Les tracés provisoires ne bloquent pas la sauvegarde et les tracés terminés sont conservés", () => {
+  const doc = copy(defaultMap);
+  doc.roads.push({ id: "unfinished-road", width: 22, points: [[720, 200]] });
+  doc.sidewalks.push({ id: "unfinished-sidewalk", width: 12, points: [] });
+  doc.roads.push({
+    id: "finished-road",
+    width: 22,
+    points: [
+      [720, 200],
+      [720, 240],
+    ],
+  });
+  const ready = finishMapTraces(doc);
+  assert.equal(ready.roads.length, defaultMap.roads.length + 1);
+  assert.equal(ready.sidewalks.length, defaultMap.sidewalks.length);
+  assert.equal(doc.roads.length, defaultMap.roads.length + 2);
+  assert.doesNotThrow(() => validateDocument(ready));
+  applyMap(ready);
+  assert.ok(map.ROADS.some((r) => r.id === "finished-road"));
+  applyMap(defaultMap);
+  ready.roads[0].width = 90;
+  assert.throws(() => validateDocument(finishMapTraces(ready)), /Route/);
 });

@@ -37,6 +37,15 @@ export function captureMap() {
   };
 }
 export const defaultMap = captureMap();
+// A first click is a provisional anchor, not a usable road. Never persist it.
+export function finishMapTraces(doc) {
+  const completed = copy(doc);
+  for (const type of ["roads", "sidewalks"])
+    completed[type] = completed[type].filter(
+      (r) => !Array.isArray(r.points) || r.points.length >= 2,
+    );
+  return completed;
+}
 export function validateDocument(doc) {
   if (
     doc?.schema !== 1 ||
