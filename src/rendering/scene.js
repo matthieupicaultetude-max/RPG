@@ -123,7 +123,7 @@ export function createRenderer(canvas) {
             s.player.y + 4 > prop.bounds.top &&
             s.player.y - 29 < prop.bounds.bottom
           )
-            ctx.globalAlpha = 0.55;
+            ctx.globalAlpha = ["exile-rampart","exile-city-gate","exile-rampart-tower","exile-gate","exile-house","windmill","house","workshop","petshop","market","sawmill"].includes(prop.kind) ? 0.8 : 0.55;
           prop.draw(ctx,felled);
           if(prop.kind==="windmill")drawWindmillRotor(ctx,prop,s.time);
           ctx.restore();
@@ -231,7 +231,7 @@ export function createRenderer(canvas) {
     drawMonsterAttackEffects(ctx,s);
     drawVolcanoProjectiles(ctx,s);
     drawSpellOverlays(ctx,s);
-    if (s.aim.active && !s.woodcutting.action && !s.monsters.some(monster=>monster.hp>0&&monster.bonusTarget?.time>0&&Math.hypot(s.aim.x-bonusTargetPosition(monster).x,s.aim.y-bonusTargetPosition(monster).y)<=BONUS_TARGET_RADIUS)) {
+    if (s.deployed && s.aim.active && !s.woodcutting.action && !s.monsters.some(monster=>monster.hp>0&&monster.bonusTarget?.time>0&&Math.hypot(s.aim.x-bonusTargetPosition(monster).x,s.aim.y-bonusTargetPosition(monster).y)<=BONUS_TARGET_RADIUS)) {
       const primary=spellById(s.team[s.main].loadout[0]);
       const guide = primary?.role==='support'?{target:null}:guidedTarget(s, s.aim, canStand);
       const target = guide.target;
