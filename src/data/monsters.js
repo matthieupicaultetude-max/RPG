@@ -273,6 +273,18 @@ export const MONSTERS = Object.freeze(
       chromaticChance: 0.1,
     },
     {
+      id:'cinder-slime', category:'slime', element:'fire', elements:['fire','air'], furnaceSlime:true,
+      name:'Slime de tison', family:'Gelée · Feu / Air', habitat:'Fournaise des Vents Rouges',
+      description:'Il annonce une course Feu qui dépose des braises temporaires, puis prépare un cône de souffle Air. Le souffle déplace les braises sans les multiplier et éteint les braseros pendant 10 secondes. À sa mort, une explosion annoncée peut être déportée une fois par un courant actif : le cercle final reste visible une seconde avant l’impact.',
+      hp:120,damage:11,attackDelay:1.2,speed:32,patrolSpeed:12,detection:180,respawn:18,xp:32,gold:12,rareChance:.2,chromaticChance:.1,
+    },
+    {
+      id:'siroccolimon',category:'slime',element:'fire',elements:['fire','air'],furnaceSlime:true,furnaceBoss:true,boss:true,
+      name:'Siroccolimon, le Brasier des Tempêtes',family:'Boss · Feu / Air',habitat:'Fournaise des Vents Rouges',
+      description:'Réveillez-le avec F. Il allume trois braseros puis effectue deux charges Feu avant un grand souffle Air. Placez un brasero entre lui et le héros principal pour que le souffle l’éteigne. Le cône suit la cible brièvement, puis se verrouille une seconde avant le départ. Les braseros restent éteints entre les cycles. Quand les trois sont éteints, son cœur est exposé 8 secondes (+50 % dégâts) puis ils se rallument. Il reste attaquable tout le temps. Sous 40 % de vie, ses charges vont plus vite avec les mêmes avertissements. Aucun butin matériel pour le moment.',
+      hp:500,damage:13,attackDelay:1.2,speed:0,patrolSpeed:0,detection:240,respawn:18,xp:180,gold:115,rareChance:0,chromaticChance:0,
+    },
+    {
       id: "foam-slime", category: "slime", element: "water", elements: ["air", "water"], stormSlime: true,
       name: "Slime d’écume", family: "Gelée · Air / Eau", habitat: "Donjon de l’Œil des Tempêtes",
       description: "L’eau et les fleurs éponges le font grossir jusqu’à trois tailles. Il bondit sur le héros isolé, se gonfle en aspirant la troupe, explose en Air puis ricoche deux fois. Esquivez les cercles : un gros impact raté sur une dalle sèche détache un petit slime et l’expose. Une seule aspiration à la fois. Les piliers bloquent le souffle.",
@@ -353,6 +365,8 @@ export function createMonster(id, x, y, level = 1) {
     species: definition.id,
     name: definition.name,
     ...stats,
+    ...(definition.furnaceSlime ? {furnaceSlime:true} : {}),
+    ...(definition.furnaceBoss ? {furnaceBoss:true} : {}),
     ...(definition.stormSlime ? {stormSlime:true, growth:1, baseMaxHp:stats.maxHp} : {}),
     ...(definition.stormBoss ? {stormBoss:true} : {}),
     ...(definition.windSlime ? { windSlime: true } : {}),

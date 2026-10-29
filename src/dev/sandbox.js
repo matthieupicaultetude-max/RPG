@@ -1,3 +1,5 @@
+import {stepFurnaceMonster,stepFurnaceHazards,onFurnaceDeath,awakenFurnaceBoss,finishFurnaceBoss} from '../game/furnace.js';
+import {FURNACE_SPAWN} from '../world/furnace-map.js';
 import {stepStormMonster,stepStormEnvironment,awakenStormBoss,finishStormBoss} from '../game/storm.js';
 import {STORM_SPAWN} from '../world/storm-map.js';
 import {slimeResource,monsterElements} from '../data/slime-loot.js';
@@ -70,7 +72,7 @@ export function note(s, message) {
 }
 export function teleport(s, station) {
   if(s.zone === "tutorial") {note(s,"Terminez ou passez le tutoriel pour rejoindre le village.");return;}
-  if(['slime-storm','slime-wind','slime-volcano','slime-fire','slime-marsh','slime-depths','slime-mountains'].includes(s.zone))travelToZone(s,'garden');
+  if(['slime-furnace','slime-storm','slime-wind','slime-volcano','slime-fire','slime-marsh','slime-depths','slime-mountains'].includes(s.zone))travelToZone(s,'garden');
   const point = STATIONS[station];
   if (!point) return;
   cancelWoodcutting(s);
@@ -228,7 +230,7 @@ function hitMonster(s, monster, damage, member, options={}) {
   const canStand=(x,y)=>canWalkZone(x,y,s.zone);
   if(monster.emergence||monster.hp<=0||!Number.isFinite(damage)||damage<=0)return;
   if(monster.boss){
-    if(monster.bossPhase==='dormant'&&(member.id!==s.main||!(monster.stormBoss?awakenStormBoss(s,monster):monster.volcanoBoss?awakenVolcanoBoss(s,monster):awakenDepthsBoss(s,monster))))return;
+    if(monster.bossPhase==='dormant'&&(member.id!==s.main||!(monster.furnaceBoss?awakenFurnaceBoss(s,monster):monster.stormBoss?awakenStormBoss(s,monster):monster.volcanoBoss?awakenVolcanoBoss(s,monster):awakenDepthsBoss(s,monster))))return;
     if(monster.bossPhase==='split')return;
     if(isVolcanoInvulnerable(monster)){
       if((monster.nextShieldMessage||0)<=s.time){monster.nextShieldMessage=s.time+.6;s.effects.push({x:monster.x,y:monster.y-78,text:'Invulnérable',color:'#f7cf96',life:.75});s.revision++;}
@@ -254,8 +256,9 @@ function hitMonster(s, monster, damage, member, options={}) {
   else if(monster.hp===0)delete monster.bonusTarget;
   s.revision++;
   if (monster.hp === 0) {
+    onFurnaceDeath(s,monster);
     onFireSlimeDeath(s,monster);
-    if(monster.boss){if(monster.stormBoss)finishStormBoss(s,monster);else if(monster.volcanoBoss)finishVolcanoBoss(s,monster);else finishDepthsBoss(s,monster);}
+    if(monster.boss){if(monster.furnaceBoss)finishFurnaceBoss(s,monster);else if(monster.stormBoss)finishStormBoss(s,monster);else if(monster.volcanoBoss)finishVolcanoBoss(s,monster);else finishDepthsBoss(s,monster);}
     monster.respawn = monster.respawnDelay;
     rewardMonster(s,monster);
   }
@@ -330,12 +333,13 @@ export function stepSandbox(s, direction, dt, elapsed = dt) {
     if (monster.hp <= 0) {
       delete monster.intent;monster.lift=0;
       s.monsterTornadoes=s.monsterTornadoes.filter(a=>a.owner!==index);
-      if(monster.stormSlime||monster.volcanoSummon||monster.magmaSlime||monster.splitSpawn||monster.depthsSlime||monster.boss)return;
+      if(monster.furnaceSlime||monster.stormSlime||monster.volcanoSummon||monster.magmaSlime||monster.splitSpawn||monster.depthsSlime||monster.boss)return;
       monster.respawn -= dt;
       if (monster.respawn <= 0) { resetMarshSlime(monster);resetMountainSlime(monster);resetFireSlime(monster,s.zone);monster.hp = monster.maxHp; delete monster.bonusTarget;delete monster.lastReceivedDamage;monster.bonusTargetCooldown=0; monster.x = monster.homeX; monster.y = monster.homeY;monster.cooldown=.6;s.revision++; }
       return;
     }
     if(stepFireEmergence(monster,dt))return;
+    if(monster.furnaceSlime){stepFurnaceMonster(s,monster,dt,enemyContext);return;}
     if(monster.stormSlime){stepStormMonster(s,monster,dt,enemyContext);return;}
     if(monster.volcanoBoss){stepVolcanoBoss(s,monster,dt,enemyContext);return;}
     if(monster.boss){stepDepthsBoss(s,monster,dt,enemyContext);return;}
@@ -351,14 +355,15 @@ export function stepSandbox(s, direction, dt, elapsed = dt) {
     }else walk(monster,monster.homeX+Math.sin(s.time*.5+monster.homeX)*20,monster.homeY+Math.cos(s.time*.4)*15,monster.patrolSpeed,dt,canStand);
   });
   for(const monster of s.monsters)leaveFireTrail(s,monster,canStand);
+  stepFurnaceHazards(s,dt,enemyContext);
   stepFireHazards(s,dt,enemyContext);
   stepMagmaHazards(s,dt,enemyContext);
   stepDepthsSlimes(s);
   stepMonsterHazards(s,dt,enemyContext);
   if(defeated&&s.team.every(m=>m.hp<=0)){
     clearMonsterAttacks(s);setCombatMode(s,true);
-    if(s.zone==='tutorial'){Object.assign(s.player,{x:230,y:250});s.team.forEach(m=>Object.assign(m,s.player));placeAllies(s,canStand);}else if(s.zone==='slime-storm')movePartyToZone(s,'slime-storm',STORM_SPAWN);else if(s.zone==='slime-wind')movePartyToZone(s,'slime-wind',WIND_SPAWN);else if(s.zone==='slime-volcano')movePartyToZone(s,'slime-volcano',VOLCANO_SPAWN);else if(s.zone==='slime-fire')movePartyToZone(s,'slime-fire',FIRE_SPAWN);else if(s.zone==='slime-mountains')movePartyToZone(s,'slime-mountains',MOUNTAIN_SPAWN);else if(s.zone==='slime-depths')movePartyToZone(s,'slime-depths',DEPTHS_SPAWN);else if(s.zone==='slime-marsh')movePartyToZone(s,'slime-marsh',{x:MARSH_ENTRY.x+30,y:MARSH_ENTRY.y});else teleport(s,'maison');
-    heal(s);if(s.deployed)placeAllies(s,canStand);note(s,s.zone==='tutorial'?'Iris vous remet sur pied. Réessayez !':s.zone==='slime-storm'?'Défaite : retour à l’entrée de l’Œil des Tempêtes, sans nouvelle clé.':s.zone==='slime-wind'?'Défaite : retour au passage des Alizés.':s.zone==='slime-volcano'?'Défaite : retour à l’entrée du volcan, sans nouvelle clé.':s.zone==='slime-fire'?'Défaite : retour au passage des Champs de Braise.':s.zone==='slime-mountains'?'Défaite : retour au col des montagnes.':s.zone==='slime-depths'?'Défaite : retour sur la berge des profondeurs.':s.zone==='slime-marsh'?'Défaite : retour à l’entrée des marais.':'Défaite : retour à la maison (règle de test).');
+    if(s.zone==='tutorial'){Object.assign(s.player,{x:230,y:250});s.team.forEach(m=>Object.assign(m,s.player));placeAllies(s,canStand);}else if(s.zone==='slime-furnace')movePartyToZone(s,'slime-furnace',FURNACE_SPAWN);else if(s.zone==='slime-storm')movePartyToZone(s,'slime-storm',STORM_SPAWN);else if(s.zone==='slime-wind')movePartyToZone(s,'slime-wind',WIND_SPAWN);else if(s.zone==='slime-volcano')movePartyToZone(s,'slime-volcano',VOLCANO_SPAWN);else if(s.zone==='slime-fire')movePartyToZone(s,'slime-fire',FIRE_SPAWN);else if(s.zone==='slime-mountains')movePartyToZone(s,'slime-mountains',MOUNTAIN_SPAWN);else if(s.zone==='slime-depths')movePartyToZone(s,'slime-depths',DEPTHS_SPAWN);else if(s.zone==='slime-marsh')movePartyToZone(s,'slime-marsh',{x:MARSH_ENTRY.x+30,y:MARSH_ENTRY.y});else teleport(s,'maison');
+    heal(s);if(s.deployed)placeAllies(s,canStand);note(s,s.zone==='tutorial'?'Iris vous remet sur pied. Réessayez !':s.zone==='slime-furnace'?'Défaite : retour à l’entrée de la Fournaise, sans nouvelle clé.':s.zone==='slime-storm'?'Défaite : retour à l’entrée de l’Œil des Tempêtes, sans nouvelle clé.':s.zone==='slime-wind'?'Défaite : retour au passage des Alizés.':s.zone==='slime-volcano'?'Défaite : retour à l’entrée du volcan, sans nouvelle clé.':s.zone==='slime-fire'?'Défaite : retour au passage des Champs de Braise.':s.zone==='slime-mountains'?'Défaite : retour au col des montagnes.':s.zone==='slime-depths'?'Défaite : retour sur la berge des profondeurs.':s.zone==='slime-marsh'?'Défaite : retour à l’entrée des marais.':'Défaite : retour à la maison (règle de test).');
   }
   if(s.player.moving&&s.time>=(s.nextFootstep||0)){s.nextFootstep=s.time+.32;emitSound(s,"step",s.player,{owner:s.main});}
   s.bots.forEach(bot => {

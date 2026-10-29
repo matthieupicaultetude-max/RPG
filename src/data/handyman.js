@@ -55,7 +55,12 @@ export const STORM_KEY_RECIPE = Object.freeze({
   {name:monsterDefinition('slime').rare,type:'rare',chromatic:false,quantity:1},
  ].map(Object.freeze)),
 });
+export const FURNACE_DUNGEON='slime-furnace';
+export const FURNACE_KEY_RECIPE=Object.freeze({id:'furnace-key',name:'Clé de la Fournaise des Vents Rouges',level:1,xp:25,
+ ingredients:Object.freeze([{...woodItem('chestnut','plank'),quantity:5},{name:monsterDefinition('fire-slime').rare,type:'rare',chromatic:false,quantity:1},{name:monsterDefinition('wind-slime').rare,type:'rare',chromatic:false,quantity:1}].map(Object.freeze)),
+});
 export const KEY_RECIPES = Object.freeze({
+ [FURNACE_DUNGEON]:FURNACE_KEY_RECIPE,
   [STORM_DUNGEON]: STORM_KEY_RECIPE,
   [CREVASSE_DUNGEON]: KEY_RECIPE,
   [VOLCANO_DUNGEON]: VOLCANO_KEY_RECIPE,

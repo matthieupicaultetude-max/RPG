@@ -45,6 +45,7 @@ export const MONSTER_ATTACKS = Object.freeze({
   },
 });
 export const monsterAttack = (monster) => {
+ if(monster.furnaceSlime||['cinder-slime','siroccolimon'].includes(monster.species))return {kind:'furnace-cycle',name:'Course ardente et souffle attiseur',element:'fire',windup:1.05,radius:14,range:200,multiplier:1.3,recovery:monster.furnaceBoss||monster.species==='siroccolimon'?1.8:3};
  if(monster.stormSlime||['foam-slime','nimbulimon'].includes(monster.species))return {kind:'storm-cycle',name:'Marée, aspiration et ricochets',element:'water',windup:1.6,radius:monster.boss?41:30,range:200,multiplier:1.4,recovery:3.2};
  if(monster.windSlime||monster.species==='wind-slime')return {kind:'wind-cycle',name:'Aspiration et ricochets',element:'air',windup:1.8,radius:43,range:160,multiplier:1.25,recovery:3.2};
  if(monster.volcanoBoss||monster.species==='volcano-slime')return {kind:'eruption',name:'Éruption de slimes',element:'earth',windup:1.5,radius:21,range:250,multiplier:1.3,recovery:5.5};

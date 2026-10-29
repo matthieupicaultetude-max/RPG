@@ -1,3 +1,4 @@
+import {clearFurnaceHazards} from '../game/furnace.js';
 import {startWindCycle,stepWindSlime} from '../game/wind-slimes.js';
 import {clearMagmaHazards} from '../game/volcano.js';
 import {clearFireHazards} from '../game/fire-slimes.js';
@@ -29,6 +30,7 @@ export function isolatedPartyMember(members, monster) {
   )[0];
 }
 export function clearMonsterAttacks(state) {
+  clearFurnaceHazards(state);
   clearFireHazards(state);
   clearMagmaHazards(state);
   for (const monster of state.monsters) {
