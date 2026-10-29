@@ -1,3 +1,4 @@
+import {nearService} from '../world/services.js';
 import {putInBag,takeOne} from './item-stacks.js';
 import { syncEquipmentHealth, SET_SLOTS, ELEMENTS } from "../data/equipment.js";
 import {
@@ -8,15 +9,13 @@ import {
   petLevelXp,
   petStats,
 } from "../data/pets.js";
-import { PET_SHOP } from "../world/map.js";
 
 const tell = (s, text) => {
   s.log.unshift(text);
   s.log.length = Math.min(s.log.length, 6);
   s.revision++;
 };
-export const nearPetShop = (s) =>
-  (s.zone||"garden")==="garden" && Math.hypot(s.player.x - PET_SHOP.npc.x, s.player.y - PET_SHOP.npc.y) < 52;
+export const nearPetShop = s => nearService(s,'petshop',52);
 export function recordSetLoot(s, item) {
   if (!item.setId || !SET_SLOTS.includes(item.slot)) return;
   const slots = (s.collections[item.setId] ||= []);

@@ -1,3 +1,5 @@
+import {travelToZone} from './zone-travel.js';
+import {canWalkExile} from '../world/exile-map.js';
 import { beginTutorial, startTutorialFight } from './tutorial.js';
 import { movePartyToZone } from '../world/zones.js';
 import { syncEquipmentHealth } from '../data/equipment.js';
@@ -23,6 +25,7 @@ export function progressSnapshot(state) {
       collections: state.collections, petQuests: state.petQuests,
       woodcutting: pick(state.woodcutting, ['level', 'xp']),
       handyman: pick(state.handyman, ['level', 'xp']),
+      ...(state.zone==='exile'?{location:{zone:'exile',x:state.player.x,y:state.player.y}}:{}),
       ...(state.devChest?{devChest:state.devChest}:{}),
       tutorial: state.tutorial ? pick(state.tutorial, TUTORIAL_FIELDS) : null,
     },
@@ -38,6 +41,7 @@ export function decodeSave(raw) {
       !integer(p.main) || p.main > 2 || typeof p.deployed !== 'boolean' ||
       !Array.isArray(p.bag) || !integer(p.gold) || !integer(p.nextItem, 1) ||
       !object(p.collections) || !object(p.petQuests)) throw new Error('invalid-progress');
+  if(p.location!==undefined&&(!object(p.location)||p.location.zone!=='exile'||!Number.isFinite(p.location.x)||!Number.isFinite(p.location.y)))throw new Error('invalid-location');
   const items = [...p.bag];
   for (const m of p.team) {
     if (!object(m) || !integer(m.level, 1) || !integer(m.xp) ||
@@ -96,6 +100,7 @@ export function restoreProgress(state, save) {
   } else {
     state.tutorial = t;
     movePartyToZone(state, 'garden', { x: 110, y: 155 });
+    if(p.location?.zone==='exile'&&travelToZone(state,'exile')&&canWalkExile(p.location.x,p.location.y))movePartyToZone(state,'exile',{x:p.location.x,y:p.location.y});
   }
   state.revision++;
 }

@@ -1,3 +1,4 @@
+import {nearService} from '../world/services.js';
 import { TUTORIAL_SAWMILL } from '../world/tutorial-map.js';
 import { emitSound } from "../audio/events.js";
 import { stepHarvestTarget } from './harvest-targets.js';
@@ -8,7 +9,7 @@ import {
   woodcuttingLevelXp,
   cuttingDuration,
 } from "../data/woodcutting.js";
-import { PROPS, SAWMILL } from "../world/map.js";
+import { PROPS } from "../world/map.js";
 import { findPath } from "../ai/companions.js";
 import { distance, lineClear } from "../combat/attacks.js";
 import { playerSpeed } from "./config.js";
@@ -25,7 +26,7 @@ export const createTrees = (props=PROPS) =>
     wood: prop.wood,
     respawn: 0,
   }));
-export const nearSawmill = (s) => !["slime-marsh","slime-depths","slime-mountains"].includes(s.zone) && distance(s.player, s.zone === "tutorial" ? TUTORIAL_SAWMILL : SAWMILL) < 48;
+export const nearSawmill = s => s.zone==='tutorial'?distance(s.player,TUTORIAL_SAWMILL)<48:nearService(s,'sawmill',48);
 export function grantWoodcuttingXp(s, amount) {
   if (!Number.isFinite(amount) || amount <= 0) return false;
   const job = s.woodcutting;

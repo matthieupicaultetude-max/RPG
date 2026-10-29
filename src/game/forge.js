@@ -1,3 +1,4 @@
+import {nearService} from '../world/services.js';
 import {putInBag,takeOne} from './item-stacks.js';
 import {HYBRID_SLIMES} from '../data/hybrid-slimes.js';
 import {
@@ -19,11 +20,8 @@ import {
   chromaticRecipe,
   chromaticVersion,
 } from "../data/chromatic.js";
-import { FORGE } from "../world/map.js";
 
-export const nearForge = (state) =>
-  (state.zone||"garden")==="garden" &&
-  Math.hypot(state.player.x - FORGE.npc.x, state.player.y - FORGE.npc.y) < 48;
+export const nearForge = state => nearService(state,'forge',48);
 export function forgeItems(state) {
   return [
     ...state.bag,

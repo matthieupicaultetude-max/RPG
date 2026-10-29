@@ -8,14 +8,14 @@ export function drawSunShadows(ctx, environment, state) {
   let cached = caches.get(environment);
   if (!cached || cached.key !== key) {
     const mask = document.createElement("canvas");
-    mask.width = 640;
-    mask.height = 400;
+    mask.width = environment.ground.width;
+    mask.height = environment.ground.height;
     const g = mask.getContext("2d");
     g.imageSmoothingEnabled = false;
     for (const prop of environment.props) {
       if (
         ![
-          "tree",
+          "exile-house","exile-lamp","exile-fountain","exile-stall","tree",
           "house","workshop",
           "petshop",
           "market",
@@ -39,7 +39,7 @@ export function drawSunShadows(ctx, environment, state) {
     }
     g.globalCompositeOperation = "source-in";
     g.fillStyle = "#343952";
-    g.fillRect(0, 0, 640, 400);
+    g.fillRect(0, 0, mask.width, mask.height);
     cached = { key, mask };
     caches.set(environment, cached);
   }
@@ -52,7 +52,10 @@ export function drawSunShadows(ctx, environment, state) {
   ctx.clip();
   ctx.globalAlpha = 0.23;
   ctx.filter = "blur(1px)";
-  ctx.drawImage(cached.mask, 0, 0);
+  if(state.zone==='exile'){
+    const transform=ctx.getTransform(),x=Math.max(0,Math.floor(-transform.e)-16),y=Math.max(0,Math.floor(-transform.f)-16),w=Math.min(672,cached.mask.width-x),h=Math.min(432,cached.mask.height-y);
+    ctx.drawImage(cached.mask,x,y,w,h,x,y,w,h);
+  }else ctx.drawImage(cached.mask, 0, 0);
   ctx.filter = "none";
   ctx.globalAlpha = 0.18;
   ctx.fillStyle = "#343952";

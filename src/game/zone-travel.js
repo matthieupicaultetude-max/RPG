@@ -1,3 +1,5 @@
+import {createExileWorld} from './exile.js';
+import {EXILE_SPAWN,EXILE_RETURN} from '../world/exile-map.js';
 import {createFurnaceWorld,resetFurnaceBoss} from './furnace.js';
 import {FURNACE_ENTRY,FURNACE_SPAWN,FIRE_FURNACE_GATE} from '../world/furnace-map.js';
 import {createStormWorld,resetStormBoss} from './storm.js';
@@ -39,6 +41,7 @@ import { emitSound } from "../audio/events.js";
 export const GARDEN_MOUNTAIN_GATE = { x: 565, y: 100 };
 export const GARDEN_MARSH_GATE = { x: 390, y: 355 };
 const ZONES = [
+  "exile",
   "slime-furnace",
   "slime-storm",
   "slime-wind",
@@ -55,6 +58,9 @@ export function nearZoneGate(state) {
     state.zone === "garden"
       ? [
           {
+            x:310,y:365,destination:"exile",label:"Embarquer pour le Comptoir de l’Exil",
+          },
+          {
             ...GARDEN_MARSH_GATE,
             destination: "slime-marsh",
             label: "Entrer dans les Marais de Gelée",
@@ -65,7 +71,7 @@ export function nearZoneGate(state) {
             label: "Gravir les Cimes de Schiste",
           },
         ]
-      : state.zone === "slime-marsh"
+      : state.zone === "exile" ? [{...EXILE_RETURN,destination:"garden",label:"Retour au Jardin des essais · Traversée gratuite"}] : state.zone === "slime-marsh"
         ? [
             {
               ...MARSH_ENTRY,
@@ -188,7 +194,7 @@ export function travelToZone(
   if (destination === "slime-depths" && world?.monsters.every((m) => m.hp <= 0))
     world = null;
   world ||=
-    destination === "slime-furnace" ? createFurnaceWorld() : destination === "slime-storm" ? createStormWorld() : destination === "slime-wind"
+    destination === "exile" ? createExileWorld() : destination === "slime-furnace" ? createFurnaceWorld() : destination === "slime-storm" ? createStormWorld() : destination === "slime-wind"
       ? createWindWorld()
       : destination === "slime-volcano"
         ? createVolcanoWorld()
@@ -205,7 +211,7 @@ export function travelToZone(
   delete state.zoneDive;
   Object.assign(state, world);
   const point =
-    destination === "slime-furnace" ? FURNACE_SPAWN : destination === "slime-storm" ? STORM_SPAWN : destination === "slime-wind"
+    destination === "exile" ? EXILE_SPAWN : destination === "slime-furnace" ? FURNACE_SPAWN : destination === "slime-storm" ? STORM_SPAWN : destination === "slime-wind"
       ? origin === "slime-storm" ? {x:WIND_STORM_GATE.x-22,y:WIND_STORM_GATE.y} : WIND_SPAWN
       : destination === "slime-volcano"
         ? VOLCANO_SPAWN
@@ -269,7 +275,7 @@ export function travelToZone(
     state.visitedMountains = true;
   }
   state.log.unshift(
-    destination === "slime-furnace" ? "Fournaise des Vents Rouges : le vent déplace les braises et éteint les braseros. Guidez le souffle de Siroccolimon !" : destination === "slime-storm" ? "Œil des Tempêtes : bassins, aspirations et ricochets Air / Eau. Guidez le dernier bond sur une dalle sèche !" : destination === "slime-wind"
+    destination === "exile" ? "Bienvenue au Comptoir de l’Exil, refuge fondé par le Roi Slime. Avenue au nord : place, commerces et ateliers." : destination === "slime-furnace" ? "Fournaise des Vents Rouges : le vent déplace les braises et éteint les braseros. Guidez le souffle de Siroccolimon !" : destination === "slime-storm" ? "Œil des Tempêtes : bassins, aspirations et ricochets Air / Eau. Guidez le dernier bond sur une dalle sèche !" : destination === "slime-wind"
       ? "Hauts des Alizés : sortez de l’aspiration, puis esquivez les deux ricochets !"
       : destination === "slime-volcano"
         ? "Donjon du Volcan : carapaces explosives, magma persistant et éruptions de slimes !"

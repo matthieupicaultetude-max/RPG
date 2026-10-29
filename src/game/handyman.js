@@ -1,3 +1,4 @@
+import {nearService} from '../world/services.js';
 import {
   KEY_RECIPES,
   CREVASSE_DUNGEON,
@@ -6,19 +7,13 @@ import {
   dungeonKeyCount,
   isDungeonKey,
 } from "../data/handyman.js";
-import { HANDYMAN_WORKSHOP } from "../world/map.js";
 import { emitSound } from "../audio/events.js";
 const tell = (s, text) => {
   s.log.unshift(text);
   s.log.length = Math.min(s.log.length, 6);
   s.revision++;
 };
-export const nearHandyman = (s) =>
-  (s.zone || "garden") === "garden" &&
-  Math.hypot(
-    s.player.x - HANDYMAN_WORKSHOP.npc.x,
-    s.player.y - HANDYMAN_WORKSHOP.npc.y,
-  ) < 44;
+export const nearHandyman = s => nearService(s,'handyman',44);
 const matches = (item, ingredient) =>
   !item.slot &&
   !item.chromatic &&

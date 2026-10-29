@@ -862,3 +862,19 @@ canvas.paper-avatar { position:relative; inset:auto; object-fit:contain; flex-sh
   .bestiary-monster-header { gap: 14px; }.bestiary-monster-header > svg { width: 95px; height: 85px; }.bestiary-monster-header h2 { font-size: 21px; }
   .bestiary-breadcrumbs { font-size: 11px; gap: 5px; }.bestiary-breadcrumbs button { font-size: 11px; padding: 7px 9px; }
 }
+
+/* The town plan and shops use the same compact dialog on desktop and touch. */
+.town-map-button { position:absolute;right:20px;bottom:126px;padding:10px 14px;background:#1b3029eb;border:1px solid #a8ac77;color:#e8ddb1;border-radius:8px;cursor:pointer; }
+.exile-panel h2 {margin:4px 0 18px;}
+.exile-plan-layout {display:grid;grid-template-columns:minmax(0,1.35fr) minmax(220px,1fr);gap:24px;align-items:start;}
+.exile-plan {display:block;width:100%;max-height:65vh;border:1px solid #7d957d;border-radius:12px;background:#376e7b;}
+.exile-addresses {padding-left:20px;display:grid;gap:12px;line-height:1.5;}
+.exile-addresses strong {display:block;color:#dfd1a2;}
+.exile-country-map {display:block;width:100%;height:auto;border-radius:10px;}
+.exile-shop-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+.exile-shop-grid article {display:flex;align-items:center;gap:10px;padding:12px;background:#263a31;border:1px solid #52664c;border-radius:8px;}
+.exile-shop-grid article>svg {width:45px;height:45px;flex-shrink:0;}
+.exile-shop-grid article>div {flex:1;min-width:0;}
+.exile-shop-grid small {display:block;margin-top:5px;color:#aab993;}
+.exile-shop-grid button {white-space:nowrap;}
+@media(max-width:700px){.exile-plan-layout,.exile-shop-grid{grid-template-columns:1fr}.town-map-button{top:90px;bottom:auto;right:10px;padding:8px;font-size:11px}.exile-panel .section-tabs{flex-wrap:wrap}.exile-panel h2{font-size:23px}}

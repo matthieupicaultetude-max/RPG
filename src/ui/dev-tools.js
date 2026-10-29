@@ -69,6 +69,10 @@ export function renderDevTools(s, source = "slime") {
     ["combat", "Combat"],
   ])}</section><section class="tool-group"><h3>Zones</h3>${buttons(
     [
+      ["exile-travel", "Comptoir · Port"],
+      ["exile-plaza", "Comptoir · Place"],
+      ["exile-artisans", "Comptoir · Artisans"],
+      ["exile-gardens", "Comptoir · Jardins"],
       ["marsh-teleport", "Marais"],
       ["mountains-teleport", "Montagnes"],
       ["fire-teleport", "Braises"],

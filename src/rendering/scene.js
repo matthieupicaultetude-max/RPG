@@ -1,3 +1,5 @@
+import {createExileEnvironment,drawExileLife} from './exile.js';
+import {worldSize} from '../world/dimensions.js';
 import {drawDevChest} from './dev-chest.js';
 import {DEV_CHEST} from '../world/dev-chest.js';
 import * as furnaceMap from '../world/furnace-map.js';
@@ -45,7 +47,7 @@ export function createRenderer(canvas) {
   const village = createEnvironment();
   const lighting = createGoldenHour(frame.width,frame.height);
   const rain=createMarshRain();
-  let tutorial, marsh, depths, mountains, fire, volcano, wind, storm, furnace;
+  let tutorial, marsh, depths, mountains, fire, volcano, wind, storm, furnace, exile;
   function label(text, x, y) {
     ctx.font = "8px monospace";
     ctx.textAlign = "center";
@@ -58,7 +60,7 @@ export function createRenderer(canvas) {
   function person(p, time, main = false, bot = false, animation = null) {
     const x = Math.round(p.x),
       y = Math.round(p.y);
-    drawAdventurer(ctx, p, time, animation);
+    if(p.slimeResident)drawCreature(ctx,{...p,hp:1,species:'slime',homeX:p.x},time);else drawAdventurer(ctx, p, time, animation);
     if (main) {
       ctx.strokeStyle = "#f0d49b";
       ctx.lineWidth = 1;
@@ -77,9 +79,14 @@ export function createRenderer(canvas) {
     label(bot ? `${p.name} · BOT` : p.name, x, y + 16);
   }
   const render = (s) => {
-    const environment = s.zone === "slime-furnace" ? (furnace ||= createEnvironment(furnaceMap)) : s.zone === "slime-storm" ? (storm ||= createEnvironment(stormMap)) : s.zone === "slime-wind" ? (wind ||= createEnvironment(windMap)) : s.zone === "slime-volcano" ? (volcano ||= createEnvironment(volcanoMap)) : s.zone === "slime-fire" ? (fire ||= createEnvironment(fireMap)) : s.zone === "slime-mountains" ? (mountains ||= createEnvironment(mountainMap)) : s.zone === "slime-depths" ? (depths ||= createEnvironment(depthsMap)) : s.zone === "tutorial" ? (tutorial ||= createEnvironment(tutorialMap)) : s.zone==='slime-marsh'?(marsh ||= createEnvironment(marshMap)):village;
+    const environment = s.zone === "exile" ? (exile ||= createExileEnvironment()) : s.zone === "slime-furnace" ? (furnace ||= createEnvironment(furnaceMap)) : s.zone === "slime-storm" ? (storm ||= createEnvironment(stormMap)) : s.zone === "slime-wind" ? (wind ||= createEnvironment(windMap)) : s.zone === "slime-volcano" ? (volcano ||= createEnvironment(volcanoMap)) : s.zone === "slime-fire" ? (fire ||= createEnvironment(fireMap)) : s.zone === "slime-mountains" ? (mountains ||= createEnvironment(mountainMap)) : s.zone === "slime-depths" ? (depths ||= createEnvironment(depthsMap)) : s.zone === "tutorial" ? (tutorial ||= createEnvironment(tutorialMap)) : s.zone==='slime-marsh'?(marsh ||= createEnvironment(marshMap)):village;
     const canStand = (x,y)=>canWalkZone(x,y,s.zone);
+    const width=Math.round(canvas.clientWidth),height=Math.round(canvas.clientHeight);
+    const camera=viewport(width,height,s.player,worldSize(s.zone));
+    ctx.save();
+    if(s.zone==='exile')ctx.translate(-camera.x,-camera.y);
     ctx.drawImage(environment.ground, 0, 0);
+    drawExileLife(ctx,s);
     if(s.lighting!==false && !["slime-furnace","slime-storm","slime-depths","slime-marsh"].includes(s.zone))drawSunShadows(ctx,environment,s);
     drawZonePassage(ctx,s);
     drawMarshGround(ctx,s);
@@ -101,13 +108,13 @@ export function createRenderer(canvas) {
       ...(s.zone==='garden'?[{y:DEV_CHEST.y,draw:()=>drawDevChest(ctx,s)}]:[]),
       ...(s.zone==='slime-furnace'?furnaceMap.FORGES.map(p=>({y:p.y,draw:()=>drawFurnaceForge(ctx,p,s)})):[]),
       ...(s.zone==='slime-furnace'?(s.furnace?.braziers||furnaceMap.BRAZIERS).map(b=>({y:b.y,draw:()=>drawFurnaceBrazier(ctx,b,s)})):[]),
-      ...environment.props.map((prop) => ({
+      ...environment.props.filter(p=>s.zone!=='exile'||(p.bounds.right>camera.x-100&&p.bounds.left<camera.x+640+100&&p.bounds.bottom>camera.y-50&&p.bounds.top<camera.y+400+50)).map((prop) => ({
         y: prop.y,
         draw: () => {
           ctx.save();
           const felled=prop.kind==="tree"&&s.trees.find(tree=>tree.id===prop.id)?.respawn>0;
           if (
-            ["windmill","tree","house","workshop","petshop","market","sawmill","mushroom","stalagmite","mountain-ridge","mountain-boulder"].includes(prop.kind) && !felled &&
+            ["exile-house","windmill","tree","house","workshop","petshop","market","sawmill","mushroom","stalagmite","mountain-ridge","mountain-boulder"].includes(prop.kind) && !felled &&
             s.player.y < prop.y &&
             s.player.x + 8 > prop.bounds.left &&
             s.player.x - 8 < prop.bounds.right &&
@@ -123,7 +130,7 @@ export function createRenderer(canvas) {
       ...(s.npcs || []).map(npc=>({y:npc.y,draw:()=>person(npc,s.time,false,false)})),
       ...s.bots.map((p) => ({
         y: p.y,
-        draw: () => person(p, s.time, false, true),
+        draw: () => person(p, s.time, false, s.zone!=='exile'),
       })),
       ...s.team
         .filter((p, i) => p.hp > 0 && (i === s.main || s.deployed))
@@ -217,6 +224,7 @@ export function createRenderer(canvas) {
       }
       ctx.restore();
     }
+    drawExileLife(ctx,s,true);
     rain.foreground(ctx,s);
     drawMonsterAttackEffects(ctx,s);
     drawVolcanoProjectiles(ctx,s);
@@ -294,15 +302,14 @@ export function createRenderer(canvas) {
     drawWindAtmosphere(ctx,s);
     drawStormAtmosphere(ctx,s);
     drawFurnaceAtmosphere(ctx,s);
-    const width = Math.round(canvas.clientWidth),
-      height = Math.round(canvas.clientHeight);
+    ctx.restore();
     if (canvas.width !== width || canvas.height !== height) {
       canvas.width = width;
       canvas.height = height;
     }
     screen.imageSmoothingEnabled = false;
     // Fill every viewport without stretching sprites. Follow the player when cropped.
-    const view = viewport(width, height, s.player);
+    const view = s.zone==='exile'?{...camera,x:0,y:0}:camera;
     const litFrame = lighting.draw(frame,s.time,s.lighting!==false&&!["slime-furnace","slime-storm","slime-depths","slime-marsh"].includes(s.zone));
     canvas.dataset.zone=s.zone;
     canvas.dataset.weather=s.zone==="slime-marsh"?"heavy-rain":"clear";

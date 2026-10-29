@@ -13,6 +13,12 @@ export function texturePixel(material, worldX, worldY) {
   const x = mod(worldX, TEXTURE_SIZE),
     y = mod(worldY, TEXTURE_SIZE),
     grain = hash(x, y, 7);
+  if(material==='town-stone'){
+    const row=Math.floor(y/8),offset=(row%2)*4,sx=(x+offset)%8,sy=y%8,h=hash(Math.floor((x+offset)/8)%8,row,32)%4;
+    if(sx===0||sy===0||(sx===1&&sy===1)||(sx===7&&sy===7))return [132,143,131,255];
+    if(sy===1)return [198+h,201+h,175+h,255];
+    return [168+h*3,177+h*2,161+h*2,255];
+  }
   if (material === "water") {
     const row = Math.floor(y / 8),
       start = hash(row, 0, 15) % 64,

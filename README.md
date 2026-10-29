@@ -551,3 +551,13 @@ Le menu du jeu et le bas des panneaux utilisent quatre catégories : **Héros** 
 Les panneaux disposent de rubriques ciblées : statistiques/combat/butins dans le bestiaire ; répartition/combat/panoplies/reset dans les caractéristiques ; améliorer/recycler à la forge ; adoptions/boss chez Nola ; récolter/fabriquer pour le bûcheron ; progression/objets/voyages/journal dans les outils dev. Les règles longues et effets détaillés sont dépliables. Onglets actifs et volets ouverts sont conservés lors des rafraîchissements du panneau ; les flèches gauche/droite, Début et Fin permettent de parcourir les sous-onglets au clavier.
 
 Le sac et le coffre partagent des catégories et sous-catégories : armures, armes, bijoux, boucliers, familiers, trophées, noyaux élémentaires/biélément, fragments, clés, morceaux royaux, certificats, bois et raretés de ressources. Sur téléphone, des sélecteurs remplacent les longues listes de créatures et de zones. **Monde → Guides des zones** rassemble les huit guides, également accessibles depuis leur zone : trois conseils essentiels, accès, puis règles détaillées à la demande. La scierie ouvre directement la fabrication ; la fontaine ouvre le reset.
+
+## Comptoir de l’Exil · Première ville du Pays des Slimes
+
+Après le tutoriel, ouvrez **Monde → Comptoir → Embarquer pour le Comptoir**. Une traversée gratuite est aussi accessible avec F près de `(310,365)` dans le Jardin des essais. Pour revenir, rejoignez l’extrémité du ponton central et appuyez sur F.
+
+La ville s’étend sur **2 240 × 1 760 pixels**, avec caméra mobile, 24 bâtiments, rues pavées, jardins, place de la fontaine, port et marché. Approchez les habitants puis utilisez **F**, ou cliquez/touchez-les. Forge, animalerie, bricolage, scierie et fontaine sont utilisables. Maëla et Oriel vendent du matériel de voyage ; Silo rachète les ressources ordinaires et rares ; l’auberge restaure la troupe contre 5 or.
+
+Le bouton **Plan du Comptoir** montre les quartiers et bonnes adresses. L’onglet **Pays des Slimes** conserve la carte illustrée de référence. Votre position dans la ville est sauvegardée. Les outils dev proposent des accès directs au port, à la place, aux artisans et aux jardins.
+
+Voir le [dossier du pays et sa carte](docs/world/PAYS_DES_SLIMES.md). Les autres régions réelles seront construites ensuite ; les terrains de développement restent disponibles.

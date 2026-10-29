@@ -1,3 +1,5 @@
+import {worldSize} from '../world/dimensions.js';
+import {stepExileResidents} from '../game/exile.js';
 import {putInBag,takeOne} from '../game/item-stacks.js';
 import {HYBRID_SLIMES,hybridForMonster,hybridResource} from '../data/hybrid-slimes.js';
 import {grantBossLoot} from '../game/boss-loot.js';
@@ -75,7 +77,7 @@ export function note(s, message) {
 }
 export function teleport(s, station) {
   if(s.zone === "tutorial") {note(s,"Terminez ou passez le tutoriel pour rejoindre le village.");return;}
-  if(['slime-furnace','slime-storm','slime-wind','slime-volcano','slime-fire','slime-marsh','slime-depths','slime-mountains'].includes(s.zone))travelToZone(s,'garden');
+  if(['exile','slime-furnace','slime-storm','slime-wind','slime-volcano','slime-fire','slime-marsh','slime-depths','slime-mountains'].includes(s.zone))travelToZone(s,'garden');
   const point = STATIONS[station];
   if (!point) return;
   cancelWoodcutting(s);
@@ -291,7 +293,7 @@ export function rewardMonster(s,monster,random=Math.random) {
 }
 export function clickBonus(s,point) {const canStand=(x,y)=>canWalkZone(x,y,s.zone);Object.assign(s.team[s.main],s.player);const hit=clickBonusTarget(s,point,canStand,hitMonster);if(hit)cancelWoodcutting(s);return hit;}
 export const spellContext = {canStand,hitMonster};
-const contextFor=s=>({canStand:(x,y)=>canWalkZone(x,y,s.zone),hitMonster});
+const contextFor=s=>({canStand:Object.assign((x,y)=>canWalkZone(x,y,s.zone),{bounds:worldSize(s.zone)}),hitMonster});
 export function castEquipped(s,slot,point=s.aim.active?s.aim:null,options={}) {
  if(s.zoneDive)return false;
  const member=s.team[s.main];Object.assign(member,s.player);
@@ -375,6 +377,7 @@ export function stepSandbox(s, direction, dt, elapsed = dt) {
     heal(s);if(s.deployed)placeAllies(s,canStand);note(s,s.zone==='tutorial'?'Iris vous remet sur pied. Réessayez !':s.zone==='slime-furnace'?'Défaite : retour à l’entrée de la Fournaise, sans nouvelle clé.':s.zone==='slime-storm'?'Défaite : retour à l’entrée de l’Œil des Tempêtes, sans nouvelle clé.':s.zone==='slime-wind'?'Défaite : retour au passage des Alizés.':s.zone==='slime-volcano'?'Défaite : retour à l’entrée du volcan, sans nouvelle clé.':s.zone==='slime-fire'?'Défaite : retour au passage des Champs de Braise.':s.zone==='slime-mountains'?'Défaite : retour au col des montagnes.':s.zone==='slime-depths'?'Défaite : retour sur la berge des profondeurs.':s.zone==='slime-marsh'?'Défaite : retour à l’entrée des marais.':'Défaite : retour à la maison (règle de test).');
   }
   if(s.player.moving&&s.time>=(s.nextFootstep||0)){s.nextFootstep=s.time+.32;emitSound(s,"step",s.player,{owner:s.main});}
+  if(s.zone==='exile'){stepExileResidents(s,dt);return;}
   s.bots.forEach(bot => {
     if (Math.hypot(bot.x - bot.target.x, bot.y - bot.target.y) < 8) {
       bot.phase += 1.8;

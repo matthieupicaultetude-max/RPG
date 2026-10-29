@@ -20,7 +20,8 @@ function visible(a, b, canStand) {
 }
 
 function safeGoal(goal, canStand) {
-  const point = { x: clamp(goal.x, 18, 622), y: clamp(goal.y, 69, 382) };
+  const bounds=canStand.bounds;
+  const point = bounds ? {x:clamp(goal.x,18,bounds.width-18),y:clamp(goal.y,18,bounds.height-18)} : { x: clamp(goal.x, 18, 622), y: clamp(goal.y, 69, 382) };
   if (canStand(point.x, point.y)) return point;
   for (let radius = 8; radius <= 96; radius += 8) {
     for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 8) {
@@ -33,9 +34,11 @@ function safeGoal(goal, canStand) {
 
 // Small navigation grid only used when the direct route is obstructed.
 export function findPath(start, goal, canStand) {
-  const cols = 62, rows = 33;
-  const cell = p => ({ x: clamp(Math.round((p.x - 14) / 10), 0, cols - 1), y: clamp(Math.round((p.y - 66) / 10), 0, rows - 1) });
-  const point = c => ({ x: 14 + c.x * 10, y: 66 + c.y * 10 });
+  const large=canStand.bounds?.width>640;
+  const originX=large?Math.max(14,Math.floor((Math.min(start.x,goal.x)-100)/10)*10):14,originY=large?Math.max(14,Math.floor((Math.min(start.y,goal.y)-100)/10)*10):66;
+  const cols=large?Math.ceil((Math.min(canStand.bounds.width-14,Math.max(start.x,goal.x)+100)-originX)/10)+1:62,rows=large?Math.ceil((Math.min(canStand.bounds.height-14,Math.max(start.y,goal.y)+100)-originY)/10)+1:33;
+  const cell = p => ({ x: clamp(Math.round((p.x - originX) / 10), 0, cols - 1), y: clamp(Math.round((p.y - originY) / 10), 0, rows - 1) });
+  const point = c => ({ x: originX + c.x * 10, y: originY + c.y * 10 });
   const key = c => c.y * cols + c.x;
   let from = cell(start);
   if (!canStand(point(from).x, point(from).y) || !visible(start, point(from), canStand)) {

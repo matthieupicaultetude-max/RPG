@@ -1,3 +1,4 @@
+import { worldSize } from '../world/dimensions.js';
 import { SCENE, SPAWN, playerSpeed } from './config.js';
 
 export function createState() {
@@ -12,7 +13,8 @@ export function update(state, direction, dt) {
   if (!player.moving) return;
   player.facing = Math.abs(direction.x) > Math.abs(direction.y)
     ? (direction.x > 0 ? 'right' : 'left') : (direction.y > 0 ? 'down' : 'up');
+  const bounds=worldSize(state.zone);
   const speed=playerSpeed(state)*Math.min(1,length);
-  player.x = Math.max(SCENE.margin, Math.min(SCENE.width - SCENE.margin, player.x + direction.x / length * speed * dt));
-  player.y = Math.max(SCENE.margin, Math.min(SCENE.height - SCENE.margin, player.y + direction.y / length * speed * dt));
+  player.x = Math.max(SCENE.margin, Math.min(bounds.width - SCENE.margin, player.x + direction.x / length * speed * dt));
+  player.y = Math.max(SCENE.margin, Math.min(bounds.height - SCENE.margin, player.y + direction.y / length * speed * dt));
 }

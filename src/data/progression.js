@@ -1,5 +1,5 @@
+import {nearService} from '../world/services.js';
 import { syncEquipmentHealth } from "./equipment.js";
-import { FOUNTAIN } from "../world/map.js";
 export const ALLOCATABLE_STATS = [
   "Vitalité",
   "Force",
@@ -56,8 +56,7 @@ export function learnUltimate(state, id) {
   state.revision++;
   return true;
 }
-export const nearFountain = (state) =>
-  (state.zone||"garden")==="garden" && Math.hypot(state.player.x - FOUNTAIN.x, state.player.y - FOUNTAIN.y) < 48;
+export const nearFountain = state => nearService(state,'fountain',48);
 export function allocateCharacteristic(state, stat, quantity) {
   const member = state.team[state.main];
   if (

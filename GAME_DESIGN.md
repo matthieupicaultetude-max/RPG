@@ -788,3 +788,11 @@ Guides de zone centralisés : trois conseils, accès et règles détaillées. M�
 Chaque ouverture revient aux grandes familles triées alphabétiquement : Bêtes, Insectes, Slime. Les cartes montrent un représentant et le nombre d’espèces. Une famille ouvre uniquement ses créatures, triées par nom et séparées en sous-onglets Monstres et Boss. Un fil de navigation permet de revenir à la famille ou au catalogue.
 
 La fiche présente en premier portrait, nom, niveau, zone et butins. Combat et Statistiques sont secondaires ; le curseur de consultation reste dans Statistiques et actualise aussi le niveau affiché dans l’en-tête. Chaque nouvelle créature ouvre ses butins à son niveau de référence. Même parcours sur ordinateur et téléphone ; aucune modification des tables de loot ou de la sauvegarde.
+
+## 58. Pays des Slimes et Comptoir de l’Exil
+
+La [carte de référence et le dossier du pays](docs/world/PAYS_DES_SLIMES.md) fixent désormais la géographie et l’origine : Roi Slime exilé, quatre héritiers bâtisseurs devenus rivaux, vétérans biéléments issus des fusions de guerre, petit Roi doré endormi au centre et réveillé par sa clé. Le Comptoir est son accueil destiné aux aventuriers sur le littoral sud.
+
+Première zone réelle `exile` : 2 240 × 1 760 pixels, 24 bâtiments et quatre quartiers reliés à la place du Refuge et aux quais. Rues et accès de portes explicites, pavés périodiques ancrés dans le monde, décors validés sur terre ferme, sols précalculés et sprites mis en cache. Caméra, pointeur, déplacements, ombres et navigation des alliés prennent en compte les dimensions réelles de la zone, indépendamment de la fenêtre de rendu 640 × 400.
+
+Ville pacifique : 16 promeneurs, 12 habitants dont deux slimes amicaux, fontaine et ambiance animée. Services existants, petites boutiques de voyage, revente de ressources et auberge. Plan local et carte du pays dans Monde → Comptoir. Traversée gratuite depuis le Jardin, retour au port ; positions du Comptoir sauvegardées dans un champ optionnel compatible avec les anciennes progressions. Les raccords aux quatre futures régions restent à construire.
