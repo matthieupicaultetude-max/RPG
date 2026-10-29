@@ -13,7 +13,7 @@ export const ARTISAN_BUILDINGS = catalog.map((p) => ({
     type: "box",
     left: -p.w / 2,
     right: p.w / 2,
-    top: -Math.min(52, p.h * 0.5),
+    top: -p.footprintDepth,
     bottom: 0,
   },
 }));

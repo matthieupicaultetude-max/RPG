@@ -14,6 +14,16 @@ const banks = [
     url: new URL("../assets/exile/artisan-buildings.png", import.meta.url).href,
     frames: atlasFrames[2].frames,
   },
+  {
+    url: new URL("../assets/exile/artisan-buildings-2.png", import.meta.url)
+      .href,
+    frames: atlasFrames[3].frames,
+  },
+  {
+    url: new URL("../assets/exile/artisan-buildings-3.png", import.meta.url)
+      .href,
+    frames: atlasFrames[4].frames,
+  },
 ];
 let version = 0;
 const frames = {};

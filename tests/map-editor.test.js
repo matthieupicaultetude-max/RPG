@@ -136,21 +136,34 @@ test("Les quinze bâtiments d’artisans sont séparés, disponibles en palette 
   assert.equal(ARTISAN_BUILDINGS.length, 15);
   for (const template of ARTISAN_BUILDINGS) {
     assert.ok(palette.some((p) => p.id === template.id));
-    assert.ok(artisanFrames[2].frames[template.asset]);
+    assert.ok(
+      artisanFrames.slice(2).some((bank) => bank.frames[template.asset]),
+    );
     assert.ok(!defaultMap.objects.some((p) => p.id === template.id));
+    const frame = artisanFrames
+      .slice(2)
+      .map((bank) => bank.frames[template.asset])
+      .find(Boolean);
+    assert.ok(
+      frame.h >= 400,
+      "Définition verticale comparable aux maisons existantes",
+    );
+    assert.ok(template.footprintDepth > 0 && template.footprintDepth <= 52);
   }
-  const frames = Object.values(artisanFrames[2].frames);
-  for (let i = 0; i < frames.length; i++)
-    for (let j = i + 1; j < frames.length; j++) {
-      const a = frames[i],
-        b = frames[j];
-      assert.ok(
-        a.x + a.w <= b.x ||
-          b.x + b.w <= a.x ||
-          a.y + a.h <= b.y ||
-          b.y + b.h <= a.y,
-      );
-    }
+  for (const bank of artisanFrames.slice(2)) {
+    const frames = Object.values(bank.frames);
+    for (let i = 0; i < frames.length; i++)
+      for (let j = i + 1; j < frames.length; j++) {
+        const a = frames[i],
+          b = frames[j];
+        assert.ok(
+          a.x + a.w <= b.x ||
+            b.x + b.w <= a.x ||
+            a.y + a.h <= b.y ||
+            b.y + b.h <= a.y,
+        );
+      }
+  }
   const doc = copy(defaultMap);
   doc.objects.push({
     id: "atelier-test",

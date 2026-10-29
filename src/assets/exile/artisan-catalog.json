@@ -3,90 +3,105 @@
     "id": "artisans-main-forge",
     "name": "Forge principale",
     "w": 176,
-    "h": 136
+    "h": 191,
+    "footprintDepth": 52
   },
   {
     "id": "artisans-tool-workshop",
     "name": "Atelier d’outillage",
     "w": 124,
-    "h": 111
+    "h": 201,
+    "footprintDepth": 52
   },
   {
     "id": "artisans-wood-workshop",
     "name": "Atelier de menuiserie",
     "w": 144,
-    "h": 113
+    "h": 158,
+    "footprintDepth": 52
   },
   {
     "id": "artisans-stone-workshop",
     "name": "Atelier de sculpture sur pierre",
     "w": 144,
-    "h": 129
+    "h": 167,
+    "footprintDepth": 52
   },
   {
     "id": "artisans-tannery",
     "name": "Tannerie",
     "w": 152,
-    "h": 115
+    "h": 163,
+    "footprintDepth": 52
   },
   {
     "id": "artisans-materials-warehouse",
     "name": "Entrepôt de matériaux",
     "w": 152,
-    "h": 117
+    "h": 167,
+    "footprintDepth": 52
   },
   {
     "id": "artisans-small-forge",
     "name": "Petite forge",
     "w": 112,
-    "h": 103
+    "h": 173,
+    "footprintDepth": 51.5
   },
   {
     "id": "artisans-small-tool-workshop",
     "name": "Petit atelier d’outils",
     "w": 112,
-    "h": 102
+    "h": 148,
+    "footprintDepth": 51.0
   },
   {
     "id": "artisans-guild-house",
     "name": "Maison des artisans",
     "w": 136,
-    "h": 127
+    "h": 151,
+    "footprintDepth": 52
   },
   {
     "id": "artisans-artisan-home",
     "name": "Maison d’artisan",
     "w": 124,
-    "h": 115
+    "h": 186,
+    "footprintDepth": 52
   },
   {
     "id": "artisans-courtyard-house",
     "name": "Maison avec cour intérieure",
     "w": 160,
-    "h": 132
+    "h": 236,
+    "footprintDepth": 52
   },
   {
     "id": "artisans-blue-workshop",
     "name": "Atelier aux ardoises bleues",
     "w": 112,
-    "h": 115
+    "h": 158,
+    "footprintDepth": 52
   },
   {
     "id": "artisans-artisan-shop",
     "name": "Échoppe d’artisan",
     "w": 120,
-    "h": 100
+    "h": 181,
+    "footprintDepth": 50.0
   },
   {
     "id": "artisans-open-hangar",
     "name": "Hangar ouvert",
     "w": 152,
-    "h": 110
+    "h": 141,
+    "footprintDepth": 52
   },
   {
     "id": "artisans-covered-hall",
     "name": "Halle couverte",
     "w": 168,
-    "h": 117
+    "h": 125,
+    "footprintDepth": 52
   }
 ]

@@ -572,6 +572,7 @@ export function createExileEnvironment(mapOverride = map) {
       const cg = canvas.getContext("2d"),
         anchorX = canvas.width / 2,
         anchorY = canvas.height - 10;
+      cg.imageSmoothingEnabled = false;
       cg.translate(anchorX, anchorY);
       if (p.kind === "exile-house") building(cg, p);
       else if (["exile-gate", "exile-city-gate"].includes(p.kind))
