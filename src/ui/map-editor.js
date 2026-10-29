@@ -94,7 +94,8 @@ export function openMapEditor(game, onClose = () => {}) {
       card.dataset.category =
         template.kind === "exile-house"
           ? "houses"
-          : ["tree", "flowers"].includes(template.kind)
+          : template.collection === "greenery" ||
+              ["tree", "flowers"].includes(template.kind)
             ? "nature"
             : "props";
       card.setAttribute(

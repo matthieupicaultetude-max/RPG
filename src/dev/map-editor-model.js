@@ -1,3 +1,4 @@
+import { GREENERY } from "../data/greenery.js";
 import { BLUE_PROPS } from "../data/blue-props.js";
 import { ARTISAN_BUILDINGS } from "../data/artisan-buildings.js";
 import * as world from "../world/exile-map.js";
@@ -7,7 +8,12 @@ const originalProps = copy(world.PROPS).map((p) =>
     ? { ...p, residenceVariant: Math.floor(p.x + p.y) % 3 }
     : p,
 );
-const catalogProps = [...originalProps, ...ARTISAN_BUILDINGS, ...BLUE_PROPS];
+const catalogProps = [
+  ...originalProps,
+  ...ARTISAN_BUILDINGS,
+  ...BLUE_PROPS,
+  ...GREENERY,
+];
 const templates = new Map(catalogProps.map((p) => [p.id, p]));
 const protectedKinds = new Set([
   "exile-fountain",

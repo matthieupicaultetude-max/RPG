@@ -368,7 +368,7 @@ test("La troupe franchit la porte depuis le port sans traverser les tours", () =
 
 test("Les cadres des bâtiments et de la tour restent dans les atlas", () => {
   const all = atlasFrames.flatMap((bank) => Object.entries(bank.frames));
-  assert.equal(all.length, 38);
+  assert.equal(all.length, 50);
   for (const bank of atlasFrames) {
     const bytes = readFileSync(
       new URL(`../src/assets/exile/${bank.file}`, import.meta.url),

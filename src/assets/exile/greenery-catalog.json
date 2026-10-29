@@ -1,0 +1,126 @@
+[
+  {
+    "id": "greenery-leafy-tree",
+    "name": "Arbre feuillu",
+    "w": 88,
+    "h": 100,
+    "footprint": {
+      "type": "circle",
+      "radius": 9
+    }
+  },
+  {
+    "id": "greenery-birch",
+    "name": "Bouleau",
+    "w": 64,
+    "h": 87,
+    "footprint": {
+      "type": "circle",
+      "radius": 7
+    }
+  },
+  {
+    "id": "greenery-potted-topiary",
+    "name": "Arbuste en pot",
+    "w": 30,
+    "h": 53,
+    "footprint": {
+      "type": "circle",
+      "radius": 7
+    }
+  },
+  {
+    "id": "greenery-cypress",
+    "name": "Cyprès en jardinière",
+    "w": 30,
+    "h": 55,
+    "footprint": {
+      "type": "box",
+      "left": -13,
+      "right": 13,
+      "top": -9,
+      "bottom": 0
+    }
+  },
+  {
+    "id": "greenery-bush",
+    "name": "Buisson feuillu",
+    "w": 32,
+    "h": 21,
+    "footprint": {
+      "type": "circle",
+      "radius": 8
+    }
+  },
+  {
+    "id": "greenery-hedge",
+    "name": "Haie taillée",
+    "w": 64,
+    "h": 27,
+    "footprint": {
+      "type": "box",
+      "left": -30,
+      "right": 30,
+      "top": -10,
+      "bottom": 0
+    }
+  },
+  {
+    "id": "greenery-flowerbed",
+    "name": "Massif de fleurs bleues",
+    "w": 52,
+    "h": 25,
+    "footprint": {
+      "type": "box",
+      "left": -24,
+      "right": 24,
+      "top": -7,
+      "bottom": 0
+    }
+  },
+  {
+    "id": "greenery-rosebush",
+    "name": "Rosier",
+    "w": 36,
+    "h": 32,
+    "footprint": {
+      "type": "circle",
+      "radius": 8
+    }
+  },
+  {
+    "id": "greenery-ivy-trellis",
+    "name": "Treillis de lierre",
+    "w": 40,
+    "h": 42,
+    "footprint": {
+      "type": "box",
+      "left": -18,
+      "right": 18,
+      "top": -6,
+      "bottom": 0
+    }
+  },
+  {
+    "id": "greenery-flowerpot",
+    "name": "Pot de fleurs",
+    "w": 24,
+    "h": 23,
+    "footprint": {
+      "type": "circle",
+      "radius": 6
+    }
+  },
+  {
+    "id": "greenery-fern",
+    "name": "Fougère",
+    "w": 30,
+    "h": 23
+  },
+  {
+    "id": "greenery-grasses",
+    "name": "Herbes fleuries",
+    "w": 28,
+    "h": 16
+  }
+]

@@ -272,3 +272,33 @@ test("Les douze décors bleus ont une miniature indépendante, une collision et 
   );
   applyMap(defaultMap);
 });
+
+test("La verdure se place manuellement : troncs et haies solides, petites plantes traversables", async () => {
+  const { GREENERY } = await import("../src/data/greenery.js");
+  assert.equal(GREENERY.length, 12);
+  for (const p of GREENERY) {
+    assert.ok(palette.some((t) => t.id === p.id));
+    assert.ok(!defaultMap.objects.some((t) => t.template === p.id));
+  }
+  const doc = copy(defaultMap);
+  doc.objects.push(
+    { id: "tree-test", template: "greenery-leafy-tree", x: 720, y: 320 },
+    { id: "fern-test", template: "greenery-fern", x: 760, y: 320 },
+  );
+  applyMap(doc);
+  assert.ok(map.SOLIDS.some((p) => p.id === "tree-test"));
+  assert.ok(!map.SOLIDS.some((p) => p.id === "fern-test"));
+  assert.equal(map.canWalkExile(760, 320), true);
+  const saved = captureMap();
+  applyMap(defaultMap);
+  applyMap(saved);
+  assert.equal(
+    map.PROPS.find((p) => p.id === "tree-test").asset,
+    "greenery-leafy-tree",
+  );
+  const bad = copy(saved);
+  bad.objects.find((p) => p.id === "tree-test").x = 5;
+  assert.throws(() => applyMap(bad), /Placement impossible/);
+  assert.equal(map.PROPS.find((p) => p.id === "tree-test").x, 720);
+  applyMap(defaultMap);
+});

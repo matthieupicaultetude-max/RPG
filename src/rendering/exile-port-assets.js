@@ -28,6 +28,10 @@ const banks = [
     url: new URL("../assets/exile/blue-props.png", import.meta.url).href,
     frames: atlasFrames[5].frames,
   },
+  {
+    url: new URL("../assets/exile/greenery.png", import.meta.url).href,
+    frames: atlasFrames[6].frames,
+  },
 ];
 let version = 0;
 const frames = {};

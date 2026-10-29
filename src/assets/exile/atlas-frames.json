@@ -256,5 +256,82 @@
         "h": 296
       }
     }
+  },
+  {
+    "file": "greenery.png",
+    "frames": {
+      "greenery-leafy-tree": {
+        "x": 27,
+        "y": 27,
+        "w": 368,
+        "h": 419
+      },
+      "greenery-birch": {
+        "x": 427,
+        "y": 10,
+        "w": 324,
+        "h": 438
+      },
+      "greenery-potted-topiary": {
+        "x": 816,
+        "y": 44,
+        "w": 227,
+        "h": 401
+      },
+      "greenery-cypress": {
+        "x": 1218,
+        "y": 8,
+        "w": 237,
+        "h": 433
+      },
+      "greenery-bush": {
+        "x": 20,
+        "y": 471,
+        "w": 296,
+        "h": 198
+      },
+      "greenery-hedge": {
+        "x": 349,
+        "y": 507,
+        "w": 398,
+        "h": 168
+      },
+      "greenery-flowerbed": {
+        "x": 770,
+        "y": 488,
+        "w": 420,
+        "h": 202
+      },
+      "greenery-rosebush": {
+        "x": 1224,
+        "y": 452,
+        "w": 287,
+        "h": 253
+      },
+      "greenery-ivy-trellis": {
+        "x": 33,
+        "y": 690,
+        "w": 289,
+        "h": 302
+      },
+      "greenery-flowerpot": {
+        "x": 385,
+        "y": 722,
+        "w": 286,
+        "h": 279
+      },
+      "greenery-fern": {
+        "x": 712,
+        "y": 722,
+        "w": 376,
+        "h": 283
+      },
+      "greenery-grasses": {
+        "x": 1133,
+        "y": 768,
+        "w": 385,
+        "h": 225
+      }
+    }
   }
 ]
