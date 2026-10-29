@@ -1,5 +1,12 @@
 import { ELEMENTS, SET_SLOTS, levelBand } from "./equipment.js";
+import { HYBRID_SLIMES } from "./hybrid-slimes.js";
 export const CORE_FRAGMENT_COST = 10;
+export const coreType = (key) =>
+  HYBRID_SLIMES[key]
+    ? { ...HYBRID_SLIMES[key], element: HYBRID_SLIMES[key].elements[0] }
+    : ELEMENTS[key]
+      ? { ...ELEMENTS[key], element: key }
+      : null;
 export function fragmentForEquipment(item) {
   if (
     !item ||
@@ -8,46 +15,55 @@ export function fragmentForEquipment(item) {
     !ELEMENTS[item.element]
   )
     return null;
-  const band = levelBand(item.requiredLevel || 1),
-    element = item.element;
+  const hybrid = HYBRID_SLIMES[item.setId],
+    band = hybrid ? { min: 10, max: 19 } : levelBand(item.requiredLevel || 1);
   return {
     kind: "core-fragment",
     type: "material",
-    name: `Fragment de noyau de ${ELEMENTS[element].name}`,
-    element,
+    name: `Fragment de noyau de ${hybrid?.name || ELEMENTS[item.element].name}`,
+    element: item.element,
+    ...(hybrid ? { setId: hybrid.id, elements: [...hybrid.elements] } : {}),
     band,
     chromatic: false,
     quantity: 1,
-    color: ELEMENTS[element].color,
+    color: hybrid?.color || ELEMENTS[item.element].color,
   };
 }
-export const matchingFragment = (item, element, min) =>
+export const matchingFragment = (item, key, min) =>
   item.kind === "core-fragment" &&
   !item.chromatic &&
-  item.element === element &&
+  (HYBRID_SLIMES[key]
+    ? item.setId === key
+    : !item.setId && item.element === key) &&
   item.band?.min === min &&
   item.band?.max === min + 9;
-export const fragmentCount = (state, element, min = 1) =>
+export const fragmentCount = (state, key, min = 1) =>
   state.bag
-    .filter((item) => matchingFragment(item, element, min))
-    .reduce((sum, item) => sum + item.quantity, 0);
+    .filter((i) => matchingFragment(i, key, min))
+    .reduce((n, i) => n + i.quantity, 0);
 export function fragmentGroups(state) {
-  const keys = new Set(Object.keys(ELEMENTS).map((element) => `${element}:1`));
-  for (const item of state.bag)
+  const keys = new Set([
+    ...Object.keys(ELEMENTS).map((e) => `${e}:1`),
+    ...Object.keys(HYBRID_SLIMES).map((id) => `${id}:10`),
+  ]);
+  for (const item of state.bag) {
+    const key = item.setId || item.element,
+      min = item.band?.min;
     if (
       item.kind === "core-fragment" &&
-      ELEMENTS[item.element] &&
-      Number.isSafeInteger(item.band?.min) &&
-      item.band.min >= 1 &&
-      item.band.min % 10 === 1
+      coreType(key) &&
+      Number.isSafeInteger(min) &&
+      (HYBRID_SLIMES[key] ? min === 10 : min >= 1 && min % 10 === 1)
     )
-      keys.add(`${item.element}:${item.band.min}`);
-  return [...keys].map((key) => {
-    const [element, min] = key.split(":");
+      keys.add(`${key}:${min}`);
+  }
+  return [...keys].map((k) => {
+    const [element, n] = k.split(":"),
+      min = Number(n);
     return {
       element,
-      band: levelBand(Number(min)),
-      quantity: fragmentCount(state, element, Number(min)),
+      band: { min, max: min + 9 },
+      quantity: fragmentCount(state, element, min),
     };
   });
 }

@@ -232,11 +232,11 @@ test("réinitialisation efface bouclier, invocations et dangers ; une explosion 
   assert.equal(breakVolcanoShield(s, stale), false);
   assert.equal(b.invulnerable, true);
 });
-test("télégraphes et bestiaire expliquent la mécanique sans rétablir le butin du boss", () => {
+test("télégraphes et bestiaire expliquent la mécanique avec les nouveaux butins du boss", () => {
   const html = renderBestiary("volcano-slime", 9);
   assert.ok(html.includes("invulnérable"));
   assert.ok(html.includes("8 secondes"));
   assert.ok(html.includes("120–180 px"));
-  assert.ok(html.includes("Aucun butin"));
+  assert.ok(html.includes("Un morceau de clé royale garanti"));
   assert.ok(!html.includes("garantis"));
 });

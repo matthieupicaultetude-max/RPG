@@ -1,3 +1,4 @@
+import {hybridForMonster,hybridResource,royalPart} from './hybrid-slimes.js';
 import {
   SLIME_RESOURCES,
   monsterElements,
@@ -259,7 +260,7 @@ export const MONSTERS = Object.freeze(
       family: "Boss · Terre / Feu",
       habitat: "Donjon du Volcan",
       description:
-        "Un volcan vivant au cratère incandescent. Réveillez-le avec F. Il invoque seulement des slimes de magma Terre/Feu à distance et devient invulnérable. Attirez une de ses invocations près de lui, puis faites exploser sa carapace sur le boss : sa protection tombe pendant 8 secondes. Les slimes ordinaires ne comptent pas. Si toutes les invocations meurent sans le débloquer, il en réinvoque. Sous 40 % de PV, il projette trois slimes au lieu de deux. Les invocations ne donnent ni XP ni butin. Le butin du boss sera défini plus tard.",
+        "Un volcan vivant au cratère incandescent. Réveillez-le avec F. Il invoque seulement des slimes de magma Terre/Feu à distance et devient invulnérable. Attirez une de ses invocations près de lui, puis faites exploser sa carapace sur le boss : sa protection tombe pendant 8 secondes. Les slimes ordinaires ne comptent pas. Si toutes les invocations meurent sans le débloquer, il en réinvoque. Sous 40 % de PV, il projette trois slimes au lieu de deux. Les invocations ne donnent ni XP ni butin. Il donne un morceau de clé royale et peut donner son familier (5 %).",
       hp: 520,
       damage: 13,
       attackDelay: 1.2,
@@ -281,7 +282,7 @@ export const MONSTERS = Object.freeze(
     {
       id:'siroccolimon',category:'slime',element:'fire',elements:['fire','air'],furnaceSlime:true,furnaceBoss:true,boss:true,
       name:'Siroccolimon, le Brasier des Tempêtes',family:'Boss · Feu / Air',habitat:'Fournaise des Vents Rouges',
-      description:'Réveillez-le avec F. Il allume trois braseros puis effectue deux charges Feu avant un grand souffle Air. Placez un brasero entre lui et le héros principal pour que le souffle l’éteigne. Le cône suit la cible brièvement, puis se verrouille une seconde avant le départ. Les braseros restent éteints entre les cycles. Quand les trois sont éteints, son cœur est exposé 8 secondes (+50 % dégâts) puis ils se rallument. Il reste attaquable tout le temps. Sous 40 % de vie, ses charges vont plus vite avec les mêmes avertissements. Aucun butin matériel pour le moment.',
+      description:'Réveillez-le avec F. Il allume trois braseros puis effectue deux charges Feu avant un grand souffle Air. Placez un brasero entre lui et le héros principal pour que le souffle l’éteigne. Le cône suit la cible brièvement, puis se verrouille une seconde avant le départ. Les braseros restent éteints entre les cycles. Quand les trois sont éteints, son cœur est exposé 8 secondes (+50 % dégâts) puis ils se rallument. Il reste attaquable tout le temps. Sous 40 % de vie, ses charges vont plus vite avec les mêmes avertissements. Morceau de clé royale garanti et familier à 5 %.',
       hp:500,damage:13,attackDelay:1.2,speed:0,patrolSpeed:0,detection:240,respawn:18,xp:180,gold:115,rareChance:0,chromaticChance:0,
     },
     {
@@ -293,7 +294,7 @@ export const MONSTERS = Object.freeze(
     {
       id: "nimbulimon", category: "slime", element: "water", elements: ["air", "water"], stormSlime: true, stormBoss: true, boss: true,
       name: "Nimbulimon, le Cœur de l’Orage", family: "Boss · Air / Eau", habitat: "Donjon de l’Œil des Tempêtes",
-      description: "Réveillez-le avec F. Il absorbe l’eau, bondit sur le héros isolé, aspire puis explose en Air avant deux ricochets. Guidez son dernier impact Eau sur une dalle sèche et esquivez-le : il perd une taille, détache un petit slime et expose son cœur 6 secondes (+50 % de dégâts), contre 2 secondes d’essoufflement ordinaire. Un bassin restaure sa masse. Sous 40 % de vie, les courants changent plus souvent. Aucun butin pour le moment.",
+      description: "Réveillez-le avec F. Il absorbe l’eau, bondit sur le héros isolé, aspire puis explose en Air avant deux ricochets. Guidez son dernier impact Eau sur une dalle sèche et esquivez-le : il perd une taille, détache un petit slime et expose son cœur 6 secondes (+50 % de dégâts), contre 2 secondes d’essoufflement ordinaire. Un bassin restaure sa masse. Sous 40 % de vie, les courants changent plus souvent. Morceau de clé royale garanti et familier à 5 %.",
       hp: 470, damage: 13, attackDelay: 1.2, speed: 0, patrolSpeed: 0, detection: 240, respawn: 18, xp: 175, gold: 110, rareChance: 0, chromaticChance: 0,
     },
     {
@@ -325,8 +326,8 @@ export const MONSTERS = Object.freeze(
         ? monster.boss
           ? { normal: null, rare: null, rareChance: 0, chromaticChance: 0 }
           : {
-              normal: SLIME_RESOURCES[monster.element].normal,
-              rare: SLIME_RESOURCES[monster.element].rare,
+              normal: hybridForMonster(monster)?.normal||SLIME_RESOURCES[monster.element].normal,
+              rare: hybridForMonster(monster)?.rare||SLIME_RESOURCES[monster.element].rare,
             }
         : { category: monster.id === "boar" ? "beast" : "insect" }),
     }),
@@ -405,8 +406,9 @@ export function createMonster(id, x, y, level = 1) {
 export function monsterLoot(id) {
   const m = monsterDefinition(id);
   if (!m) throw new Error(`Monstre inconnu : ${id}`);
-  if (m.boss) return [];
-  const elements = m.category === "slime" ? monsterElements(m) : [m.element];
+  const hybrid=hybridForMonster(m);
+  if (m.boss) return hybrid ? [{...royalPart(hybrid.id),chance:1},{kind:'pet',petId:`pet-${hybrid.id}`,petSpecies:hybrid.monster,hybridId:hybrid.id,name:hybrid.pet,element:hybrid.elements[0],elements:hybrid.elements,color:hybrid.color,chance:.05}] : [];
+  const elements = hybrid ? [hybrid.elements[0]] : m.category === "slime" ? monsterElements(m) : [m.element];
   return elements.flatMap((element) =>
     [
       {
@@ -432,7 +434,7 @@ export function monsterLoot(id) {
     ].map((drop) => ({
       ...drop,
       ...(m.category === "slime"
-        ? slimeResource(element, drop.type, drop.chromatic)
+        ? hybrid ? hybridResource(hybrid.id,drop.type,drop.chromatic) : slimeResource(element, drop.type, drop.chromatic)
         : { name: drop.type === "rare" ? m.rare : m.normal }),
       chance: drop.chance / elements.length,
     })),

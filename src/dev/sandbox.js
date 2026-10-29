@@ -1,3 +1,5 @@
+import {HYBRID_SLIMES,hybridForMonster,hybridResource} from '../data/hybrid-slimes.js';
+import {grantBossLoot} from '../game/boss-loot.js';
 import {stepFurnaceMonster,stepFurnaceHazards,onFurnaceDeath,awakenFurnaceBoss,finishFurnaceBoss} from '../game/furnace.js';
 import {FURNACE_SPAWN} from '../world/furnace-map.js';
 import {stepStormMonster,stepStormEnvironment,awakenStormBoss,finishStormBoss} from '../game/storm.js';
@@ -33,7 +35,7 @@ import { castCompanionSpell } from '../ai/spell-tactics.js';
 import { nearForge } from '../game/forge.js';
 import { recordSetLoot, nearPetShop } from '../game/pet-quests.js';
 import { PET_SHOP, FORGE, HANDYMAN_WORKSHOP } from '../world/map.js';
-import { STARTER_SETS, ELEMENTS, CORE_CHANCE, createCore, rollCoreEquipment, characterStats, syncEquipmentHealth } from '../data/equipment.js';
+import { STARTER_SETS, BOSS_SETS, ELEMENTS, CORE_CHANCE, createCore, createHybridCore, rollCoreEquipment, characterStats, syncEquipmentHealth } from '../data/equipment.js';
 import { createMonster, monsterDefinition } from '../data/monsters.js';
 import { stepAttacks } from '../combat/attacks.js';
 import { stepCompanions, placeAllies, clearRoute } from '../ai/companions.js';
@@ -140,18 +142,19 @@ export function grantLoot(s, type = 'normal', chromatic = false, monster = 'Slim
   if(!definition||definition.boss||!['normal','rare'].includes(type))return false;
   const elements=monsterElements(typeof monster==='object'?monster:definition),chosen=element||definition.element;
   if(!elements.includes(chosen))return false;
-  const resource=definition.category==='slime'?slimeResource(chosen,type,chromatic):{name:type==='rare'?definition.rare:definition.normal,type,chromatic};
+  const hybrid=hybridForMonster(typeof monster==='object'?monster:definition);
+  const resource=hybrid?hybridResource(hybrid.id,type,chromatic):definition.category==='slime'?slimeResource(chosen,type,chromatic):{name:type==='rare'?definition.rare:definition.normal,type,chromatic};
   const existing=s.bag.find(item=>item.name===resource.name&&item.type===type&&item.chromatic===chromatic);
   if(existing)existing.quantity++;
   else s.bag.push({id:s.nextItem++,...resource,quantity:1});
   note(s,`Butin : ${resource.name}${chromatic?' chromatique':''}.`);return true;
 }
 export function grantCore(s,element,level=1) {
-  const core=createCore(element,level);
-  const existing=s.bag.find(item=>item.kind==='core'&&item.element===element&&item.band.min===core.band.min&&!item.chromatic);
+  const core=HYBRID_SLIMES[element]?createHybridCore(element):createCore(element,level);
+  const existing=s.bag.find(item=>item.kind==='core'&&item.element===core.element&&item.setId===core.setId&&item.band.min===core.band.min&&!item.chromatic);
   if(existing)existing.quantity++;
   else {core.id=s.nextItem++;s.bag.push(core);}
-  note(s,`Noyau de ${ELEMENTS[element].name} obtenu · niveaux ${core.band.min}–${core.band.max}.`);
+  note(s,`${core.name} obtenu · niveaux ${core.band.min}–${core.band.max}.`);
   return existing?.id ?? core.id;
 }
 export function openCore(s,id,random=Math.random) {
@@ -194,6 +197,10 @@ export function giveMaximizedSets(s) {
   for (const item of items) recordSetLoot(s, item);
   note(s, `${items.length} pièces chromatiques ajoutées au sac : panoplies Ronce, Braise, Brise et Rosée complètes et maximisées.`);
   return items;
+}
+export function giveBossSets(s){
+ const items=BOSS_SETS.flatMap(set=>set.pieces.map(piece=>({...piece,stats:{...piece.stats},id:s.nextItem++,quantity:1,chromatic:false})));
+ s.bag.push(...items);s.revision++;note(s,'36 pièces de panoplie biélément niveau 10 ajoutées.');return items;
 }
 export function equip(s, id) {
   const index = s.bag.findIndex(item => item.id === id);
@@ -264,7 +271,7 @@ function hitMonster(s, monster, damage, member, options={}) {
   }
 }
 export function rewardMonster(s,monster,random=Math.random) {
-  if(monster.volcanoSummon||monster.stormSpawn)return;
+  if(monster.volcanoSummon||monster.stormSpawn||monster.bossOwner!==undefined)return;
   if(monster.boss){if(monster.rewarded)return;monster.rewarded=true;}
   if(monster.tutorial) {
     if(!s.tutorial || s.tutorial.defeated)return;
@@ -273,12 +280,12 @@ export function rewardMonster(s,monster,random=Math.random) {
   s.gold += monster.gold;
   grantXp(s, monster.xp);
   const definition=monsterDefinition(monster.species);
-  if(definition.boss)return;
+  if(definition.boss){grantBossLoot(s,monster,random);return;}
   const elements=definition.category==='slime'?monsterElements(monster):[definition.element];
   const element=elements.length>1?elements[Math.min(elements.length-1,Math.floor(random()*elements.length))]:elements[0];
   grantLoot(s,random()<definition.rareChance?'rare':'normal',random()<definition.chromaticChance,monster,element);
   if(monster.tutorial)s.tutorial.coreId=grantCore(s,element,monster.level);
-  else if(random()<CORE_CHANCE)grantCore(s,element,monster.level);
+  else if(random()<CORE_CHANCE)grantCore(s,hybridForMonster(monster)?.id||element,monster.level);
 }
 export function clickBonus(s,point) {const canStand=(x,y)=>canWalkZone(x,y,s.zone);Object.assign(s.team[s.main],s.player);const hit=clickBonusTarget(s,point,canStand,hitMonster);if(hit)cancelWoodcutting(s);return hit;}
 export const spellContext = {canStand,hitMonster};

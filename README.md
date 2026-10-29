@@ -326,7 +326,7 @@ Au sud-est de la crevasse sommeille **Gorgelimon**, un boss **niveau 8 Eau / Ter
 - À **70 % puis 35 % de PV**, la carapace se scinde en **deux aspects de taille 2, Eau et Terre**. Le cœur central est protégé. Détruisez tous les aspects et leurs descendants en **12 s** : le boss expose son cœur pendant **5 s**, avec **+50 % de dégâts reçus**. Sinon il absorbe les survivants et récupère **4 % de ses PV maximum par unité de taille survivante**, jusqu’à 16 %.
 - Les aspects peuvent se scinder et fusionner entre eux ; ils ne fusionnent pas avec les slimes ordinaires. La dernière phase accélère les attaques.
 
-La barre de vie indique les seuils, la phase et le temps avant réabsorption. Sa fiche de bestiaire décrit ses attaques. Le boss ne donne pour le moment aucun objet ni noyau ; son XP et son or restent attribués une seule fois. Les réabsorptions ne donnent aucune récompense. Une fuite, une défaite ou un départ de la zone remet le boss vivant au repos avec tous ses PV et supprime ses aspects. Un boss vaincu reste mort pendant l’expédition ; il revient à la prochaine entrée payante dans une nouvelle expédition.
+La barre de vie indique les seuils, la phase et le temps avant réabsorption. Sa fiche de bestiaire décrit ses attaques. Le boss donne son morceau de clé royale et possède un jet indépendant à 5 % pour Limonceau ; XP, or et butins sont attribués une seule fois. Les réabsorptions ne donnent aucune récompense. Une fuite, une défaite ou un départ de la zone remet le boss vivant au repos avec tous ses PV et supprime ses aspects. Un boss vaincu reste mort pendant l’expédition ; il revient à la prochaine entrée payante dans une nouvelle expédition.
 
 ### Météo des marais
 
@@ -407,7 +407,7 @@ Le magma **reste au sol**, même après avoir touché plusieurs personnages : br
 
 Au nord-est, **Pyroclaste, le Slime-Volcan**, boss niveau 9, se réveille avec **F** ou une attaque du héros principal à proximité. Son cratère projette uniquement des **slimes de magma Terre/Feu**, sur des emplacements annoncés et verrouillés **à 120–180 pixels du boss**, avec un chemin de retour praticable. Pyroclaste se protège pendant l’invocation. Attirez une de ses invocations près de lui, puis faites éclater sa carapace : si l’explosion atteint le boss, sa protection tombe pendant **8 secondes**. Les slimes ordinaires ne comptent pas. Si toutes ses invocations meurent sans le débloquer, il recommence après un court délai, une fois les explosions en attente résolues. Sous **40 % de PV**, il invoque trois slimes au lieu de deux. Maximum six invocations vivantes, sans XP, or ou butin.
 
-Les slimes de magma donnent une gelée ou un cœur de Terre ou de Feu, avec variantes chromatiques et possibilité d’un noyau de l’élément tiré. Pyroclaste ne donne pour le moment aucun objet ni noyau ; son XP et son or sont conservés. Les monstres du donjon ne réapparaissent pas durant l’expédition. Le bestiaire et le guide détaillent les règles. Les outils dev proposent l’accès gratuit au volcan, l’approche du boss et les ingrédients de la clé.
+Les slimes de magma donnent leur gelée ou cœur biélément, avec variantes chromatiques et possibilité d’un Noyau de Pyroclaste (25 %). Pyroclaste donne son morceau de clé royale et possède un jet indépendant à 5 % pour Pyrolin ; XP et or sont conservés. Les monstres du donjon ne réapparaissent pas durant l’expédition. Le bestiaire et le guide détaillent les règles. Les outils dev proposent l’accès gratuit au volcan, l’approche du boss et les ingrédients de la clé.
 
 ## Hauts des Alizés · Slimes Vent
 
@@ -440,7 +440,7 @@ Les ressources normale et rare possèdent chacune une variante chromatique. Les 
 
 Pour un slime à deux éléments, un élément est choisi à parts égales pour la victoire : gelée/cœur et éventuel noyau correspondent à cet élément. Cela couvre le magma Terre/Feu et les fusions Eau/Terre des profondeurs. Aucun noyau chromatique.
 
-**Gorgelimon et Pyroclaste n’ont aucun butin pour le moment** : ni ressource ni noyau, y compris dans le générateur de loot dev. Leur XP, leur or et la validation de victoire restent inchangés. Les ingrédients des clés et la nourriture du familier Eau utilisent les nouveaux cœurs ; un cœur du bon élément peut provenir de n’importe quelle zone. Les butins des sangliers et insectes restent inchangés.
+**Les quatre boss donnent leur morceau de clé royale et peuvent donner leur familier (5 %)**, sans noyau ni équipement direct. Leur XP, leur or et la validation de victoire restent inchangés. Les ingrédients des clés et la nourriture du familier Eau utilisent les nouveaux cœurs ; un cœur du bon élément peut provenir de n’importe quelle zone. Les butins des sangliers et insectes restent inchangés.
 
 
 ## Panoplies de slime · Profil guerrier débutant
@@ -485,7 +485,7 @@ Dans **I**, sélectionner une pièce montre le bonus actif, le prochain palier e
 - **Ouverture de 8 secondes** : le boss reçoit alors les dégâts normalement. À la prochaine vague, sa protection revient.
 - **Vague ratée** : si toutes les invocations sont mortes, attendre la résolution de leurs dernières explosions, puis 1,2 seconde avant une nouvelle préparation d’invocation. Une explosion au coup fatal peut donc encore ouvrir le boss.
 
-Les éruptions conservent leurs annonces de 1,5 s et leur vol de 0,8 s. La sortie ou une défaite annule les invocations, les projections et la protection. Les boss ne donnent toujours aucun objet ni noyau ; leur XP et leur or restent inchangés.
+Les éruptions conservent leurs annonces de 1,5 s et leur vol de 0,8 s. La sortie ou une défaite annule les invocations, les projections et la protection. Les boss donnent leur morceau de clé royale et peuvent donner leur familier (5 %), sans noyau direct ; leur XP et leur or restent inchangés.
 
 ### Sauvegarde navigateur
 
@@ -501,7 +501,7 @@ Depuis le plateau est des Hauts des Alizés, le passage à `(575,300)` ouvre une
 
 Quatre salles reliées introduisent les Sources, les Souffles, les Bourrasques puis l’Œil. Six slimes d’écume niveau 6 combinent Air et Eau : croissance en bassin peu profond ou près d’une fleur éponge, bond Eau, gonflement/aspiration, explosion Air et deux ricochets Air puis Eau. Les points sont annoncés et verrouillés. Une seule aspiration à la fois ; les piliers et rebords bloquent la poussée. Les courants sont annoncés 1 seconde, poussent 2 secondes puis s’arrêtent avant de s’inverser. Les impacts ratés sur sol sec détachent un petit slime des grandes formes ; les enfants ne donnent aucun gain.
 
-Nimbulimon niveau 10 se réveille avec F dans la salle est. Il conserve ses PV maximaux pendant les changements de taille. Son dernier ricochet raté sur dalle sèche détache un petit slime et expose son cœur 6 secondes (+50 % dégâts), contre 2 secondes après un cycle ordinaire. Les bassins restaurent sa masse ; sous 40 % de PV, les courants de l’arène deviennent plus fréquents. Il donne XP et or, sans ressources ni noyaux pour l’instant. Les slimes ordinaires donnent les gelées/cœurs Air ou Eau et les noyaux correspondants selon les règles existantes.
+Nimbulimon niveau 10 se réveille avec F dans la salle est. Il conserve ses PV maximaux pendant les changements de taille. Son dernier ricochet raté sur dalle sèche détache un petit slime et expose son cœur 6 secondes (+50 % dégâts), contre 2 secondes après un cycle ordinaire. Les bassins restaurent sa masse ; sous 40 % de PV, les courants de l’arène deviennent plus fréquents. Il donne XP, or et morceau royal, avec 5 % de chance de donner Nimbulin. Les slimes d’écume donnent leurs ressources biélément et peuvent donner un Noyau de Nimbulimon.
 
 La sortie est gratuite ; une défaite réveille la troupe à l’entrée sans nouvelle clé, réinitialise le boss et retire ses enfants. Une nouvelle entrée payante recrée le donjon. Les ennemis ordinaires vaincus ne réapparaissent pas pendant l’expédition. La sauvegarde navigateur conserve les gains et les clés restantes, et replace la troupe au village au rechargement.
 
@@ -511,6 +511,27 @@ Le passage au sud-est des Champs de Braise `(535,325)` demande une **Clé de la 
 
 Quatre salles relient les Forges éteintes, les Souffleries, les Cheminées rouges et le Grand Foyer. Six slimes de tison niveau 6 préparent une charge Feu puis un souffle Air en cône. Les traînées brûlent pendant 4 secondes ; souffle et courants les déplacent sans les multiplier, avec une destination annoncée 0,8 seconde. Une explosion de mort peut être déportée une fois par un courant actif, en recommençant un avertissement complet d’une seconde. Les dégâts de brûlure sont regroupés par personnage, au maximum une touche toutes les 0,6 seconde. Les braseros ordinaires s’éteignent 10 secondes sous un souffle, puis annoncent leur rallumage.
 
-Siroccolimon, niveau 10, se réveille avec F ou une attaque du héros principal. Il allume trois braseros, charge vers le héros puis revient au centre avant son souffle. Le cône vise le principal pendant 0,8 seconde puis se verrouille pendant 1 seconde : placez un brasero entre lui et vous, puis esquivez. Seul son propre souffle éteint ses braseros ; ils restent éteints entre les cycles. Le troisième éteint expose son cœur pendant 8 secondes (+50 % dégâts) avant rallumage. Le boss reste attaquable hors exposition. Sous 40 % de vie, ses charges accélèrent sans raccourcir leurs avertissements. XP et or une seule fois, aucun butin matériel pour le moment. Les slimes ordinaires donnent les ressources et noyaux Feu ou Air standard.
+Siroccolimon, niveau 10, se réveille avec F ou une attaque du héros principal. Il allume trois braseros, charge vers le héros puis revient au centre avant son souffle. Le cône vise le principal pendant 0,8 seconde puis se verrouille pendant 1 seconde : placez un brasero entre lui et vous, puis esquivez. Seul son propre souffle éteint ses braseros ; ils restent éteints entre les cycles. Le troisième éteint expose son cœur pendant 8 secondes (+50 % dégâts) avant rallumage. Le boss reste attaquable hors exposition. Sous 40 % de vie, ses charges accélèrent sans raccourcir leurs avertissements. XP et or une seule fois, morceau royal garanti et Siroccotin à 5 %. Les slimes de tison donnent leurs ressources biélément et peuvent donner un Noyau de Siroccolimon.
 
 Fuite et défaite restaurent le boss et nettoient les dangers. Une nouvelle entrée payante recrée les monstres ; les vaincus ne réapparaissent pas pendant l’expédition. La sauvegarde navigateur conserve les gains et clés restantes, avec retour au village au rechargement.
+
+### Panoplies de boss biélément · Niveau 10
+
+| Panoplie | Éléments | Source du noyau (25 %) | Familier (boss, 5 %) |
+| --- | --- | --- | --- |
+| Gouffre | Eau / Terre | Fusions Eau/Terre des slimes de la Crevasse | Gorgelimon → Limonceau |
+| Pyroclaste | Terre / Feu | Slimes de magma ordinaires | Pyroclaste → Pyrolin |
+| Nimbulimon | Air / Eau | Slimes d’écume | Nimbulimon → Nimbulin |
+| Siroccolimon | Feu / Air | Slimes de tison | Siroccolimon → Siroccotin |
+
+Un noyau dédié s’ouvre partout en une pièce standard aléatoire parmi les neuf emplacements de panoplie, équipable au niveau 10. Il reste standard ; les pièces chromatiques se fabriquent. Les noyaux élémentaires débutants et leurs panoplies restent distincts. Les invocations/aspects de boss et enfants sans récompense ne donnent pas ces noyaux.
+
+Chaque pièce apporte vitalité, deux caractéristiques élémentaires, puissance, sagesse et résistances dans ses éléments. Les bonus progressifs de 2 à 9 pièces comptent normales et chromatiques ensemble. Une panoplie normale complète, bonus compris et sans familier : **162 Vitalité, 66 dans chacune des deux caractéristiques, 15 Puissance, 20 Sagesse et 12 % de résistance dans chacun de ses deux éléments**. Chaque version chromatique conserve les statistiques et ajoute 2 Puissance ; neuf pièces chromatiques donnent donc 33 Puissance au total et une aura de déplacement propre au set.
+
+La forge transforme une pièce avec **1 Bois de noyer brut** (récoltable au niveau 10 bûcheron) et **1 ressource normale chromatique du duo** : gelée de limon abyssal, de magma, d’écume ou de tison. Pas de planche, de ressource normale supplémentaire ou de ressource rare dans cette recette. Les nouvelles ressources biélément ont leurs propres piles et variantes normales/rares/chromatiques (72/8/18/2 %). Les ressources déjà possédées restent conservées. Les dix fragments issus du recyclage d’une même panoplie reconstituent son noyau dédié, sans mélange avec les fragments élémentaires débutants.
+
+Les familiers de boss s’équipent au niveau de personnage 10 et progressent du niveau familier 1 à 20 avec le **cœur rare chromatique du même duo**. Chaque repas donne 10 XP ; leurs deux caractéristiques et leur vitalité augmentent. Ils ne s’obtiennent pas par certificat chez Nola, mais sa présentation les répertorie. Ils ne comptent pas parmi les neuf pièces du bonus de panoplie.
+
+Chaque boss donne **un morceau royal garanti**, indépendamment du jet de familier à 5 %. Un morceau différent de chacun des quatre boss fabrique **une Clé du Roi des slimes** chez Tessa, pour 100 XP bricoleur (recette niveau 1). Les doublons ne remplacent pas un morceau manquant. La clé est conservée pour le futur donjon royal, qui n’est pas encore accessible.
+
+Les outils dev donnent les quatre panoplies, noyaux, matériaux, familiers et morceaux pour tester. Tous ces objets, y compris les familiers nourris et équipements portés, sont compatibles avec la sauvegarde navigateur existante sans effacement.

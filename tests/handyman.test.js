@@ -260,7 +260,7 @@ test("interface : deux métiers, recette et icône de clé, filtre de sac et des
   assert.ok(jobs.includes("Bricoleur"));
   assert.ok(jobs.includes("Bûcheron"));
   assert.ok(jobs.includes("Planche de châtaignier"));
-  assert.ok(bag.includes("Une clé est consommée"));
+  assert.ok(bag.includes("Une clé ouvre une expédition"));
   assert.equal(/undefined|NaN/.test(jobs + bag), false);
   assert.notEqual(
     renderItemIcon(key),

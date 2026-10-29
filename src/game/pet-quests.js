@@ -1,4 +1,4 @@
-import { SET_SLOTS, ELEMENTS } from "../data/equipment.js";
+import { syncEquipmentHealth, SET_SLOTS, ELEMENTS } from "../data/equipment.js";
 import {
   PET_FOOD_XP,
   PET_MAX_LEVEL,
@@ -32,7 +32,7 @@ export function acceptAdoption(s, element) {
     tell(s, "Approchez de Nola à l’animalerie.");
     return false;
   }
-  if (!petDefinition(element) || s.petQuests[element]) return false;
+  if (!ELEMENTS[element] || !petDefinition(element) || s.petQuests[element]) return false;
   s.petQuests[element] = { status: "active" };
   s.bag.push({
     id: s.nextItem++,
@@ -100,7 +100,8 @@ export function feedPet(s, id) {
     pet.level++;
   }
   if (pet.level === PET_MAX_LEVEL) pet.xp = 0;
-  pet.stats = petStats(pet.element, pet.level);
+  pet.stats = petStats(pet.petId, pet.level);
+  const owner=s.team.find(m=>m.equipment.Familier?.id===pet.id);if(owner)syncEquipmentHealth(owner);
   tell(s, `${pet.name} a mangé : +${PET_FOOD_XP} XP · Niveau ${pet.level}.`);
   return true;
 }

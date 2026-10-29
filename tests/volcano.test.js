@@ -371,7 +371,7 @@ test("boss : rage, plafond d’invocations, pas d’XP/loot et population borné
   stepMagmaHazards(s, 0.9, ctx);
   assert.ok(s.monsters.length <= 4);
 });
-test("victoire : aucun butin, fin de run et invocations supprimées", () => {
+test("victoire : morceau royal et familier possible, fin de run et invocations supprimées", () => {
   const s = setup(),
     b = volcanoBoss(s);
   s.monsters = [b];
@@ -391,7 +391,7 @@ test("victoire : aucun butin, fin de run et invocations supprimées", () => {
   assert.equal(b.bossPhase, "dead");
   assert.equal(s.dungeonRun.completed, true);
   assert.ok(s.monsters.every((m) => !m.volcanoSummon));
-  assert.equal(s.bag.length, 0);
+  assert.equal(s.bag.filter(i=>i.kind==='royal-key-part').length, 1);
   const n = s.bag.length;
   spellContext.hitMonster(s, b, 99999, s.team[0]);
   assert.equal(s.bag.length, n);

@@ -210,13 +210,13 @@ test("fuite et changement de zone : réinitialisation du boss et nettoyage des a
   assert.equal(b.bossPhase, "dormant");
   assert.equal(b.x, DEPTHS_BOSS_HOME.x);
 });
-test("mort du boss : aucun butin, XP et or uniques, suppression des invocations et absence de respawn individuel", () => {
+test("mort du boss : morceau royal et familier possible, XP et or uniques, suppression des invocations et absence de respawn individuel", () => {
   const { s, b } = setup();
   awakenDepthsBoss(s);
   spellContext.hitMonster(s, b, b.hp + 1, s.team[0]);
   assert.equal(b.hp, 0);
   assert.equal(b.bossPhase, "dead");
-  assert.equal(s.bag.length,0);
+  assert.equal(s.bag.filter(i=>i.kind==='royal-key-part').length,1);
   const gold = s.gold,
     xp = s.team[0].xp;
   rewardMonster(s, b, () => 0);
@@ -231,7 +231,7 @@ test("bestiaire du boss : statistiques, illustration et récompenses cohérentes
   assert.equal(values.respawnDelay, "Nouvelle expédition");
   assert.ok(Number(values.maxHp) > 700);
   assert.ok(markup.includes("70 %"));
-  assert.ok(coreDropMarkup("gorgelimon", 8).includes("Aucun butin"));
+  assert.ok(coreDropMarkup("gorgelimon", 8).includes("Un morceau de clé royale garanti"));
   assert.equal(/undefined|NaN/.test(markup), false);
 });
 

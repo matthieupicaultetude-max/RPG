@@ -54,7 +54,7 @@ export function drawEquipmentGlints(ctx, person, time) {
     if (!item.chromatic || !POSITIONS[slot]) continue;
     const [x, y] = POSITIONS[slot],
       phase = (time * 0.7 + index++ * 0.19) % 1;
-    ctx.fillStyle = CHROMATIC_COLORS[item.element] || "#ebbbff";
+    ctx.fillStyle = CHROMATIC_COLORS[item.setId] || CHROMATIC_COLORS[item.element] || "#ebbbff";
     ctx.globalAlpha = 0.3 + Math.sin(phase * Math.PI) * 0.65;
     const px = Math.round(person.x + x + (person.facing === "left" ? -2 : 2)),
       py = Math.round(person.y + y - phase * 5);

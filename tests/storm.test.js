@@ -119,7 +119,7 @@ test("storm key: correct distinct recipe, consumes one per party, free exit and 
 test("storm development travel is free and return home works", () => {
   const s = createSandbox();
   assert.equal(travelToZone(s, "slime-storm"), true);
-  assert.equal(s.bag.length, 0);
+  assert.equal(s.bag.length,0);
   teleport(s, "maison");
   assert.equal(s.zone, "garden");
 });
@@ -203,7 +203,7 @@ test("storm scission: dry missed impact spawns an Air/Water child, water instead
   assert.equal(child.growth, 1);
   assert.ok(m.hp + child.hp <= hp);
   rewardMonster(s, child);
-  assert.equal(s.bag.length, 0);
+  assert.equal(s.bag.length,0);
   assert.equal(s.gold, 0);
   assert.equal(s.team[0].xp, 0);
   assert.equal(onStormLanding(s, m, POOLS[0], 0), false);
@@ -273,11 +273,11 @@ test("storm roots interrupt preparation, paused frames cause no impacts and dead
   assert.equal(hits.length, 0);
 });
 
-test("storm bestiary and rewards: standard Air/Water resources, boss without loot and victory recorded once", () => {
+test("storm bestiary and rewards: standard Air/Water resources, boss with royal loot and victory recorded once", () => {
   const drops = monsterLoot("foam-slime");
-  assert.equal(drops.length, 8);
-  assert.deepEqual([...new Set(drops.map((d) => d.element))], ["air", "water"]);
-  assert.deepEqual(monsterLoot("nimbulimon"), []);
+  assert.equal(drops.length, 4);
+  assert.deepEqual(drops[0].elements, ["air", "water"]);
+  assert.deepEqual(monsterLoot("nimbulimon").map(i=>i.chance), [1,.05]);
   assert.ok(
     renderBestiary("nimbulimon", 10).includes("Dernier impact sur dalle sèche"),
   );
@@ -290,11 +290,11 @@ test("storm bestiary and rewards: standard Air/Water resources, boss without loo
   rewardMonster(s, m);
   assert.equal(s.gold, gold);
   assert.ok(gold > 0);
-  assert.deepEqual(s.bag, []);
+  assert.equal(s.bag.filter(i=>i.kind==='royal-key-part').length, 1);
   assert.equal(s.dungeonRun.completed, true);
 });
 
-test("storm full combat pipeline: exposed damage and boss victory without material loot", () => {
+test("storm full combat pipeline: exposed damage and boss victory with royal loot", () => {
   const { s, m } = fixture(true);
   assert.equal(awakenStormBoss(s), true);
   m.vulnerableUntil = s.time + 6;
@@ -305,7 +305,7 @@ test("storm full combat pipeline: exposed damage and boss victory without materi
   spellContext.hitMonster(s, m, 99999, s.team[0]);
   assert.equal(m.bossPhase, "dead");
   assert.equal(s.dungeonRun.completed, true);
-  assert.equal(s.bag.length, 0);
+  assert.equal(s.bag.filter(i=>i.kind==='royal-key-part').length, 1);
   const gold = s.gold;
   spellContext.hitMonster(s, m, 99999, s.team[0]);
   assert.equal(s.gold, gold);

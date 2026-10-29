@@ -1,5 +1,5 @@
 import { ELEMENTS } from "../data/equipment.js";
-import { PETS } from "../data/pets.js";
+import { PETS, BOSS_PETS } from "../data/pets.js";
 import { adoptionProgress, nearPetShop } from "../game/pet-quests.js";
 import { renderItemIcon } from "./item-art.js";
 
@@ -19,5 +19,5 @@ export function renderPetShop(state) {
     },
   ).join(
     "",
-  )}</div><p class="panel-hint">Neuf pièces distinctes obtenues dans les noyaux, sans obligation de les porter ensemble. Une adoption par panoplie dans cette session. Les ressources normales chromatiques sont utilisées à la forge pour améliorer les armures.</p>`;
+  )}</div><h3>Familiers de boss · Niveau 10</h3><div class="adoption-grid">${BOSS_PETS.map(p=>`<article class="adoption-card"><div class="adoption-title">${renderItemIcon({...p,kind:'pet',petSpecies:p.monster,hybridId:p.hybridId})}<div><h3>${p.name}</h3><small>Panoplie biélément · ${p.elements.map(e=>ELEMENTS[e].name).join(' / ')}</small></div></div><p>Butin de son boss à 5 % par victoire. Aucune quête d’adoption.</p><p>Nourriture : ${p.food} chromatique (rare). Deux caractéristiques et vitalité augmentent avec son niveau.</p></article>`).join('')}</div><p class="panel-hint">Neuf pièces distinctes obtenues dans les noyaux, sans obligation de les porter ensemble. Une adoption par panoplie, conservée dans la sauvegarde. Les ressources normales chromatiques sont utilisées à la forge pour améliorer les armures.</p>`;
 }

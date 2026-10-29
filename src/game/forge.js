@@ -1,3 +1,4 @@
+import {HYBRID_SLIMES} from '../data/hybrid-slimes.js';
 import {
   fragmentForEquipment,
   matchingFragment,
@@ -7,6 +8,7 @@ import {
 import {
   ELEMENTS,
   createCore,
+  createHybridCore,
   syncEquipmentHealth,
 } from "../data/equipment.js";
 import { emitSound } from "../audio/events.js";
@@ -111,7 +113,7 @@ export function recycleEquipment(state, id) {
     syncEquipmentHealth(owner);
   }
   const existing = state.bag.find((resource) =>
-    matchingFragment(resource, fragment.element, fragment.band.min),
+    matchingFragment(resource, fragment.setId||fragment.element, fragment.band.min),
   );
   if (existing) existing.quantity++;
   else state.bag.push({ ...fragment, id: state.nextItem++ });
@@ -124,10 +126,10 @@ export function recycleEquipment(state, id) {
 export function exchangeCoreFragments(state, element, min = 1) {
   if (
     !nearForge(state) ||
-    !ELEMENTS[element] ||
+    !(ELEMENTS[element]||HYBRID_SLIMES[element]) ||
     !Number.isSafeInteger(min) ||
     min < 1 ||
-    min % 10 !== 1 ||
+    (HYBRID_SLIMES[element]?min!==10:min%10!==1) ||
     fragmentCount(state, element, min) < CORE_FRAGMENT_COST
   )
     return null;
@@ -145,11 +147,11 @@ export function exchangeCoreFragments(state, element, min = 1) {
     (item) =>
       item.kind === "core" &&
       !item.chromatic &&
-      item.element === element &&
+      (HYBRID_SLIMES[element]?item.setId===element:!item.setId&&item.element===element) &&
       item.band.min === min,
   );
   const core = existing || {
-    ...createCore(element, min),
+    ...(HYBRID_SLIMES[element]?createHybridCore(element):createCore(element, min)),
     id: state.nextItem++,
   };
   if (existing) existing.quantity++;

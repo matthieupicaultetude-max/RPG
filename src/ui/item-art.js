@@ -1,3 +1,4 @@
+import {HYBRID_SLIMES} from '../data/hybrid-slimes.js';
 import {SLIME_RESOURCES,slimeResourceByName} from '../data/slime-loot.js';
 import {AMBER_SLIME} from '../data/rock-shell.js';
 import { CHROMATIC_COLORS } from '../data/chromatic.js';
@@ -317,16 +318,22 @@ function resourceArt(item) {
 }
 function petArt(item,p) {
   const species=item.petSpecies;
+  if(item.hybridId)return path('M3 24c0-7 5-9 7-13 3-7 14-5 15 3l4 9c2 8-27 10-26 1z',HYBRID_SLIMES[item.hybridId]?.color||p.base)+path('M9 18c0-6 10-8 12-3','none',p.light,2)+path('M10 23v2m11-2v2','none','#344f49',2)+path('M10 10V5l6 3 6-3v5z','#e6c67d');
   if(species==='slime')return path('M3 24c0-7 5-9 7-13 3-7 14-5 15 3l4 9c2 8-27 10-26 1z',p.base)+path('M9 18c0-6 10-8 12-3','none',p.light,2)+path('M10 23v2m11-2v2M15 27h3','none','#344f49',2);
   if(species==='boar')return path('m5 13 1-9 7 5h7l6-5 1 9v12l-10 5-12-5z','#9d8056')+path('M10 20h13v7H10z','#cfb18a')+path('M8 15v3m16-3v3m-10 5h2m4 0h2','none','#514b38',2)+path('M7 23v4h4m14-4v4h-4','none','#eee1bb',2)+elementSigil('earth',10,-3,.4,p.gem);
   return path('M12 14 3 4 1 15l10 10m9-11L29 4l2 11-10 10z',p.light)+path('M12 7h8v22h-8z',p.base)+path('M14 4V1m4 3V1M14 13v2m4-2v2','none',p.dark,2)+path('M13 22h6v6h-6z',p.gem);
 }
 export function renderItemIcon(item = {}) {
-  const original = PALETTES[item.element] || PALETTES.neutral;
-  const p = item.chromatic && item.setId ? {...original,base:CHROMATIC_COLORS[item.element],light:'#f1e1ff',gem:'#fff5ce'} : original;
+  const hybrid=HYBRID_SLIMES[item.setId||item.hybridId];
+  const base=PALETTES[item.element] || PALETTES.neutral;
+  const original=hybrid?{...base,base:hybrid.color,gem:PALETTES[hybrid.elements[1]].base}:base;
+  const p = item.chromatic && item.setId ? {...original,base:(CHROMATIC_COLORS[item.setId]||CHROMATIC_COLORS[item.element]),light:'#f1e1ff',gem:'#fff5ce'} : original;
   let art = item.kind==='pet' ? petArt(item,p) : resourceArt(item);
   if(item.kind==='dungeon-key')art=path('m6 3 10-1 6 8-5 7-7-1-6-7z','#72b8bb','#315e76',1)+path('m8 5 6-1 5 6-4 4-5-1-4-5z','#b2e8de')+path('m16 15 3-2 11 12-3 5-3-4-3 2-3-4 3-2z','#d2b779','#725e40',1)+path('m8 7 3-1 3 3-2 3-3-1z','#3d859e')+path('m18 19 6 6','none','#f4dd9c',1);
   if(item.kind==='dungeon-key'&&item.dungeonId==='slime-volcano')art=path('m7 2 12 0 6 9-8 8-9-3-6-8z','#ad593d','#653b3c',1)+path('m11 4 7 2 3 6-6 5-7-6z','#ffc66d')+path('m16 16 4-2 11 12-3 5-4-4-3 2-4-5 3-2z','#b9a68a','#62515a',1)+path('m14 6 4 4-3 4-3-4z','#fff0b7');
+  if(item.kind==='royal-key-part')art=path('m5 6 17-3 5 9-7 7 3 10-12-4-6-11z',hybrid?.color||'#d5ad66','#6c5a50',1)+path('m9 8 9-1 3 5-6 5-7-5z','#edd598')+path('m12 10 5-1 1 3-3 2z','#765e48');
+  if(item.kind==='hybrid-resource')art=item.type==='rare'?path('m16 3 11 8-2 12-9 7-9-7-2-12z',item.chromatic?'#d0a5e4':hybrid.color,p.dark,1)+elementSigil(hybrid.elements[1],9,8,.45,p.gem):path('M4 23c-3-9 4-12 7-16 3-6 13-4 14 3l5 12c1 9-26 11-26 1z',item.chromatic?'#c7a7e7':hybrid.color,p.dark,1)+path('M8 16c0-6 8-9 12-4','none',p.light,2);
+  if(item.kind==='dungeon-key'&&item.dungeonId==='slime-king')art=path('M4 4v10l12 5 12-5V4l-7 5-5-7-5 7z','#d6b26f','#796041',1)+path('m15 17 5-2 9 12-4 4-3-4-3 1-3-5 3-2z','#e4c68b','#796041',1)+Object.values(HYBRID_SLIMES).map((h,i)=>`<rect x="${7+i*5}" y="11" width="3" height="3" fill="${h.color}"/>`).join('');
   if(item.kind==='certificate')art=path('M7 3h21v24H6V8H3V3z','#dfd0a4')+path('M7 3v5H3m4 19h21v-4H9','none','#a08b62')+path('M11 10h12m-12 4h8','none','#9d8a61')+path('m20 17 5 3-1 7-4-2-4 2-1-7z',p.base)+elementSigil(item.element,14,15,.38,p.gem);
   if (item.kind === "core" || item.slot === "Noyau")
     art =
@@ -338,9 +345,10 @@ export function renderItemIcon(item = {}) {
   if(item.kind==='wood')art=path('M5 12 23 4l7 14-18 10z',item.color||'#ac8a56')+path('M3 14c1-8 12-9 14 0 3 13-11 18-14 0z','#dcc18c','#80653e')+path('M7 16c0-6 7-6 7 0s-7 10-7 0z','none','#987345',1);
   if(item.kind==='plank')art=path('m2 12 20-9 8 16-20 10z',item.color||'#bd995b')+path('m5 15 20-9M8 21l20-9M11 27l17-8','none','#e2c78f',1)+path('M10 10l7 16','none','#8e7044',1);
   if (!art) art = equipmentArt(item, p);
+  if(hybrid&&item.kind!=="pet")art+=elementSigil(hybrid.elements[1],20,19,.32,p.gem);
   const sparkle =
     item.chromatic && item.kind !== "core" && item.slot !== "Noyau"
       ? '<path d="m26 1 1 3 4 1-4 1-1 4-1-4-4-1 4-1z" fill="#efcaff" stroke="#8f6da8" stroke-width=".5"/>'
       : "";
-  return `<svg viewBox="0 0 32 32" aria-hidden="true" class="item-art${item.chromatic && item.setId ? " chromatic-art" : ""}" data-art="${item.kind === "core" ? "core" : item.setId || item.slot || "resource"}" stroke-linecap="round">${item.chromatic && item.setId ? `<ellipse cx="16" cy="17" rx="14" ry="13" fill="${CHROMATIC_COLORS[item.element]}" opacity=".22"/>` : ""}${art}${sparkle}</svg>`;
+  return `<svg viewBox="0 0 32 32" aria-hidden="true" class="item-art${item.chromatic && item.setId ? " chromatic-art" : ""}" data-art="${item.kind === "core" ? "core" : item.setId || item.slot || "resource"}" stroke-linecap="round">${item.chromatic && item.setId ? `<ellipse cx="16" cy="17" rx="14" ry="13" fill="${(CHROMATIC_COLORS[item.setId]||CHROMATIC_COLORS[item.element])}" opacity=".22"/>` : ""}${art}${sparkle}</svg>`;
 }

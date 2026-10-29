@@ -1,3 +1,4 @@
+import {HYBRID_SLIMES,royalPart} from './hybrid-slimes.js';
 import { woodItem } from "./woodcutting.js";
 import { monsterDefinition } from "./monsters.js";
 export const CREVASSE_DUNGEON = "slime-depths";
@@ -59,7 +60,10 @@ export const FURNACE_DUNGEON='slime-furnace';
 export const FURNACE_KEY_RECIPE=Object.freeze({id:'furnace-key',name:'Clé de la Fournaise des Vents Rouges',level:1,xp:25,
  ingredients:Object.freeze([{...woodItem('chestnut','plank'),quantity:5},{name:monsterDefinition('fire-slime').rare,type:'rare',chromatic:false,quantity:1},{name:monsterDefinition('wind-slime').rare,type:'rare',chromatic:false,quantity:1}].map(Object.freeze)),
 });
+export const ROYAL_DUNGEON='slime-king';
+export const ROYAL_KEY_RECIPE=Object.freeze({id:'royal-key',name:'Clé du Roi des slimes',level:1,xp:100,ingredients:Object.freeze(Object.keys(HYBRID_SLIMES).map(id=>Object.freeze(royalPart(id))))});
 export const KEY_RECIPES = Object.freeze({
+ [ROYAL_DUNGEON]:ROYAL_KEY_RECIPE,
  [FURNACE_DUNGEON]:FURNACE_KEY_RECIPE,
   [STORM_DUNGEON]: STORM_KEY_RECIPE,
   [CREVASSE_DUNGEON]: KEY_RECIPE,

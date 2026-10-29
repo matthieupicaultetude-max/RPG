@@ -1,3 +1,4 @@
+import {HYBRID_SLIMES,hybridForMonster} from '../data/hybrid-slimes.js';
 import { monsterElements } from "../data/slime-loot.js";
 import { AMBER_SLIME } from "../data/rock-shell.js";
 import { monsterAttack, monsterAttackDamage } from "../data/monster-attacks.js";
@@ -6,6 +7,7 @@ import {
   ELEMENTS,
   CORE_CHANCE,
   createCore,
+  createHybridCore,
   setForCore,
 } from "../data/equipment.js";
 import {
@@ -29,21 +31,16 @@ export function bestiaryValues(id, level) {
     attackDelay: `${number(monsterAttack({ species: id }).recovery)} s`,
     speed: `${s.speed} px/s`,
     detection: `${s.detection} px`,
-    respawnDelay:
-      id.startsWith("depths-") ||
-      id === "gorgelimon" ||
-      id === "magma-slime" ||
-      id === "volcano-slime" || id === "foam-slime" || id === "nimbulimon" || id === "cinder-slime" || id === "siroccolimon"
-        ? "Nouvelle expédition"
-        : `${s.respawnDelay} s`,
+    respawnDelay: (()=>{const m=monsterDefinition(id);return m.boss||m.depthsSlime||m.magmaSlime||m.stormSlime||m.furnaceSlime?'Nouvelle expédition':`${s.respawnDelay} s`;})(),
     xp: `${number(s.xp)} XP`,
     gold: `${number(s.gold)} pièces`,
   };
 }
 export function coreDropMarkup(id, level) {
   const monster = monsterDefinition(id);
-  if (monster.boss)
-    return "<h3>Butin du boss</h3><p>Aucun butin pour le moment : ni ressource, ni équipement, ni noyau.</p>";
+  const hybrid=hybridForMonster(monster);
+  if(monster.boss)return `<h3>Butin du boss</h3><p>Un morceau de clé royale garanti et un jet indépendant à 5 % pour son familier. Aucun noyau ni pièce d’armure directement sur le boss.</p>${monsterLoot(id).map(item=>`<div class="monster-loot">${itemIcon('',false,item.color,item)}<div><strong>${item.name}</strong><small>${item.kind==='pet'?`Familier niveau 10 · Nourriture : ${hybrid.rare} chromatique`:'Un des quatre morceaux différents nécessaires à la clé du Roi des slimes'}</small></div><b>${number(item.chance*100)} %</b></div>`).join('')}`;
+  if(hybrid){const core=createHybridCore(hybrid.id),set=setForCore(core);return `<h3>${core.name} · ${number(CORE_CHANCE*100)} %</h3><div class="monster-loot">${itemIcon('Noyau',false,core.color,core)}<div><strong>${set.name}</strong><small>${hybrid.elements.map(e=>ELEMENTS[e].name).join(' / ')} · Équipable niveau 10</small></div></div><p>Bonus indépendant de la ressource. Ouvrez partout : une pièce normale aléatoire parmi neuf. Doublons possibles. Version chromatique à la forge : pièce + 1 Bois de noyer + 1 ${hybrid.normal} chromatique.</p>`;}
   const elements = monsterElements(monster),
     core = createCore(elements[0], level),
     set = setForCore(core);
@@ -62,7 +59,7 @@ const combatNote = (id) =>
     ? "Aspiration 78 px, explosion Air 43 px, deux bonds de rayon 23 px. Récupération de 3,2 s après le second. Immobilisation pendant gonflement ou pause : cycle interrompu."
     : id === "magma-slime"
       ? "Carapace −40 % : après 25 % des PV maximaux en dégâts reçus, explosion annoncée puis projections de magma persistant."
-      : id === "volcano-slime" || id === "foam-slime" || id === "nimbulimon" || id === "cinder-slime" || id === "siroccolimon"
+      : id === "volcano-slime"
         ? "Invocations Terre/Feu à 120–180 px et invulnérabilité. Une explosion de carapace de sa propre invocation au contact du boss ouvre 8 s de vulnérabilité. Si toutes meurent sans le débloquer, une nouvelle vague arrive. Sous 40 % de PV : trois invocations au lieu de deux. Aucune XP ni loot sur les invocations."
         : id === "fire-slime"
           ? "Braises : 0,35 s d’annonce, 4 s actives, une touche au maximum toutes les 0,6 s. Explosion à la mort : 0,9 s d’annonce, rayon de 36 px. Tous les dégâts sont de type Feu."
@@ -101,9 +98,10 @@ export function renderBestiaryNavigation(selectedId) {
 }
 function resourcePurpose(monster, item) {
   if (!item.chromatic) return "";
-  const pet = petDefinition(item.element || monster.element);
+  const pet = petDefinition(item.hybridId || item.element || monster.element);
   if (item.type === "rare" && pet?.food === item.name)
     return `<small class="resource-purpose">Nourrit ${pet.name}</small>`;
+  if (item.hybridId&&item.type==="normal")return '<small class="resource-purpose">Forge de la panoplie biélément niveau 10</small>';
   if (
     item.type === "normal" &&
     (monster.id === "slime" ||
@@ -115,19 +113,20 @@ function resourcePurpose(monster, item) {
 }
 function lootMarkup(monster, level) {
   if (monster.boss)
-    return `<section class="monster-drops no-boss-loot">${coreDropMarkup(monster.id, level)}</section>`;
+    return `<section class="monster-drops boss-loot">${coreDropMarkup(monster.id, level)}${monster.depthsSlime?"<p>Une fusion Eau/Terre donne les ressources de limon abyssal et peut donner un Noyau de Gouffre (25 %) pour la panoplie biélément niveau 10.</p>":""}</section>`;
+  const hybrid=hybridForMonster(monster);
   const multiple =
-    monster.category === "slime" && monsterElements(monster).length > 1;
-  return `<section class="monster-drops"><h3>Butins possibles</h3><p>Un objet par victoire. ${multiple ? "Un des deux éléments est choisi à parts égales, puis la rareté et la variation chromatique sont tirées." : "La variation chromatique est tirée indépendamment de la rareté."} ${monster.category === "slime" ? "Les slimes du même élément partagent leur gelée et leur cœur." : ""}</p><div class="monster-loot-grid">${monsterLoot(
+    !hybrid && monster.category === "slime" && monsterElements(monster).length > 1;
+  return `<section class="monster-drops"><h3>Butins possibles</h3><p>Un objet par victoire. ${multiple ? "Un des deux éléments est choisi à parts égales, puis la rareté et la variation chromatique sont tirées." : "La variation chromatique est tirée indépendamment de la rareté."} ${hybrid?"Les ressources sont propres à ce duo : normale chromatique pour la forge, rare chromatique pour le familier.":monster.category === "slime" ? "Les slimes du même élément partagent leur gelée et leur cœur." : ""}</p><div class="monster-loot-grid">${monsterLoot(
     monster.id,
   )
     .map(
       (item) =>
-        `<div class="monster-loot ${item.chromatic ? "chromatic" : ""}">${itemIcon("", item.chromatic, null, item)}<div><strong>${item.name}${item.chromatic ? " chromatique" : ""}</strong><small>${item.type === "rare" ? "Rare" : "Normal"}${item.chromatic ? " · Chromatique" : " · Standard"}${item.element ? " · " + ELEMENTS[item.element].name : ""}</small>${resourcePurpose(monster, item)}</div><b>${number(item.chance * 100)} %</b></div>`,
+        `<div class="monster-loot ${item.chromatic ? "chromatic" : ""}">${itemIcon("", item.chromatic, null, item)}<div><strong>${item.name}${item.chromatic ? " chromatique" : ""}</strong><small>${item.type === "rare" ? "Rare" : "Normal"}${item.chromatic ? " · Chromatique" : " · Standard"}${item.elements?" · "+item.elements.map(e=>ELEMENTS[e].name).join(" / "):item.element ? " · " + ELEMENTS[item.element].name : ""}</small>${resourcePurpose(monster, item)}</div><b>${number(item.chance * 100)} %</b></div>`,
     )
     .join(
       "",
-    )}</div></section><section class="monster-drops bestiary-core">${coreDropMarkup(monster.id, level)}</section>`;
+    )}</div></section><section class="monster-drops bestiary-core">${coreDropMarkup(monster.id, level)}${monster.depthsSlime?"<p>Une fusion Eau/Terre donne les ressources de limon abyssal et peut donner un Noyau de Gouffre (25 %) pour la panoplie biélément niveau 10.</p>":""}</section>`;
 }
 export function renderBestiary(id, level) {
   const monster = monsterDefinition(id),

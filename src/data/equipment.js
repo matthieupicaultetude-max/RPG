@@ -1,3 +1,4 @@
+import { HYBRID_SLIMES } from "./hybrid-slimes.js";
 export const ELEMENTS = Object.freeze({
   earth: { name: "Terre", stat: "Force", color: "#7b8d4a", set: "Ronce" },
   fire: { name: "Feu", stat: "Intelligence", color: "#bc6846", set: "Braise" },
@@ -142,6 +143,84 @@ export const STARTER_SETS = Object.freeze(
     }),
   ),
 );
+export const BOSS_SETS = Object.freeze(
+  Object.values(HYBRID_SLIMES).map((h) => {
+    const statBlock = (vitality, characteristic, power, wisdom, resistance) =>
+      Object.freeze({
+        Vitalité: vitality,
+        ...Object.fromEntries(
+          h.elements.map((e) => [ELEMENTS[e].stat, characteristic]),
+        ),
+        Puissance: power,
+        Sagesse: wisdom,
+        ...Object.fromEntries(
+          h.elements.map((e) => [`Résistance ${ELEMENTS[e].name}`, resistance]),
+        ),
+      });
+    return Object.freeze({
+      id: h.id,
+      name: `Panoplie ${h.name}`,
+      element: h.elements[0],
+      elements: h.elements,
+      minLevel: 10,
+      band: Object.freeze({ min: 10, max: 19 }),
+      source: h.boss,
+      archetype: "biélément",
+      description: `Panoplie de niveau 10 · ${h.elements.map((e) => ELEMENTS[e].name).join(" / ")}.`,
+      pieces: Object.freeze(
+        SET_SLOTS.map((slot, i) =>
+          Object.freeze({
+            name: `${slot} de ${h.name}`,
+            slot,
+            requiredLevel: 10,
+            element: h.elements[0],
+            elements: [...h.elements],
+            setId: h.id,
+            setName: `Panoplie ${h.name}`,
+            color: h.color,
+            stats: statBlock(
+              [18, 16, 14, 14, 12, 10, 10, 12, 22][i],
+              [5, 5, 5, 5, 7, 5, 5, 9, 4][i],
+              i === 7 ? 3 : 1,
+              i === 3 || i === 7 ? 1 : 2,
+              i === 8 ? 2 : 1,
+            ),
+          }),
+        ),
+      ),
+      bonuses: Object.freeze(
+        Array.from({ length: 8 }, (_, i) =>
+          Object.freeze({
+            pieces: i + 2,
+            stats: statBlock(
+              6 + i * 4,
+              2 + i * 2,
+              1 + Math.floor(i / 2),
+              Math.floor((i + 1) / 2),
+              Math.floor((i + 1) / 3),
+            ),
+          }),
+        ),
+      ),
+    });
+  }),
+);
+export const ALL_SETS = Object.freeze([...STARTER_SETS, ...BOSS_SETS]);
+export function createHybridCore(id) {
+  const h = HYBRID_SLIMES[id];
+  if (!h) throw Error("Noyau biélément inconnu");
+  return {
+    kind: "core",
+    setId: id,
+    name: `Noyau de ${h.name}`,
+    element: h.elements[0],
+    elements: [...h.elements],
+    band: { min: 10, max: 19 },
+    chromatic: false,
+    quantity: 1,
+    color: h.color,
+  };
+}
 export function equippedSetCount(member, set) {
   return set.pieces.filter((piece) => {
     const item = member.equipment?.[piece.slot];
@@ -154,7 +233,7 @@ export function equippedSetCount(member, set) {
   }).length;
 }
 export function setProgress(member, setId) {
-  const set = STARTER_SETS.find((s) => s.id === setId);
+  const set = ALL_SETS.find((s) => s.id === setId);
   if (!set) return null;
   const count = equippedSetCount(member, set),
     active =
@@ -163,7 +242,7 @@ export function setProgress(member, setId) {
   return { set, count, active, next };
 }
 export const wornSets = (member) =>
-  STARTER_SETS.map((set) => setProgress(member, set.id)).filter(
+  ALL_SETS.map((set) => setProgress(member, set.id)).filter(
     (progress) => progress.count > 0,
   );
 export function setBonusStats(member) {
@@ -174,7 +253,9 @@ export function setBonusStats(member) {
   return result;
 }
 export function setForCore(core) {
-  return STARTER_SETS.find(
+  return (
+    core.setId ? BOSS_SETS.filter((set) => set.id === core.setId) : STARTER_SETS
+  ).find(
     (set) =>
       set.element === core.element &&
       set.band.min === core.band.min &&

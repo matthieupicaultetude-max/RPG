@@ -1,3 +1,4 @@
+import {hybridForMonster,HYBRID_SLIMES} from '../src/data/hybrid-slimes.js';
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
@@ -55,7 +56,7 @@ test("Slime est une catégorie unique avec tous les normaux avant tous les boss,
   );
 });
 test("gelées et cœurs sont identiques par élément pour chaque slime et possèdent leurs variantes", () => {
-  for (const m of MONSTERS.filter((m) => m.category === "slime" && !m.boss)) {
+  for (const m of MONSTERS.filter((m) => m.category === "slime" && !m.boss && !hybridForMonster(m))) {
     const drops = monsterLoot(m.id),
       elements = m.elements || [m.element];
     assert.equal(drops.length, 4 * elements.length);
@@ -78,34 +79,15 @@ test("gelées et cœurs sont identiques par élément pour chaque slime et poss�
     monsterLoot("depths-earth-slime"),
   );
 });
-test("récompense multi-élément : une ressource et éventuellement un noyau du même élément", () => {
-  for (const [choice, element] of [
-    [0.1, "earth"],
-    [0.9, "fire"],
-  ]) {
-    const s = createSandbox(),
-      m = createMonster("magma-slime", 100, 100, 6);
-    rewardMonster(s, m, rng([choice, 0.1, 0.01, 0.01]));
-    const resource = s.bag.find((i) => i.kind === "slime-resource"),
-      core = s.bag.find((i) => i.kind === "core");
-    assert.equal(resource.name, SLIME_RESOURCES[element].rare);
-    assert.equal(resource.chromatic, true);
-    assert.equal(resource.element, element);
-    assert.equal(core.element, element);
-    assert.equal(core.chromatic, false);
-    assert.equal(s.bag.length, 2);
-  }
-  for (const [choice, element] of [
-    [0.1, "water"],
-    [0.9, "earth"],
-  ]) {
-    const s = createSandbox(),
-      m = createMonster("depths-water-slime", 100, 100, 5);
-    m.dualElement = true;
-    rewardMonster(s, m, rng([choice, 0.9, 0.9, 0.01]));
-    assert.ok(s.bag.some((i) => i.name === SLIME_RESOURCES[element].normal));
-    assert.ok(s.bag.some((i) => i.kind === "core" && i.element === element));
-  }
+test("récompense biélément : ressource dédiée et noyau de panoplie, y compris fusions Eau/Terre",()=>{
+ for(const id of ['magma','storm','furnace','depths']){
+  const h=HYBRID_SLIMES[id],s=createSandbox(),m=createMonster(h.monster,100,100,6);
+  if(id==='depths')m.dualElement=true;
+  rewardMonster(s,m,rng([.1,.1,.01,.01]));
+  assert.ok(s.bag.some(i=>i.kind==='hybrid-resource'&&i.hybridId===id));
+  assert.ok(s.bag.some(i=>i.kind==='core'&&i.setId===id));
+  assert.equal(s.bag.length,2);
+ }
 });
 test("même élément, même pile ; rareté et chromatique restent séparées", () => {
   const s = createSandbox();
@@ -119,29 +101,15 @@ test("même élément, même pile ; rareté et chromatique restent séparées", 
   assert.equal(s.bag.length, 4);
   assert.ok(s.bag.every((i) => i.element === "water"));
 });
-test("boss : aucune ressource ni noyau, même depuis les outils dev ; XP/or restent uniques", () => {
-  for (const def of MONSTERS.filter((m) => m.boss)) {
-    const s = createSandbox(),
-      b = createMonster(def.id, 100, 100, 8),
-      bag = structuredClone(s.bag),
-      gold = s.gold;
-    assert.deepEqual(monsterLoot(def.id), []);
-    assert.equal(def.normal, null);
-    assert.equal(def.rare, null);
-    assert.equal(grantLoot(s, "normal", false, def.id), false);
-    assert.equal(grantLoot(s, "rare", true, def.id), false);
-    rewardMonster(s, b, () => 0);
-    assert.deepEqual(s.bag, bag);
-    assert.equal(s.gold, gold + b.gold);
-    const awardedGold = s.gold;
-    rewardMonster(s, b, () => 0);
-    assert.equal(s.gold, awardedGold);
-    const html = renderBestiary(def.id, 8);
-    assert.ok(html.includes("Aucun butin pour le moment"));
-    assert.ok(!html.includes('class="monster-loot '));
-    assert.ok(!html.includes("bestiary-core"));
-    assert.ok(!coreDropMarkup(def.id, 8).includes("garanti"));
-  }
+test("boss : morceau royal garanti et familier à 5 %, XP/or et butins uniques",()=>{
+ for(const def of MONSTERS.filter(m=>m.boss)){
+  const s=createSandbox(),b=createMonster(def.id,100,100,8);
+  assert.deepEqual(monsterLoot(def.id).map(i=>i.chance),[1,.05]);
+  assert.equal(grantLoot(s,'normal',false,def.id),false);assert.equal(grantLoot(s,'rare',true,def.id),false);
+  rewardMonster(s,b,()=>0);assert.equal(s.bag.length,2);assert.equal(s.bag.filter(i=>i.kind==='royal-key-part').length,1);assert.equal(s.bag.filter(i=>i.kind==='pet').length,1);
+  const before=JSON.stringify(s.bag),gold=s.gold;rewardMonster(s,b,()=>0);assert.equal(JSON.stringify(s.bag),before);assert.equal(s.gold,gold);
+  const html=renderBestiary(def.id,8);assert.ok(html.includes('Un morceau de clé royale garanti'));assert.ok(html.includes('5 %'));assert.ok(!html.includes('bestiary-core'));
+ }
 });
 test("recettes et familier Eau suivent les ressources communes des zones de donjon", () => {
   assert.equal(petDefinition("water").food, "Cœur d’eau");

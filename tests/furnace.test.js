@@ -328,13 +328,13 @@ test("furnace victory, loot, bestiary and developer entry follow shared dungeon 
   spellContext.hitMonster(s, m, 99999, s.team[0]);
   assert.equal(m.bossPhase, "dead");
   assert.equal(s.dungeonRun.completed, true);
-  assert.deepEqual(s.bag, []);
+  assert.equal(s.bag.filter(i=>i.kind==='royal-key-part').length, 1);
   assert.ok(s.furnace.braziers.every((b) => !b.lit));
   const gold = s.gold;
   rewardMonster(s, m);
   assert.equal(s.gold, gold);
-  assert.deepEqual(monsterLoot("siroccolimon"), []);
-  assert.equal(monsterLoot("cinder-slime").length, 8);
+  assert.deepEqual(monsterLoot("siroccolimon").map(i=>i.chance), [1,.05]);
+  assert.equal(monsterLoot("cinder-slime").length, 4);
   assert.ok(
     renderBestiary("siroccolimon", 10).includes("Les braseros restent éteints"),
   );

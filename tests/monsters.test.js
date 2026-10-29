@@ -1,3 +1,4 @@
+import {hybridForMonster} from '../src/data/hybrid-slimes.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { monsterAttackDamage } from '../src/data/monster-attacks.js';
@@ -14,7 +15,7 @@ test('statistiques progressives de 1 à 100, bornes et entrées invalides',()=>{
  assert.equal(monsterStats('slime',-1).level,1);assert.equal(monsterStats('slime',1000).level,100);assert.equal(monsterStats('slime','bad').level,1);assert.equal(monsterStats('slime',3.9).level,3);assert.throws(()=>monsterStats('unknown'));
 });
 test('quatre issues de butin distinctes, probabilités totales de 100 %',()=>{
- for(const monster of MONSTERS){const drops=monsterLoot(monster.id);if(monster.boss){assert.deepEqual(drops,[]);continue;}const count=4*(monster.elements?.length||1);assert.equal(drops.length,count);assert.ok(Math.abs(drops.reduce((sum,d)=>sum+d.chance,0)-1)<1e-10);assert.equal(new Set(drops.map(d=>`${d.name}:${d.chromatic}`)).size,count);assert.ok(Math.abs(drops.filter(d=>d.chromatic).reduce((sum,d)=>sum+d.chance,0)-.1)<1e-10);}
+ for(const monster of MONSTERS){const drops=monsterLoot(monster.id);if(monster.boss){assert.deepEqual(drops.map(d=>d.chance),[1,.05]);continue;}const count=hybridForMonster(monster)?4:4*(monster.elements?.length||1);assert.equal(drops.length,count);assert.ok(Math.abs(drops.reduce((sum,d)=>sum+d.chance,0)-1)<1e-10);assert.equal(new Set(drops.map(d=>`${d.name}:${d.chromatic}`)).size,count);assert.ok(Math.abs(drops.filter(d=>d.chromatic).reduce((sum,d)=>sum+d.chance,0)-.1)<1e-10);}
 });
 test('attaque de niveau supérieur : avertissement avant les dégâts élémentaires calculés',()=>{
  const s=createSandbox();s.deployed=false;s.monsters=[createMonster('slime',s.player.x,s.player.y,10)];const before=s.team[0].hp;
