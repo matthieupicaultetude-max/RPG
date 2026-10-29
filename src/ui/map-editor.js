@@ -66,7 +66,17 @@ export function openMapEditor(game, onClose = () => {}) {
     draw();
   }
   function renderPalette() {
-    const bank = createExileEnvironment(previewMap(defaultMap));
+    const bank = createExileEnvironment(
+      previewMap({
+        ...defaultMap,
+        objects: [
+          ...defaultMap.objects,
+          ...palette
+            .filter((p) => !defaultMap.objects.some((o) => o.id === p.id))
+            .map((p) => ({ id: p.id, template: p.id, x: p.x, y: p.y })),
+        ],
+      }),
+    );
     paletteVersion = portAssetVersion();
     tiles.replaceChildren();
     for (const template of palette) {

@@ -10,6 +10,10 @@ const banks = [
     url: new URL("../assets/exile/port-streets.png", import.meta.url).href,
     frames: atlasFrames[1].frames,
   },
+  {
+    url: new URL("../assets/exile/artisan-buildings.png", import.meta.url).href,
+    frames: atlasFrames[2].frames,
+  },
 ];
 let version = 0;
 const frames = {};

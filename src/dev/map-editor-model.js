@@ -1,3 +1,4 @@
+import { ARTISAN_BUILDINGS } from "../data/artisan-buildings.js";
 import * as world from "../world/exile-map.js";
 const copy = (value) => structuredClone(value);
 const originalProps = copy(world.PROPS).map((p) =>
@@ -5,7 +6,8 @@ const originalProps = copy(world.PROPS).map((p) =>
     ? { ...p, residenceVariant: Math.floor(p.x + p.y) % 3 }
     : p,
 );
-const templates = new Map(originalProps.map((p) => [p.id, p]));
+const catalogProps = [...originalProps, ...ARTISAN_BUILDINGS];
+const templates = new Map(catalogProps.map((p) => [p.id, p]));
 const protectedKinds = new Set([
   "exile-fountain",
   "exile-gate",
@@ -14,7 +16,7 @@ const protectedKinds = new Set([
   "exile-crane",
 ]);
 export const editableProp = (p) => !protectedKinds.has(p.kind);
-export const palette = originalProps.filter(
+export const palette = catalogProps.filter(
   (p, i, a) =>
     editableProp(p) &&
     a.findIndex(

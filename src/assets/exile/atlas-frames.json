@@ -74,5 +74,100 @@
         "h": 456
       }
     }
+  },
+  {
+    "file": "artisan-buildings.png",
+    "frames": {
+      "artisans-main-forge": {
+        "x": 21,
+        "y": 30,
+        "w": 350,
+        "h": 254
+      },
+      "artisans-tool-workshop": {
+        "x": 398,
+        "y": 35,
+        "w": 297,
+        "h": 243
+      },
+      "artisans-wood-workshop": {
+        "x": 720,
+        "y": 43,
+        "w": 327,
+        "h": 236
+      },
+      "artisans-stone-workshop": {
+        "x": 1075,
+        "y": 33,
+        "w": 312,
+        "h": 258
+      },
+      "artisans-tannery": {
+        "x": 20,
+        "y": 286,
+        "w": 351,
+        "h": 247
+      },
+      "artisans-materials-warehouse": {
+        "x": 396,
+        "y": 305,
+        "w": 325,
+        "h": 231
+      },
+      "artisans-small-forge": {
+        "x": 767,
+        "y": 319,
+        "w": 270,
+        "h": 224
+      },
+      "artisans-small-tool-workshop": {
+        "x": 1094,
+        "y": 305,
+        "w": 284,
+        "h": 233
+      },
+      "artisans-guild-house": {
+        "x": 19,
+        "y": 548,
+        "w": 339,
+        "h": 292
+      },
+      "artisans-artisan-home": {
+        "x": 395,
+        "y": 578,
+        "w": 301,
+        "h": 255
+      },
+      "artisans-courtyard-house": {
+        "x": 728,
+        "y": 560,
+        "w": 352,
+        "h": 270
+      },
+      "artisans-blue-workshop": {
+        "x": 1113,
+        "y": 578,
+        "w": 258,
+        "h": 240
+      },
+      "artisans-artisan-shop": {
+        "x": 18,
+        "y": 845,
+        "w": 321,
+        "h": 243
+      },
+      "artisans-open-hangar": {
+        "x": 363,
+        "y": 845,
+        "w": 351,
+        "h": 235
+      },
+      "artisans-covered-hall": {
+        "x": 732,
+        "y": 844,
+        "w": 383,
+        "h": 248
+      }
+    }
   }
 ]

@@ -11,3 +11,7 @@ Les grues, les quais à arcades, les escaliers, les emblèmes de slime et les d�
 `port-streets.png` : six variantes de maisons et ateliers sur fond transparent. Ligne supérieure : trois façades marchandes aux toits chauds ; ligne inférieure : trois ateliers aux ardoises bleues. Les gouttières de découpe mesurées sont stockées dans le module de rendu pour conserver les potences, auvents et cheminées.
 
 La variante `tower` du manifeste réutilise une tour de la porte pour les remparts, sans nouvelle texture. La géométrie des courtines et des terrasses reste indépendante de ce cadre graphique.
+
+`artisan-buildings.png` : quinze sprites indépendants sur fond transparent, adaptés de la planche « Quartier des Artisans » fournie par le joueur. La préparation avec l’outil d’image retire les légendes et le fond et réorganise les bâtiments ; il s’agit d’assets adaptés, pas d’un découpage identique pixel par pixel de la planche. Les cadres sont mesurés individuellement sur les silhouettes alpha, et non découpés à intervalles réguliers. Leur absence de chevauchement et les dimensions réelles des PNG sont vérifiées par les tests.
+
+`artisan-catalog.json` nomme les quinze bâtiments et définit leur taille dans le jeu. `src/data/artisan-buildings.js` ajoute leurs ancrages au sol et leurs empreintes de collision. Ces modèles enrichissent uniquement la palette de l’éditeur ; aucun bâtiment supplémentaire n’est placé automatiquement dans la ville. Les copies conservent leur modèle dans l’export JSON et la sauvegarde locale.

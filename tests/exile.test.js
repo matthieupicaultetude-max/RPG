@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import atlasFrames from "../src/assets/exile/atlas-frames.json" with { type: "json" };
 import { texturePixel } from "../src/rendering/textures.js";
 import test from "node:test";
@@ -367,10 +368,17 @@ test("La troupe franchit la porte depuis le port sans traverser les tours", () =
 
 test("Les cadres des bâtiments et de la tour restent dans les atlas", () => {
   const all = atlasFrames.flatMap((bank) => Object.entries(bank.frames));
-  assert.equal(all.length, 11);
-  for (const [key, rect] of all) {
-    assert.ok(rect.x >= 0 && rect.y >= 0 && rect.w > 0 && rect.h > 0, key);
-    assert.ok(rect.x + rect.w <= 1536 && rect.y + rect.h <= 1024, key);
+  assert.equal(all.length, 26);
+  for (const bank of atlasFrames) {
+    const bytes = readFileSync(
+      new URL(`../src/assets/exile/${bank.file}`, import.meta.url),
+    );
+    const width = bytes.readUInt32BE(16),
+      height = bytes.readUInt32BE(20);
+    for (const [key, rect] of Object.entries(bank.frames)) {
+      assert.ok(rect.x >= 0 && rect.y >= 0 && rect.w > 0 && rect.h > 0, key);
+      assert.ok(rect.x + rect.w <= width && rect.y + rect.h <= height, key);
+    }
   }
 });
 
