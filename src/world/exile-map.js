@@ -15,7 +15,7 @@ export const EXILE_RETURN = Object.freeze({ x: 720, y: 1160 });
 export const FOUNTAIN = Object.freeze({ x: 720, y: 620 });
 export const EXILE_DEV_POINTS = {
   plaza: { x: 720, y: 710 },
-  artisans: { x: 380, y: 820 },
+  artisans: { x: 1060, y: 820 },
   gardens: { x: 720, y: 160 },
 };
 const shore = [
@@ -62,6 +62,8 @@ export const DOCKS = [
 export const SHIPS = [
   { x: 800, y: 1115, color: "#83a9a4" },
   { x: 1205, y: 1100, color: "#ba8475" },
+  { x: 900, y: 1140, color: "#d9be83", caravel: true },
+  { x: 230, y: 1110, color: "#a66f52" },
 ];
 export const QUAY_EDGE = [
   [130, 997],
@@ -232,25 +234,26 @@ const lots = [
 ];
 const servicesAt = {
   "4-0-0": ["entrepot", "Entrepôt des arrivages", null],
-  "3-2-0": ["halle", "Halle des compagnons", null],
+  "3-2-0": ["forge", "Forge de Borin", "forge"],
   "0-2-0": ["maison-du-roi", "Maison du Premier Accueil", "history"],
-  "1-1-0": ["magicien", "Le Bâton étoilé", "magic"],
-  "1-2-0": ["armurier", "La Maille du Refuge", "armor"],
-  "2-0-0": ["bricoleur", "Atelier de Tessa", "handyman"],
-  "2-3-0": ["epicerie", "Échoppe des voyageurs", "trader"],
-  "3-0-0": ["scierie", "Scierie des voyageurs", "sawmill"],
-  "3-1-0": ["forge", "Forge de Borin", "forge"],
-  "3-3-0": ["animalerie", "Refuge de Nola", "petshop"],
-  "4-1-0": ["capitainerie", "Capitainerie", "harbor"],
-  "4-2-0": ["auberge", "Auberge des Quatre Vents", "inn"],
+  "1-0-0": ["magicien", "Le Bâton étoilé", "magic"],
+  "1-1-0": ["armurier", "Halle des Marchands", "armor"],
+  "2-2-0": ["bricoleur", "Atelier de Tessa", "handyman"],
+  "2-0-0": ["epicerie", "Échoppe des voyageurs", "trader"],
+  "3-3-0": ["scierie", "Scierie des voyageurs", "sawmill"],
+  "3-1-0": ["animalerie", "Refuge de Nola", "petshop"],
+  "4-2-0": ["capitainerie", "Capitainerie", "harbor"],
+  "4-1-0": ["auberge", "Auberge des Quatre Vents", "inn"],
 };
+const landmarks = { "1-1": "guildhall", "3-2": "forge", "4-0": "warehouse" };
 export const BUILDINGS = [],
   ENTRANCES = [],
   FRONTAGES = [];
-for (const [row, y] of [240, 450, 610, 780, 940].entries())
+for (const [row, y] of [280, 450, 610, 780, 940].entries())
   for (const [block, lot] of lots.entries()) {
-    const widths =
-      row === 0
+    const widths = landmarks[`${row}-${block}`]
+      ? [lot.widths.reduce((a, b) => a + b, 0)]
+      : row === 0
         ? [110, lot.widths.reduce((a, b) => a + b, 0) - 110]
         : lot.widths;
     let edge = lot.left,
@@ -277,7 +280,15 @@ for (const [row, y] of [240, 450, 610, 780, 940].entries())
         w,
         h: floors * 34 + 116,
         floors,
-        roof: ["clay", "wine", "ochre", "slate"][(row + block + index) % 4],
+        district: block < 2 ? "merchants" : "artisans",
+        roof:
+          block < 2
+            ? ["clay", "wine", "ochre"][(row + index) % 3]
+            : ["navy", "slate", "teal"][(row + index) % 3],
+        archetype: block < 2 ? (index % 2 ? "arcade" : "merchant") : "workshop",
+        ...(landmarks[`${row}-${block}`]
+          ? { asset: landmarks[`${row}-${block}`] }
+          : {}),
         footprint: {
           type: "box",
           left: -w / 2,
@@ -407,6 +418,9 @@ for (const [x, y] of [
 for (const [x, y] of [
   [560, 975],
   [1000, 975],
+  [285, 485],
+  [335, 485],
+  [490, 645],
 ])
   add("exile-stall", x, y, {
     type: "box",
@@ -424,6 +438,52 @@ for (const [x, y] of [
   [1345, 420],
 ])
   add("flowers", x, y);
+export const PORT_GATE = {
+  id: "porte-du-refuge",
+  kind: "exile-gate",
+  asset: "gate",
+  x: 720,
+  y: 1018,
+  w: 210,
+  h: 190,
+};
+export const GATE_TOWERS = [-1, 1].map((side) => ({
+  id: `porte-tour-${side}`,
+  kind: "gate-collision",
+  x: 720 + side * 65,
+  y: 1018,
+  footprint: { type: "box", left: -25, right: 25, top: -35, bottom: 0 },
+}));
+export const STAIRS = [
+  { x: 720, y: 940, w: 82, length: 62 },
+  { x: 730, y: 355, w: 64, length: 40 },
+];
+for (const [x, y] of [
+  [320, 1050],
+  [743, 1080],
+])
+  STREET_PROPS.push({
+    id: `grue-${x}`,
+    kind: "exile-crane",
+    x,
+    y,
+    w: 70,
+    h: 120,
+    onDock: true,
+    footprint: { type: "circle", radius: 3 },
+  });
+for (const [x, y] of [
+  [333, 1080],
+  [735, 1125],
+])
+  STREET_PROPS.push({
+    id: `cargaison-${x}`,
+    kind: "crate",
+    x,
+    y,
+    onDock: true,
+    footprint: { type: "box", left: -9, right: 9, top: -16, bottom: 0 },
+  });
 const trees = [];
 for (const [x, y] of [
   [95, 260],
@@ -446,8 +506,14 @@ for (const [x, y] of [
     rootRadius: 15,
   });
 }
-export const PROPS = [...BUILDINGS, TOWN_FOUNTAIN, ...STREET_PROPS, ...trees];
-export const SOLIDS = PROPS.filter((p) => p.footprint);
+export const PROPS = [
+  ...BUILDINGS,
+  TOWN_FOUNTAIN,
+  PORT_GATE,
+  ...STREET_PROPS,
+  ...trees,
+];
+export const SOLIDS = [...PROPS.filter((p) => p.footprint), ...GATE_TOWERS];
 export function canWalkExile(x, y) {
   return (
     x > 15 &&
@@ -466,7 +532,9 @@ export function canWalkExile(x, y) {
   );
 }
 export const placementOnLand = (p) =>
-  footprintPoints(p).every(([x, y]) => landDistance(x, y) >= 2);
+  footprintPoints(p).every(
+    ([x, y]) => landDistance(x, y) >= 2 || (p.onDock && onDock(x, y, 1)),
+  );
 export function validateExileMap() {
   const errors = [];
   for (const p of PROPS)
@@ -491,8 +559,8 @@ export function exileDistrict(x, y) {
     : y < 340
       ? "Le Premier Accueil"
       : x < 640
-        ? "Le quartier des artisans"
+        ? "Le quartier des marchands"
         : x > 810
-          ? "Les ruelles du Levant"
+          ? "Le quartier des artisans"
           : "La place du Refuge";
 }

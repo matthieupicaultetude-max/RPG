@@ -1,3 +1,4 @@
+import {portAssetVersion} from './exile-port-assets.js';
 import {createExileEnvironment,drawExileLife} from './exile.js';
 import {worldSize} from '../world/dimensions.js';
 import {drawDevChest} from './dev-chest.js';
@@ -79,7 +80,7 @@ export function createRenderer(canvas) {
     label(bot ? `${p.name} · BOT` : p.name, x, y + 16);
   }
   const render = (s) => {
-    const environment = s.zone === "exile" ? (exile ||= createExileEnvironment()) : s.zone === "slime-furnace" ? (furnace ||= createEnvironment(furnaceMap)) : s.zone === "slime-storm" ? (storm ||= createEnvironment(stormMap)) : s.zone === "slime-wind" ? (wind ||= createEnvironment(windMap)) : s.zone === "slime-volcano" ? (volcano ||= createEnvironment(volcanoMap)) : s.zone === "slime-fire" ? (fire ||= createEnvironment(fireMap)) : s.zone === "slime-mountains" ? (mountains ||= createEnvironment(mountainMap)) : s.zone === "slime-depths" ? (depths ||= createEnvironment(depthsMap)) : s.zone === "tutorial" ? (tutorial ||= createEnvironment(tutorialMap)) : s.zone==='slime-marsh'?(marsh ||= createEnvironment(marshMap)):village;
+    const environment = s.zone === "exile" ? ((!exile||exile.assetVersion!==portAssetVersion())?(exile=createExileEnvironment()):exile) : s.zone === "slime-furnace" ? (furnace ||= createEnvironment(furnaceMap)) : s.zone === "slime-storm" ? (storm ||= createEnvironment(stormMap)) : s.zone === "slime-wind" ? (wind ||= createEnvironment(windMap)) : s.zone === "slime-volcano" ? (volcano ||= createEnvironment(volcanoMap)) : s.zone === "slime-fire" ? (fire ||= createEnvironment(fireMap)) : s.zone === "slime-mountains" ? (mountains ||= createEnvironment(mountainMap)) : s.zone === "slime-depths" ? (depths ||= createEnvironment(depthsMap)) : s.zone === "tutorial" ? (tutorial ||= createEnvironment(tutorialMap)) : s.zone==='slime-marsh'?(marsh ||= createEnvironment(marshMap)):village;
     const canStand = (x,y)=>canWalkZone(x,y,s.zone);
     const width=Math.round(canvas.clientWidth),height=Math.round(canvas.clientHeight);
     const camera=viewport(width,height,s.player,worldSize(s.zone));
@@ -114,7 +115,7 @@ export function createRenderer(canvas) {
           ctx.save();
           const felled=prop.kind==="tree"&&s.trees.find(tree=>tree.id===prop.id)?.respawn>0;
           if (
-            ["exile-house","windmill","tree","house","workshop","petshop","market","sawmill","mushroom","stalagmite","mountain-ridge","mountain-boulder"].includes(prop.kind) && !felled &&
+            ["exile-gate","exile-crane","exile-house","windmill","tree","house","workshop","petshop","market","sawmill","mushroom","stalagmite","mountain-ridge","mountain-boulder"].includes(prop.kind) && !felled &&
             s.player.y < prop.y &&
             s.player.x + 8 > prop.bounds.left &&
             s.player.x - 8 < prop.bounds.right &&

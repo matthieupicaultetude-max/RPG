@@ -1,9 +1,13 @@
+import atlasFrames from "../src/assets/exile/atlas-frames.json" with { type: "json" };
 import { texturePixel } from "../src/rendering/textures.js";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
   MAP_SIZE,
   SHIPS,
+  GATE_TOWERS,
+  PORT_GATE,
+  STAIRS,
   onDock,
   isLand,
   FOUNTAIN,
@@ -302,4 +306,62 @@ test("Les navires restent dans l’eau sans recouvrir un ponton", () => {
         assert.equal(isLand(p.x + dx, p.y + dy), false);
         assert.equal(onDock(p.x + dx, p.y + dy), false);
       }
+});
+
+test("Le port garde une porte franchissable, des tours solides et deux escaliers accessibles", () => {
+  assert.ok(canWalkExile(PORT_GATE.x, PORT_GATE.y - 10));
+  for (const tower of GATE_TOWERS)
+    assert.equal(canWalkExile(tower.x, tower.y - 12), false);
+  for (const stairs of STAIRS)
+    for (let y = stairs.y - stairs.length; y <= stairs.y; y += 5)
+      assert.ok(canWalkExile(stairs.x, y));
+});
+test("Les quartiers et les ateliers suivent la référence marchands à l’ouest, artisans à l’est", () => {
+  assert.ok(
+    BUILDINGS.filter((p) => p.district === "merchants").every((p) => p.x < 720),
+  );
+  assert.ok(
+    BUILDINGS.filter((p) => p.district === "artisans").every((p) => p.x > 720),
+  );
+  for (const id of ["forge", "handyman", "sawmill"])
+    assert.ok(SERVICES[id].x > 720);
+  for (const id of ["armor", "magic", "trader"])
+    assert.ok(SERVICES[id].x < 720);
+  assert.deepEqual(
+    BUILDINGS.filter((p) => p.asset)
+      .map((p) => p.asset)
+      .sort(),
+    ["forge", "guildhall", "warehouse"],
+  );
+});
+test("Les sols et l’eau du port restent périodiques aux raccords", () => {
+  for (const material of ["harbor-stone", "harbor-water"])
+    for (let y = -5; y < 70; y++)
+      for (let x = -5; x < 70; x++) {
+        assert.deepEqual(
+          texturePixel(material, x, y),
+          texturePixel(material, x + 64, y),
+        );
+        assert.deepEqual(
+          texturePixel(material, x, y),
+          texturePixel(material, x, y + 64),
+        );
+      }
+});
+
+test("La troupe franchit la porte depuis le port sans traverser les tours", () => {
+  const s = town();
+  movePartyToZone(s, "exile", EXILE_RETURN);
+  for (let i = 0; i < 80; i++) stepSandbox(s, { x: 0, y: -1 }, 0.05);
+  assert.ok(s.player.y < PORT_GATE.y - 70);
+  for (const m of s.team) assert.ok(canWalkExile(m.x, m.y));
+});
+
+test("Les dix assets possèdent un cadre mesuré valide dans leur atlas", () => {
+  const all = atlasFrames.flatMap((bank) => Object.entries(bank.frames));
+  assert.equal(all.length, 10);
+  for (const [key, rect] of all) {
+    assert.ok(rect.x >= 0 && rect.y >= 0 && rect.w > 0 && rect.h > 0, key);
+    assert.ok(rect.x + rect.w <= 1536 && rect.y + rect.h <= 1024, key);
+  }
 });

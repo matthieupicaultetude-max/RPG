@@ -1,3 +1,15 @@
+import {
+  portSpriteSize,
+  loadPortAssets,
+  portAssetVersion,
+  drawPortLandmark,
+  drawPortResidence,
+  drawHarborGate,
+  drawCargoCrane,
+  drawPortGround,
+  drawPortEmblem,
+  drawWorkshopDetails,
+} from "./exile-port-assets.js";
 import * as map from "../world/exile-map.js";
 import { createSpriteAtlas } from "./sprites.js";
 import { texturePixel, hash } from "./textures.js";
@@ -34,7 +46,7 @@ function tile(material) {
     for (let x = 0; x < 64; x++) {
       let rgba;
       rgba = texturePixel(
-        ["pavers", "courtyard"].includes(material) ? "town-stone" : material,
+        ["pavers", "courtyard"].includes(material) ? "harbor-stone" : material,
         x,
         y,
       );
@@ -50,7 +62,7 @@ function path(g, r) {
   r.points.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y)));
 }
 function plotGround(g) {
-  const water = g.createPattern(tile("water"), "repeat"),
+  const water = g.createPattern(tile("harbor-water"), "repeat"),
     grass = g.createPattern(tile("grass"), "repeat"),
     pavers = g.createPattern(tile("pavers"), "repeat");
   rect(g, 0, 0, map.MAP_SIZE.width, map.MAP_SIZE.height, water);
@@ -78,19 +90,19 @@ function plotGround(g) {
   for (const r of map.ROADS) {
     path(g, r);
     g.lineWidth = r.width + 10;
-    g.strokeStyle = "#7f8b70";
+    g.strokeStyle = "#ab9f82";
     g.stroke();
   }
   for (const p of map.PLAZAS)
-    ellipse(g, p.x, p.y, p.rx + 5, p.ry + 5, "#7f8b70");
+    ellipse(g, p.x, p.y, p.rx + 5, p.ry + 5, "#ab9f82");
   for (const r of map.ROADS) {
     path(g, r);
     g.lineWidth = r.width + 5;
-    g.strokeStyle = "#d2c79d";
+    g.strokeStyle = "#e5d5ad";
     g.stroke();
   }
   for (const p of map.PLAZAS)
-    ellipse(g, p.x, p.y, p.rx + 2, p.ry + 2, "#d2c79d");
+    ellipse(g, p.x, p.y, p.rx + 2, p.ry + 2, "#e5d5ad");
   for (const r of map.ROADS) {
     path(g, r);
     g.lineWidth = r.width;
@@ -162,6 +174,7 @@ function plotGround(g) {
   g.strokeStyle = "#d3cfab";
   g.lineWidth = 3;
   g.stroke();
+  drawPortGround(g, map);
   // A memorial mosaic belongs to the square, not to the paving texture.
   g.strokeStyle = "#c7b77c";
   g.lineWidth = 3;
@@ -198,6 +211,7 @@ function plotGround(g) {
   }
 }
 const roofColors = {
+  navy: ["#2f496c", "#496d92", "#809bb4"],
   clay: ["#8e493b", "#b86748", "#d79768"],
   ochre: ["#9b6245", "#bf8a59", "#d9b179"],
   teal: ["#527c80", "#709598", "#94b2ac"],
@@ -219,6 +233,7 @@ function window(g, x, y, w = 18, h = 22) {
   }
 }
 function building(g, p) {
+  if (p.asset ? drawPortLandmark(g, p) : drawPortResidence(g, p)) return;
   const w = p.w,
     a = w / 2,
     floors = p.floors || 2,
@@ -360,6 +375,7 @@ function building(g, p) {
     g.fillStyle = "#f0dfb4";
     g.fillText(labels[p.service], 0, -13);
   }
+  drawWorkshopDetails(g, p);
 }
 function lamp(g) {
   rect(g, -2, -38, 4, 38, "#536358");
@@ -420,7 +436,7 @@ function stall(g, p) {
       ["#c98365", "#d4be78", "#8aa86c"][i % 3],
     );
 }
-function ship(g, x, y, color) {
+function ship(g, x, y, color, caravel = false) {
   g.save();
   g.translate(x, y);
   ellipse(g, 2, 8, 30, 69, "#244e5b44");
@@ -482,9 +498,29 @@ function ship(g, x, y, color) {
   rect(g, -2, 20, 4, 25, "#74533b");
   rect(g, -19, 39, 38, 13, "#7b6950");
   window(g, -12, 41, 8, 7);
+  if (caravel)
+    for (const yy of [-37, 32]) {
+      rect(g, -1, yy - 25, 3, 55, "#604d37");
+      poly(
+        g,
+        [
+          [1, yy - 24],
+          [29, yy + 5],
+          [1, yy + 19],
+        ],
+        "#e6d9a6",
+      );
+      g.strokeStyle = "#d9bf86";
+      g.lineWidth = 1;
+      g.beginPath();
+      g.moveTo(0, yy - 22);
+      g.lineTo(-20, yy + 21);
+      g.stroke();
+    }
   g.restore();
 }
 export function createExileEnvironment() {
+  loadPortAssets();
   const errors = map.validateExileMap();
   if (errors.length) throw Error(errors.join("; "));
   const ground = document.createElement("canvas");
@@ -492,11 +528,13 @@ export function createExileEnvironment() {
   const g = ground.getContext("2d");
   g.imageSmoothingEnabled = false;
   plotGround(g);
-  for (const p of map.SHIPS) ship(g, p.x, p.y, p.color);
+  for (const p of map.SHIPS) ship(g, p.x, p.y, p.color, p.caravel);
   const atlas = createSpriteAtlas();
   const props = map.PROPS.map((p) => {
     const custom = [
       "exile-house",
+      "exile-gate",
+      "exile-crane",
       "exile-lamp",
       "exile-fountain",
       "exile-stall",
@@ -505,13 +543,19 @@ export function createExileEnvironment() {
     if (!custom) sprite = atlas(p);
     else {
       const canvas = document.createElement("canvas");
-      canvas.width = (p.w || 80) + 70;
-      canvas.height = (p.h || 90) + 35;
+      const size =
+        p.kind === "exile-house" || p.kind === "exile-gate"
+          ? portSpriteSize(p)
+          : null;
+      canvas.width = Math.max(p.w || 80, size?.w || 0) + 70;
+      canvas.height = Math.max(p.h || 90, size?.h || 0) + 35;
       const cg = canvas.getContext("2d"),
         anchorX = canvas.width / 2,
         anchorY = canvas.height - 10;
       cg.translate(anchorX, anchorY);
       if (p.kind === "exile-house") building(cg, p);
+      else if (p.kind === "exile-gate") drawHarborGate(cg, p);
+      else if (p.kind === "exile-crane") drawCargoCrane(cg);
       else if (p.kind === "exile-lamp") lamp(cg);
       else if (p.kind === "exile-fountain") fountain(cg);
       else stall(cg, p);
@@ -520,10 +564,10 @@ export function createExileEnvironment() {
     return {
       ...p,
       bounds: {
-        left: p.x - (p.w || 70) / 2,
-        right: p.x + (p.w || 70) / 2,
-        top: p.y - (p.h || 80),
-        bottom: p.y + 8,
+        left: p.x - sprite.anchorX,
+        right: p.x - sprite.anchorX + sprite.canvas.width,
+        top: p.y - sprite.anchorY,
+        bottom: p.y - sprite.anchorY + sprite.canvas.height,
       },
       draw(ctx) {
         ctx.drawImage(
@@ -534,7 +578,13 @@ export function createExileEnvironment() {
       },
     };
   });
-  return { ground, props, markers: [], land: map.LAND };
+  return {
+    ground,
+    props,
+    markers: [],
+    land: map.LAND,
+    assetVersion: portAssetVersion(),
+  };
 }
 export function drawExileLife(g, s, foreground = false) {
   if (s.zone !== "exile") return;
@@ -547,7 +597,9 @@ export function drawExileLife(g, s, foreground = false) {
       if (map.isLand(x, y) || map.onDock(x, y)) continue;
       rect(g, x + Math.sin(t * 0.6 + i) * 4, y, 6 + (i % 4), 1, "#b5d8ce88");
     }
-    for (const p of map.BUILDINGS.filter((p) => p.service))
+    for (const p of map.BUILDINGS.filter(
+      (p) => p.service === "forge" || p.service === "sawmill",
+    ))
       for (let i = 0; i < 3; i++) {
         const k = (t * 0.2 + i * 0.33) % 1;
         ellipse(
@@ -561,6 +613,19 @@ export function drawExileLife(g, s, foreground = false) {
       }
     return;
   }
+  const forge = map.BUILDINGS.find((p) => p.asset === "forge");
+  if (forge)
+    for (let i = 0; i < 4; i++) {
+      const k = (t * 0.7 + i * 0.25) % 1;
+      rect(
+        g,
+        forge.x - 10 + Math.sin(t + i) * 4,
+        forge.y - 24 - k * 18,
+        1,
+        2,
+        i % 2 ? "#edb765" : "#e7d799",
+      );
+    }
   const f = map.FOUNTAIN;
   for (let i = 0; i < 9; i++) {
     const a = i * 0.7,
@@ -574,7 +639,9 @@ export function drawExileLife(g, s, foreground = false) {
       "#d2eddf",
     );
   }
-  for (const p of map.BUILDINGS.filter((p) => p.service)) {
+  for (const p of map.BUILDINGS.filter(
+    (p) => p.service && !p.asset && portAssetVersion() < 2,
+  )) {
     const x = p.x - p.w / 2 + 7,
       y = p.y - p.h * 0.55;
     rect(g, x, y, 2, 27, "#6b5d43");
@@ -588,6 +655,23 @@ export function drawExileLife(g, s, foreground = false) {
       ],
       p.roof === "wine" ? "#c98c78" : "#86b4ac",
     );
+  }
+  for (const side of [-1, 1]) {
+    const x = map.PORT_GATE.x + side * 106,
+      y = map.PORT_GATE.y;
+    rect(g, x - 1, y - 95, 2, 90, "#796d51");
+    poly(
+      g,
+      [
+        [x + 2, y - 91],
+        [x + 20, y - 90 + Math.sin(t * 2) * 2],
+        [x + 18, y - 51],
+        [x + 10, y - 56],
+        [x + 2, y - 51],
+      ],
+      "#345e86",
+    );
+    drawPortEmblem(g, x + 10, y - 71);
   }
   for (let i = 0; i < 7; i++) {
     const x = 200 + i * 150 + Math.sin(t * 0.12 + i) * 100,

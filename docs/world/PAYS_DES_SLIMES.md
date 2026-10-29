@@ -27,12 +27,12 @@ Les canaux, fortifications, routes et ateliers témoignent d’abord de la const
 
 ## Première zone jouable : le Comptoir
 
-Carte extérieure de 1 440 × 1 240 pixels monde, avec caméra à l’échelle des personnages. 48 bâtiments : 36 habitations, capitainerie, auberge, forge, atelier de bricolage, scierie, animalerie, armurerie, enchanteur, échoppe, Maison du Premier Accueil, entrepôt et halle.
+Carte extérieure de 1 440 × 1 240 pixels monde, avec caméra à l’échelle des personnages. 43 bâtiments : façades mitoyennes, halle marchande, forge, entrepôt, capitainerie, auberge et services pour les aventuriers. Le port reste au sud du pays, avec la place du Refuge et la route du sanctuaire dans son axe central.
 
-- **Sud :** trois pontons, liaison entre quais, deux voiliers et promenade du marché.
+- **Sud :** trois pontons, liaison entre quais, quatre navires, grues de chargement, porte du Refuge et quais de pierre à arcades.
 - **Centre :** place du Refuge, fontaine du renouveau, mosaïque aux quatre couleurs et commerces.
-- **Ouest :** forge, cour des métiers, atelier de Tessa et scierie.
-- **Est :** allées du Levant, habitations, refuge animalier et halle.
+- **Ouest :** quartier des marchands, halle marchande, enchanteur, échoppe et animalerie.
+- **Est :** quartier des artisans, forge, atelier de Tessa, scierie et capitainerie.
 - **Nord :** jardins, îlots résidentiels et Maison du Premier Accueil.
 
 Les rues sont sinueuses et bordées de façades mitoyennes de deux à trois étages. Vingt rangées partagent des trottoirs raccordés au réseau ; les anciennes pelouses du centre sont devenues des cours pavées. Les murs mitoyens sont fermés à la circulation, tout en gardant les portes accessibles. Une palette commune de pierre, enduit clair, bois et ardoises et tuiles de plusieurs teintes assure la cohésion. Les pavés utilisent un motif périodique unique en coordonnées monde ; les intersections partagent le même revêtement. Les arbres sont placés sur terre ferme et hors des accès. Les collisions utilisent les pieds des bâtiments, avec transparence des façades devant le joueur.
@@ -44,3 +44,9 @@ La traversée depuis le Jardin des essais est gratuite : Monde → Comptoir → 
 Les services de forge, animalerie, bricolage, scierie et fontaine réutilisent leurs règles existantes. Maëla et Oriel vendent uniquement de l’équipement de voyage sans panoplie ; les noyaux gardent leur rôle dans l’obtention des ensembles élémentaires. Silo rachète les ressources normales et rares non chromatiques. L’auberge soigne la troupe contre 5 or. La position dans le Comptoir se sauvegarde sans changer la version ni invalider les anciennes sauvegardes.
 
 Les anciens points de sauvegarde devenus invalides après la réduction de la ville reviennent au port, sans modifier le sac, les équipements ou la progression.
+
+La référence portuaire guide désormais la direction artistique : tuiles chaudes à l’ouest, ardoises bleues à l’est, calcaire clair, arcades, escaliers, bannières royales et structures de chargement. Deux atlas transparents originaux fournissent dix assets réutilisables (six façades et quatre monuments), chargés à l’entrée dans la zone puis mis en cache. Le terrain et les collisions restent indépendants des images. Les versions Canvas servent de repli pendant le chargement.
+
+### Aperçu du Comptoir intégré
+
+![Rendu du Comptoir : marchands à l’ouest, artisans à l’est, porte et quais au sud](comptoir-port.png)

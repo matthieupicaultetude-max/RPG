@@ -808,3 +808,11 @@ Les grandes pelouses centrales deviennent des cours minérales. Les trottoirs de
 Le plan précédent reste trop étalé : la ville est reconstruite sur 1 440 × 1 240 pixels au lieu de 2 240 × 1 760, soit 55 % de surface en moins. Les sprites et la vitesse gardent leur échelle ; la réduction concerne réellement les distances et l’implantation.
 
 48 bâtiments composent vingt rangées mitoyennes. Les rues sont retracées entre les îlots avec des largeurs de 20 à 36 pixels et des trottoirs communs de 12 pixels. Port au sud, place du Refuge et fontaine au centre, commerces et artisans dans les rues voisines, Premier Accueil au nord. Quelques jardins et arbres de bordure subsistent. Les quais, les navires, les habitants, le plan local et les accès dev suivent les nouvelles coordonnées ; les services restent utilisables. Les positions de sauvegarde invalides sont replacées au port sans perte de progression.
+
+## 61. Direction artistique du port marchand
+
+La nouvelle référence montre un port en contrebas d’une ville de calcaire, avec escaliers et arcades. Le Comptoir conserve son emprise compacte et sa position au sud du pays. Les marchands occupent l’ouest (toits chauds), les artisans l’est (ardoises bleues), reliés par la place du Refuge et l’axe vers le sanctuaire. Les trois grands édifices remplacent certains lots contigus, pour un total de 43 bâtiments.
+
+Deux atlas transparents originaux apportent dix assets : six façades de rue, halle marchande, forge, entrepôt et porte portuaire. Les grues, les escaliers, les quais à arcades et les emblèmes de slime complètent le décor. Quatre navires, des étals, des fumées, des braises et des bannières animent l’ensemble. Pavés et eau utilisent des motifs périodiques propres au port.
+
+Les images chargent à l’entrée dans la zone, avec un dessin de repli immédiat ; les cellules sont détourées selon l’alpha et mises en cache à l’échelle du jeu. Une nouvelle version d’atlas invalide le cache d’environnement une seule fois. Les emprises, les portes, les escaliers et les pontons restent décrits dans la carte : les images ne dictent pas la navigabilité. Les tours de la porte bloquent le mouvement mais laissent le passage central ouvert.
