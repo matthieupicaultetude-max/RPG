@@ -3,6 +3,11 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   MAP_SIZE,
+  SHIPS,
+  onDock,
+  isLand,
+  FOUNTAIN,
+  EXILE_DEV_POINTS,
   LAND,
   PROPS,
   BUILDINGS,
@@ -51,9 +56,9 @@ const town = () => {
 };
 const approach = (s, id) =>
   movePartyToZone(s, "exile", { x: SERVICES[id].x, y: SERVICES[id].y + 16 });
-test("Comptoir : grande carte, quartiers médiévaux mitoyens raccordés, aucune empreinte superposée ou arbre dans l’eau", () => {
-  assert.ok(MAP_SIZE.width * MAP_SIZE.height > SCENE.width * SCENE.height * 15);
-  assert.ok(BUILDINGS.length >= 50);
+test("Comptoir : surface réduite, quartiers médiévaux mitoyens raccordés, aucune empreinte superposée ou arbre dans l’eau", () => {
+  assert.ok(MAP_SIZE.width * MAP_SIZE.height < 2240 * 1760 * 0.5);
+  assert.ok(BUILDINGS.length >= 40);
   const attached = BUILDINGS.filter((p) => p.attachedTo);
   assert.ok(attached.length > BUILDINGS.length / 2);
   for (const p of attached) {
@@ -89,11 +94,11 @@ test("Comptoir : grande carte, quartiers médiévaux mitoyens raccordés, aucune
     }
 });
 test("Tous les commerces, portes et pontons sont accessibles à pied depuis le port", () => {
-  const cols = 224,
-    rows = 176,
+  const cols = MAP_SIZE.width / 10,
+    rows = MAP_SIZE.height / 10,
     key = (x, y) => y * cols + x,
-    seen = new Set([key(112, 140)]),
-    queue = [[112, 140]],
+    seen = new Set([key(EXILE_SPAWN.x / 10, EXILE_SPAWN.y / 10)]),
+    queue = [[EXILE_SPAWN.x / 10, EXILE_SPAWN.y / 10]],
     cache = new Map();
   const walk = (x, y) => {
     const k = key(x, y);
@@ -133,10 +138,10 @@ test("Tous les commerces, portes et pontons sont accessibles à pied depuis le p
   assert.ok(canWalkExile(EXILE_RETURN.x, EXILE_RETURN.y));
 });
 test("Caméra, souris et déplacements gardent les coordonnées du grand monde", () => {
-  const player = { x: 1120, y: 1400 },
+  const player = { ...EXILE_SPAWN },
     view = viewport(1280, 800, player, MAP_SIZE);
-  assert.equal(view.x, 800);
-  assert.equal(view.y, 1200);
+  assert.equal(view.x, EXILE_SPAWN.x - 320);
+  assert.equal(view.y, EXILE_SPAWN.y - 200);
   assert.deepEqual(
     screenToWorld(
       640,
@@ -150,7 +155,7 @@ test("Caméra, souris et déplacements gardent les coordonnées du grand monde",
   const s = town();
   stepSandbox(s, { x: 0, y: -1 }, 0.05);
   assert.ok(s.player.x > 640 && s.player.y > 400);
-  assert.ok(s.player.y < 1400);
+  assert.ok(s.player.y < EXILE_SPAWN.y);
   assert.ok(canWalkZone(s.player.x, s.player.y, "exile"));
   assert.equal(worldSize("garden").width, 640);
 });
@@ -158,11 +163,15 @@ test("Alliés et navigation contournent les obstacles au-delà de l’ancienne c
   const canStand = Object.assign((x, y) => canWalkExile(x, y), {
     bounds: MAP_SIZE,
   });
-  const path = findPath({ x: 1120, y: 860 }, { x: 1120, y: 750 }, canStand);
+  const path = findPath(
+    { x: FOUNTAIN.x, y: FOUNTAIN.y + 50 },
+    { x: FOUNTAIN.x, y: FOUNTAIN.y - 50 },
+    canStand,
+  );
   assert.ok(path.length > 1);
   for (const p of path) assert.ok(canStand(p.x, p.y));
   const s = town();
-  movePartyToZone(s, "exile", { x: 1120, y: 930 });
+  movePartyToZone(s, "exile", EXILE_DEV_POINTS.plaza);
   for (let i = 0; i < 100; i++) stepSandbox(s, { x: 0, y: 1 }, 0.05);
   for (const m of s.team) {
     assert.ok(m.x > 640 && m.y > 400);
@@ -204,7 +213,7 @@ test("Les artisans existants et la fontaine fonctionnent aux adresses du Comptoi
     approach(s, id);
     assert.ok(near(s), id);
   }
-  movePartyToZone(s, "exile", { x: 1120, y: 850 });
+  movePartyToZone(s, "exile", { x: FOUNTAIN.x, y: FOUNTAIN.y + 40 });
   assert.ok(nearFountain(s));
   assert.ok(!nearForge(s));
 });
@@ -248,13 +257,13 @@ test("Achats, revente et repos vérifient portée, prix et quantité sans touche
 test("La sauvegarde retrouve le Comptoir sans effacer les anciennes progressions", () => {
   const s = town();
   s.gold = 74;
-  movePartyToZone(s, "exile", { x: 1120, y: 930 });
+  movePartyToZone(s, "exile", EXILE_DEV_POINTS.plaza);
   const saved = decodeSave(JSON.stringify(progressSnapshot(s))),
     restored = createSandbox();
   restoreProgress(restored, saved);
   assert.equal(restored.zone, "exile");
-  assert.equal(restored.player.x, 1120);
-  assert.equal(restored.player.y, 930);
+  assert.equal(restored.player.x, EXILE_DEV_POINTS.plaza.x);
+  assert.equal(restored.player.y, EXILE_DEV_POINTS.plaza.y);
   assert.equal(restored.gold, 74);
   assert.equal(restored.monsters.length, 0);
   delete saved.progress.location;
@@ -271,4 +280,26 @@ test("Les pavés utilisent un échantillonnage périodique en coordonnées monde
       assert.deepEqual(pixel, texturePixel("town-stone", x + 64, y));
       assert.deepEqual(pixel, texturePixel("town-stone", x, y + 64));
     }
+});
+
+test("Une ancienne position du grand Comptoir revient au port sans perte de progression", () => {
+  const s = town();
+  s.gold = 123;
+  const save = progressSnapshot(s);
+  save.progress.location = { zone: "exile", x: 1120, y: 1400 };
+  const restored = createSandbox();
+  restoreProgress(restored, decodeSave(JSON.stringify(save)));
+  assert.equal(restored.gold, 123);
+  assert.equal(restored.zone, "exile");
+  assert.equal(restored.player.x, EXILE_SPAWN.x);
+  assert.equal(restored.player.y, EXILE_SPAWN.y);
+});
+
+test("Les navires restent dans l’eau sans recouvrir un ponton", () => {
+  for (const p of SHIPS)
+    for (const dx of [-28, 0, 28])
+      for (const dy of [-78, 0, 78]) {
+        assert.equal(isLand(p.x + dx, p.y + dy), false);
+        assert.equal(onDock(p.x + dx, p.y + dy), false);
+      }
 });

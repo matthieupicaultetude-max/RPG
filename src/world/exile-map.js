@@ -1,4 +1,5 @@
-// World coordinates are independent from the 640 × 400 rendering window.
+// Authored compact blocks. Building dimensions remain at character scale;
+// density comes from plot placement and street widths, never sprite scaling.
 import {
   insidePolygon,
   polygonDistance,
@@ -8,50 +9,69 @@ import {
   footprintPoints,
 } from "./map.js";
 export const EXILE_ZONE = "exile";
-export const MAP_SIZE = Object.freeze({ width: 2240, height: 1760 });
-export const EXILE_SPAWN = Object.freeze({ x: 1120, y: 1400 });
-export const EXILE_RETURN = Object.freeze({ x: 1120, y: 1580 });
-const SHORE = [
-  [180, 70],
-  [600, 40],
-  [1080, 65],
-  [1530, 40],
-  [1980, 110],
-  [2110, 350],
-  [2150, 760],
-  [2070, 1120],
-  [1990, 1370],
-  [1740, 1430],
-  [1450, 1400],
-  [1350, 1460],
-  [990, 1460],
-  [880, 1410],
-  [640, 1440],
-  [330, 1370],
-  [160, 1180],
-  [100, 870],
-  [130, 450],
+export const MAP_SIZE = Object.freeze({ width: 1440, height: 1240 });
+export const EXILE_SPAWN = Object.freeze({ x: 720, y: 1010 });
+export const EXILE_RETURN = Object.freeze({ x: 720, y: 1160 });
+export const FOUNTAIN = Object.freeze({ x: 720, y: 620 });
+export const EXILE_DEV_POINTS = {
+  plaza: { x: 720, y: 710 },
+  artisans: { x: 380, y: 820 },
+  gardens: { x: 720, y: 160 },
+};
+const shore = [
+  [90, 100],
+  [350, 65],
+  [690, 80],
+  [1040, 65],
+  [1330, 100],
+  [1385, 340],
+  [1395, 620],
+  [1340, 870],
+  [1270, 970],
+  [1120, 1000],
+  [940, 990],
+  [830, 1030],
+  [630, 1030],
+  [510, 985],
+  [300, 980],
+  [130, 1005],
+  [75, 800],
+  [45, 490],
 ];
-export const LAND = SHORE.flatMap((a, i) => {
-  const b = SHORE[(i + 1) % SHORE.length],
+export const LAND = shore.flatMap((a, i) => {
+  const b = shore[(i + 1) % shore.length],
     dx = b[0] - a[0],
     dy = b[1] - a[1],
-    length = Math.hypot(dx, dy),
-    n = Math.ceil(length / 28);
+    d = Math.hypot(dx, dy),
+    n = Math.ceil(d / 25);
   return Array.from({ length: n }, (_, j) => {
     const t = j / n,
-      bend = Math.sin(t * Math.PI) * Math.sin(j * 1.7 + i) * 5;
+      w = Math.sin(t * Math.PI) * Math.sin(j * 1.7 + i) * 3;
     return [
-      Math.round(a[0] + dx * t - (dy / length) * bend),
-      Math.round(a[1] + dy * t + (dx / length) * bend),
+      Math.round(a[0] + dx * t - (dy / d) * w),
+      Math.round(a[1] + dy * t + (dx / d) * w),
     ];
   });
 });
 export const DOCKS = [
-  { x: 1090, y: 1400, w: 60, h: 240 },
-  { x: 650, y: 1390, w: 58, h: 210 },
-  { x: 1580, y: 1390, w: 58, h: 220 },
-  { x: 650, y: 1510, w: 500, h: 46 },
+  { x: 690, y: 1000, w: 60, h: 190 },
+  { x: 310, y: 960, w: 48, h: 190 },
+  { x: 1120, y: 975, w: 48, h: 185 },
+  { x: 310, y: 1100, w: 440, h: 36 },
+];
+export const SHIPS = [
+  { x: 800, y: 1115, color: "#83a9a4" },
+  { x: 1205, y: 1100, color: "#ba8475" },
+];
+export const QUAY_EDGE = [
+  [130, 997],
+  [300, 972],
+  [510, 977],
+  [630, 1022],
+  [830, 1022],
+  [940, 982],
+  [1120, 992],
+  [1270, 962],
 ];
 export const isLand = (x, y) => insidePolygon(x, y, LAND);
 export const landDistance = (x, y) => polygonDistance(x, y, LAND);
@@ -63,7 +83,6 @@ export const onDock = (x, y, margin = 0) =>
       y >= d.y + margin &&
       y <= d.y + d.h - margin,
   );
-// Chaikin subdivision produces the same centerline for paving and navigation tests.
 function smooth(points) {
   for (let pass = 0; pass < 2; pass++) {
     const next = [points[0]];
@@ -82,74 +101,88 @@ function smooth(points) {
 }
 const road = (id, width, points) => ({ id, width, points: smooth(points) });
 export const ROADS = [
-  road("avenue-du-refuge", 58, [
-    [1120, 1450],
-    [1120, 1260],
-    [1080, 1030],
-    [1120, 820],
-    [1160, 580],
-    [1120, 260],
+  road("avenue-du-refuge", 36, [
+    [720, 1020],
+    [710, 850],
+    [720, 620],
+    [740, 400],
+    [720, 140],
   ]),
-  road("rue-des-artisans", 48, [
-    [320, 920],
-    [590, 890],
-    [830, 930],
-    [1120, 820],
-    [1450, 900],
-    [1810, 880],
-    [2010, 970],
+  road("rue-du-premier-accueil", 24, [
+    [120, 300],
+    [380, 300],
+    [650, 300],
+    [720, 310],
+    [1060, 300],
+    [1320, 300],
   ]),
-  road("rue-des-jardins", 38, [
-    [320, 920],
-    [360, 640],
-    [520, 450],
-    [800, 380],
-    [1120, 260],
-    [1450, 370],
-    [1780, 550],
-    [1810, 880],
+  road("rue-des-echoppes", 26, [
+    [120, 510],
+    [380, 510],
+    [610, 520],
+    [720, 620],
+    [840, 520],
+    [1060, 510],
+    [1320, 510],
   ]),
-  road("promenade-des-quais", 48, [
-    [320, 1230],
-    [650, 1350],
-    [900, 1340],
-    [1120, 1370],
-    [1450, 1330],
-    [1780, 1330],
-    [1990, 1230],
+  road("rue-des-artisans", 26, [
+    [120, 685],
+    [380, 685],
+    [620, 680],
+    [720, 700],
+    [820, 680],
+    [1060, 685],
+    [1320, 685],
   ]),
-  road("ruelle-des-voiles", 36, [
-    [320, 920],
-    [420, 1130],
-    [650, 1350],
+  road("rue-des-voiles", 24, [
+    [120, 820],
+    [380, 820],
+    [650, 825],
+    [720, 830],
+    [1060, 820],
+    [1320, 820],
   ]),
-  road("rue-du-couchant", 36, [
-    [1810, 880],
-    [1810, 1100],
-    [1780, 1330],
+  road("promenade-des-quais", 34, [
+    [140, 950],
+    [310, 970],
+    [510, 975],
+    [720, 990],
+    [940, 970],
+    [1120, 975],
+    [1290, 945],
   ]),
-  road("cour-des-metiers", 32, [
-    [590, 890],
-    [610, 1050],
-    [650, 1130],
-    [790, 1140],
-    [1080, 1030],
+  road("passage-des-tisserands", 22, [
+    [380, 260],
+    [380, 510],
+    [380, 685],
+    [380, 820],
+    [380, 970],
   ]),
-  road("allee-des-tilleuls", 30, [
-    [1450, 900],
-    [1500, 1080],
-    [1450, 1330],
+  road("passage-du-levant", 22, [
+    [1060, 260],
+    [1060, 510],
+    [1060, 685],
+    [1060, 820],
+    [1060, 970],
   ]),
-  road("jardin-du-roi", 32, [
-    [1160, 580],
-    [950, 520],
-    [800, 380],
+  road("ruelle-occidentale", 20, [
+    [120, 300],
+    [120, 510],
+    [120, 685],
+    [120, 820],
+    [140, 950],
+  ]),
+  road("ruelle-orientale", 20, [
+    [1320, 300],
+    [1320, 510],
+    [1320, 685],
+    [1320, 820],
+    [1290, 945],
   ]),
 ];
 export const PLAZAS = [
-  { x: 1120, y: 820, rx: 146, ry: 113 },
-  { x: 1120, y: 1365, rx: 128, ry: 54 },
-  { x: 650, y: 1130, rx: 92, ry: 60 },
+  { ...FOUNTAIN, rx: 79, ry: 64 },
+  { x: 720, y: 990, rx: 62, ry: 28 },
 ];
 export function roadDistance(x, y) {
   let d = Infinity;
@@ -169,550 +202,250 @@ export function roadDistance(x, y) {
   return d;
 }
 export const isRoad = (x, y) => roadDistance(x, y) <= 0;
-const building = (id, name, x, y, w, h, roof, service = null) => ({
-  id,
-  kind: "exile-house",
-  name,
-  x,
-  y,
-  w,
-  h,
-  roof,
-  service,
-  footprint: {
-    type: "box",
-    left: -w / 2 + 9,
-    right: w / 2 - 9,
-    top: -h * 0.44,
-    bottom: 0,
-  },
-});
-export const BUILDINGS = [
-  building(
-    "capitainerie",
-    "Capitainerie",
-    940,
-    1290,
-    142,
-    146,
-    "teal",
-    "harbor",
-  ),
-  building(
-    "auberge",
-    "Auberge des Quatre Vents",
-    1300,
-    1240,
-    174,
-    178,
-    "wine",
-    "inn",
-  ),
-  building("forge", "Forge de Borin", 820, 860, 150, 160, "slate", "forge"),
-  building(
-    "bricoleur",
-    "Atelier de Tessa",
-    480,
-    1020,
-    140,
-    148,
-    "teal",
-    "handyman",
-  ),
-  building(
-    "scierie",
-    "Scierie des voyageurs",
-    790,
-    1110,
-    146,
-    144,
-    "slate",
-    "sawmill",
-  ),
-  building(
-    "animalerie",
-    "Refuge de Nola",
-    1660,
-    1070,
-    148,
-    152,
-    "teal",
-    "petshop",
-  ),
-  building(
-    "armurier",
-    "La Maille du Refuge",
-    1380,
-    790,
-    142,
-    166,
-    "wine",
-    "armor",
-  ),
-  building("magicien", "Le Bâton étoilé", 900, 670, 130, 181, "teal", "magic"),
-  building(
-    "epicerie",
-    "Échoppe des voyageurs",
-    1550,
-    870,
-    122,
-    140,
-    "slate",
-    "trader",
-  ),
-  building(
-    "maison-du-roi",
-    "Maison du Premier Accueil",
-    1330,
-    470,
-    176,
-    190,
-    "wine",
-    "history",
-  ),
-  building("residence-1", "Maison des Hortensias", 570, 340, 136, 152, "teal"),
-  building("residence-2", "Maison du Canal", 800, 260, 146, 160, "slate"),
-  building("residence-3", "Maison du Levant", 1440, 250, 144, 166, "wine"),
-  building("residence-4", "Les Trois Lucarnes", 1640, 410, 150, 164, "teal"),
-  building("residence-5", "Logis des Messagers", 1850, 650, 136, 150, "slate"),
-  building("residence-6", "Maison des Filets", 1860, 1230, 132, 140, "wine"),
-  building("residence-7", "Maison des Voiliers", 1660, 1240, 128, 148, "teal"),
-  building("residence-8", "Maison des Tisserands", 250, 800, 124, 148, "wine"),
-  building("residence-9", "Maison des Potiers", 560, 750, 140, 158, "slate"),
-  building("residence-10", "Maison des Glycines", 720, 590, 130, 148, "wine"),
-  building("residence-11", "Maison du Verger", 1520, 620, 142, 158, "slate"),
-  building("residence-12", "Logis du Phare", 350, 1190, 124, 144, "teal"),
-  building("entrepot", "Entrepôt des arrivages", 730, 1290, 152, 134, "slate"),
-  building("halle", "Halle des compagnons", 1900, 1040, 158, 166, "teal"),
+export const URBAN_GROUND = [
+  [120, 270],
+  [350, 230],
+  [650, 250],
+  [800, 250],
+  [1050, 230],
+  [1320, 270],
+  [1330, 860],
+  [1270, 970],
+  [830, 1025],
+  [630, 1025],
+  [160, 940],
+  [100, 820],
 ];
-// Every front door has an explicit approach to the shared street network.
-export const ENTRANCES = [];
-const streets = [...ROADS];
-function connectEntrance(house) {
-  const door = [house.x, house.y + 12],
-    apron = [house.x, house.y + 26];
-  let nearest = null,
-    best = Infinity;
-  for (const street of streets)
-    for (let i = 1; i < street.points.length; i++) {
-      const a = street.points[i - 1],
-        b = street.points[i],
-        dx = b[0] - a[0],
-        dy = b[1] - a[1];
-      let t = Math.max(
-        0,
-        Math.min(
-          1,
-          ((apron[0] - a[0]) * dx + (apron[1] - a[1]) * dy) /
-            (dx * dx + dy * dy || 1),
-        ),
-      );
-      if (a[1] + dy * t < apron[1]) {
-        if (Math.max(a[1], b[1]) < apron[1]) continue;
-        t = dy ? (apron[1] - a[1]) / dy : t;
-      }
-      const point = [a[0] + dx * t, a[1] + dy * t],
-        distance = Math.hypot(point[0] - apron[0], point[1] - apron[1]);
-      if (distance >= best) continue;
-      let clear = true;
-      for (let step = 0; step <= Math.ceil(distance / 5); step++) {
-        const f = step / Math.max(1, Math.ceil(distance / 5)),
-          x = apron[0] + (point[0] - apron[0]) * f,
-          y = apron[1] + (point[1] - apron[1]) * f;
-        if (BUILDINGS.some((p) => inFootprint(x, y, p))) {
-          clear = false;
-          break;
-        }
-      }
-      if (clear) {
-        best = distance;
-        nearest = point;
-      }
+export const PARKS = [
+  { x: 720, y: 160, rx: 65, ry: 42 },
+  { x: 1300, y: 150, rx: 38, ry: 30 },
+];
+export const isUrbanGround = (x, y) =>
+  insidePolygon(x, y, URBAN_GROUND) &&
+  !PARKS.some((p) => Math.hypot((x - p.x) / p.rx, (y - p.y) / p.ry) < 1);
+// Four narrow blocks per row; the 40–50 pixel gaps are traversable alleys.
+const lots = [
+  { left: 150, widths: [90, 100] },
+  { left: 400, widths: [80, 70, 70] },
+  { left: 820, widths: [90, 70, 60] },
+  { left: 1090, widths: [100, 95] },
+];
+const servicesAt = {
+  "4-0-0": ["entrepot", "Entrepôt des arrivages", null],
+  "3-2-0": ["halle", "Halle des compagnons", null],
+  "0-2-0": ["maison-du-roi", "Maison du Premier Accueil", "history"],
+  "1-1-0": ["magicien", "Le Bâton étoilé", "magic"],
+  "1-2-0": ["armurier", "La Maille du Refuge", "armor"],
+  "2-0-0": ["bricoleur", "Atelier de Tessa", "handyman"],
+  "2-3-0": ["epicerie", "Échoppe des voyageurs", "trader"],
+  "3-0-0": ["scierie", "Scierie des voyageurs", "sawmill"],
+  "3-1-0": ["forge", "Forge de Borin", "forge"],
+  "3-3-0": ["animalerie", "Refuge de Nola", "petshop"],
+  "4-1-0": ["capitainerie", "Capitainerie", "harbor"],
+  "4-2-0": ["auberge", "Auberge des Quatre Vents", "inn"],
+};
+export const BUILDINGS = [],
+  ENTRANCES = [],
+  FRONTAGES = [];
+for (const [row, y] of [240, 450, 610, 780, 940].entries())
+  for (const [block, lot] of lots.entries()) {
+    const widths =
+      row === 0
+        ? [110, lot.widths.reduce((a, b) => a + b, 0) - 110]
+        : lot.widths;
+    let edge = lot.left,
+      previous = null;
+    const frontage = [];
+    for (const [index, w] of widths.entries()) {
+      const special = servicesAt[`${row}-${block}-${index}`],
+        id = special?.[0] || `logis-${row}-${block}-${index}`,
+        floors = special ? 3 : 2 + ((row + block + index) % 2);
+      const p = {
+        id,
+        kind: "exile-house",
+        name:
+          special?.[1] ||
+          [
+            "Logis des Voiliers",
+            "Logis des Tisserands",
+            "Logis des Embruns",
+            "Logis du Refuge",
+          ][(row + block + index) % 4],
+        service: special?.[2] || null,
+        x: edge + w / 2,
+        y,
+        w,
+        h: floors * 34 + 116,
+        floors,
+        roof: ["clay", "wine", "ochre", "slate"][(row + block + index) % 4],
+        footprint: {
+          type: "box",
+          left: -w / 2,
+          right: w / 2,
+          top: -62,
+          bottom: 0,
+        },
+        ...(previous ? { attachedTo: previous.id } : {}),
+      };
+      BUILDINGS.push(p);
+      frontage.push(p.id);
+      ENTRANCES.push({ id, x: p.x, y: y + 10 });
+      previous = p;
+      edge += w;
     }
-  if (nearest) {
-    ROADS.push(road(`entrance-${house.id}`, 16, [door, apron, nearest]));
-    ENTRANCES.push({ id: house.id, x: door[0], y: door[1] });
+    FRONTAGES.push(frontage);
+    // A short shared sidewalk opens at both ends into the neighboring alley.
+    ROADS.push(
+      road(`frontage-${row}-${block}`, 12, [
+        [lot.left - 14, y + 14],
+        [edge + 14, y + 14],
+      ]),
+    );
   }
-}
-for (const house of BUILDINGS) connectEntrance(house);
-export const FOUNTAIN = { x: 1120, y: 808 };
-const npc = (id, name, x, y, role = "support") => ({
-  id,
-  name,
-  x,
-  y,
-  role,
-  facing: "down",
-  moving: false,
-  equipment: {},
-});
-export const SERVICES = {
-  forge: {
-    ...npc("borin", "Borin · Forgeron", 847, 890, "melee"),
-    panel: "forge",
-  },
-  handyman: {
-    ...npc("tessa", "Tessa · Bricoleuse", 507, 1050, "ranged"),
-    panel: "handyman",
-  },
-  sawmill: {
-    ...npc("erwan", "Erwan · Scieur", 822, 1140, "melee"),
-    panel: "professions",
-  },
-  petshop: {
-    ...npc("nola", "Nola · Animalerie", 1685, 1100),
-    panel: "petshop",
-  },
-  armor: {
-    ...npc("maela", "Maëla · Armurière", 1407, 820, "melee"),
-    panel: "town",
-  },
-  magic: { ...npc("oriel", "Oriel · Enchanteur", 925, 700), panel: "town" },
-  trader: {
-    ...npc("silo", "Silo · Marchand", 1572, 900, "ranged"),
-    panel: "town",
-  },
-  harbor: {
-    ...npc("capitaine", "Ysée · Capitainerie", 967, 1320, "ranged"),
-    panel: "town",
-  },
-  inn: { ...npc("aubergiste", "Mina · Aubergiste", 1330, 1270), panel: "town" },
-  history: {
-    ...npc("archiviste", "Lys · Archiviste", 1360, 500),
-    panel: "town",
-  },
-};
-SERVICES.ambassador = {
-  ...npc("ambassadeur", "Ambre · Émissaire slime", 1190, 890),
-  panel: "town",
-  slimeResident: true,
-};
-SERVICES.gardener = {
-  ...npc("jardinier", "Mousse · Jardinier slime", 980, 570),
-  panel: "town",
-  slimeResident: true,
-};
 export const TOWN_FOUNTAIN = {
   id: "exile-fountain",
   kind: "exile-fountain",
-  x: 1120,
-  y: 808,
-  footprint: { type: "circle", radius: 29 },
+  ...FOUNTAIN,
+  footprint: { type: "circle", radius: 26 },
+};
+const identities = {
+  forge: ["borin", "Borin · Forgeron", "melee", "forge"],
+  handyman: ["tessa", "Tessa · Bricoleuse", "ranged", "handyman"],
+  sawmill: ["erwan", "Erwan · Scieur", "melee", "professions"],
+  petshop: ["nola", "Nola · Animalerie", "support", "petshop"],
+  armor: ["maela", "Maëla · Armurière", "melee", "town"],
+  magic: ["oriel", "Oriel · Enchanteur", "support", "town"],
+  trader: ["silo", "Silo · Marchand", "ranged", "town"],
+  harbor: ["capitaine", "Ysée · Capitainerie", "ranged", "town"],
+  inn: ["aubergiste", "Mina · Aubergiste", "support", "town"],
+  history: ["archiviste", "Lys · Archiviste", "support", "town"],
+};
+export const SERVICES = {};
+for (const [key, [id, name, role, panel]] of Object.entries(identities)) {
+  const house = BUILDINGS.find((p) => p.service === key);
+  SERVICES[key] = {
+    id,
+    name,
+    role,
+    panel,
+    x: house.x + 16,
+    y: house.y + 32,
+    facing: "down",
+    moving: false,
+    equipment: {},
+  };
+}
+SERVICES.ambassador = {
+  id: "ambassadeur",
+  name: "Ambre · Émissaire slime",
+  x: 785,
+  y: 695,
+  role: "support",
+  panel: "town",
+  slimeResident: true,
+  facing: "down",
+  moving: false,
+  equipment: {},
+};
+SERVICES.gardener = {
+  id: "jardinier",
+  name: "Mousse · Jardinier slime",
+  x: 760,
+  y: 165,
+  role: "support",
+  panel: "town",
+  slimeResident: true,
+  facing: "down",
+  moving: false,
+  equipment: {},
 };
 export const STREET_PROPS = [];
-const add = (kind, x, y, extra = {}) =>
+const add = (kind, x, y, footprint) =>
   STREET_PROPS.push({
     id: `exile-${kind}-${STREET_PROPS.length}`,
     kind,
     x,
     y,
-    ...extra,
-  });
-// Street furniture always sits beside the walkable centerline, not on it.
-for (const [x, y] of [
-  [1010, 750],
-  [1230, 750],
-  [1010, 890],
-  [1230, 890],
-  [1040, 1250],
-  [1190, 1320],
-  [590, 1185],
-  [720, 1190],
-  [1740, 890],
-  [1870, 1110],
-  [410, 1000],
-  [1650, 550],
-  [630, 415],
-])
-  add("exile-lamp", x, y, { footprint: { type: "circle", radius: 4 } });
-for (const [x, y] of [
-  [995, 797],
-  [1245, 797],
-  [1080, 935],
-  [1200, 935],
-  [1030, 1280],
-  [1550, 1260],
-  [510, 1160],
-  [1750, 660],
-])
-  add("bench", x, y, {
-    footprint: { type: "box", left: -17, right: 17, top: -7, bottom: 0 },
+    ...(footprint ? { footprint } : {}),
   });
 for (const [x, y] of [
-  [860, 1285],
-  [850, 1262],
-  [835, 1245],
-  [1710, 1390],
-  [1750, 1390],
-  [620, 1390],
-  [640, 1275],
-  [410, 1040],
-  [470, 1050],
+  [642, 565],
+  [800, 565],
+  [642, 670],
+  [800, 670],
+  [675, 960],
+  [770, 960],
+  [363, 850],
+  [1078, 850],
+  [363, 335],
+  [1078, 335],
 ])
-  add("crate", x, y, {
-    footprint: { type: "box", left: -9, right: 9, top: -16, bottom: 0 },
-  });
+  add("exile-lamp", x, y, { type: "circle", radius: 3 });
 for (const [x, y] of [
-  [870, 1295],
-  [630, 1300],
-  [1635, 1410],
-  [1730, 1405],
-  [459, 1072],
-  [910, 862],
+  [657, 620],
+  [783, 620],
+  [680, 698],
+  [760, 698],
+  [665, 190],
+  [775, 190],
 ])
-  add("barrel", x, y, { footprint: { type: "circle", radius: 7 } });
+  add("bench", x, y, { type: "box", left: -17, right: 17, top: -7, bottom: 0 });
 for (const [x, y] of [
-  [970, 900],
-  [1270, 920],
-  [465, 700],
-  [620, 760],
-  [1570, 660],
-  [1700, 1160],
-  [850, 1195],
-  [1465, 1295],
-  [850, 490],
-  [1020, 570],
+  [260, 965],
+  [280, 965],
+  [1175, 975],
+  [1200, 965],
+  [625, 975],
 ])
-  add("flowers", x, y);
+  add("crate", x, y, { type: "box", left: -9, right: 9, top: -16, bottom: 0 });
 for (const [x, y] of [
-  [640, 1240],
-  [800, 1220],
-  [1660, 1350],
-  [1750, 1350],
+  [300, 950],
+  [1225, 960],
+  [600, 995],
+])
+  add("barrel", x, y, { type: "circle", radius: 7 });
+for (const [x, y] of [
+  [560, 975],
+  [1000, 975],
 ])
   add("exile-stall", x, y, {
-    footprint: { type: "box", left: -22, right: 22, top: -15, bottom: 0 },
+    type: "box",
+    left: -22,
+    right: 22,
+    top: -15,
+    bottom: 0,
   });
-// Continuous medieval frontages: adjoining plots share their party-wall line.
-// Preserve service doors and the road network while replacing isolated villas by blocks.
-export const URBAN_GROUND = [
-  [250, 510],
-  [490, 300],
-  [940, 230],
-  [1500, 240],
-  [1930, 500],
-  [2010, 1040],
-  [1960, 1360],
-  [1450, 1380],
-  [1090, 1410],
-  [620, 1370],
-  [290, 1260],
-  [190, 860],
-];
-export const PARKS = [
-  { x: 980, y: 550, rx: 70, ry: 60 },
-  { x: 1120, y: 170, rx: 145, ry: 60 },
-];
-export const isUrbanGround = (x, y) =>
-  insidePolygon(x, y, URBAN_GROUND) &&
-  !PARKS.some((p) => Math.hypot((x - p.x) / p.rx, (y - p.y) / p.ry) < 1);
-const blocksApron = (a, b) =>
-  b.kind === "exile-house" &&
-  a.y !== b.y &&
-  footprintsOverlap(
-    {
-      ...a,
-      footprint: { ...a.footprint, left: -a.w / 2, right: a.w / 2, bottom: 32 },
-    },
-    {
-      ...b,
-      footprint: { ...b.footprint, left: -b.w / 2, right: b.w / 2, bottom: 32 },
-    },
-  );
-const anchors = [...BUILDINGS];
-for (const p of anchors) {
-  p.floors = p.service ? 3 : 2 + (p.x % 3 === 0 ? 1 : 0);
-  p.h = p.floors * 34 + 116;
-}
-for (const anchor of anchors) {
-  for (const side of [-1, 1]) {
-    let edge = anchor.x + (side * anchor.w) / 2;
-    for (let n = 0; n < 4; n++) {
-      const w = 64 + ((anchor.x + anchor.y + n * 17) % 4) * 8,
-        x = edge + (side * w) / 2,
-        y = anchor.y;
-      const floors = 2 + ((anchor.x + n) % 3 === 0 ? 1 : 0),
-        candidate = building(
-          `block-${anchor.id}-${side}-${n}`,
-          [
-            "Logis des Navigateurs",
-            "Logis des Tisserands",
-            "Logis des Écumeurs",
-            "Logis du Refuge",
-          ][(n + anchor.x) % 4],
-          x,
-          y,
-          w,
-          floors * 34 + 116,
-          ["clay", "wine", "ochre", "slate"][(n + anchor.y) % 4],
-        );
-      candidate.floors = floors;
-      candidate.attachedTo = n
-        ? `block-${anchor.id}-${side}-${n - 1}`
-        : anchor.id;
-      candidate.footprint = {
-        type: "box",
-        left: -w / 2 + 1,
-        right: w / 2 - 1,
-        top: anchor.footprint.top,
-        bottom: 0,
-      };
-      const box = candidate.footprint;
-      let clear = true;
-      for (let yy = box.top - 4; yy <= 8; yy += 5)
-        for (let xx = box.left - 3; xx <= box.right + 3; xx += 5) {
-          if (
-            landDistance(x + xx, y + yy) < 22 ||
-            roadDistance(x + xx, y + yy) < 5
-          ) {
-            clear = false;
-            break;
-          }
-        }
-      if (
-        !clear ||
-        [...BUILDINGS, ...STREET_PROPS, TOWN_FOUNTAIN].some(
-          (p) => footprintsOverlap(candidate, p) || blocksApron(candidate, p),
-        ) ||
-        Object.values(SERVICES).some(
-          (p) =>
-            Math.abs(p.x - x) < w / 2 + 18 &&
-            p.y > y + box.top - 18 &&
-            p.y < y + 25,
-        )
-      )
-        break;
-      BUILDINGS.push(candidate);
-      edge = x + (side * w) / 2;
-    }
-  }
-}
-// Fill the former lawns with residential blocks; keep parks and all existing streets open.
-for (const y of [330, 450, 520, 690, 880, 960, 1050, 1140, 1220])
-  for (let x = 300; x < 1980; x += 72) {
-    const w = 72,
-      floors = 2 + ((x + y) % 5 === 0 ? 1 : 0),
-      candidate = building(
-        `urban-${x}-${y}`,
-        "Logis du Comptoir",
-        x,
-        y,
-        w,
-        floors * 34 + 116,
-        ["clay", "wine", "ochre"][(x + y) % 3],
-      );
-    candidate.floors = floors;
-    candidate.footprint = {
-      type: "box",
-      left: -35,
-      right: 35,
-      top: -62,
-      bottom: 0,
-    };
-    let clear = true;
-    for (let yy = -70; yy <= 22; yy += 6)
-      for (let xx = -39; xx <= 39; xx += 6)
-        if (
-          !isUrbanGround(x + xx, y + yy) ||
-          landDistance(x + xx, y + yy) < 32 ||
-          roadDistance(x + xx, y + yy) < 9
-        )
-          clear = false;
-    if (
-      !clear ||
-      [...BUILDINGS, ...STREET_PROPS, TOWN_FOUNTAIN].some(
-        (p) => footprintsOverlap(candidate, p) || blocksApron(candidate, p),
-      ) ||
-      Object.values(SERVICES).some(
-        (p) => Math.abs(p.x - x) < 55 && p.y > y - 80 && p.y < y + 33,
-      )
-    )
-      continue;
-    const neighbor = BUILDINGS.find(
-      (p) => p.y === y && Math.abs(Math.abs(p.x - x) - (p.w + w) / 2) < 2,
-    );
-    if (neighbor) candidate.attachedTo = neighbor.id;
-    BUILDINGS.push(candidate);
-  }
-
-// Close shared collision walls as well as the visible façades.
-for (const p of BUILDINGS.filter((p) => p.attachedTo)) {
-  const neighbor = BUILDINGS.find((b) => b.id === p.attachedTo);
-  if (p.x < neighbor.x) {
-    p.footprint.right = p.w / 2;
-    neighbor.footprint.left = -neighbor.w / 2;
-  } else {
-    p.footprint.left = -p.w / 2;
-    neighbor.footprint.right = neighbor.w / 2;
-  }
-}
-// A frontage shares one sidewalk and one street connection instead of a path per door.
-ROADS.splice(streets.length);
-ENTRANCES.length = 0;
-export const FRONTAGES = [];
-for (const y of new Set(BUILDINGS.map((p) => p.y))) {
-  const row = BUILDINGS.filter((p) => p.y === y).sort((a, b) => a.x - b.x);
-  let block = [];
-  const finish = () => {
-    if (!block.length) return;
-    FRONTAGES.push(block.map((p) => p.id));
-    if (block.length > 1) {
-      const first = block[0],
-        last = block.at(-1);
-      ROADS.push(
-        road(`frontage-${first.id}`, 14, [
-          [first.x - first.w / 2, y + 14],
-          [last.x + last.w / 2, y + 14],
-        ]),
-      );
-    }
-    const representative = [...block].sort(
-      (a, b) => roadDistance(a.x, a.y + 28) - roadDistance(b.x, b.y + 28),
-    )[0];
-    connectEntrance(representative);
-    for (const p of block)
-      if (!ENTRANCES.some((e) => e.id === p.id))
-        ENTRANCES.push({ id: p.id, x: p.x, y: p.y + 12 });
-    block = [];
-  };
-  for (const house of row) {
-    const previous = block.at(-1);
-    if (previous && house.x - house.w / 2 - (previous.x + previous.w / 2) > 6)
-      finish();
-    block.push(house);
-  }
-  finish();
-}
+for (const [x, y] of [
+  [650, 560],
+  [790, 560],
+  [685, 160],
+  [820, 165],
+  [105, 420],
+  [1345, 420],
+])
+  add("flowers", x, y);
 const trees = [];
-for (let y = 170; y < 1370; y += 93)
-  for (let x = 240; x < 2040; x += 119) {
-    const px = x + Math.round(Math.sin(x + y) * 23),
-      py = y + Math.round(Math.cos(x - y) * 19);
-    if (
-      landDistance(px, py) < 48 ||
-      roadDistance(px, py) < 53 ||
-      isUrbanGround(px, py)
-    )
-      continue;
-    if (
-      [...BUILDINGS, ...STREET_PROPS].some(
-        (p) =>
-          Math.abs(px - p.x) < (p.w || 70) / 2 + 43 &&
-          py > p.y - (p.h || 70) - 20 &&
-          py < p.y + 55,
-      )
-    )
-      continue;
-    trees.push({
-      id: `exile-tree-${trees.length}`,
-      kind: "tree",
-      x: px,
-      y: py,
-      variant: trees.length % 3,
-      footprint: { type: "circle", radius: 9 },
-      rootRadius: 15,
-    });
-  }
+for (const [x, y] of [
+  [95, 260],
+  [90, 550],
+  [100, 740],
+  [1335, 200],
+  [1350, 420],
+  [1340, 680],
+  [675, 150],
+  [790, 150],
+]) {
+  if (landDistance(x, y) < 18 || roadDistance(x, y) < 19) continue;
+  trees.push({
+    id: `exile-tree-${trees.length}`,
+    kind: "tree",
+    x,
+    y,
+    variant: trees.length % 3,
+    footprint: { type: "circle", radius: 9 },
+    rootRadius: 15,
+  });
+}
 export const PROPS = [...BUILDINGS, TOWN_FOUNTAIN, ...STREET_PROPS, ...trees];
 export const SOLIDS = PROPS.filter((p) => p.footprint);
 export function canWalkExile(x, y) {
@@ -742,19 +475,24 @@ export function validateExileMap() {
     for (let j = i + 1; j < SOLIDS.length; j++)
       if (footprintsOverlap(SOLIDS[i], SOLIDS[j]))
         errors.push(`${SOLIDS[i].id}/${SOLIDS[j].id}: overlap`);
-  for (const p of [EXILE_SPAWN, EXILE_RETURN, ...Object.values(SERVICES)])
+  for (const p of [
+    EXILE_SPAWN,
+    EXILE_RETURN,
+    ...Object.values(SERVICES),
+    ...Object.values(EXILE_DEV_POINTS),
+  ])
     if (!canWalkExile(p.x, p.y))
       errors.push(`${p.id || "entry"}: inaccessible`);
   return errors;
 }
 export function exileDistrict(x, y) {
-  return y > 1300
+  return y > 945
     ? "Le port de l’Exil"
-    : y < 600
-      ? "Les jardins du Premier Accueil"
-      : x < 900
+    : y < 340
+      ? "Le Premier Accueil"
+      : x < 640
         ? "Le quartier des artisans"
-        : x > 1450
-          ? "Les allées du Levant"
+        : x > 810
+          ? "Les ruelles du Levant"
           : "La place du Refuge";
 }

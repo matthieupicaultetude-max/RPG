@@ -802,3 +802,9 @@ Ville pacifique : 16 promeneurs, 12 habitants dont deux slimes amicaux, fontaine
 Le Comptoir conserve son rôle d’accueil sur le littoral sud de la carte du pays, ses quais et ses services. Il passe à 55 bâtiments, dont 29 ajouts mitoyens, répartis en douze rangées de plusieurs façades. Les constructions ont deux à trois étages, colombages, soubassements de pierre, fenêtres à volets, tuiles en terre cuite et ardoises, cheminées et auvents de commerces.
 
 Les grandes pelouses centrales deviennent des cours minérales. Les trottoirs de façade desservent plusieurs portes avec un raccord commun, tandis que les jardins et la place du Refuge restent ouverts. Les empreintes des murs mitoyens se rejoignent : aucun passage caché à travers les façades. La génération réserve les rues, les abords des portes, les ateliers et les habitants ; les tests vérifient l’accès à chaque bâtiment depuis le port.
+
+## 60. Comptoir resserré autour du port
+
+Le plan précédent reste trop étalé : la ville est reconstruite sur 1 440 × 1 240 pixels au lieu de 2 240 × 1 760, soit 55 % de surface en moins. Les sprites et la vitesse gardent leur échelle ; la réduction concerne réellement les distances et l’implantation.
+
+48 bâtiments composent vingt rangées mitoyennes. Les rues sont retracées entre les îlots avec des largeurs de 20 à 36 pixels et des trottoirs communs de 12 pixels. Port au sud, place du Refuge et fontaine au centre, commerces et artisans dans les rues voisines, Premier Accueil au nord. Quelques jardins et arbres de bordure subsistent. Les quais, les navires, les habitants, le plan local et les accès dev suivent les nouvelles coordonnées ; les services restent utilisables. Les positions de sauvegarde invalides sont replacées au port sans perte de progression.

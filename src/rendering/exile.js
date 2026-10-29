@@ -100,8 +100,8 @@ function plotGround(g) {
   for (const p of map.PLAZAS) ellipse(g, p.x, p.y, p.rx, p.ry, pavers);
   // Gardens, clover and flower beds are planted off every road and building apron.
   for (let i = 0; i < 2200; i++) {
-    const x = 180 + (hash(i, 2, 18) % 1870),
-      y = 110 + (hash(i, 3, 18) % 1250);
+    const x = 80 + (hash(i, 2, 18) % (map.MAP_SIZE.width - 160)),
+      y = 90 + (hash(i, 3, 18) % (map.MAP_SIZE.height - 200));
     if (
       map.isUrbanGround(x, y) ||
       map.roadDistance(x, y) < 12 ||
@@ -154,25 +154,26 @@ function plotGround(g) {
     }
   }
   // Quays: dressed stone follows the southern shoreline, with deliberate breaks for piers.
-  for (let x = 310; x < 1990; x += 16) {
-    const y = 1400 + Math.sin(x * 0.008) * 12;
-    if (!map.isLand(x, y) || !map.isLand(x, y - 10)) continue;
-    rect(g, x, y - 4, 16, 9, "#778984");
-    rect(g, x, y - 5, 15, 3, "#d3cfab");
-    rect(g, x + 1, y, 13, 3, "#9da99b");
-  }
+  g.strokeStyle = "#778984";
+  g.lineWidth = 10;
+  g.beginPath();
+  map.QUAY_EDGE.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y)));
+  g.stroke();
+  g.strokeStyle = "#d3cfab";
+  g.lineWidth = 3;
+  g.stroke();
   // A memorial mosaic belongs to the square, not to the paving texture.
   g.strokeStyle = "#c7b77c";
   g.lineWidth = 3;
   g.beginPath();
-  g.ellipse(1120, 808, 67, 47, 0, 0, Math.PI * 2);
+  g.ellipse(map.FOUNTAIN.x, map.FOUNTAIN.y, 52, 39, 0, 0, Math.PI * 2);
   g.stroke();
   for (let i = 0; i < 4; i++) {
     const a = (i * Math.PI) / 2;
     ellipse(
       g,
-      1120 + Math.cos(a) * 58,
-      808 + Math.sin(a) * 40,
+      map.FOUNTAIN.x + Math.cos(a) * 46,
+      map.FOUNTAIN.y + Math.sin(a) * 33,
       7,
       5,
       ["#85bacc", "#c3a26d", "#bf775d", "#a7c6af"][i],
@@ -224,7 +225,9 @@ function building(g, p) {
     wall = floors * 34 + 32,
     h = p.h,
     roof = roofColors[p.roof] || roofColors.clay;
-  const plaster = ["#dfcba7", "#d9b99a", "#d4c6a9", "#e5d4ad"][(p.x + p.y) % 4];
+  const plaster = ["#dfcba7", "#d9b99a", "#d4c6a9", "#e5d4ad"][
+    Math.floor(p.x + p.y) % 4
+  ];
   ellipse(g, 3, 4, a + 5, 8, "#384e4733");
   // Party walls meet exactly; adjoining façades form a continuous street frontage.
   rect(g, -a, -wall, w, wall, "#735b45");
@@ -489,8 +492,7 @@ export function createExileEnvironment() {
   const g = ground.getContext("2d");
   g.imageSmoothingEnabled = false;
   plotGround(g);
-  ship(g, 1040, 1550, "#83a9a4");
-  ship(g, 1665, 1535, "#ba8475");
+  for (const p of map.SHIPS) ship(g, p.x, p.y, p.color);
   const atlas = createSpriteAtlas();
   const props = map.PROPS.map((p) => {
     const custom = [
@@ -540,8 +542,8 @@ export function drawExileLife(g, s, foreground = false) {
   if (!foreground) {
     // Shore glints and foam move on water only; docks are never overwritten.
     for (let i = 0; i < 44; i++) {
-      const x = 300 + i * 41,
-        y = 1480 + (i % 6) * 35;
+      const x = 120 + i * 29,
+        y = 1050 + (i % 6) * 25;
       if (map.isLand(x, y) || map.onDock(x, y)) continue;
       rect(g, x + Math.sin(t * 0.6 + i) * 4, y, 6 + (i % 4), 1, "#b5d8ce88");
     }
@@ -588,8 +590,8 @@ export function drawExileLife(g, s, foreground = false) {
     );
   }
   for (let i = 0; i < 7; i++) {
-    const x = 670 + i * 143 + Math.sin(t * 0.12 + i) * 100,
-      y = 1450 + (i % 3) * 60 + Math.cos(t * 0.3 + i) * 9;
+    const x = 200 + i * 150 + Math.sin(t * 0.12 + i) * 100,
+      y = 1060 + (i % 3) * 45 + Math.cos(t * 0.3 + i) * 9;
     g.strokeStyle = "#e7e7cb";
     g.lineWidth = 1;
     g.beginPath();
