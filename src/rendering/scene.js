@@ -110,7 +110,7 @@ export function createRenderer(canvas) {
       ...(s.zone==='garden'?[{y:DEV_CHEST.y,draw:()=>drawDevChest(ctx,s)}]:[]),
       ...(s.zone==='slime-furnace'?furnaceMap.FORGES.map(p=>({y:p.y,draw:()=>drawFurnaceForge(ctx,p,s)})):[]),
       ...(s.zone==='slime-furnace'?(s.furnace?.braziers||furnaceMap.BRAZIERS).map(b=>({y:b.y,draw:()=>drawFurnaceBrazier(ctx,b,s)})):[]),
-      ...environment.props.filter(p=>s.zone!=='exile'||(p.bounds.right>camera.x-100&&p.bounds.left<camera.x+640+100&&p.bounds.bottom>camera.y-50&&p.bounds.top<camera.y+400+50)).map((prop) => ({
+      ...environment.props.filter(p=>!p.groundLayer).filter(p=>s.zone!=='exile'||(p.bounds.right>camera.x-100&&p.bounds.left<camera.x+640+100&&p.bounds.bottom>camera.y-50&&p.bounds.top<camera.y+400+50)).map((prop) => ({
         y: prop.y,
         draw: () => {
           ctx.save();

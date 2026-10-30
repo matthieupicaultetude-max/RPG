@@ -172,7 +172,7 @@ function plotGround(g, map) {
     );
   }
   g.restore();
-  for (const d of map.DOCKS) {
+  for (const d of map.DOCKS.filter((d) => !d.editor)) {
     rect(g, d.x - 3, d.y - 3, d.w + 6, d.h + 6, "#5a5143");
     rect(g, d.x, d.y, d.w, d.h, "#b79260");
     for (let y = d.y; y < d.y + d.h; y += 9) {
@@ -559,6 +559,7 @@ export function createExileEnvironment(mapOverride = map) {
       p.kind === "exile-prop" ? portSpriteSize(p) || { w: p.w, h: p.h } : null;
     return {
       ...p,
+      groundLayer: !!p.walkSurface,
       bounds: tight
         ? {
             left: p.x - tight.w / 2,
@@ -592,6 +593,7 @@ export function createExileEnvironment(mapOverride = map) {
       },
     };
   });
+  for (const p of props.filter((p) => p.groundLayer)) p.draw(g);
   return {
     ground,
     props: [...props, ...rampartPieces(map)],

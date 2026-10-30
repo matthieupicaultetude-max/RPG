@@ -302,3 +302,50 @@ test("La verdure se place manuellement : troncs et haies solides, petites plante
   assert.equal(map.PROPS.find((p) => p.id === "tree-test").x, 720);
   applyMap(defaultMap);
 });
+
+test("Les assets maritimes séparent eau, quais et pontons praticables sans perdre la sauvegarde", async () => {
+  const { HARBOR_ASSETS } = await import("../src/data/harbor-assets.js");
+  assert.equal(HARBOR_ASSETS.length, 12);
+  assert.equal(HARBOR_ASSETS.filter((p) => p.placement === "water").length, 4);
+  assert.equal(HARBOR_ASSETS.filter((p) => p.walkSurface).length, 2);
+  for (const p of HARBOR_ASSETS) {
+    assert.ok(palette.some((t) => t.id === p.id));
+    assert.ok(!defaultMap.objects.some((t) => t.template === p.id));
+  }
+  const doc = copy(defaultMap),
+    dockCount = map.DOCKS.length;
+  doc.objects.push(
+    { id: "pontoon-test", template: "harbor-pier-vertical", x: 720, y: 1236 },
+    { id: "ship-test", template: "harbor-fishing-boat", x: 900, y: 1210 },
+    { id: "bollard-test", template: "harbor-bollard", x: 720, y: 1140 },
+  );
+  applyMap(doc);
+  assert.equal(map.DOCKS.length, dockCount + 1);
+  for (let y = 1170; y <= 1224; y += 2)
+    assert.ok(map.canWalkExile(720, y), `jointure du ponton y=${y}`);
+  const saved = captureMap();
+  applyMap(defaultMap);
+  assert.equal(map.DOCKS.length, dockCount);
+  applyMap(saved);
+  assert.equal(map.DOCKS.length, dockCount + 1);
+  const bad = copy(saved);
+  Object.assign(
+    bad.objects.find((p) => p.id === "ship-test"),
+    { x: 720, y: 320 },
+  );
+  assert.throws(() => applyMap(bad), /Placement impossible/);
+  assert.equal(map.PROPS.find((p) => p.id === "ship-test").y, 1210);
+  applyMap(defaultMap);
+});
+
+test("Une coque ne peut pas chevaucher un ponton même si ses coins sont dans l’eau", () => {
+  const doc = copy(defaultMap);
+  doc.objects.push({
+    id: "ship-crossing",
+    template: "harbor-caravel",
+    x: 720,
+    y: 1215,
+  });
+  assert.throws(() => applyMap(doc), /Placement impossible/);
+  assert.deepEqual(captureMap(), defaultMap);
+});

@@ -1,0 +1,86 @@
+[
+  {
+    "id": "harbor-pier-vertical",
+    "name": "Ponton vertical",
+    "w": 36,
+    "h": 54,
+    "surface": "pier"
+  },
+  {
+    "id": "harbor-pier-horizontal",
+    "name": "Ponton horizontal",
+    "w": 100,
+    "h": 49,
+    "surface": "pier"
+  },
+  {
+    "id": "harbor-bollard",
+    "name": "Bollard et cordages",
+    "w": 24,
+    "h": 20,
+    "surface": "quay"
+  },
+  {
+    "id": "harbor-cargo",
+    "name": "Cargaison et filets",
+    "w": 42,
+    "h": 32,
+    "surface": "quay"
+  },
+  {
+    "id": "harbor-fishing-rack",
+    "name": "Râtelier de pêche",
+    "w": 40,
+    "h": 44,
+    "surface": "quay"
+  },
+  {
+    "id": "harbor-crane",
+    "name": "Grue de chargement",
+    "w": 64,
+    "h": 72,
+    "surface": "quay"
+  },
+  {
+    "id": "harbor-lamp",
+    "name": "Lampadaire du port",
+    "w": 26,
+    "h": 42,
+    "surface": "quay"
+  },
+  {
+    "id": "harbor-fish-stall",
+    "name": "Poissonnerie",
+    "w": 60,
+    "h": 60,
+    "surface": "quay"
+  },
+  {
+    "id": "harbor-rowboat",
+    "name": "Barque à rames",
+    "w": 64,
+    "h": 29,
+    "surface": "water"
+  },
+  {
+    "id": "harbor-fishing-boat",
+    "name": "Voilier de pêche",
+    "w": 108,
+    "h": 91,
+    "surface": "water"
+  },
+  {
+    "id": "harbor-merchant-cog",
+    "name": "Cogue marchande",
+    "w": 150,
+    "h": 123,
+    "surface": "water"
+  },
+  {
+    "id": "harbor-caravel",
+    "name": "Caravelle bleue",
+    "w": 184,
+    "h": 134,
+    "surface": "water"
+  }
+]

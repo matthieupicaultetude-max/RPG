@@ -77,14 +77,17 @@ export const QUAY_EDGE = [
 ];
 export const isLand = (x, y) => insidePolygon(x, y, LAND);
 export const landDistance = (x, y) => polygonDistance(x, y, LAND);
-export const onDock = (x, y, margin = 0) =>
-  DOCKS.some(
-    (d) =>
-      x >= d.x + margin &&
-      x <= d.x + d.w - margin &&
-      y >= d.y + margin &&
-      y <= d.y + d.h - margin,
+export const onDock = (x, y, margin = 0) => {
+  const inside = (px, py) =>
+    DOCKS.some(
+      (d) => px >= d.x && px <= d.x + d.w && py >= d.y && py <= d.y + d.h,
+    );
+  if (!inside(x, y)) return false;
+  if (!margin) return true;
+  return Array.from({ length: 8 }, (_, i) => (i * Math.PI) / 4).every((a) =>
+    inside(x + Math.cos(a) * margin, y + Math.sin(a) * margin),
   );
+};
 function smooth(points) {
   for (let pass = 0; pass < 2; pass++) {
     const next = [points[0]];
@@ -756,14 +759,58 @@ export function canWalkExile(x, y) {
     )
   );
 }
-export const placementOnLand = (p) =>
-  footprintPoints(p).every(
-    ([x, y]) => landDistance(x, y) >= 2 || (p.onDock && onDock(x, y, 1)),
+export const placementOnLand = (p) => {
+  if (
+    p.placement === "water" &&
+    DOCKS.some((d) =>
+      footprintsOverlap(p, {
+        x: d.x,
+        y: d.y,
+        footprint: { type: "box", left: 0, right: d.w, top: 0, bottom: d.h },
+      }),
+    )
+  )
+    return false;
+  if (p.walkSurface) {
+    const f = p.walkSurface;
+    return [
+      [f.left, f.top],
+      [f.right, f.bottom],
+    ].every(
+      ([dx, dy]) =>
+        p.x + dx > 0 &&
+        p.x + dx < MAP_SIZE.width &&
+        p.y + dy > 0 &&
+        p.y + dy < MAP_SIZE.height,
+    );
+  }
+  return footprintPoints(p).every(([x, y]) =>
+    p.placement === "water"
+      ? x > 0 &&
+        x < MAP_SIZE.width &&
+        y > 0 &&
+        y < MAP_SIZE.height &&
+        !isLand(x, y) &&
+        !onDock(x, y)
+      : landDistance(x, y) >= 2 || (p.onDock && onDock(x, y, 1)),
   );
+};
 export function validateExileMap() {
   const errors = [];
   for (const p of PROPS)
-    if (!placementOnLand(p)) errors.push(`${p.id}: outside land`);
+    if (!placementOnLand(p))
+      errors.push(
+        p.placement === "water"
+          ? `${p.name || p.id} : placez la coque dans l’eau, hors des pontons`
+          : `${p.id}: outside land`,
+      );
+  for (const p of PROPS.filter((p) => p.walkSurface))
+    if (
+      SOLIDS.some((other) =>
+        footprintsOverlap({ ...p, footprint: p.walkSurface }, other),
+      )
+    )
+      errors.push(`${p.id}: ponton obstrué`);
   for (let i = 0; i < SOLIDS.length; i++)
     for (let j = i + 1; j < SOLIDS.length; j++)
       if (footprintsOverlap(SOLIDS[i], SOLIDS[j]))

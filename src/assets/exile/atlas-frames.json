@@ -333,5 +333,82 @@
         "h": 225
       }
     }
+  },
+  {
+    "file": "harbor-assets.png",
+    "frames": {
+      "harbor-pier-vertical": {
+        "x": 86,
+        "y": 29,
+        "w": 192,
+        "h": 289
+      },
+      "harbor-pier-horizontal": {
+        "x": 344,
+        "y": 75,
+        "w": 404,
+        "h": 199
+      },
+      "harbor-bollard": {
+        "x": 836,
+        "y": 76,
+        "w": 259,
+        "h": 215
+      },
+      "harbor-cargo": {
+        "x": 1159,
+        "y": 26,
+        "w": 349,
+        "h": 268
+      },
+      "harbor-fishing-rack": {
+        "x": 47,
+        "y": 330,
+        "w": 312,
+        "h": 341
+      },
+      "harbor-crane": {
+        "x": 403,
+        "y": 310,
+        "w": 333,
+        "h": 373
+      },
+      "harbor-lamp": {
+        "x": 841,
+        "y": 312,
+        "w": 229,
+        "h": 371
+      },
+      "harbor-fish-stall": {
+        "x": 1165,
+        "y": 341,
+        "w": 340,
+        "h": 339
+      },
+      "harbor-rowboat": {
+        "x": 17,
+        "y": 809,
+        "w": 338,
+        "h": 151
+      },
+      "harbor-fishing-boat": {
+        "x": 386,
+        "y": 705,
+        "w": 322,
+        "h": 270
+      },
+      "harbor-merchant-cog": {
+        "x": 729,
+        "y": 683,
+        "w": 368,
+        "h": 301
+      },
+      "harbor-caravel": {
+        "x": 1118,
+        "y": 700,
+        "w": 401,
+        "h": 291
+      }
+    }
   }
 ]
