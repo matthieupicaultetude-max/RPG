@@ -63,6 +63,20 @@ function path(g, r) {
   g.beginPath();
   r.points.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y)));
 }
+function naturalShore(g, map, style, width) {
+  g.beginPath();
+  for (let i = 0; i < map.LAND.length; i++) {
+    const a = map.LAND[i],
+      b = map.LAND[(i + 1) % map.LAND.length];
+    if (a[1] > 925 || b[1] > 925) continue;
+    g.moveTo(...a);
+    g.lineTo(...b);
+  }
+  g.lineCap = g.lineJoin = "round";
+  g.lineWidth = width;
+  g.strokeStyle = style;
+  g.stroke();
+}
 function plotGround(g, map) {
   const water = g.createPattern(tile("harbor-water"), "repeat"),
     grass = g.createPattern(tile("grass"), "repeat"),
@@ -71,6 +85,14 @@ function plotGround(g, map) {
     sidewalk = g.createPattern(tile("harbor-sidewalk"), "repeat");
   rect(g, 0, 0, map.MAP_SIZE.width, map.MAP_SIZE.height, water);
   poly(g, map.LAND, "#596e65");
+  poly(g, map.LAND);
+  g.lineWidth = 36;
+  g.strokeStyle = "#63bdb855";
+  g.stroke();
+  poly(g, map.LAND);
+  g.lineWidth = 18;
+  g.strokeStyle = "#91cec066";
+  g.stroke();
   g.save();
   poly(g, map.LAND);
   g.clip();
@@ -89,6 +111,10 @@ function plotGround(g, map) {
   g.lineWidth = 5;
   g.stroke();
   g.restore();
+  // Only the unbuilt coast is sandy; the southern quay keeps its dressed stone.
+  naturalShore(g, map, g.createPattern(tile("sand"), "repeat"), 30);
+  naturalShore(g, map, g.createPattern(tile("wet-sand"), "repeat"), 5);
+  naturalShore(g, map, "#dde5c1", 1);
   // All border strokes precede all paving strokes: intersections share one material.
   g.lineCap = g.lineJoin = "round";
   for (const r of map.ROADS) {
@@ -127,6 +153,8 @@ function plotGround(g, map) {
     const x = 80 + (hash(i, 2, 18) % (map.MAP_SIZE.width - 160)),
       y = 90 + (hash(i, 3, 18) % (map.MAP_SIZE.height - 200));
     if (
+      !map.isLand(x, y) ||
+      map.landDistance(x, y) < 18 ||
       map.isUrbanGround(x, y) ||
       map.roadDistance(x, y) < 12 ||
       map.BUILDINGS.some(
@@ -610,8 +638,13 @@ export function drawExileLife(g, s, foreground = false) {
     for (let i = 0; i < 44; i++) {
       const x = 120 + i * 29,
         y = 1050 + (i % 6) * 25;
-      if (map.isLand(x, y) || map.onDock(x, y)) continue;
-      rect(g, x + Math.sin(t * 0.6 + i) * 4, y, 6 + (i % 4), 1, "#b5d8ce88");
+      const xx = x + Math.sin(t * 0.6 + i) * 4,
+        length = 6 + (i % 4);
+      if (
+        [xx, xx + length].some((px) => map.isLand(px, y) || map.onDock(px, y))
+      )
+        continue;
+      rect(g, xx, y, length, 1, "#b5d8ce88");
     }
     for (const p of map.BUILDINGS.filter(
       (p) => p.service === "forge" || p.service === "sawmill",

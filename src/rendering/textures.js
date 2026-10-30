@@ -9,48 +9,118 @@ export function hash(x, y, salt = 0) {
   return (n ^ (n >>> 16)) >>> 0;
 }
 const mod = (value, size) => ((Math.floor(value) % size) + size) % size;
+// Wrapped lattice noise keeps both the value and slope continuous across a tile.
+function noise(x, y, cell, salt) {
+  const cx = Math.floor(x / cell),
+    cy = Math.floor(y / cell),
+    period = 64 / cell;
+  const smooth = (t) => t * t * (3 - 2 * t),
+    u = smooth((x % cell) / cell),
+    v = smooth((y % cell) / cell);
+  const n = (dx, dy) =>
+    (hash(mod(cx + dx, period), mod(cy + dy, period), salt) % 1024) / 1023 -
+    0.5;
+  return (
+    (n(0, 0) * (1 - u) + n(1, 0) * u) * (1 - v) +
+    (n(0, 1) * (1 - u) + n(1, 1) * u) * v
+  );
+}
+function waterPixel(x, y, harbor) {
+  const n =
+    Math.round((noise(x, y, 32, 71) * 20 + noise(x, y, 16, 72) * 8) / 2) * 2;
+  const base = harbor ? [36 + n, 136 + n, 153 + n] : [54 + n, 128 + n, 143 + n];
+  const cx = Math.floor(x / 16),
+    cy = Math.floor(y / 16);
+  // Short curved wavelets cross cell and tile edges; no regularly spaced rows.
+  for (const dx of [0, -1])
+    for (const dy of [0, -1]) {
+      const gx = mod(cx + dx, 4),
+        gy = mod(cy + dy, 4),
+        h = hash(gx, gy, 83);
+      if (h % 3 === 0) continue;
+      const px = gx * 16 + (h % 16),
+        py = gy * 16 + ((h >>> 5) % 16),
+        len = 5 + ((h >>> 9) % 9);
+      const sx = mod(x - px, 64),
+        sy = mod(y - py, 64),
+        bend = sx < len * 0.3 ? 1 : sx < len * 0.75 ? 0 : 1;
+      if (sx < len && sy === bend)
+        return [base[0] + 23, base[1] + 27, base[2] + 20, 255];
+      if (sx < len * 0.6 && sy === bend + 2)
+        return [base[0] - 4, base[1] - 5, base[2] - 3, 255];
+    }
+  return [...base, 255];
+}
+function sandPixel(x, y, material) {
+  const wet = material === "wet-sand",
+    dirt = material === "dirt";
+  const n = Math.round(noise(x, y, 32, 91) * 10 + noise(x, y, 8, 92) * 4),
+    grain = hash(x, y, 93);
+  const shift = grain % 97 === 0 ? 8 : grain % 71 === 0 ? -8 : (grain % 3) - 1;
+  const base = wet ? [174, 163, 122] : dirt ? [213, 194, 149] : [229, 212, 169];
+  // Tiny grains sit on gentle broad patches instead of a speckled grid.
+  return [base[0] + n + shift, base[1] + n + shift, base[2] + n + shift, 255];
+}
+const naturalTiles = new Map();
+function naturalPixel(material, x, y) {
+  let tile = naturalTiles.get(material);
+  if (!tile) {
+    tile = Array.from({ length: 4096 }, (_, i) =>
+      material.includes("water")
+        ? waterPixel(i % 64, Math.floor(i / 64), material === "harbor-water")
+        : sandPixel(i % 64, Math.floor(i / 64), material),
+    );
+    naturalTiles.set(material, tile);
+  }
+  return tile[y * 64 + x].slice();
+}
 export function texturePixel(material, worldX, worldY) {
   const x = mod(worldX, TEXTURE_SIZE),
     y = mod(worldY, TEXTURE_SIZE),
     grain = hash(x, y, 7);
-  if (material === 'harbor-sidewalk' || material === 'harbor-cobbles') {
-    const slab = material === 'harbor-sidewalk', w = slab ? 16 : 8, h = slab ? 8 : 4;
-    const row = Math.floor(y / h), sx = (x + (row % 2) * w / 2) % w, sy = y % h;
-    const shade = hash(Math.floor((x + (row % 2) * w / 2) / w) % (64 / w), row, 73) % 9;
-    if (!sx || !sy) return slab ? [107,115,119,255] : [109,111,106,255];
-    if (sy === 1) return slab ? [203,208,209,255] : [188,187,171,255];
-    return slab ? [166+shade,174+shade,178+shade,255] : [149+shade,151+shade,139+shade,255];
+  if (["water", "harbor-water", "sand", "wet-sand", "dirt"].includes(material))
+    return naturalPixel(material, x, y);
+  if (material === "harbor-sidewalk" || material === "harbor-cobbles") {
+    const slab = material === "harbor-sidewalk",
+      w = slab ? 16 : 8,
+      h = slab ? 8 : 4;
+    const row = Math.floor(y / h),
+      sx = (x + ((row % 2) * w) / 2) % w,
+      sy = y % h;
+    const shade =
+      hash(Math.floor((x + ((row % 2) * w) / 2) / w) % (64 / w), row, 73) % 9;
+    if (!sx || !sy) return slab ? [107, 115, 119, 255] : [109, 111, 106, 255];
+    if (sy === 1) return slab ? [203, 208, 209, 255] : [188, 187, 171, 255];
+    return slab
+      ? [166 + shade, 174 + shade, 178 + shade, 255]
+      : [149 + shade, 151 + shade, 139 + shade, 255];
   }
-  if(material==='harbor-stone'){
-    const row=Math.floor(y/8),offset=(row%2)*4,sx=(x+offset)%8,sy=y%8,h=hash(Math.floor((x+offset)/8)%8,row,32)%4;
-    if(sx===0||sy===0||(sx===1&&sy===1))return [166,160,133,255];
-    if(sy===1)return [242,229,195,255];
-    return [211+h*3,204+h*2,175+h*2,255];
-  }
-  if(material==='harbor-water'){
-    const row=Math.floor(y/8),start=hash(row,0,15)%64,len=4+hash(row,2,15)%9;
-    if(y%8===3&&mod(x-start,64)<len)return [102,192,195,255];
-    return [30+grain%4,133+grain%4,153+grain%4,255];
-  }
-  if(material==='town-stone'){
-    const row=Math.floor(y/8),offset=(row%2)*4,sx=(x+offset)%8,sy=y%8,h=hash(Math.floor((x+offset)/8)%8,row,32)%4;
-    if(sx===0||sy===0||(sx===1&&sy===1)||(sx===7&&sy===7))return [132,143,131,255];
-    if(sy===1)return [198+h,201+h,175+h,255];
-    return [168+h*3,177+h*2,161+h*2,255];
-  }
-  if (material === "water") {
+  if (material === "harbor-stone") {
     const row = Math.floor(y / 8),
-      start = hash(row, 0, 15) % 64,
-      length = 4 + (hash(row, 2, 15) % 9);
-    if (y % 8 === 3 && mod(x - start, 64) < length) return [116, 165, 163, 255];
-    const shift = grain % 3;
-    return [60 + shift, 125 + shift, 134 + shift, 255];
+      offset = (row % 2) * 4,
+      sx = (x + offset) % 8,
+      sy = y % 8,
+      h = hash(Math.floor((x + offset) / 8) % 8, row, 32) % 4;
+    if (sx === 0 || sy === 0 || (sx === 1 && sy === 1))
+      return [166, 160, 133, 255];
+    if (sy === 1) return [242, 229, 195, 255];
+    return [211 + h * 3, 204 + h * 2, 175 + h * 2, 255];
   }
-  if (material === "dirt") {
-    if (grain % 113 === 0) return [190, 169, 115, 255];
-    if (grain % 97 === 0) return [225, 206, 155, 255];
-    const n = grain % 4;
-    return [210 + n, 190 + n, 139 + n, 255];
+  if (material === "town-stone") {
+    const row = Math.floor(y / 8),
+      offset = (row % 2) * 4,
+      sx = (x + offset) % 8,
+      sy = y % 8,
+      h = hash(Math.floor((x + offset) / 8) % 8, row, 32) % 4;
+    if (
+      sx === 0 ||
+      sy === 0 ||
+      (sx === 1 && sy === 1) ||
+      (sx === 7 && sy === 7)
+    )
+      return [132, 143, 131, 255];
+    if (sy === 1) return [198 + h, 201 + h, 175 + h, 255];
+    return [168 + h * 3, 177 + h * 2, 161 + h * 2, 255];
   }
   if (material === "grass") {
     // Sparse wrapped tufts: no grid of opaque tiles and no stripes along tile edges.

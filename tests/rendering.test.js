@@ -21,7 +21,15 @@ test("map: all footprints grounded, no obstacles overlap paths or one another", 
       assert.ok(isLand(x, y) && !isRoad(x, y));
 });
 test("textures: periodic in both axes including negative coordinates", () => {
-  for (const material of ["grass", "dirt", "water", "stone"])
+  for (const material of [
+    "grass",
+    "dirt",
+    "water",
+    "harbor-water",
+    "sand",
+    "wet-sand",
+    "stone",
+  ])
     for (let x = -71; x < 130; x += 7)
       for (let y = -75; y < 128; y += 9) {
         assert.deepEqual(
@@ -138,4 +146,49 @@ test("pixel-perfect camera: integer zoom and integer source origin at all tested
       );
       assert.ok(640 * view.scale >= w && 400 * view.scale >= h);
     }
+});
+
+test("eau et sable : les bordures répétées ne créent pas de contraste de couture", () => {
+  for (const material of ["water", "harbor-water", "sand", "wet-sand"]) {
+    let interior = 0,
+      seam = 0;
+    for (let y = 0; y < TEXTURE_SIZE; y++)
+      for (let x = 0; x < TEXTURE_SIZE; x++) {
+        const a = texturePixel(material, x, y);
+        for (const [xx, yy, border] of [
+          [(x + 1) % TEXTURE_SIZE, y, x === TEXTURE_SIZE - 1],
+          [x, (y + 1) % TEXTURE_SIZE, y === TEXTURE_SIZE - 1],
+        ]) {
+          const b = texturePixel(material, xx, yy),
+            difference = a
+              .slice(0, 3)
+              .reduce((sum, v, i) => sum + Math.abs(v - b[i]), 0);
+          if (border) seam += difference;
+          else interior += difference;
+        }
+      }
+    assert.ok(
+      seam / (2 * TEXTURE_SIZE) <
+        (interior / (2 * TEXTURE_SIZE * (TEXTURE_SIZE - 1))) * 2,
+      material,
+    );
+  }
+});
+test("eau et sable : les fragments peints séparément gardent le même ancrage mondial", () => {
+  for (const distance of [-20, 3]) {
+    const map = { landDistance: () => distance, roadDistance: () => 99 };
+    const full = terrainRaster(-19, 23, 91, 47, map),
+      left = terrainRaster(-19, 23, 31, 47, map),
+      right = terrainRaster(12, 23, 60, 47, map);
+    for (let y = 0; y < 47; y++) {
+      assert.deepEqual(
+        full.slice(y * 91 * 4, (y * 91 + 31) * 4),
+        left.slice(y * 31 * 4, (y + 1) * 31 * 4),
+      );
+      assert.deepEqual(
+        full.slice((y * 91 + 31) * 4, (y + 1) * 91 * 4),
+        right.slice(y * 60 * 4, (y + 1) * 60 * 4),
+      );
+    }
+  }
 });

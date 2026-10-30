@@ -1,12 +1,20 @@
 import { landDistance, roadDistance } from "../world/map.js";
 import { texturePixel, hash } from "./textures.js";
 
-export function terrainPixel(x, y, map = {landDistance, roadDistance}) {
-  if(map.terrainPixel)return map.terrainPixel(x,y);
-  const sample=map.texturePixel||texturePixel;
+export function terrainPixel(x, y, map = { landDistance, roadDistance }) {
+  if (map.terrainPixel) return map.terrainPixel(x, y);
+  const sample = map.texturePixel || texturePixel;
   const land = map.landDistance(x + 0.5, y + 0.5);
+  const sandyCoast = !map.texturePixel || map.texturePixel === texturePixel;
   if (land < -5) return sample("water", x, y);
   if (land < 0) {
+    if (sandyCoast) {
+      if (land >= -3.7) return sample("wet-sand", x, y);
+      const water = sample("water", x, y);
+      return water.map((v, i) =>
+        i < 3 ? Math.round(v * 0.7 + [142, 196, 184][i] * 0.3) : v,
+      );
+    }
     if (land < -3.7) return [154, 191, 174, 255];
     return sample("stone", x, y);
   }
@@ -17,6 +25,8 @@ export function terrainPixel(x, y, map = {landDistance, roadDistance}) {
     if (dirt > -1.2) return [188, 177, 119, 255];
     return color;
   }
+  if (sandyCoast && (land < 6 || (land < 9 && hash(x, y, 98) % 3 === 0)))
+    return sample("sand", x, y);
   const grass = sample("grass", x, y);
   if (dirt < 1.8 && hash(x, y, 19) % 3 === 0) return [157, 160, 78, 255];
   if (land < 2) return [137, 149, 77, 255];
