@@ -1,3 +1,8 @@
+import {
+  cityAsset,
+  dressArtisanDistrict,
+  comptoirDecor,
+} from "./comptoir-dressing.js";
 // Authored compact blocks. Building dimensions remain at character scale;
 // density comes from plot placement and street widths, never sprite scaling.
 import {
@@ -12,16 +17,21 @@ export const EXILE_ZONE = "exile";
 export const MAP_SIZE = Object.freeze({ width: 1440, height: 1240 });
 export const EXILE_SPAWN = Object.freeze({ x: 720, y: 1010 });
 export const EXILE_RETURN = Object.freeze({ x: 720, y: 1160 });
+export const ROYAL_EXIT = Object.freeze({ x: 720, y: 24 });
 export const FOUNTAIN = Object.freeze({ x: 720, y: 620 });
 export const EXILE_DEV_POINTS = {
   plaza: { x: 720, y: 710 },
   artisans: { x: 1060, y: 820 },
   gardens: { x: 720, y: 160 },
+  royal: { x: 720, y: 72 },
 };
 const shore = [
   [90, 100],
   [350, 65],
-  [690, 80],
+  [650, 80],
+  [665, 0],
+  [775, 0],
+  [790, 80],
   [1040, 65],
   [1330, 100],
   [1385, 340],
@@ -46,7 +56,7 @@ export const LAND = shore.flatMap((a, i) => {
     n = Math.ceil(d / 25);
   return Array.from({ length: n }, (_, j) => {
     const t = j / n,
-      w = Math.sin(t * Math.PI) * Math.sin(j * 1.7 + i) * 3;
+      w = Math.sin(t * Math.PI) * Math.sin(j * 1.7 + (i >= 6 ? i - 3 : i)) * 3;
     return [
       Math.round(a[0] + dx * t - (dy / d) * w),
       Math.round(a[1] + dy * t + (dx / d) * w),
@@ -60,10 +70,10 @@ export const DOCKS = [
   { x: 310, y: 1100, w: 440, h: 36 },
 ];
 export const SHIPS = [
-  { x: 800, y: 1115, color: "#83a9a4" },
-  { x: 1205, y: 1100, color: "#ba8475" },
-  { x: 900, y: 1140, color: "#d9be83", caravel: true },
-  { x: 230, y: 1110, color: "#a66f52" },
+  cityAsset("harbor-rowboat", 800, 1120, "comptoir-barque"),
+  cityAsset("harbor-fishing-boat", 230, 1130, "comptoir-voilier"),
+  cityAsset("harbor-merchant-cog", 930, 1190, "comptoir-cogue"),
+  cityAsset("harbor-caravel", 1270, 1130, "comptoir-caravelle"),
 ];
 export const QUAY_EDGE = [
   [130, 997],
@@ -123,13 +133,13 @@ export const BLOCK_LAYOUT = [
     { left: 170, y: 615, widths: [80, 110] },
     { left: 420, y: 625, widths: [62, 96, 62] },
     { left: 835, y: 595, widths: [110, 54, 56] },
-    { left: 1105, y: 635, widths: [118, 77] },
+    { left: 1105, y: 635, widths: [80, 65, 50] },
   ],
   [
     { left: 145, y: 790, widths: [102, 88] },
     { left: 390, y: 770, widths: [64, 80, 76] },
     { left: 820, y: 805, widths: [112, 108] },
-    { left: 1110, y: 765, widths: [72, 123] },
+    { left: 1110, y: 765, widths: [72, 61, 62] },
   ],
   [
     { left: 160, y: 930, widths: [100, 90] },
@@ -139,6 +149,12 @@ export const BLOCK_LAYOUT = [
   ],
 ];
 export const ROADS = [
+  road("chemin-du-roi", 28, [
+    [720, 140],
+    [720, 95],
+    [714, 60],
+    [720, 18],
+  ]),
   road("avenue-du-refuge", 36, [
     [720, 1020],
     [704, 870],
@@ -288,9 +304,10 @@ for (const [row, layout] of BLOCK_LAYOUT.entries())
         w,
         h: floors * 34 + 116,
         floors,
-        district: block < 2 ? "merchants" : "artisans",
+        district:
+          block < 2 ? "merchants" : row < 2 ? "residential" : "artisans",
         roof:
-          block < 2
+          block < 2 || row < 2
             ? ["clay", "wine", "ochre"][(row + index) % 3]
             : ["navy", "slate", "teal"][(row + index) % 3],
         archetype: block < 2 ? (index % 2 ? "arcade" : "merchant") : "workshop",
@@ -351,6 +368,7 @@ for (const [row, layout] of BLOCK_LAYOUT.entries())
       ],
     });
   }
+dressArtisanDistrict(BUILDINGS);
 export const SIDEWALKS = BLOCK_LAYOUT.flatMap((row, r) =>
   row.map((lot, b) => ({
     id: `sidewalk-${r}-${b}`,
@@ -734,7 +752,20 @@ export const PROPS = [
   ...RAMPART_TOWERS,
   ...STREET_PROPS,
   ...trees,
+  ...comptoirDecor(),
+  ...SHIPS,
 ];
+for (const p of PROPS.filter((p) => p.walkSurface)) {
+  const f = p.walkSurface;
+  DOCKS.push({
+    id: p.id,
+    editor: true,
+    x: p.x + f.left,
+    y: p.y + f.top,
+    w: f.right - f.left,
+    h: f.bottom - f.top,
+  });
+}
 export const SOLIDS = [
   ...PROPS.filter((p) => p.footprint),
   ...GATE_TOWERS,
@@ -820,19 +851,17 @@ export function validateExileMap() {
     EXILE_RETURN,
     ...Object.values(SERVICES),
     ...Object.values(EXILE_DEV_POINTS),
+    ROYAL_EXIT,
   ])
     if (!canWalkExile(p.x, p.y))
       errors.push(`${p.id || "entry"}: inaccessible`);
   return errors;
 }
 export function exileDistrict(x, y) {
-  return y > 945
-    ? "Le port de l’Exil"
-    : y < 340
-      ? "Le Premier Accueil"
-      : x < 640
-        ? "Le quartier des marchands"
-        : x > 810
-          ? "Le quartier des artisans"
-          : "La place du Refuge";
+  if (y < 110) return "Le chemin du Roi Slime";
+  if (y > 945) return "Le port de l’Exil";
+  if (y < 340) return "Le Premier Accueil";
+  if (x > 810)
+    return y >= 550 ? "Le quartier bleu des artisans" : "Les logis du Levant";
+  return x < 640 ? "Le quartier des marchands" : "La place du Refuge";
 }

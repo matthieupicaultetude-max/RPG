@@ -316,7 +316,7 @@ test("Les assets maritimes séparent eau, quais et pontons praticables sans perd
     dockCount = map.DOCKS.length;
   doc.objects.push(
     { id: "pontoon-test", template: "harbor-pier-vertical", x: 720, y: 1236 },
-    { id: "ship-test", template: "harbor-fishing-boat", x: 900, y: 1210 },
+    { id: "ship-test", template: "harbor-fishing-boat", x: 1040, y: 1210 },
     { id: "bollard-test", template: "harbor-bollard", x: 720, y: 1140 },
   );
   applyMap(doc);

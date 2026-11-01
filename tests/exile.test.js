@@ -5,6 +5,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   MAP_SIZE,
+  ROYAL_EXIT,
   RAMPARTS,
   NORTH_GATE,
   TERRACES,
@@ -142,7 +143,12 @@ test("Tous les commerces, portes et pontons sont accessibles à pied depuis le p
       queue.push([nx, ny]);
     }
   }
-  for (const p of [...Object.values(SERVICES), ...ENTRANCES, EXILE_RETURN])
+  for (const p of [
+    ...Object.values(SERVICES),
+    ...ENTRANCES,
+    EXILE_RETURN,
+    ROYAL_EXIT,
+  ])
     assert.ok(
       queue.some(([x, y]) => Math.hypot(x * 10 - p.x, y * 10 - p.y) < 14),
       p.id || "return",
@@ -309,12 +315,11 @@ test("Une ancienne position du grand Comptoir revient au port sans perte de prog
 });
 
 test("Les navires restent dans l’eau sans recouvrir un ponton", () => {
-  for (const p of SHIPS)
-    for (const dx of [-28, 0, 28])
-      for (const dy of [-78, 0, 78]) {
-        assert.equal(isLand(p.x + dx, p.y + dy), false);
-        assert.equal(onDock(p.x + dx, p.y + dy), false);
-      }
+  assert.equal(SHIPS.length, 4);
+  for (const p of SHIPS) {
+    assert.ok(p.asset.startsWith("harbor-"));
+    assert.ok(placementOnLand(p));
+  }
 });
 
 test("Le port garde une porte franchissable, des tours solides et deux escaliers accessibles", () => {
@@ -330,18 +335,18 @@ test("Les quartiers et les ateliers suivent la référence marchands à l’oues
     BUILDINGS.filter((p) => p.district === "merchants").every((p) => p.x < 720),
   );
   assert.ok(
-    BUILDINGS.filter((p) => p.district === "artisans").every((p) => p.x > 720),
+    BUILDINGS.filter((p) => p.district === "artisans").every(
+      (p) => p.x > 800 && p.y >= 595,
+    ),
   );
   for (const id of ["forge", "handyman", "sawmill"])
     assert.ok(SERVICES[id].x > 720);
   for (const id of ["armor", "magic", "trader"])
     assert.ok(SERVICES[id].x < 720);
-  assert.deepEqual(
-    BUILDINGS.filter((p) => p.asset)
-      .map((p) => p.asset)
-      .sort(),
-    ["forge", "guildhall", "warehouse"],
-  );
+  const artisans = BUILDINGS.filter((p) => p.district === "artisans");
+  assert.equal(artisans.length, 15);
+  assert.equal(new Set(artisans.map((p) => p.asset)).size, 15);
+  assert.ok(artisans.every((p) => p.asset.startsWith("artisans-")));
 });
 test("Les sols et l’eau du port restent périodiques aux raccords", () => {
   for (const material of ["harbor-stone", "harbor-water"])
@@ -494,4 +499,30 @@ test("Chaque façade possède un trottoir jusqu’aux portes et une rue raccord�
         texturePixel(material, 64, i),
       );
     }
+});
+
+test("Le Comptoir utilise tous les nouveaux modèles et ouvre son chemin royal au nord", async () => {
+  const { ARTISAN_BUILDINGS } = await import(
+    "../src/data/artisan-buildings.js"
+  );
+  const { BLUE_PROPS } = await import("../src/data/blue-props.js");
+  const { GREENERY } = await import("../src/data/greenery.js");
+  const { HARBOR_ASSETS } = await import("../src/data/harbor-assets.js");
+  for (const p of [
+    ...ARTISAN_BUILDINGS,
+    ...BLUE_PROPS,
+    ...GREENERY,
+    ...HARBOR_ASSETS,
+  ])
+    assert.ok(
+      PROPS.some((q) => q.asset === p.asset),
+      p.id,
+    );
+  assert.equal(BUILDINGS.length, 45);
+  assert.ok(PROPS.filter((p) => p.walkSurface).length >= 2);
+  const road = ROADS.find((r) => r.id === "chemin-du-roi");
+  assert.ok(road);
+  for (let y = 24; y <= 150; y += 2)
+    assert.ok(canWalkExile(720, y), `porte royale y=${y}`);
+  assert.deepEqual(validateExileMap(), []);
 });

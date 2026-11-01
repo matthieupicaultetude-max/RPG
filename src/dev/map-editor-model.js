@@ -4,18 +4,34 @@ import { BLUE_PROPS } from "../data/blue-props.js";
 import { ARTISAN_BUILDINGS } from "../data/artisan-buildings.js";
 import * as world from "../world/exile-map.js";
 const copy = (value) => structuredClone(value);
-const originalDocks = copy(world.DOCKS);
+const originalDocks = copy(world.DOCKS.filter((d) => !d.editor));
 const originalProps = copy(world.PROPS).map((p) =>
   p.kind === "exile-house"
     ? { ...p, residenceVariant: Math.floor(p.x + p.y) % 3 }
     : p,
 );
+// Keep the original three blue street facades available after the town rebuild.
+const classicResidences = [0, 1, 2].map((residenceVariant) => ({
+  id: `classic-artisan-${residenceVariant}`,
+  name: `Maison bleue classique ${residenceVariant + 1}`,
+  kind: "exile-house",
+  district: "artisans",
+  residenceVariant,
+  x: 720,
+  y: 200,
+  w: 100,
+  h: 200,
+  floors: 3,
+  roof: "navy",
+  footprint: { type: "box", left: -50, right: 50, top: -62, bottom: 0 },
+}));
 const catalogProps = [
-  ...originalProps,
   ...ARTISAN_BUILDINGS,
   ...BLUE_PROPS,
   ...GREENERY,
   ...HARBOR_ASSETS,
+  ...classicResidences,
+  ...originalProps,
 ];
 const templates = new Map(catalogProps.map((p) => [p.id, p]));
 const protectedKinds = new Set([
@@ -35,7 +51,7 @@ export const palette = catalogProps.filter(
         q.asset === p.asset &&
         q.district === p.district &&
         q.variant === p.variant &&
-        q.residenceVariant === p.residenceVariant,
+        (p.asset || q.residenceVariant === p.residenceVariant),
     ) === i,
 );
 export const BUILDING_SERVICES = {

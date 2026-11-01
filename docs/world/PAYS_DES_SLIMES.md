@@ -27,12 +27,13 @@ Les canaux, fortifications, routes et ateliers témoignent d’abord de la const
 
 ## Première zone jouable : le Comptoir
 
-Carte extérieure de 1 440 × 1 240 pixels monde, avec caméra à l’échelle des personnages. 43 bâtiments : façades mitoyennes, halle marchande, forge, entrepôt, capitainerie, auberge et services pour les aventuriers. Le port reste au sud du pays, avec la place du Refuge et la route du sanctuaire dans son axe central.
+Carte extérieure de 1 440 × 1 240 pixels monde, avec caméra à l’échelle des personnages. 45 bâtiments : façades mitoyennes, halle marchande, forge, entrepôt, capitainerie, auberge et services pour les aventuriers. Le port reste au sud du pays, avec la place du Refuge et la route du sanctuaire dans son axe central.
 
 - **Sud :** trois pontons, liaison entre quais, quatre navires, grues de chargement, porte du Refuge et quais de pierre à arcades.
 - **Centre :** place du Refuge, fontaine du renouveau, mosaïque aux quatre couleurs et commerces.
 - **Ouest :** quartier des marchands, halle marchande, enchanteur, échoppe et animalerie.
-- **Est :** quartier des artisans, forge, atelier de Tessa, scierie et capitainerie.
+- **Sud-est :** quartier bleu des artisans, avec quinze nouveaux bâtiments, la forge, l’atelier de Tessa, la scierie et la capitainerie.
+- **Nord-est :** habitations du Levant aux façades chaudes.
 - **Nord :** jardins, îlots résidentiels et Maison du Premier Accueil.
 
 Les rues sont sinueuses et bordées de façades mitoyennes de deux à trois étages. Vingt rangées partagent des trottoirs raccordés au réseau ; les anciennes pelouses du centre sont devenues des cours pavées. Les murs mitoyens sont fermés à la circulation, tout en gardant les portes accessibles. Une palette commune de pierre, enduit clair, bois et ardoises et tuiles de plusieurs teintes assure la cohésion. Les pavés utilisent un motif périodique unique en coordonnées monde ; les intersections partagent le même revêtement. Les arbres sont placés sur terre ferme et hors des accès. Les collisions utilisent les pieds des bâtiments, avec transparence des façades devant le joueur.
@@ -49,7 +50,7 @@ La référence portuaire guide désormais la direction artistique : tuiles chaud
 
 ### Aperçu du Comptoir intégré
 
-![Rendu du Comptoir : marchands à l’ouest, artisans à l’est, porte et quais au sud](comptoir-port.png)
+![Rendu du Comptoir : marchands à l’ouest, quartier bleu au sud-est, chemin royal au nord, port au sud](comptoir-port.png)
 
 ### Remparts et relief
 
@@ -58,3 +59,6 @@ Les remparts suivent les bords du littoral et se raccordent aux quais. Dix tours
 Le port, la terrasse intermédiaire et la ville haute forment trois paliers. Les deux fronts de terrasse suivent des contours irréguliers et se franchissent par dix escaliers, en plus des deux volées préexistantes. Les faces de soutènement sont infranchissables hors des escaliers ; les alliés utilisent la même navigation. Les différences de niveau sont de 18 puis 20 pixels, soit 38 pixels entre le port et la ville haute.
 
 Les vingt fronts bâtis ont désormais des retraits, des largeurs de lots et des alignements propres. Les rues sont retracées entre eux. Les habitants se tiennent sur un espace d’approche libre devant leurs commerces et les promeneurs démarrent uniquement sur un point de rue praticable.
+
+
+La disposition utilise désormais tous les nouveaux modèles de bâtiments, accessoires, verdure et port. Les quatre navires sont des sprites détaillés et les deux extensions de ponton sont praticables. Le chemin royal traverse la porte nord et rejoint une avancée de terre réservée au futur raccord avec le sanctuaire. Ce raccord n’ouvre pas encore la zone du Roi Slime et ne modifie pas son histoire ni les conditions de son réveil.

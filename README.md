@@ -556,7 +556,7 @@ Le sac et le coffre partagent des catégories et sous-catégories : armures, arm
 
 Après le tutoriel, ouvrez **Monde → Comptoir → Embarquer pour le Comptoir**. Une traversée gratuite est aussi accessible avec F près de `(310,365)` dans le Jardin des essais. Pour revenir, rejoignez l’extrémité du ponton central et appuyez sur F.
 
-La ville s’étend sur **1 440 × 1 240 pixels**, avec caméra mobile, 43 bâtiments et dix nouveaux assets architecturaux réutilisables, quartiers marchands à l’ouest et artisans à l’est, ruelles courtes et quais à arcades, jardins, place de la fontaine, port et marché. Approchez les habitants puis utilisez **F**, ou cliquez/touchez-les. Forge, animalerie, bricolage, scierie et fontaine sont utilisables. Maëla et Oriel vendent du matériel de voyage ; Silo rachète les ressources ordinaires et rares ; l’auberge restaure la troupe contre 5 or.
+La ville s’étend sur **1 440 × 1 240 pixels**, avec caméra mobile, 45 bâtiments, les quinze façades d’artisans et tous les nouveaux accessoires, quartiers marchands à l’ouest et bleu au sud-est, ruelles courtes et quais à arcades, jardins, place de la fontaine, port et marché. Approchez les habitants puis utilisez **F**, ou cliquez/touchez-les. Forge, animalerie, bricolage, scierie et fontaine sont utilisables. Maëla et Oriel vendent du matériel de voyage ; Silo rachète les ressources ordinaires et rares ; l’auberge restaure la troupe contre 5 or.
 
 Des remparts crénelés, dix tours d’angle et deux portes entourent la ville. Les îlots sont décalés, les façades ont des largeurs variées et deux terrasses se franchissent par des escaliers. La porte du port, les grues de chargement, les étals et quatre navires donnent une identité maritime au Comptoir.
 
@@ -584,3 +584,12 @@ La palette inclut également **15 bâtiments du Quartier des Artisans** : forge 
 **Végétation** : 12 nouveaux décors peuvent être placés manuellement — arbre feuillu, bouleau, arbuste en pot, cyprès en jardinière, buisson, haie, massif de fleurs, rosier, treillis de lierre, pot fleuri, fougère et herbes fleuries. Les bases des arbres et les jardinières bloquent le passage ; les petites herbes et fougères restent traversables. Ces arbres sont décoratifs. Aucun ajout automatique autour des bâtiments.
 
 **Port et bateaux** : 12 nouveaux assets séparés sont proposés dans le filtre dédié : pontons vertical et horizontal, bollard et cordages, cargaison/filets, râtelier de pêche, grue, lampadaire du port, poissonnerie, barque, voilier de pêche, cogue marchande et caravelle. Les accessoires se placent sur terre ou sur les quais. Les bateaux doivent rester dans l’eau ; leur coque ne peut pas chevaucher un ponton. Les segments de ponton créent de nouvelles surfaces praticables et peuvent être raccordés aux quais existants. Les bateaux sont décoratifs, sans navigation ni embarquement. Rien n’est ajouté automatiquement et les placements sont inclus dans la sauvegarde et l’export.
+
+
+### Comptoir reconstruit avec les nouveaux assets
+
+Le plan livré utilise les **51 nouveaux modèles** : 15 bâtiments bleus au sud-est, 12 accessoires d’artisans, 12 éléments de végétation et 12 assets maritimes, dont les quatre bateaux et les deux extensions de ponton. Les habitations au nord-est adoptent des façades chaudes pour distinguer le quartier résidentiel du quartier bleu. La place centrale et les accès aux dix services sont conservés. L’enceinte reste continue hors de ses portes et des accès aux pontons.
+
+Au nord, une nouvelle route franchit la porte et rejoint le départ vers le sanctuaire du Roi Slime. La destination est signalée mais la future zone n’est pas encore ouverte. **Développement → Outils dev → Voyages → Comptoir · Porte du Roi** permet de vérifier ce départ.
+
+Si une ancienne carte personnalisée est chargée dans votre navigateur, elle reste prioritaire. Pour adopter ce nouveau plan, exportez votre carte si vous souhaitez la conserver, puis utilisez **Éditeur → Carte d’origine → Appliquer et sauvegarder**. La progression du personnage reste indépendante.

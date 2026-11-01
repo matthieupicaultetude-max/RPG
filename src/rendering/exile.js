@@ -536,7 +536,7 @@ export function createExileEnvironment(mapOverride = map) {
   const g = ground.getContext("2d");
   g.imageSmoothingEnabled = false;
   plotGround(g, map);
-  for (const p of map.SHIPS) ship(g, p.x, p.y, p.color, p.caravel);
+  for (const p of map.SHIPS.filter(p=>!p.asset)) ship(g, p.x, p.y, p.color, p.caravel);
   const atlas = createSpriteAtlas();
   const props = map.PROPS.map((p) => {
     const custom = [
@@ -625,7 +625,7 @@ export function createExileEnvironment(mapOverride = map) {
   return {
     ground,
     props: [...props, ...rampartPieces(map)],
-    markers: [],
+    markers: [{text:"Vers le sanctuaire du Roi Slime",x:720,y:38}],
     land: map.LAND,
     assetVersion: portAssetVersion(),
   };

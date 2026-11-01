@@ -73,6 +73,7 @@ export function renderDevTools(s, source = "slime") {
       ["exile-plaza", "Comptoir · Place"],
       ["exile-artisans", "Comptoir · Artisans"],
       ["exile-gardens", "Comptoir · Jardins"],
+      ["exile-royal", "Comptoir · Porte du Roi"],
       ["marsh-teleport", "Marais"],
       ["mountains-teleport", "Montagnes"],
       ["fire-teleport", "Braises"],
