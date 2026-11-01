@@ -151,7 +151,13 @@ export function drawPortGround(g, map) {
         x = a[0] + (b[0] - a[0]) * t,
         y = a[1] + (b[1] - a[1]) * t - 4;
       if (
-        map.DOCKS.some((d) => x + 12 > d.x - 7 && x < d.x + d.w + 7) ||
+        map.DOCKS.some(
+          (d) =>
+            x + 12 > d.x - 7 &&
+            x < d.x + d.w + 7 &&
+            y >= d.y - 8 &&
+            y <= d.y + d.h + 8,
+        ) ||
         Math.abs(x - map.PORT_GATE.x) < 100
       )
         continue;

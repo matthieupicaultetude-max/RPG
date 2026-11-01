@@ -4,6 +4,12 @@ import { BLUE_PROPS } from "../data/blue-props.js";
 import { ARTISAN_BUILDINGS } from "../data/artisan-buildings.js";
 import * as world from "../world/exile-map.js";
 const copy = (value) => structuredClone(value);
+const legacyPortDocks = [
+  { x: 690, y: 1000, w: 60, h: 190, legacy: true },
+  { x: 310, y: 960, w: 48, h: 190, legacy: true },
+  { x: 1120, y: 975, w: 48, h: 185, legacy: true },
+  { x: 310, y: 1100, w: 440, h: 36, legacy: true },
+];
 const originalDocks = copy(world.DOCKS.filter((d) => !d.editor));
 const originalProps = copy(world.PROPS).map((p) =>
   p.kind === "exile-house"
@@ -98,6 +104,8 @@ export let mapRevision = 0;
 export function captureMap() {
   return {
     schema: 1,
+    portLayout: 2,
+    legacyDocks: world.DOCKS.some((d) => d.legacy === true),
     zone: "exile",
     objects: world.PROPS.map((p) => ({
       id: p.id,
@@ -113,6 +121,29 @@ export function captureMap() {
   };
 }
 export const defaultMap = captureMap();
+// Replace just the waterfront, so a saved custom city does not need a full reset.
+export function rebuildPort(doc) {
+  const isPort = (item) => {
+    const p = templates.get(item.template);
+    return (
+      item.id.startsWith("comptoir-port-") ||
+      (item.y >= 950 && p?.collection === "harbor")
+    );
+  };
+  const kept = copy(doc.objects.filter((p) => !isPort(p))),
+    ids = new Set(kept.map((p) => p.id));
+  const replacements = copy(defaultMap.objects.filter(isPort));
+  for (const item of replacements) {
+    if (ids.has(item.id)) item.id = `comptoir-port-preset-${item.id}`;
+    ids.add(item.id);
+  }
+  return {
+    ...copy(doc),
+    portLayout: 2,
+    legacyDocks: false,
+    objects: [...kept, ...replacements],
+  };
+}
 // A first click is a provisional anchor, not a usable road. Never persist it.
 export function finishMapTraces(doc) {
   const completed = copy(doc);
@@ -208,9 +239,13 @@ export function validateDocument(doc) {
   }
   return doc;
 }
-function docksFor(props) {
+function docksFor(props, doc) {
+  const legacy =
+    doc.legacyDocks === true ||
+    (doc.portLayout === undefined &&
+      !props.some((p) => p.id === "comptoir-port-arrival-0"));
   return [
-    ...copy(originalDocks),
+    ...copy(legacy ? legacyPortDocks : originalDocks),
     ...props
       .filter((p) => p.walkSurface)
       .map((p) => ({
@@ -253,7 +288,7 @@ export function previewMap(doc) {
   return {
     ...world,
     PROPS: props,
-    DOCKS: docksFor(props),
+    DOCKS: docksFor(props, doc),
     BUILDINGS: props.filter((p) => p.kind === "exile-house"),
     ROADS: doc.roads,
     SIDEWALKS: doc.sidewalks,

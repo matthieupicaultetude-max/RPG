@@ -29,7 +29,7 @@ Les canaux, fortifications, routes et ateliers témoignent d’abord de la const
 
 Carte extérieure de 1 440 × 1 240 pixels monde, avec caméra à l’échelle des personnages. 45 bâtiments : façades mitoyennes, halle marchande, forge, entrepôt, capitainerie, auberge et services pour les aventuriers. Le port reste au sud du pays, avec la place du Refuge et la route du sanctuaire dans son axe central.
 
-- **Sud :** trois pontons, liaison entre quais, quatre navires, grues de chargement, porte du Refuge et quais de pierre à arcades.
+- **Sud :** trois pontons, liaison entre quais, six embarcations, grues de chargement, porte du Refuge et quais de pierre à arcades.
 - **Centre :** place du Refuge, fontaine du renouveau, mosaïque aux quatre couleurs et commerces.
 - **Ouest :** quartier des marchands, halle marchande, enchanteur, échoppe et animalerie.
 - **Sud-est :** quartier bleu des artisans, avec quinze nouveaux bâtiments, la forge, l’atelier de Tessa, la scierie et la capitainerie.
@@ -61,4 +61,4 @@ Le port, la terrasse intermédiaire et la ville haute forment trois paliers. Les
 Les vingt fronts bâtis ont désormais des retraits, des largeurs de lots et des alignements propres. Les rues sont retracées entre eux. Les habitants se tiennent sur un espace d’approche libre devant leurs commerces et les promeneurs démarrent uniquement sur un point de rue praticable.
 
 
-La disposition utilise désormais tous les nouveaux modèles de bâtiments, accessoires, verdure et port. Les quatre navires sont des sprites détaillés et les deux extensions de ponton sont praticables. Le chemin royal traverse la porte nord et rejoint une avancée de terre réservée au futur raccord avec le sanctuaire. Ce raccord n’ouvre pas encore la zone du Roi Slime et ne modifie pas son histoire ni les conditions de son réveil.
+La disposition utilise désormais tous les nouveaux modèles de bâtiments, accessoires, verdure et port. Les six embarcations sont des sprites détaillés et les trois débarcadères sont composés de huit segments praticables. Le chemin royal traverse la porte nord et rejoint une avancée de terre réservée au futur raccord avec le sanctuaire. Ce raccord n’ouvre pas encore la zone du Roi Slime et ne modifie pas son histoire ni les conditions de son réveil.

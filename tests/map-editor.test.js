@@ -4,6 +4,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   captureMap,
+  rebuildPort,
   setBuildingService,
   resizeBuilding,
   finishMapTraces,
@@ -315,8 +316,8 @@ test("Les assets maritimes séparent eau, quais et pontons praticables sans perd
   const doc = copy(defaultMap),
     dockCount = map.DOCKS.length;
   doc.objects.push(
-    { id: "pontoon-test", template: "harbor-pier-vertical", x: 720, y: 1236 },
-    { id: "ship-test", template: "harbor-fishing-boat", x: 1040, y: 1210 },
+    { id: "pontoon-test", template: "harbor-pier-vertical", x: 720, y: 1232 },
+    { id: "ship-test", template: "harbor-fishing-boat", x: 850, y: 1220 },
     { id: "bollard-test", template: "harbor-bollard", x: 720, y: 1140 },
   );
   applyMap(doc);
@@ -334,7 +335,7 @@ test("Les assets maritimes séparent eau, quais et pontons praticables sans perd
     { x: 720, y: 320 },
   );
   assert.throws(() => applyMap(bad), /Placement impossible/);
-  assert.equal(map.PROPS.find((p) => p.id === "ship-test").y, 1210);
+  assert.equal(map.PROPS.find((p) => p.id === "ship-test").y, 1220);
   applyMap(defaultMap);
 });
 
@@ -344,8 +345,55 @@ test("Une coque ne peut pas chevaucher un ponton même si ses coins sont dans l�
     id: "ship-crossing",
     template: "harbor-caravel",
     x: 720,
-    y: 1215,
+    y: 1204,
   });
   assert.throws(() => applyMap(doc), /Placement impossible/);
   assert.deepEqual(captureMap(), defaultMap);
+});
+
+test("Les anciennes cartes conservent leur port et le nouveau plan retire les anciens quais invisibles", () => {
+  const old = copy(defaultMap);
+  delete old.portLayout;
+  delete old.legacyDocks;
+  old.objects = old.objects.filter(
+    (p) =>
+      !p.id.startsWith("comptoir-port-") &&
+      !p.id.startsWith("comptoir-harbor-"),
+  );
+  applyMap(old);
+  assert.ok(map.onDock(500, 1115));
+  assert.ok(map.DOCKS.some((d) => d.legacy));
+  const saved = captureMap();
+  assert.equal(saved.legacyDocks, true);
+  applyMap(saved);
+  assert.ok(map.onDock(500, 1115));
+  applyMap(defaultMap);
+  assert.equal(map.onDock(500, 1115), false);
+  assert.ok(map.DOCKS.every((d) => d.editor && !d.legacy));
+});
+
+test("Reconstruire seulement le port préserve les réglages et les rues d’une ville personnalisée", () => {
+  const doc = copy(defaultMap),
+    house = doc.objects.find((p) => p.id === "logis-0-0-0");
+  house.scale = 0.9;
+  const inlandCrane = doc.objects.find((p) => p.id === "grue-320");
+  Object.assign(inlandCrane, { x: 720, y: 300 });
+  doc.objects = doc.objects.filter((p) => !p.id.startsWith("comptoir-port-"));
+  doc.legacyDocks = true;
+  const rebuilt = rebuildPort(doc);
+  assert.deepEqual(
+    rebuilt.objects.find((p) => p.id === house.id),
+    house,
+  );
+  assert.deepEqual(rebuilt.roads, doc.roads);
+  assert.deepEqual(
+    rebuilt.objects.find((p) => p.id === inlandCrane.id),
+    inlandCrane,
+  );
+  assert.equal(rebuilt.legacyDocks, false);
+  applyMap(rebuilt);
+  assert.equal(map.SHIPS.length, 6);
+  assert.equal(map.DOCKS.length, 8);
+  assert.equal(map.onDock(500, 1115), false);
+  applyMap(defaultMap);
 });

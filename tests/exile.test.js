@@ -315,7 +315,7 @@ test("Une ancienne position du grand Comptoir revient au port sans perte de prog
 });
 
 test("Les navires restent dans l’eau sans recouvrir un ponton", () => {
-  assert.equal(SHIPS.length, 4);
+  assert.equal(SHIPS.length, 6);
   for (const p of SHIPS) {
     assert.ok(p.asset.startsWith("harbor-"));
     assert.ok(placementOnLand(p));
@@ -525,4 +525,17 @@ test("Le Comptoir utilise tous les nouveaux modèles et ouvre son chemin royal a
   for (let y = 24; y <= 150; y += 2)
     assert.ok(canWalkExile(720, y), `porte royale y=${y}`);
   assert.deepEqual(validateExileMap(), []);
+});
+
+test("Le nouveau port utilise les pontons détaillés et garde la troupe sur le débarcadère", () => {
+  const DOCKS = PROPS.filter((p) => p.walkSurface);
+  assert.equal(DOCKS.length, 8);
+  assert.ok(DOCKS.every((p) => p.asset.startsWith("harbor-pier-")));
+  assert.equal(canWalkExile(500, 1115), false, "ancien quai supprimé");
+  const s = town();
+  movePartyToZone(s, "exile", { x: 720, y: 1080 });
+  for (let i = 0; i < 60; i++) stepSandbox(s, { x: 0, y: 1 }, 0.05);
+  for (let i = 0; i < 40; i++) stepSandbox(s, { x: 0, y: 0 }, 0.05);
+  assert.ok(s.player.y >= 1160);
+  for (const p of s.team) assert.ok(canWalkExile(p.x, p.y));
 });

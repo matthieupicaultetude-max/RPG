@@ -849,6 +849,12 @@ Les matériaux d’eau et de sable se répètent sans raccord visible sur une p�
 
 Le plan par défaut comporte 45 bâtiments. Les quinze modèles d’artisans sont réunis dans le quartier bleu au sud-est, avec les accessoires de métiers et les services de Borin, Tessa et de la scierie. Les logis du nord-est adoptent des façades chaudes. La place du Refuge conserve sa fontaine et ses rues raccordées aux entrées.
 
-Tous les nouveaux modèles sont utilisés dans la composition : quinze bâtiments, douze accessoires bleus, douze décors de verdure et douze éléments maritimes. Au sud, quatre bateaux détaillés accompagnent les quais de chargement et de pêche ; deux extensions de ponton sont praticables. Les décorations sont placées explicitement et validées contre les collisions, les accès des PNJ et les portes.
+Tous les nouveaux modèles sont utilisés dans la composition : quinze bâtiments, douze accessoires bleus, douze décors de verdure et douze éléments maritimes. Au sud, six bateaux détaillés accompagnent trois débarcadères entièrement composés de huit segments de ponton praticables. Les décorations sont placées explicitement et validées contre les collisions, les accès des PNJ et les portes.
 
 Les remparts, leurs tours et leurs deux portes encadrent la ville. La porte nord débouche sur le chemin du Roi Slime, dont le terrain se prolonge jusqu’au bord nord de la carte. Un repère annonce le sanctuaire, encore inaccessible en tant que zone distincte. Les sauvegardes de progression et les cartes personnalisées restent séparées ; le nouveau plan est disponible avec « Carte d’origine » dans l’éditeur, sans écraser automatiquement un aménagement local.
+
+### Port entièrement composé des assets maritimes
+
+Le plan courant remplace les anciens quais rectangulaires procéduraux par huit segments de ponton utilisant les sprites du port. Ils forment une arrivée centrale, un quai de pêche à l’ouest et un débarcadère commercial plus large à l’est. Les segments sont dessinés dans le sol sous les acteurs et leur union forme la surface praticable. Les accessoires peuvent occuper les pontons sans bloquer toute leur surface ; les accès à la ville et le retour au Jardin restent accessibles. Six embarcations sont positionnées dans l’eau hors des pontons.
+
+« Nouveau port » dans l’éditeur remplace seulement les objets maritimes du front de mer et reconstruit les surfaces de marche, en préservant les bâtiments et routes personnalisés. Les anciennes cartes conservent un profil de quais historiques, enregistré dans leurs métadonnées lors du prochain export, jusqu’à l’adoption du nouveau port. L’opération est réversible dans l’historique de l’éditeur.

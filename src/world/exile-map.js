@@ -2,6 +2,7 @@ import {
   cityAsset,
   dressArtisanDistrict,
   comptoirDecor,
+  portWalkways,
 } from "./comptoir-dressing.js";
 // Authored compact blocks. Building dimensions remain at character scale;
 // density comes from plot placement and street widths, never sprite scaling.
@@ -63,17 +64,14 @@ export const LAND = shore.flatMap((a, i) => {
     ];
   });
 });
-export const DOCKS = [
-  { x: 690, y: 1000, w: 60, h: 190 },
-  { x: 310, y: 960, w: 48, h: 190 },
-  { x: 1120, y: 975, w: 48, h: 185 },
-  { x: 310, y: 1100, w: 440, h: 36 },
-];
+export const DOCKS = [];
 export const SHIPS = [
-  cityAsset("harbor-rowboat", 800, 1120, "comptoir-barque"),
+  cityAsset("harbor-rowboat", 440, 1190, "comptoir-barque"),
   cityAsset("harbor-fishing-boat", 230, 1130, "comptoir-voilier"),
   cityAsset("harbor-merchant-cog", 930, 1190, "comptoir-cogue"),
-  cityAsset("harbor-caravel", 1270, 1130, "comptoir-caravelle"),
+  cityAsset("harbor-caravel", 1335, 1180, "comptoir-caravelle"),
+  cityAsset("harbor-fishing-boat", 520, 1210, "comptoir-voilier-cotier"),
+  cityAsset("harbor-rowboat", 800, 1130, "comptoir-barque-arrivee"),
 ];
 export const QUAY_EDGE = [
   [130, 997],
@@ -550,6 +548,24 @@ for (const [x, y] of [
     onDock: true,
     footprint: { type: "box", left: -9, right: 9, top: -16, bottom: 0 },
   });
+for (const p of STREET_PROPS) {
+  if (p.id.startsWith("grue-"))
+    Object.assign(p, {
+      kind: "exile-prop",
+      asset: "harbor-crane",
+      w: 70,
+      h: 79,
+      collection: "harbor",
+    });
+  if (p.id.startsWith("cargaison-"))
+    Object.assign(p, {
+      kind: "exile-prop",
+      asset: "harbor-cargo",
+      w: 42,
+      h: 32,
+      collection: "harbor",
+    });
+}
 export const RAMPARTS = [
   [
     [130, 140],
@@ -753,6 +769,7 @@ export const PROPS = [
   ...STREET_PROPS,
   ...trees,
   ...comptoirDecor(),
+  ...portWalkways(),
   ...SHIPS,
 ];
 for (const p of PROPS.filter((p) => p.walkSurface)) {
@@ -837,8 +854,10 @@ export function validateExileMap() {
       );
   for (const p of PROPS.filter((p) => p.walkSurface))
     if (
-      SOLIDS.some((other) =>
-        footprintsOverlap({ ...p, footprint: p.walkSurface }, other),
+      SOLIDS.some(
+        (other) =>
+          !other.onDock &&
+          footprintsOverlap({ ...p, footprint: p.walkSurface }, other),
       )
     )
       errors.push(`${p.id}: ponton obstrué`);

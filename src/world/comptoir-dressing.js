@@ -52,18 +52,53 @@ export function comptoirDecor() {
     ["greenery-flowerpot", 800, 680],
     ["greenery-fern", 1080, 575],
     ["greenery-grasses", 748, 85],
-    ["harbor-pier-vertical", 334, 1194],
-    ["harbor-pier-horizontal", 1144, 1200],
-    ["harbor-bollard", 738, 1150],
-    ["harbor-cargo", 334, 1042],
-    ["harbor-fishing-rack", 1146, 1035],
-    ["harbor-crane", 1144, 1085],
-    ["harbor-lamp", 1138, 1135],
-    ["harbor-fish-stall", 490, 969],
+
+    ["harbor-bollard", 740, 1160],
+    ["harbor-cargo", 350, 1030],
+    ["harbor-fishing-rack", 395, 1130],
+    ["harbor-crane", 1190, 1150],
+    ["harbor-lamp", 1095, 1150],
+    ["harbor-fish-stall", 375, 1150],
   ].map(([template, x, y]) => {
     const p = cityAsset(template, x, y);
-    if (template === "harbor-crane")
+    if (
+      template === "harbor-crane" ||
+      template === "harbor-cargo" ||
+      template === "harbor-bollard"
+    )
       p.footprint = { type: "box", left: -10, right: 10, top: -12, bottom: 0 };
+    return p;
+  });
+}
+
+export function portWalkways() {
+  const segments = [
+    ["vertical", 720, 1120, 72, "arrival-0"],
+    ["vertical", 720, 1184, 72, "arrival-1"],
+    ["vertical", 334, 1052, 64, "fish-0"],
+    ["vertical", 334, 1136, 64, "fish-1"],
+    ["horizontal", 360, 1160, 148, "fish-head"],
+    ["vertical", 1144, 1092, 80, "cargo-0"],
+    ["vertical", 1144, 1192, 80, "cargo-1"],
+    ["horizontal", 1120, 1200, 240, "cargo-head"],
+  ];
+  return segments.map(([direction, x, y, width, key]) => {
+    const p = cityAsset(
+        `harbor-pier-${direction}`,
+        x,
+        y,
+        `comptoir-port-${key}`,
+      ),
+      factor = width / p.w;
+    p.w = width;
+    p.h = Math.round(p.h * factor);
+    p.walkSurface = {
+      type: "box",
+      left: -width / 2 + 5,
+      right: width / 2 - 5,
+      top: -p.h + 4,
+      bottom: -2,
+    };
     return p;
   });
 }
