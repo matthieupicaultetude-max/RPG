@@ -3,6 +3,7 @@ import {
   dressArtisanDistrict,
   comptoirDecor,
   portWalkways,
+  shipGangways,
 } from "./comptoir-dressing.js";
 // Authored compact blocks. Building dimensions remain at character scale;
 // density comes from plot placement and street widths, never sprite scaling.
@@ -538,7 +539,7 @@ for (const [x, y] of [
   });
 for (const [x, y] of [
   [333, 1080],
-  [735, 1125],
+  [735, 1145],
 ])
   STREET_PROPS.push({
     id: `cargaison-${x}`,
@@ -770,12 +771,15 @@ export const PROPS = [
   ...trees,
   ...comptoirDecor(),
   ...portWalkways(),
+  ...shipGangways(),
   ...SHIPS,
 ];
 for (const p of PROPS.filter((p) => p.walkSurface)) {
   const f = p.walkSurface;
   DOCKS.push({
     id: p.id,
+    boardingShip: p.boardingShip,
+    gangway: p.isGangway === true,
     editor: true,
     x: p.x + f.left,
     y: p.y + f.top,
@@ -808,17 +812,30 @@ export function canWalkExile(x, y) {
   );
 }
 export const placementOnLand = (p) => {
-  if (
-    p.placement === "water" &&
-    DOCKS.some((d) =>
-      footprintsOverlap(p, {
-        x: d.x,
-        y: d.y,
-        footprint: { type: "box", left: 0, right: d.w, top: 0, bottom: d.h },
-      }),
+  if (p.placement === "water") {
+    const hull = { ...p, footprint: p.hullFootprint || p.footprint };
+    const foreign = DOCKS.filter(
+      (d) => d.id !== p.id && !d.gangway && d.boardingShip !== p.id,
+    );
+    if (
+      foreign.some((d) =>
+        footprintsOverlap(hull, {
+          x: d.x,
+          y: d.y,
+          footprint: { type: "box", left: 0, right: d.w, top: 0, bottom: d.h },
+        }),
+      )
     )
-  )
-    return false;
+      return false;
+    return footprintPoints(hull).every(
+      ([x, y]) =>
+        x > 0 &&
+        x < MAP_SIZE.width &&
+        y > 0 &&
+        y < MAP_SIZE.height &&
+        !isLand(x, y),
+    );
+  }
   if (p.walkSurface) {
     const f = p.walkSurface;
     return [
@@ -832,15 +849,8 @@ export const placementOnLand = (p) => {
         p.y + dy < MAP_SIZE.height,
     );
   }
-  return footprintPoints(p).every(([x, y]) =>
-    p.placement === "water"
-      ? x > 0 &&
-        x < MAP_SIZE.width &&
-        y > 0 &&
-        y < MAP_SIZE.height &&
-        !isLand(x, y) &&
-        !onDock(x, y)
-      : landDistance(x, y) >= 2 || (p.onDock && onDock(x, y, 1)),
+  return footprintPoints(p).every(
+    ([x, y]) => landDistance(x, y) >= 2 || (p.onDock && onDock(x, y, 1)),
   );
 };
 export function validateExileMap() {
@@ -861,6 +871,22 @@ export function validateExileMap() {
       )
     )
       errors.push(`${p.id}: ponton obstrué`);
+  const boats = PROPS.filter((p) => p.placement === "water");
+  for (let i = 0; i < boats.length; i++)
+    for (let j = i + 1; j < boats.length; j++)
+      if (
+        footprintsOverlap(
+          {
+            ...boats[i],
+            footprint: boats[i].hullFootprint || boats[i].footprint,
+          },
+          {
+            ...boats[j],
+            footprint: boats[j].hullFootprint || boats[j].footprint,
+          },
+        )
+      )
+        errors.push(`${boats[i].id}/${boats[j].id}: coques superposées`);
   for (let i = 0; i < SOLIDS.length; i++)
     for (let j = i + 1; j < SOLIDS.length; j++)
       if (footprintsOverlap(SOLIDS[i], SOLIDS[j]))

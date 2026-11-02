@@ -528,7 +528,7 @@ test("Le Comptoir utilise tous les nouveaux modèles et ouvre son chemin royal a
 });
 
 test("Le nouveau port utilise les pontons détaillés et garde la troupe sur le débarcadère", () => {
-  const DOCKS = PROPS.filter((p) => p.walkSurface);
+  const DOCKS = PROPS.filter((p) => p.surface === "pier" && !p.isGangway);
   assert.equal(DOCKS.length, 8);
   assert.ok(DOCKS.every((p) => p.asset.startsWith("harbor-pier-")));
   assert.equal(canWalkExile(500, 1115), false, "ancien quai supprimé");
@@ -538,4 +538,62 @@ test("Le nouveau port utilise les pontons détaillés et garde la troupe sur le 
   for (let i = 0; i < 40; i++) stepSandbox(s, { x: 0, y: 0 }, 0.05);
   assert.ok(s.player.y >= 1160);
   for (const p of s.team) assert.ok(canWalkExile(p.x, p.y));
+});
+
+test("Les ponts des six bateaux se rejoignent avec le cheminement réel des alliés", async () => {
+  const { findPath } = await import("../src/ai/companions.js");
+  const stand = Object.assign((x, y) => canWalkExile(x, y), {
+    bounds: MAP_SIZE,
+  });
+  for (const boat of SHIPS) {
+    const goal = {
+      x: boat.x,
+      y: boat.y + (boat.walkSurface.top + boat.walkSurface.bottom) / 2,
+    };
+    const start =
+      boat.x < 600
+        ? { x: 334, y: 1120 }
+        : boat.x < 850
+          ? { x: 720, y: 1160 }
+          : { x: 1144, y: 1160 };
+    assert.ok(canWalkExile(goal.x, goal.y), boat.id);
+    assert.ok(findPath(start, goal, stand).length, boat.id);
+    assert.ok(
+      !canWalkExile(boat.x, boat.y - boat.h * 0.85),
+      "pas de marche sur les voiles",
+    );
+  }
+});
+
+test("Le personnage rejoint réellement le pont de la cogue par sa passerelle", async () => {
+  const { findPath } = await import("../src/ai/companions.js");
+  const { playerSpeed } = await import("../src/game/config.js");
+  const { setCombatMode } = await import("../src/dev/sandbox.js");
+  const s = town();
+  movePartyToZone(s, "exile", { x: 1144, y: 1160 });
+  setCombatMode(s, false);
+  const boat = SHIPS.find((p) => p.id === "comptoir-cogue"),
+    goal = {
+      x: boat.x,
+      y: boat.y + (boat.walkSurface.top + boat.walkSurface.bottom) / 2,
+    };
+  const stand = Object.assign((x, y) => canWalkExile(x, y), {
+    bounds: MAP_SIZE,
+  });
+  const path = findPath(s.player, goal, stand);
+  assert.ok(path.length);
+  for (const point of path) {
+    for (let i = 0; i < 50; i++) {
+      const dx = point.x - s.player.x,
+        dy = point.y - s.player.y,
+        d = Math.hypot(dx, dy);
+      if (d < 0.1) break;
+      stepSandbox(
+        s,
+        { x: dx / d, y: dy / d },
+        Math.min(0.04, d / playerSpeed(s)),
+      );
+    }
+  }
+  assert.ok(Math.hypot(s.player.x - goal.x, s.player.y - goal.y) < 1);
 });

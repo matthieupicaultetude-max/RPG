@@ -54,6 +54,7 @@ export const palette = catalogProps.filter(
     a.findIndex(
       (q) =>
         q.kind === p.kind &&
+        q.isGangway === p.isGangway &&
         q.asset === p.asset &&
         q.district === p.district &&
         q.variant === p.variant &&
@@ -127,6 +128,8 @@ export function rebuildPort(doc) {
     const p = templates.get(item.template);
     return (
       item.id.startsWith("comptoir-port-") ||
+      (p?.placement === "water" &&
+        world.SHIPS.some((ship) => ship.id === item.id)) ||
       (item.y >= 950 && p?.collection === "harbor")
     );
   };
@@ -250,6 +253,8 @@ function docksFor(props, doc) {
       .filter((p) => p.walkSurface)
       .map((p) => ({
         id: p.id,
+        boardingShip: p.boardingShip,
+        gangway: p.isGangway === true,
         editor: true,
         x: p.x + p.walkSurface.left,
         y: p.y + p.walkSurface.top,

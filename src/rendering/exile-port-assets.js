@@ -71,7 +71,42 @@ export function drawPortLandmark(g, p) {
 }
 const residenceKey = (p) =>
   `${p.district === "artisans" ? "artisan" : "merchant"}-${p.residenceVariant ?? Math.floor(p.x + p.y) % 3}`;
+const deckPatterns = new Map();
+export function drawPortDeck(g, rect, originX = 0, originY = 0) {
+  const orientation = rect.w >= rect.h ? "horizontal" : "vertical",
+    frame = frames[`harbor-pier-${orientation}`];
+  if (!frame) {
+    g.fillStyle = "#aa8049";
+    g.fillRect(rect.x, rect.y, rect.w, rect.h);
+    return false;
+  }
+  let tile = deckPatterns.get(orientation);
+  if (!tile) {
+    tile = document.createElement("canvas");
+    tile.width = tile.height = 32;
+    const ctx = tile.getContext("2d");
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(
+      frame.image,
+      frame.x + frame.w * 0.24,
+      frame.y + frame.h * 0.24,
+      frame.w * 0.52,
+      frame.h * 0.52,
+      0,
+      0,
+      32,
+      32,
+    );
+    deckPatterns.set(orientation, tile);
+  }
+  const pattern = g.createPattern(tile, "repeat");
+  pattern.setTransform(new DOMMatrix().translate(-originX % 32, -originY % 32));
+  g.fillStyle = pattern;
+  g.fillRect(rect.x, rect.y, rect.w, rect.h);
+  return true;
+}
 export function portSpriteSize(p) {
+  if (p.isGangway) return { w: p.w, h: p.h };
   const f = frames[p.asset || residenceKey(p)];
   if (!f) return null;
   const w =

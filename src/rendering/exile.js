@@ -9,6 +9,7 @@ import {
   drawHarborGate,
   drawCargoCrane,
   drawPortGround,
+  drawPortDeck,
   drawPortEmblem,
   drawWorkshopDetails,
 } from "./exile-port-assets.js";
@@ -200,22 +201,7 @@ function plotGround(g, map) {
     );
   }
   g.restore();
-  for (const d of map.DOCKS.filter((d) => !d.editor)) {
-    rect(g, d.x - 3, d.y - 3, d.w + 6, d.h + 6, "#5a5143");
-    rect(g, d.x, d.y, d.w, d.h, "#b79260");
-    for (let y = d.y; y < d.y + d.h; y += 9) {
-      rect(g, d.x, y, d.w, 1, "#735c42");
-      rect(g, d.x + 2, y + 1, d.w - 4, 1, "#d4b782");
-      for (let x = d.x + 5; x < d.x + d.w - 3; x += 28)
-        rect(g, x, y + 3, 1, 1, "#6c5a43");
-    }
-    for (let y = d.y; y < d.y + d.h; y += 40) {
-      for (const x of [d.x, d.x + d.w - 3]) {
-        rect(g, x - 2, y, 6, 8, "#786347");
-        rect(g, x - 2, y, 6, 2, "#e1c997");
-      }
-    }
-  }
+  for (const d of map.DOCKS.filter((d) => !d.editor)) drawPortDeck(g, d);
 }
 const roofColors = {
   navy: ["#2f496c", "#496d92", "#809bb4"],
@@ -443,89 +429,6 @@ function stall(g, p) {
       ["#c98365", "#d4be78", "#8aa86c"][i % 3],
     );
 }
-function ship(g, x, y, color, caravel = false) {
-  g.save();
-  g.translate(x, y);
-  ellipse(g, 2, 8, 30, 69, "#244e5b44");
-  poly(
-    g,
-    [
-      [0, -78],
-      [27, -49],
-      [28, 47],
-      [0, 78],
-      [-28, 47],
-      [-27, -49],
-    ],
-    "#574b3c",
-    "#d0ae78",
-  );
-  poly(
-    g,
-    [
-      [0, -69],
-      [21, -43],
-      [22, 42],
-      [0, 63],
-      [-22, 42],
-      [-21, -43],
-    ],
-    "#a27c51",
-  );
-  for (let yy = -45; yy < 50; yy += 8) rect(g, -20, yy, 40, 1, "#775a3d");
-  rect(g, -2, -66, 4, 120, "#6e5138");
-  g.strokeStyle = "#dac598";
-  g.lineWidth = 1;
-  for (const yy of [-44, 30]) {
-    g.beginPath();
-    g.moveTo(0, -65);
-    g.lineTo(-24, yy);
-    g.moveTo(0, -65);
-    g.lineTo(24, yy);
-    g.stroke();
-  }
-  poly(
-    g,
-    [
-      [2, -56],
-      [36, -7],
-      [2, 18],
-    ],
-    color,
-  );
-  poly(
-    g,
-    [
-      [-2, -50],
-      [-29, -9],
-      [-2, 13],
-    ],
-    "#e7dbb4",
-  );
-  rect(g, -2, 20, 4, 25, "#74533b");
-  rect(g, -19, 39, 38, 13, "#7b6950");
-  window(g, -12, 41, 8, 7);
-  if (caravel)
-    for (const yy of [-37, 32]) {
-      rect(g, -1, yy - 25, 3, 55, "#604d37");
-      poly(
-        g,
-        [
-          [1, yy - 24],
-          [29, yy + 5],
-          [1, yy + 19],
-        ],
-        "#e6d9a6",
-      );
-      g.strokeStyle = "#d9bf86";
-      g.lineWidth = 1;
-      g.beginPath();
-      g.moveTo(0, yy - 22);
-      g.lineTo(-20, yy + 21);
-      g.stroke();
-    }
-  g.restore();
-}
 export function createExileEnvironment(mapOverride = map) {
   const map = mapOverride;
   loadPortAssets();
@@ -536,7 +439,7 @@ export function createExileEnvironment(mapOverride = map) {
   const g = ground.getContext("2d");
   g.imageSmoothingEnabled = false;
   plotGround(g, map);
-  for (const p of map.SHIPS.filter(p=>!p.asset)) ship(g, p.x, p.y, p.color, p.caravel);
+
   const atlas = createSpriteAtlas();
   const props = map.PROPS.map((p) => {
     const custom = [
@@ -570,7 +473,9 @@ export function createExileEnvironment(mapOverride = map) {
         anchorY = canvas.height - 10;
       cg.imageSmoothingEnabled = false;
       cg.translate(anchorX, anchorY);
-      if (p.kind === "exile-prop") {
+      if (p.isGangway)
+        drawPortDeck(cg, { x: -p.w / 2, y: -p.h, w: p.w, h: p.h }, p.x, p.y);
+      else if (p.kind === "exile-prop") {
         if (!drawPortLandmark(cg, p))
           rect(cg, -p.w / 2, -p.h, p.w, p.h, "#526e81");
       } else if (p.kind === "exile-house") building(cg, p);
@@ -625,7 +530,7 @@ export function createExileEnvironment(mapOverride = map) {
   return {
     ground,
     props: [...props, ...rampartPieces(map)],
-    markers: [{text:"Vers le sanctuaire du Roi Slime",x:720,y:38}],
+    markers: [{ text: "Vers le sanctuaire du Roi Slime", x: 720, y: 38 }],
     land: map.LAND,
     assetVersion: portAssetVersion(),
   };
@@ -634,6 +539,17 @@ export function drawExileLife(g, s, foreground = false) {
   if (s.zone !== "exile") return;
   const t = s.time;
   if (!foreground) {
+    const boatBounds = map.PROPS.filter((p) => p.placement === "water").map(
+      (p) => {
+        const size = portSpriteSize(p) || p;
+        return {
+          left: p.x - size.w / 2,
+          right: p.x + size.w / 2,
+          top: p.y - size.h,
+          bottom: p.y,
+        };
+      },
+    );
     // Shore glints and foam move on water only; docks are never overwritten.
     for (let i = 0; i < 44; i++) {
       const x = 120 + i * 29,
@@ -641,7 +557,15 @@ export function drawExileLife(g, s, foreground = false) {
       const xx = x + Math.sin(t * 0.6 + i) * 4,
         length = 6 + (i % 4);
       if (
-        [xx, xx + length].some((px) => map.isLand(px, y) || map.onDock(px, y))
+        [xx, xx + length].some(
+          (px) =>
+            map.isLand(px, y) ||
+            map.onDock(px, y) ||
+            boatBounds.some(
+              (b) =>
+                px >= b.left && px <= b.right && y >= b.top && y <= b.bottom,
+            ),
+        )
       )
         continue;
       rect(g, xx, y, length, 1, "#b5d8ce88");

@@ -306,9 +306,9 @@ test("La verdure se place manuellement : troncs et haies solides, petites plante
 
 test("Les assets maritimes séparent eau, quais et pontons praticables sans perdre la sauvegarde", async () => {
   const { HARBOR_ASSETS } = await import("../src/data/harbor-assets.js");
-  assert.equal(HARBOR_ASSETS.length, 12);
+  assert.equal(HARBOR_ASSETS.length, 13);
   assert.equal(HARBOR_ASSETS.filter((p) => p.placement === "water").length, 4);
-  assert.equal(HARBOR_ASSETS.filter((p) => p.walkSurface).length, 2);
+  assert.equal(HARBOR_ASSETS.filter((p) => p.surface === "pier").length, 2);
   for (const p of HARBOR_ASSETS) {
     assert.ok(palette.some((t) => t.id === p.id));
     assert.ok(!defaultMap.objects.some((t) => t.template === p.id));
@@ -318,17 +318,17 @@ test("Les assets maritimes séparent eau, quais et pontons praticables sans perd
   doc.objects.push(
     { id: "pontoon-test", template: "harbor-pier-vertical", x: 720, y: 1232 },
     { id: "ship-test", template: "harbor-fishing-boat", x: 850, y: 1220 },
-    { id: "bollard-test", template: "harbor-bollard", x: 720, y: 1140 },
+    { id: "bollard-test", template: "harbor-bollard", x: 704, y: 1140 },
   );
   applyMap(doc);
-  assert.equal(map.DOCKS.length, dockCount + 1);
+  assert.equal(map.DOCKS.length, dockCount + 2);
   for (let y = 1170; y <= 1224; y += 2)
     assert.ok(map.canWalkExile(720, y), `jointure du ponton y=${y}`);
   const saved = captureMap();
   applyMap(defaultMap);
   assert.equal(map.DOCKS.length, dockCount);
   applyMap(saved);
-  assert.equal(map.DOCKS.length, dockCount + 1);
+  assert.equal(map.DOCKS.length, dockCount + 2);
   const bad = copy(saved);
   Object.assign(
     bad.objects.find((p) => p.id === "ship-test"),
@@ -393,7 +393,7 @@ test("Reconstruire seulement le port préserve les réglages et les rues d’une
   assert.equal(rebuilt.legacyDocks, false);
   applyMap(rebuilt);
   assert.equal(map.SHIPS.length, 6);
-  assert.equal(map.DOCKS.length, 8);
+  assert.equal(map.DOCKS.length, 21);
   assert.equal(map.onDock(500, 1115), false);
   applyMap(defaultMap);
 });

@@ -370,9 +370,9 @@ export function openMapEditor(game, onClose = () => {}) {
     }
     if ($("[data-collision]").checked)
       for (const p of viewMap().PROPS) {
-        const f = p.footprint;
+        const f = p.walkSurface || p.footprint;
         if (!f) continue;
-        g.strokeStyle = "#ff7272";
+        g.strokeStyle = p.walkSurface ? "#79e3bd" : "#ff7272";
         g.lineWidth = 1 / zoom;
         g.beginPath();
         if (f.type === "box")

@@ -102,3 +102,37 @@ export function portWalkways() {
     return p;
   });
 }
+
+export function shipGangways() {
+  const routes = [
+    [745, 1112, 42, 16, "comptoir-barque-arrivee", "arrival-boat"],
+    [969, 1162, 44, 24, "comptoir-cogue", "merchant"],
+    [1228, 1155, 60, 16, "comptoir-caravelle", "caravel"],
+    [256, 1109, 44, 16, "comptoir-voilier", "fishing-west"],
+    [421, 1152, 18, 28, "comptoir-barque", "rowboat-west"],
+    [420, 1140, 84, 18, "comptoir-voilier-cotier", "fishing-east-0"],
+    [483, 1140, 24, 58, "comptoir-voilier-cotier", "fishing-east-1"],
+  ];
+  return routes.map(([x, y, w, h, boardingShip, key]) => {
+    const p = cityAsset(
+      w >= h ? "harbor-pier-horizontal" : "harbor-pier-vertical",
+      x + w / 2,
+      y + h,
+      `comptoir-port-gangway-${key}`,
+    );
+    return {
+      ...p,
+      w,
+      h,
+      isGangway: true,
+      boardingShip,
+      walkSurface: {
+        type: "box",
+        left: -w / 2,
+        right: w / 2,
+        top: -h,
+        bottom: 0,
+      },
+    };
+  });
+}
