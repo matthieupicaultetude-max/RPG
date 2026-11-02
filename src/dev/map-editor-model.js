@@ -1,3 +1,5 @@
+import { CUSTOM_QUESTS, CUSTOM_QUEST_NPCS } from "../world/custom-quests.js";
+import { validateQuestContent } from "../data/quest-schema.js";
 import { HARBOR_ASSETS } from "../data/harbor-assets.js";
 import { GREENERY } from "../data/greenery.js";
 import { BLUE_PROPS } from "../data/blue-props.js";
@@ -106,6 +108,8 @@ let fleetVersion = 1;
 export function captureMap() {
   return {
     schema: 1,
+    quests: copy(CUSTOM_QUESTS),
+    npcs: copy(CUSTOM_QUEST_NPCS),
     fleetVersion,
     portLayout: 2,
     legacyDocks: world.DOCKS.some((d) => d.legacy === true),
@@ -160,6 +164,13 @@ export function finishMapTraces(doc) {
   return completed;
 }
 export function validateDocument(doc) {
+  if (
+    (doc?.quests !== undefined &&
+      (!Array.isArray(doc.quests) || doc.quests.length > 100)) ||
+    (doc?.npcs !== undefined &&
+      (!Array.isArray(doc.npcs) || doc.npcs.length > 80))
+  )
+    throw Error("Format des quêtes ou PNJ invalide.");
   if (
     doc?.schema !== 1 ||
     doc.zone !== "exile" ||
@@ -304,6 +315,12 @@ export function previewMap(doc) {
   };
 }
 function install(doc) {
+  CUSTOM_QUESTS.splice(0, CUSTOM_QUESTS.length, ...copy(doc.quests || []));
+  CUSTOM_QUEST_NPCS.splice(
+    0,
+    CUSTOM_QUEST_NPCS.length,
+    ...copy(doc.npcs || []),
+  );
   const map = previewMap(doc);
   fleetVersion = doc.fleetVersion ?? 0;
   world.PROPS.splice(0, world.PROPS.length, ...map.PROPS);
@@ -339,7 +356,15 @@ export function applyMap(doc) {
   const previous = captureMap();
   try {
     install(doc);
+    validateQuestContent(
+      doc.quests || [],
+      doc.npcs || [],
+      Object.values(world.SERVICES).map((p) => p.id),
+    );
     const errors = world.validateExileMap();
+    for (const p of CUSTOM_QUEST_NPCS)
+      if (!world.canWalkExile(p.x, p.y) || !world.canWalkExile(p.x, p.y + 16))
+        errors.push(`${p.name}: PNJ inaccessible`);
     for (const p of world.ENTRANCES)
       if (!world.canWalkExile(p.x, p.y))
         errors.push(`${p.id}: porte inaccessible`);

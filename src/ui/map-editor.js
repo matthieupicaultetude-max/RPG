@@ -1,3 +1,7 @@
+import { validateQuestContent } from "../data/quest-schema.js";
+import { SERVICES } from "../world/exile-map.js";
+import { mountQuestEditor } from "./quest-editor.js";
+import { drawAdventurer } from "../rendering/actors.js";
 import {
   captureMap,
   rebuildPort,
@@ -52,6 +56,22 @@ export function openMapEditor(game, onClose = () => {}) {
   let paletteVersion = -1,
     paletteDrag = null;
   const status = (t) => ($('[role="status"]').textContent = t);
+  let questPick = null;
+  dialog.addEventListener("quest-cancel-position",()=>{questPick=null;});
+  const questEditor = mountQuestEditor(
+    dialog,
+    () => doc,
+    change,
+    status,
+    (id) => {
+      if (game.state.customQuests) delete game.state.customQuests[id];
+      game.state.revision++;
+      game.refresh();
+    },
+  );
+  dialog.addEventListener("quest-pick-position", (e) => {
+    questPick = e.detail.done;
+  });
   const paletteSelect = $("[data-palette]");
   for (const p of palette) {
     const option = new Option(
@@ -268,6 +288,7 @@ export function openMapEditor(game, onClose = () => {}) {
     draw();
   }
   function sync() {
+    questEditor.render();
     for (const b of tiles.querySelectorAll("button"))
       b.setAttribute(
         "aria-pressed",
@@ -380,6 +401,17 @@ export function openMapEditor(game, onClose = () => {}) {
         else g.arc(p.x, p.y, f.radius, 0, Math.PI * 2);
         g.stroke();
       }
+    for (const n of doc.npcs || []) {
+      drawAdventurer(
+        g,
+        { ...n, equipment: {}, facing: "down", moving: false },
+        0,
+      );
+      g.fillStyle = "#ffe29a";
+      g.font = "8px sans-serif";
+      g.textAlign = "center";
+      g.fillText(n.name, n.x, n.y + 15);
+    }
     const item = selectedValue();
     if (item) {
       g.strokeStyle = "#66efff";
@@ -462,6 +494,12 @@ export function openMapEditor(game, onClose = () => {}) {
     canvas.setPointerCapture(e.pointerId);
     const p = position(e),
       before = snapshot();
+    if (questPick) {
+      const done = questPick;
+      questPick = null;
+      done(Math.round(p.x), Math.round(p.y));
+      return;
+    }
     if (mode === "pan" || e.button === 1) {
       drag = { kind: "pan", x: e.clientX, y: e.clientY, ox, oy };
       return;
@@ -652,6 +690,7 @@ export function openMapEditor(game, onClose = () => {}) {
       draw();
       return;
     }
+    if (!b.dataset.edit) return;
     const action = b.dataset.edit,
       item = selectedValue();
     try {
@@ -757,6 +796,11 @@ export function openMapEditor(game, onClose = () => {}) {
       }
       if (action === "export") {
         finishTraces();
+        validateQuestContent(
+          doc.quests || [],
+          doc.npcs || [],
+          Object.values(SERVICES).map((n) => n.id),
+        );
         previewMap(doc);
         const blob = new Blob([JSON.stringify(doc, null, 2)], {
             type: "application/json",
@@ -779,6 +823,11 @@ export function openMapEditor(game, onClose = () => {}) {
     try {
       if (file.size > 1000000) throw Error("Fichier trop volumineux.");
       const next = JSON.parse(await file.text());
+      validateQuestContent(
+        next.quests || [],
+        next.npcs || [],
+        Object.values(SERVICES).map((n) => n.id),
+      );
       previewMap(next);
       change(() => {
         doc = next;

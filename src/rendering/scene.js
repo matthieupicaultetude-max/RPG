@@ -1,3 +1,5 @@
+import {CUSTOM_QUESTS} from "../world/custom-quests.js";
+import {questRecord,questAvailable,stageReady} from "../game/custom-quests.js";
 import {mapRevision} from '../dev/map-editor-model.js';
 import {portAssetVersion} from './exile-port-assets.js';
 import {createExileEnvironment,drawExileLife} from './exile.js';
@@ -129,7 +131,7 @@ export function createRenderer(canvas) {
           ctx.restore();
         },
       })),
-      ...(s.npcs || []).map(npc=>({y:npc.y,draw:()=>person(npc,s.time,false,false)})),
+      ...(s.npcs || []).map(npc=>({y:npc.y,draw:()=>{person(npc,s.time,false,false);const ready=CUSTOM_QUESTS.some(q=>q.enabled&&q.stages[questRecord(s,q)?.stage]?.npc===npc.id&&stageReady(s,q)),available=CUSTOM_QUESTS.some(q=>q.giver===npc.id&&questAvailable(s,q));if(ready||available){ctx.fillStyle=ready?'#a4efbc':'#ffe38c';ctx.font='bold 13px sans-serif';ctx.textAlign='center';ctx.fillText(ready?'?':'!',npc.x,npc.y-43);}}})),
       ...s.bots.map((p) => ({
         y: p.y,
         draw: () => person(p, s.time, false, s.zone!=='exile'),

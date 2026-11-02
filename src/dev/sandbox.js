@@ -1,3 +1,4 @@
+import {questEvent,updateQuestVisits} from "../game/custom-quests.js";
 import {worldSize} from '../world/dimensions.js';
 import {stepExileResidents} from '../game/exile.js';
 import {putInBag,takeOne} from '../game/item-stacks.js';
@@ -57,7 +58,7 @@ export function createSandbox() {
   Object.assign(state, {
     zone: 'garden', lighting:true,
     team: ['melee', 'support', 'ranged'].map(makeMember), main: 0, deployed: true,
-    collections: {}, petQuests: {}, npcs:[{...PET_SHOP.npc},{...FORGE.npc},{...HANDYMAN_WORKSHOP.npc}],
+    collections: {}, customQuests: {}, petQuests: {}, npcs:[{...PET_SHOP.npc},{...FORGE.npc},{...HANDYMAN_WORKSHOP.npc}],
     bag: [], nextItem: 1, gold: 0, log: ['Bienvenue dans le jardin des essais.'], revision: 0,
     monsters: [createMonster('slime',455,220), createMonster('boar',535,285),createMonster('firefly',530,165),createMonster('moth',585,240)],
     bots: Array.from({ length: 3 }, (_, i) => ({ name: ['Milo', 'Éline', 'Orin'][i], x: 290 + i * 70, y: 110, role: ['melee', 'support', 'ranged'][i], facing: 'down', moving: true, phase: i * 2, target: { x: 270 + i * 70, y: 110 } })),
@@ -281,6 +282,7 @@ export function rewardMonster(s,monster,random=Math.random) {
     if(!s.tutorial || s.tutorial.defeated)return;
     s.tutorial.defeated=true;
   }
+  questEvent(s,"kill",monster.species);
   s.gold += monster.gold;
   grantXp(s, monster.xp);
   const definition=monsterDefinition(monster.species);
@@ -377,6 +379,7 @@ export function stepSandbox(s, direction, dt, elapsed = dt) {
     heal(s);if(s.deployed)placeAllies(s,canStand);note(s,s.zone==='tutorial'?'Iris vous remet sur pied. Réessayez !':s.zone==='slime-furnace'?'Défaite : retour à l’entrée de la Fournaise, sans nouvelle clé.':s.zone==='slime-storm'?'Défaite : retour à l’entrée de l’Œil des Tempêtes, sans nouvelle clé.':s.zone==='slime-wind'?'Défaite : retour au passage des Alizés.':s.zone==='slime-volcano'?'Défaite : retour à l’entrée du volcan, sans nouvelle clé.':s.zone==='slime-fire'?'Défaite : retour au passage des Champs de Braise.':s.zone==='slime-mountains'?'Défaite : retour au col des montagnes.':s.zone==='slime-depths'?'Défaite : retour sur la berge des profondeurs.':s.zone==='slime-marsh'?'Défaite : retour à l’entrée des marais.':'Défaite : retour à la maison (règle de test).');
   }
   if(s.player.moving&&s.time>=(s.nextFootstep||0)){s.nextFootstep=s.time+.32;emitSound(s,"step",s.player,{owner:s.main});}
+  updateQuestVisits(s);
   if(s.zone==='exile'){stepExileResidents(s,dt);return;}
   s.bots.forEach(bot => {
     if (Math.hypot(bot.x - bot.target.x, bot.y - bot.target.y) < 8) {

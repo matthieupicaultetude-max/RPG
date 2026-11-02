@@ -1,3 +1,4 @@
+import { CUSTOM_QUEST_NPCS } from "../world/custom-quests.js";
 import {
   SERVICES,
   ROADS,
@@ -54,7 +55,14 @@ export function createExileWorld() {
   return {
     monsters: [],
     bots,
-    npcs: Object.values(SERVICES).map((p) => ({ ...p, equipment: {} })),
+    npcs: [
+      ...Object.values(SERVICES),
+      ...CUSTOM_QUEST_NPCS.map((n) => ({
+        ...n,
+        panel: "town",
+        facing: "down",
+      })),
+    ].map((p) => ({ ...p, equipment: {} })),
     trees: [],
   };
 }

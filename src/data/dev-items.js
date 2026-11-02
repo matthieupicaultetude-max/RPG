@@ -55,7 +55,7 @@ for (const slot of [
   templates.push({ name: `${slot} d’essai`, slot, quantity: 1 });
 const unique = new Map();
 for (const item of templates) if (item) unique.set(stackKey(item), item);
-const keyFor = (i) =>
+export const keyFor = (i) =>
   JSON.stringify([
     i.kind || "equipment",
     i.name,

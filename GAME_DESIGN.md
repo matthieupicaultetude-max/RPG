@@ -870,3 +870,9 @@ Une passerelle réutilisable est proposée dans la palette de port. Ses planches
 Trois embarcations supplémentaires rapprochent les bateaux de la ville : une cogue vers le quai de pêche, une barque près de l’arrivée et un voilier près de la plateforme commerciale. La flotte par défaut compte neuf bateaux. Les sprites maritimes au sol sont dessinés du nord au sud pour respecter leurs superpositions.
 
 Une mise à jour additive de la carte navigateur complète les identifiants de flotte manquants uniquement si leurs emplacements restent valides. Les objets existants, leurs positions et la ville sont conservés ; les emplacements occupés sont ignorés. Le marqueur `fleetVersion` empêche de recréer un bateau qu’un joueur supprime ensuite volontairement. Cette mise à jour ne reconstruit pas les pontons d’une carte personnalisée.
+
+### Quêtes créées dans l’éditeur
+
+Le volet Quêtes de l’éditeur de carte crée des scénarios séquentiels, avec dialogues de proposition/étape/fin, PNJ personnalisés positionnables au Comptoir, niveau minimum, chaînes de prérequis et répétition avec délai. Chaque étape combine librement conversation, visite, combat, possession/remise d’objets, récolte et fabrication. La validation se fait auprès du PNJ désigné ; les récompenses finales regroupent or, XP sensible à la sagesse et objets du catalogue. Les invocations non récompensées ne font pas progresser les objectifs de combat.
+
+Les définitions et PNJ suivent la carte (historique, sauvegarde, import/export), tandis que le journal et les compteurs sont persistés dans le compte navigateur sans changement de clé de sauvegarde. Les brouillons ne sont pas jouables ; les références manquantes, cycles, positions impraticables et données hors limites sont refusés. Modifier un scénario actif recommence son exécution en conservant ses réussites passées. Guide : `docs/QUEST_EDITOR.md`.

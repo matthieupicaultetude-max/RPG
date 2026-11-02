@@ -15,6 +15,7 @@ export const PANEL_GROUPS = [
     tabs: [
       ["bestiary", "Bestiaire"],
       ["guides", "Guides des zones"],
+      ["quests", "Journal de quêtes"],
       ["town", "Comptoir"],
     ],
   },

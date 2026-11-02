@@ -22,7 +22,7 @@ export function progressSnapshot(state) {
       team: state.team.map(member => pick(member, MEMBER_FIELDS)),
       main: state.main, deployed: state.deployed, bag: state.bag,
       gold: state.gold, nextItem: state.nextItem,
-      collections: state.collections, petQuests: state.petQuests,
+      collections: state.collections, petQuests: state.petQuests, customQuests: state.customQuests||{},
       woodcutting: pick(state.woodcutting, ['level', 'xp']),
       handyman: pick(state.handyman, ['level', 'xp']),
       ...(state.zone==='exile'?{location:{zone:'exile',x:state.player.x,y:state.player.y}}:{}),
@@ -37,6 +37,7 @@ export function decodeSave(raw) {
   if (save?.version > SAVE_VERSION) throw new Error('future-version');
   if (save?.version !== SAVE_VERSION) throw new Error('invalid-version');
   const p = save.progress;
+  if(p?.customQuests!==undefined&&(!object(p.customQuests)||Object.keys(p.customQuests).length>200||!Object.entries(p.customQuests).every(([id,r])=>/^[a-z0-9][a-z0-9_-]{0,79}$/.test(id)&&object(r)&&['active','completed'].includes(r.status)&&integer(r.stage)&&r.stage<20&&integer(r.completedAt)&&integer(r.runs)&&typeof r.fingerprint==='string'&&r.fingerprint.length<1000000&&object(r.counts)&&Object.keys(r.counts).length<=160&&Object.values(r.counts).every(n=>integer(n)&&n<=999))))throw Error('invalid-custom-quests');
   if (!object(p) || !Array.isArray(p.team) || p.team.length !== 3 ||
       !integer(p.main) || p.main > 2 || typeof p.deployed !== 'boolean' ||
       !Array.isArray(p.bag) || !integer(p.gold) || !integer(p.nextItem, 1) ||
@@ -81,6 +82,7 @@ export function restoreProgress(state, save) {
     syncEquipmentHealth(m);
     m.hp = m.maxHp;
   });
+  state.customQuests=structuredClone(p.customQuests||{});
   for (const key of ['main', 'deployed', 'bag', 'gold', 'collections', 'petQuests']) state[key] = p[key];
   if(p.devChest)state.devChest=p.devChest;
   state.nextItem = Math.max(p.nextItem, 1 + Math.max(0, ...state.bag.concat(state.team.flatMap(m => Object.values(m.equipment))).map(i => i.id)));

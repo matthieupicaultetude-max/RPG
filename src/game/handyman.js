@@ -1,3 +1,4 @@
+import {questEvent} from "./custom-quests.js";
 import {nearService} from '../world/services.js';
 import {
   KEY_RECIPES,
@@ -79,6 +80,7 @@ export function craftDungeonKeys(
   if (existing) existing.quantity += quantity;
   else
     s.bag.push({ ...createDungeonKey(dungeonId), id: s.nextItem++, quantity });
+  questEvent(s,"craft",`key:${dungeonId}`,quantity);
   grantHandymanXp(s, quantity * recipe.xp);
   emitSound(s, "craft", s.player, { owner: s.main });
   tell(

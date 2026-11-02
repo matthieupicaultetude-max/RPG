@@ -1,3 +1,4 @@
+import {questEvent} from "./custom-quests.js";
 import {nearService} from '../world/services.js';
 import { TUTORIAL_SAWMILL } from '../world/tutorial-map.js';
 import { emitSound } from "../audio/events.js";
@@ -213,6 +214,7 @@ export function stepWoodcutting(s, direction, dt, elapsed, canStand) {
     s.woodcutting.action = null;
     addWoodItem(s, wood.id, "wood", 1);
     if(s.zone === "tutorial" && s.tutorial?.step === "gather" && tree.id.startsWith("tutorial-ash-"))s.tutorial.harvested=(s.tutorial.harvested||0)+1;
+    questEvent(s,"harvest",wood.id);
     grantWoodcuttingXp(s, wood.xp);
     tell(s, `${wood.log} récolté · +${wood.xp} XP bûcheron.`);
   }
@@ -241,6 +243,7 @@ export function craftPlanks(s, id, quantity) {
   addWoodItem(s, id, "plank", quantity);
   if(s.zone === "tutorial" && s.tutorial?.step === "craft" && id === "ash")s.tutorial.crafted=true;
   emitSound(s,"craft",s.player,{owner:s.main});
+  questEvent(s,"craft",`plank:${id}`,quantity);
   grantWoodcuttingXp(s, quantity * 10);
   tell(
     s,

@@ -1,3 +1,4 @@
+import {questEvent} from "./custom-quests.js";
 import {nearService} from '../world/services.js';
 import {putInBag,takeOne} from './item-stacks.js';
 import {HYBRID_SLIMES} from '../data/hybrid-slimes.js';
@@ -78,6 +79,7 @@ export function upgradeChromatic(state, id) {
   }
   state.bag = state.bag.filter((item) => item.quantity > 0);
   Object.assign(item, chromaticVersion(item));
+  questEvent(state,"craft","chromatic");
   emitSound(state, "forge", state.player, { owner: state.main });
   tell(
     `${item.name} amélioré en chromatique : +${CHROMATIC_POWER} Puissance !`,

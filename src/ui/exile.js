@@ -1,3 +1,5 @@
+import { renderNpcQuests } from "./quests.js";
+import { escapeQuest } from "./quest-editor.js";
 import {
   MAP_SIZE,
   RAMPARTS,
@@ -102,8 +104,15 @@ export function renderExile(s) {
       { id: "plan", label: "Plan & adresses", content: overview },
       {
         id: "residents",
-        label: selected?.name || "Habitants",
-        content: conversation,
+        label: escapeQuest(selected?.name || "Habitants"),
+        content:
+          (selected?.panel && selected.panel !== "town"
+            ? `<button data-open-panel="${escapeQuest(selected.panel)}">Ouvrir l’atelier</button>`
+            : "") +
+          (selected?.greeting
+            ? `<h3>${escapeQuest(selected.name)}</h3><p>${escapeQuest(selected.greeting)}</p>`
+            : conversation) +
+          renderNpcQuests(s, selected?.id),
       },
       {
         id: "country",

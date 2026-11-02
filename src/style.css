@@ -903,3 +903,32 @@ canvas.paper-avatar { position:relative; inset:auto; object-fit:contain; flex-sh
 @media(max-width:850px){.map-editor .map-editor-palette{width:132px;padding:7px;}.map-editor-tiles{grid-template-columns:1fr;}}
 @media(max-width:650px){.map-editor-body{position:relative;}.map-editor .map-editor-palette{position:absolute;right:0;top:0;bottom:0;width:96px;background:#172b28ed;}.map-editor .map-editor-map{margin-right:110px;}.map-editor-tiles span{font-size:9px;}.map-editor .map-editor-tiles canvas{height:74px;}.map-editor .map-editor-palette strong{font-size:11px;}.map-editor aside:not(.map-editor-palette){width:110px;}}
 .mobile-layout.exploring .ultimate-box{right:0;top:auto;bottom:0;}
+
+/* Quest authoring shares the map document and its undo history. */
+.map-editor [hidden]{display:none!important}
+.quest-editor-tabs{display:flex;gap:6px;margin-left:auto}
+.quest-editor-tabs [aria-pressed=true],.quest-editor-list [aria-pressed=true]{border-color:#e3c47c;background:#415347}
+.quest-editor-workspace{display:grid;grid-template-columns:240px minmax(0,1fr);flex:1;min-height:0;overflow:hidden;gap:16px;padding:14px}
+.quest-editor-workspace>aside,.quest-editor-workspace>main{overflow:auto;min-width:0;padding:12px;background:#1d3029;border-radius:10px}
+.quest-editor-workspace label{display:flex;flex-direction:column;gap:5px;margin:10px 0;color:#d8d3b6}
+.quest-editor-workspace input,.quest-editor-workspace select,.quest-editor-workspace textarea{width:100%;min-width:0;padding:8px;background:#14271f;color:#f3e7c0;border:1px solid #657356;border-radius:5px;font:inherit}
+.quest-editor-workspace input[type=checkbox]{width:auto;align-self:flex-start}
+.quest-editor-workspace textarea{min-height:65px;resize:vertical}
+.quest-editor-workspace select[multiple]{min-height:100px}
+.quest-editor-workspace fieldset,.quest-stage{border:1px solid #617055;border-radius:8px;padding:12px;margin:14px 0}
+.quest-editor-workspace legend{color:#e6c889;padding:0 8px}
+.quest-editor-workspace button{margin:3px;white-space:normal}
+.quest-editor-list{display:flex;flex-direction:column;gap:5px;margin:15px 0}
+.quest-editor-list button{text-align:left}
+.quest-editor-workspace p{font-size:13px;line-height:1.5;color:#b7c1a0}
+.quest-editor-workspace details{border-bottom:1px solid #54634b;padding:12px 0}
+.quest-journal{max-width:1050px;margin:auto;padding:20px}
+.quest-journal>details>summary{padding:14px;color:#e7ce8b;cursor:pointer}
+.quest-card{border:1px solid #657658;background:#20372d;padding:18px;border-radius:12px;margin:12px 0;line-height:1.6}
+.quest-card-heading{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.quest-card h3{margin:0;color:#ead7a3}.quest-card h4{margin-bottom:8px}
+.quest-card button{margin:5px}.quest-card small{color:#bbc8aa}.quest-card footer{margin-top:15px;border-top:1px solid #53644c;padding-top:10px;color:#e0ca8e}.quest-card ul{padding-left:22px}
+@media(max-width:700px){.quest-editor-workspace{grid-template-columns:1fr;overflow:auto;gap:8px;padding:6px}.quest-editor-workspace>aside,.quest-editor-workspace>main{overflow:visible}.quest-editor-workspace>aside{max-height:240px;overflow:auto}.quest-editor-tabs{margin:0}.map-editor header{flex-wrap:wrap}.quest-journal{padding:8px}.quest-card{padding:12px}}
+.map-editor .quest-editor-workspace>aside{width:auto}
+@media(max-width:700px){.map-editor .quest-editor-workspace{display:block;overflow-y:auto}.map-editor .quest-editor-workspace>aside{min-height:180px;max-height:240px;margin-bottom:12px}.map-editor .quest-editor-workspace>main{overflow:visible}.map-editor .quest-editor-workspace aside p{display:block}}
+.quests-open #panel{display:block!important}.quests-open .quest-journal{width:100%;box-sizing:border-box}
