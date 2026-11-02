@@ -558,7 +558,7 @@ Après le tutoriel, ouvrez **Monde → Comptoir → Embarquer pour le Comptoir**
 
 La ville s’étend sur **1 440 × 1 240 pixels**, avec caméra mobile, 45 bâtiments, les quinze façades d’artisans et tous les nouveaux accessoires, quartiers marchands à l’ouest et bleu au sud-est, ruelles courtes et quais à arcades, jardins, place de la fontaine, port et marché. Approchez les habitants puis utilisez **F**, ou cliquez/touchez-les. Forge, animalerie, bricolage, scierie et fontaine sont utilisables. Maëla et Oriel vendent du matériel de voyage ; Silo rachète les ressources ordinaires et rares ; l’auberge restaure la troupe contre 5 or.
 
-Des remparts crénelés, dix tours d’angle et deux portes entourent la ville. Les îlots sont décalés, les façades ont des largeurs variées et deux terrasses se franchissent par des escaliers. La porte du port, les grues de chargement, les étals et six embarcations donnent une identité maritime au Comptoir.
+Des remparts crénelés, dix tours d’angle et deux portes entourent la ville. Les îlots sont décalés, les façades ont des largeurs variées et deux terrasses se franchissent par des escaliers. La porte du port, les grues de chargement, les étals et neuf embarcations donnent une identité maritime au Comptoir.
 
 Le bouton **Plan du Comptoir** montre les quartiers et bonnes adresses. L’onglet **Pays des Slimes** conserve la carte illustrée de référence. Votre position dans la ville est sauvegardée. Les outils dev proposent des accès directs au port, à la place, aux artisans et aux jardins.
 
@@ -588,7 +588,7 @@ La palette inclut également **15 bâtiments du Quartier des Artisans** : forge 
 
 ### Comptoir reconstruit avec les nouveaux assets
 
-Le plan livré utilise les **51 nouveaux modèles** : 15 bâtiments bleus au sud-est, 12 accessoires d’artisans, 12 éléments de végétation et 12 assets maritimes, dont quatre modèles de bateaux déclinés en six embarcations, et huit segments de ponton pour les trois débarcadères. Les habitations au nord-est adoptent des façades chaudes pour distinguer le quartier résidentiel du quartier bleu. La place centrale et les accès aux dix services sont conservés. L’enceinte reste continue hors de ses portes et des accès aux pontons.
+Le plan livré utilise les **51 nouveaux modèles** : 15 bâtiments bleus au sud-est, 12 accessoires d’artisans, 12 éléments de végétation et 12 assets maritimes, dont quatre modèles de bateaux déclinés en neuf embarcations, et huit segments de ponton pour les trois débarcadères. Les habitations au nord-est adoptent des façades chaudes pour distinguer le quartier résidentiel du quartier bleu. La place centrale et les accès aux dix services sont conservés. L’enceinte reste continue hors de ses portes et des accès aux pontons.
 
 Au nord, une nouvelle route franchit la porte et rejoint le départ vers le sanctuaire du Roi Slime. La destination est signalée mais la future zone n’est pas encore ouverte. **Développement → Outils dev → Voyages → Comptoir · Porte du Roi** permet de vérifier ce départ.
 
@@ -596,8 +596,10 @@ Si une ancienne carte personnalisée est chargée dans votre navigateur, elle re
 
 ### Nouveau port détaillé
 
-Le port est reconstruit entièrement avec les assets maritimes : débarcadère central d’arrivée, quai de pêche à l’ouest et plateforme de chargement à l’est. Huit segments de ponton détaillés remplacent les anciens planchers procéduraux ; grues, cargaisons, filets, cordages, éclairage et poissonnerie occupent les quais. Six embarcations restent dans l’eau : deux barques, deux voiliers de pêche, une cogue et une caravelle.
+Le port est reconstruit entièrement avec les assets maritimes : débarcadère central d’arrivée, quai de pêche à l’ouest et plateforme de chargement à l’est. Huit segments de ponton détaillés remplacent les anciens planchers procéduraux ; grues, cargaisons, filets, cordages, éclairage et poissonnerie occupent les quais. Neuf embarcations restent dans l’eau : trois barques, trois voiliers de pêche, deux cogues et une caravelle.
 
 Pour intégrer seulement ce port à une carte locale personnalisée : **Éditeur → Nouveau port → Appliquer et sauvegarder**. Le reste de la ville et ses rues sont conservés ; l’opération peut être annulée dans le brouillon. Les anciens fichiers de carte gardent leurs quais d’origine jusqu’à cette reconstruction, avec conservation de la progression du personnage.
 
-Les pontons, passerelles et **ponts des bateaux se comportent comme du sol praticable**, avec un dessin sous les personnages. Les six bateaux du plan sont reliés aux quais ; les voiles ne constituent pas une surface de marche. La palette **Port et bateaux** propose aussi une **Passerelle de bateau**, qui réutilise les planches du ponton sans poteaux aux extrémités pour raccorder des surfaces. Les anciennes surfaces de quai utilisent désormais cette texture issue des assets au lieu du dessin procédural. Pour mettre à jour un port déjà sauvegardé : **Éditeur → Nouveau port → Appliquer et sauvegarder**.
+Les pontons, passerelles et **ponts des bateaux se comportent comme du sol praticable**, avec un dessin sous les personnages. Les neuf bateaux du plan sont reliés aux quais ; les voiles ne constituent pas une surface de marche. La palette **Port et bateaux** propose aussi une **Passerelle de bateau**, qui réutilise les planches du ponton sans poteaux aux extrémités pour raccorder des surfaces. Les anciennes surfaces de quai utilisent désormais cette texture issue des assets au lieu du dessin procédural. Pour mettre à jour un port déjà sauvegardé : **Éditeur → Nouveau port → Appliquer et sauvegarder**.
+
+La flotte du port compte neuf embarcations, avec trois ajouts dans le bassin : une cogue à l’ouest, une barque près de l’arrivée et un voilier de pêche à l’est. Les cartes locales antérieures reçoivent une mise à jour additive de flotte : seuls les bateaux manquants dont l’emplacement est libre sont ajoutés, sans déplacer les autres objets ni reconstruire les quais. Cette opération est enregistrée une fois ; une suppression volontaire ultérieure reste respectée.

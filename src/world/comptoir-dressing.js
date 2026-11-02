@@ -105,6 +105,9 @@ export function portWalkways() {
 
 export function shipGangways() {
   const routes = [
+    [354, 1090, 108, 18, "comptoir-caboteur-bassin", "inner-cog"],
+    [642, 1092, 54, 14, "comptoir-barque-bassin", "inner-rowboat"],
+    [995, 1070, 30, 28, "comptoir-pecheur-bassin", "inner-fisher"],
     [745, 1112, 42, 16, "comptoir-barque-arrivee", "arrival-boat"],
     [969, 1162, 44, 24, "comptoir-cogue", "merchant"],
     [1228, 1155, 60, 16, "comptoir-caravelle", "caravel"],

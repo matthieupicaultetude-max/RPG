@@ -73,6 +73,9 @@ export const SHIPS = [
   cityAsset("harbor-caravel", 1335, 1180, "comptoir-caravelle"),
   cityAsset("harbor-fishing-boat", 520, 1210, "comptoir-voilier-cotier"),
   cityAsset("harbor-rowboat", 800, 1130, "comptoir-barque-arrivee"),
+  cityAsset("harbor-merchant-cog", 500, 1115, "comptoir-caboteur-bassin"),
+  cityAsset("harbor-rowboat", 630, 1110, "comptoir-barque-bassin"),
+  cityAsset("harbor-fishing-boat", 1000, 1080, "comptoir-pecheur-bassin"),
 ];
 export const QUAY_EDGE = [
   [130, 997],

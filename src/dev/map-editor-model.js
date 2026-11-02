@@ -102,9 +102,11 @@ export function resizeBuilding(item, scale) {
   item.scale = Math.round(Math.max(0.25, Math.min(3, scale)) * 100) / 100;
 }
 export let mapRevision = 0;
+let fleetVersion = 1;
 export function captureMap() {
   return {
     schema: 1,
+    fleetVersion,
     portLayout: 2,
     legacyDocks: world.DOCKS.some((d) => d.legacy === true),
     zone: "exile",
@@ -143,6 +145,7 @@ export function rebuildPort(doc) {
   return {
     ...copy(doc),
     portLayout: 2,
+    fleetVersion: 1,
     legacyDocks: false,
     objects: [...kept, ...replacements],
   };
@@ -302,6 +305,7 @@ export function previewMap(doc) {
 }
 function install(doc) {
   const map = previewMap(doc);
+  fleetVersion = doc.fleetVersion ?? 0;
   world.PROPS.splice(0, world.PROPS.length, ...map.PROPS);
   world.DOCKS.splice(0, world.DOCKS.length, ...map.DOCKS);
   world.BUILDINGS.splice(0, world.BUILDINGS.length, ...map.BUILDINGS);
@@ -354,7 +358,31 @@ export const MAP_STORAGE_KEY = "auroria-map-exile-v1";
 export function restoreEditedMap(storage = localStorage) {
   try {
     const raw = storage.getItem(MAP_STORAGE_KEY);
-    if (raw) applyMap(JSON.parse(raw));
+    if (raw) {
+      const doc = JSON.parse(raw);
+      applyMap(doc);
+      if (doc.fleetVersion !== 1) {
+        let candidate = { ...captureMap(), fleetVersion: 1 };
+        const ids = new Set(candidate.objects.map((p) => p.id));
+        for (const ship of world.SHIPS) {
+          if (ids.has(ship.id)) continue;
+          const item = defaultMap.objects.find((p) => p.id === ship.id);
+          const next = {
+            ...candidate,
+            objects: [...candidate.objects, copy(item)],
+          };
+          try {
+            applyMap(next);
+            candidate = next;
+            ids.add(ship.id);
+          } catch {
+            /* Occupied water stays untouched. */
+          }
+        }
+        applyMap(candidate);
+        storage.setItem?.(MAP_STORAGE_KEY, JSON.stringify(candidate));
+      }
+    }
     return null;
   } catch (e) {
     return e.message;

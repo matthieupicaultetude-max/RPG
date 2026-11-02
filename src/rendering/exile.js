@@ -526,7 +526,12 @@ export function createExileEnvironment(mapOverride = map) {
       },
     };
   });
-  for (const p of props.filter((p) => p.groundLayer)) p.draw(g);
+  const floor = props.filter((p) => p.groundLayer);
+  for (const p of floor.filter((p) => p.placement !== "water")) p.draw(g);
+  for (const p of floor
+    .filter((p) => p.placement === "water")
+    .sort((a, b) => a.y - b.y))
+    p.draw(g);
   return {
     ground,
     props: [...props, ...rampartPieces(map)],

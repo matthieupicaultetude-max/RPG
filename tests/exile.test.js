@@ -315,7 +315,7 @@ test("Une ancienne position du grand Comptoir revient au port sans perte de prog
 });
 
 test("Les navires restent dans l’eau sans recouvrir un ponton", () => {
-  assert.equal(SHIPS.length, 6);
+  assert.equal(SHIPS.length, 9);
   for (const p of SHIPS) {
     assert.ok(p.asset.startsWith("harbor-"));
     assert.ok(placementOnLand(p));
@@ -540,7 +540,7 @@ test("Le nouveau port utilise les pontons détaillés et garde la troupe sur le 
   for (const p of s.team) assert.ok(canWalkExile(p.x, p.y));
 });
 
-test("Les ponts des six bateaux se rejoignent avec le cheminement réel des alliés", async () => {
+test("Les ponts des neuf bateaux se rejoignent avec le cheminement réel des alliés", async () => {
   const { findPath } = await import("../src/ai/companions.js");
   const stand = Object.assign((x, y) => canWalkExile(x, y), {
     bounds: MAP_SIZE,

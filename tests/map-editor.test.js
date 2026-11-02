@@ -358,7 +358,12 @@ test("Les anciennes cartes conservent leur port et le nouveau plan retire les an
   old.objects = old.objects.filter(
     (p) =>
       !p.id.startsWith("comptoir-port-") &&
-      !p.id.startsWith("comptoir-harbor-"),
+      !p.id.startsWith("comptoir-harbor-") &&
+      ![
+        "comptoir-caboteur-bassin",
+        "comptoir-barque-bassin",
+        "comptoir-pecheur-bassin",
+      ].includes(p.id),
   );
   applyMap(old);
   assert.ok(map.onDock(500, 1115));
@@ -392,8 +397,43 @@ test("Reconstruire seulement le port préserve les réglages et les rues d’une
   );
   assert.equal(rebuilt.legacyDocks, false);
   applyMap(rebuilt);
-  assert.equal(map.SHIPS.length, 6);
-  assert.equal(map.DOCKS.length, 21);
+  assert.equal(map.SHIPS.length, 9);
+  assert.equal(map.DOCKS.length, 27);
   assert.equal(map.onDock(500, 1115), false);
+  applyMap(defaultMap);
+});
+
+test("La flotte se complète une seule fois dans une carte sauvegardée sans modifier la ville", () => {
+  const doc = copy(defaultMap);
+  delete doc.fleetVersion;
+  const addedIds = [
+    "comptoir-caboteur-bassin",
+    "comptoir-barque-bassin",
+    "comptoir-pecheur-bassin",
+  ];
+  doc.objects = doc.objects.filter((p) => !addedIds.includes(p.id));
+  const house = doc.objects.find((p) => p.id === "logis-0-0-0");
+  house.scale = 0.9;
+  let raw = JSON.stringify(doc);
+  const storage = {
+    getItem: () => raw,
+    setItem: (key, value) => {
+      raw = value;
+    },
+  };
+  assert.equal(restoreEditedMap(storage), null);
+  const migrated = JSON.parse(raw);
+  assert.deepEqual(
+    migrated.objects.find((p) => p.id === house.id),
+    house,
+  );
+  for (const id of addedIds)
+    assert.ok(migrated.objects.some((p) => p.id === id));
+  assert.equal(migrated.fleetVersion, 1);
+  // An explicit later deletion stays deleted.
+  migrated.objects = migrated.objects.filter((p) => p.id !== addedIds[0]);
+  raw = JSON.stringify(migrated);
+  assert.equal(restoreEditedMap(storage), null);
+  assert.ok(!map.PROPS.some((p) => p.id === addedIds[0]));
   applyMap(defaultMap);
 });
